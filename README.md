@@ -1,2 +1,2 @@
-# PickMeDemo - Team 서울고양이
+# PickMeDemo  Team 서울고양이
  

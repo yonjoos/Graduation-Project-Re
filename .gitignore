@@ -10,6 +10,7 @@ bin/
 .gradle/
 .idea/
 .vscode/
+src/main/generated
 
 ### Keep ###
 !/src/main/frontend/

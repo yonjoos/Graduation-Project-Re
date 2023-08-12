@@ -29,6 +29,8 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 성능 상의 문제가 있을 수 있으므로, 배포할 때 확인해보기.
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 
 	//Querydsl 추가
@@ -40,6 +42,14 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+def querydslSrcDir = 'src/main/generated'
+clean {
+	delete file(querydslSrcDir)
+}
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
 
 

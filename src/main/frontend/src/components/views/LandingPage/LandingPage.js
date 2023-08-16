@@ -1,74 +1,17 @@
-import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
-import { Row, Col } from 'antd';
+import React from 'react';
+import { Row, Col, } from 'antd';
 import WelcomeContent from './Sections/WelcomeContent';
 import Auth from '../Auth/Auth';
-import Login from '../Login/Login';
-import { request, setAuthHeader } from '../../../hoc/auth';
-import Buttons from '../Buttons/Buttons';
 import RecommendationCard from './Sections/RecommendationCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
 
-function LandingPage() {
-    const navigate = useNavigate();
-    const [componentToShow, setComponentToShow] = useState('welcome');
-
-    const login = () => {
-        navigate('/login');
-        setComponentToShow('login');
-    };
-
-    const logout = () => {
-        setComponentToShow('welcome');
-        setAuthHeader(null);
-    };
-
-    const onLogin = (event, username, password) => {
-        event.preventDefault();
-
-        request('POST', '/login', {
-            login: username,
-            password: password
-        })
-            .then((response) => {
-                setAuthHeader(response.data.token);
-                setComponentToShow('messages');
-            })
-            .catch((error) => {
-                setAuthHeader(null);
-                setComponentToShow('welcome');
-            });
-    };
-
-    const onRegister = (event, firstName, lastName, username, password) => {
-        event.preventDefault();
-
-        request('POST', '/register', {
-            firstName: firstName,
-            lastName: lastName,
-            login: username,
-            password: password
-        })
-            .then((response) => {
-                setAuthHeader(response.data.token);
-                setComponentToShow('messages');
-            })
-            .catch((error) => {
-                setAuthHeader(null);
-                setComponentToShow('welcome');
-            });
-    };
+function LandingPage(props) {
 
     return (
         <div>
-            <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <Buttons login={login} logout={logout} />
-                </Col>
-            </Row>
-
-            {componentToShow === 'welcome' && (
+            {/* componentToShow 값에 따른 조건부 렌더링 */}
+            {props.isLogin === false && (
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
                         <WelcomeContent />
@@ -84,12 +27,10 @@ function LandingPage() {
                     </Col>
                 </Row>
             )}
-            {componentToShow === 'login' && (
-                <Login onLogin={onLogin} onRegister={onRegister} />
-            )}
-            {componentToShow === 'messages' && (
+            {props.isLogin === true && (
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
+                        {/** 로그인된 회원만 볼 수 있는 페이지 */}
                         <Auth />
                     </Col>
                     <Col span={8}>
@@ -108,4 +49,3 @@ function LandingPage() {
 }
 
 export default LandingPage;
-

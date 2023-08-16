@@ -1,4 +1,4 @@
-// 로그인된 사람만 볼 수 있는 페이지
+// 로그인된 회원만 볼 수 있는 페이지
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'antd';
 import { request } from '../../../hoc/auth';

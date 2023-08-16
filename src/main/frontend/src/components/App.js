@@ -3,45 +3,42 @@
 // app.js는 node module을 로딩하고 초기 initialize해야 하는 변수나 Object를 선언하고 Router에 유입이 이루어지는 그 유입점의 역할을 하는 JavaScript
 
 
-import React, { Suspense } from "react";
-import {
-    BrowserRouter as Router,
-    // Switch는 v5버전이고, 현재는 v6이므로 Routes를 씀
-    Routes,
-    Route,
-    Link,
-} from "react-router-dom";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import from React Router v6
+import MyHeader from './views/MyHeader/MyHeader';
+import LandingPage from "./views/LandingPage/LandingPage";
+import LoginPage from "./views/Login/Login";
 
 import './App.css';
 import logo from '../logo.svg';
-import MyHeader from './views/MyHeader/MyHeader';
-import LandingPage from "./views/LandingPage/LandingPage";
-import NavBar from "./views/NavBar/NavBar";
-import Footer from "./views/Footer/Footer";
 
 function App() {
     return (
-        <div>
-            <MyHeader pageTitle="Frontend authenticated with JWT" logoSrc={logo}/>
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col">
-                        <LandingPage/>
+        <Router>
+            <div>
+                {/** 사이트 이름과 로고 모양을 인자로 넘김 */}
+                <MyHeader pageTitle="P!ck Me" logoSrc={logo}/>
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col">
+                            <Routes>
+                                <Route path="/" element={<LandingPage />} />
+                                <Route path="/login" element={<LoginPage />} />
+                            </Routes>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </Router>
     )
-    // return (
-    //   <Router>
-    //       <Suspense fallback={<div>Loading...</div>}>
-    //           <NavBar />
-    //           <div style={{ paddingTop: "69px" }}></div>
-    //           <div style={{ paddingTop: "200px" }}></div>
-    //             <Footer />
-    //       </Suspense>
-    //   </Router>
-    // );
 }
 
+// es6에서는 내보낼 단일객체를 위해 export를 사용하고, 그 이전 버전의 CommonJS에서는 module.exports를 사용한다.
+// https://www.daleseo.com/js-module-import/
 export default App;
+
+// export default :
+// 코딩 중 export할 파일소스 내 제일 처음 export default로 정의한 클래스(함수, 변수등 모든 정의되것들)로 가지고옴
+// 같은 소스 내에 export default로 정의한 것들이 여러 개 있다 하더라도 제일 처음 정의한 것만 가능
+
+// export : export할 파일소스내의 클래스(함수, 변수등 모든 정의되것들)들 중 “import {그안에 들어있는 것들중1, 것들중2,것들중3, 계속추가} from 파일.js” 처럼 특정해서 사용됨

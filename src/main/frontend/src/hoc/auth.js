@@ -15,9 +15,13 @@ export const setAuthHeader = (token) => {
 axios.defaults.baseURL = 'http://localhost:9090';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
+// 로그인 성공시, getAuthToken()을 통해 로그인 정보를 가져오고, request틀을 만들어 준다.
 export const request = (method, url, data) => {
 
+    // 로그인되지 않은 유저라면, 헤더에 토큰을 달아주지 않는다.
     let headers = {};
+
+    // 로그인된 유저라면, 헤더에 토큰을 달아준다.
     if (getAuthToken() !== null && getAuthToken() !== "null") {
         // Baerer 백틱 (`) 주의!
         headers = {'Authorization': `Bearer ${getAuthToken()}`};

@@ -1,42 +1,31 @@
-// 인증이 필요한 보호받는 페이지가 될 것
-import * as React from 'react';
+// 로그인된 사람만 볼 수 있는 페이지
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col } from 'antd';
+import { request } from '../../../hoc/auth';
 
-import {request} from '../../../helpers/axios_helper';
+function Auth() {
+    const [data, setData] = useState([]);
 
-export default class Auth extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            data : []
-        };
-    };
-
-    componentDidMount() {
-        request(
-            "GET",
-            "/messages",
-            {}
-        ).then((response) => {
-            this.setState({data : response.data})
+    useEffect(() => {
+        request('GET', '/messages', {}).then((response) => {
+            setData(response.data);
         });
-    };
+    }, []);
 
-    render() {
-        return (
-            <div className="row justify-content-md-center">
-                <div className="col-4">
-                    <div className="card" style={{ width: "18rem"}}>
-                        <div className="card-body">
-                            <h5 className="card-title">Backend response</h5>
-                            <p className="card-text">Content:</p>
-                            <ul>
-                                {this.state.data && this.state.data.map((line) => <li key={line}>{line}</li>)}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    };
+    return (
+        <Row justify="center" style={{ marginTop: '20px' }}>
+            <Col xs={24} sm={16} md={12} lg={8}>
+                <Card title="Backend Response" style={{ width: '100%' }}>
+                    <p>Content:</p>
+                    <ul>
+                        {data.map((line, index) => (
+                            <li key={index}>{line}</li>
+                        ))}
+                    </ul>
+                </Card>
+            </Col>
+        </Row>
+    );
 }
+
+export default Auth;

@@ -14,9 +14,9 @@ function MyHeader(props) {
     const dispatch = useDispatch();
 
     const handleLogout = () => {
-        setAuthHeader(null);
+        setAuthHeader(null); // Clear token in local storage
         dispatch(logout()); // Dispatch logout action
-    };
+    };    
 
     const login = () => {
         navigate('/login');

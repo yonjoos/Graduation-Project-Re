@@ -9,11 +9,7 @@ export const getAuthToken = () => {
 };
 
 export const setAuthHeader = (token) => {
-    if (token !== null && token !== "null") {
-        window.localStorage.setItem('auth_token', token);
-    } else {
-        window.localStorage.removeItem('auth_token');
-    }
+    window.localStorage.setItem('auth_token', token);
 };
 
 axios.defaults.baseURL = 'http://localhost:9090';

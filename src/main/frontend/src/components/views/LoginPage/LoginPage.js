@@ -51,19 +51,21 @@ function Login() {
 
     const onLogin = (event, username, password) => {
         event.preventDefault();
-
+    
         request('POST', '/login', {
             login: username,
             password: password
         })
             .then((response) => {
                 dispatch(loginSuccess(response.data.token)); // Dispatch login success action
+                setAuthHeader(response.data.token); // Set token in local storage
                 alert("로그인에 성공하였습니다.");
             })
             .catch((error) => {
                 alert("로그인에 실패하였습니다.");
             });
     };
+    
 
     // Login 컴포넌트 내에서 회원가입 액션을 처리하는 함수를 정의
     const onRegister = (event, firstName, lastName, username, password) => {

@@ -2,6 +2,7 @@ package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.config.UserAuthenticationProvider;
 import PickMe.PickMeDemo.dto.CredentialsDto;
+import PickMe.PickMeDemo.dto.LogoutDto;
 import PickMe.PickMeDemo.dto.SignUpDto;
 import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.service.UserService;
@@ -21,35 +22,29 @@ public class AuthController {
     private final UserService userService;
     private final UserAuthenticationProvider userAuthenticationProvider;
 
+    // CredentialsDto (아이디, 비번)이 들어있는 credentialDto로 로그인 시도
     @PostMapping("/login")
     public ResponseEntity<UserDto> login(@RequestBody @Valid CredentialsDto credentialsDto) {
         UserDto userDto = userService.login(credentialsDto);
         
-        // 로그인하면, 새로운 JWT를 반환함
+        // 로그인하면, userDto의 아이디를 바탕으로 새로운 토큰을 생성한 후, userDto에 해당 토큰 세팅
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getLogin()));
 
+        // 토큰까지 세팅된 해당 userDto를 반환
         // ResponseEntity.ok : status 200
-        //return ResponseEntity.ok(userDto);
-        // 동일한 코드. 가독성 좋게 변경.
         return ResponseEntity.ok().body(userDto);
     }
 
+    // SignUpDto (성, 이름, 아이디, 비번)이 들어있는 user로 회원가입.
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody @Valid SignUpDto user) {
         // 새로운 사용자 Entity 생성
         UserDto createdUser = userService.register(user);
         
-        // 로그인과 동일하게 회원가입할 때에도, 새로 생성된 JWT를 반환
-        // 생성된 사용자 Entity에 JWT를 설정
-        // 이 JWT는 클라이언트가 나중에 로그인 상태를 유지하기 위해 사용
-        // 회원가입과 로그인을 분리할 때에는 토큰을 생성할 필요 없는듯?
+        // userDto 형식을 갖춘 createdUser 필드에 토큰을 세팅
         createdUser.setToken(userAuthenticationProvider.createToken(user.getLogin()));
 
-        // 엔티티를 생성할 때 새로운 엔티티를 찾을 수 있는 URL과 함께 201 HTTP 코드를 리턴하는 것이 가장 좋음.
-        // return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body(createdUser);
-
-        // Return success response
-        return ResponseEntity.ok().body(createdUser);
+        // 회원가입 완료된 애의 토큰이 담긴 DTO를 반환
+         return ResponseEntity.ok().body(createdUser);
     }
-
 }

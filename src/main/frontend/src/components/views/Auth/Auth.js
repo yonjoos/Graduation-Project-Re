@@ -7,10 +7,16 @@ function Auth() {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        request('GET', '/messages', {}).then((response) => {
-            setData(response.data);
-        });
+        request('GET', '/messages', {})
+            .then((response) => {
+                setData(response.data);
+            })
+            .catch((error) => {
+                // Handle error, e.g., redirect to login or display an error message
+                console.error("Error fetching data:", error);
+            });
     }, []);
+    
 
     return (
         <Row justify="center" style={{ marginTop: '20px' }}>

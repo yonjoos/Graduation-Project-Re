@@ -37,12 +37,12 @@ function Login(props) {
             .then((response) => {
                 setAuthHeader(response.data.token);         // 헤더에 토큰 설정
                 props.setIsLogin(true);                      // 로그인 상태로 설정
-                console.log("login success");
+                alert("로그인에 성공하였습니다.");
             })
             // 로그인 실패
             .catch((error) => {
                 setAuthHeader(null);                        // 헤더에 토큰 지우기
-                console.log("login failed");
+                alert("로그인에 실패하였습니다.");
             });
     };
 
@@ -59,12 +59,12 @@ function Login(props) {
             // 회원가입 성공
             .then((response) => {
                 setAuthHeader(response.data.token);     // 헤더에 토큰 설정
-                console.log("register success");
+                alert("회원가입에 성공하였습니다.");
             })
             // 회원가입 실패
             .catch((error) => {
                 setAuthHeader(null);                    // 헤더에 토큰 지우기
-                console.log("register failed");
+                alert("회원가입에 실패하였습니다.");
             });
     };
 
@@ -116,6 +116,7 @@ function Login(props) {
                                     name="firstName"
                                     placeholder="First Name"
                                     onChange={onChangeHandler}
+
                                 />
                             </div>
                             <div className="form-outline mb-4">

@@ -9,7 +9,11 @@ export const getAuthToken = () => {
 };
 
 export const setAuthHeader = (token) => {
-    window.localStorage.setItem('auth_token', token);
+    if (token !== null && token !== "null") {
+        window.localStorage.setItem('auth_token', token);
+    } else {
+        window.localStorage.removeItem('auth_token');
+    }
 };
 
 axios.defaults.baseURL = 'http://localhost:9090';
@@ -21,8 +25,11 @@ export const request = (method, url, data) => {
     // 로그인되지 않은 유저라면, 헤더에 토큰을 달아주지 않는다.
     let headers = {};
 
+    const authToken = getAuthToken();
+    console.log('Token:', authToken);
+
     // 로그인된 유저라면, 헤더에 토큰을 달아준다.
-    if (getAuthToken() !== null && getAuthToken() !== "null") {
+    if (getAuthToken() !== null && getAuthToken() !== "null" && getAuthToken() !== "undefined") {
         // Baerer 백틱 (`) 주의!
         headers = {'Authorization': `Bearer ${getAuthToken()}`};
     }
@@ -31,5 +38,14 @@ export const request = (method, url, data) => {
         method: method,
         url: url,
         headers: headers,
-        data: data});
+        data: data
+    })
+    .then(response => {
+        console.log('Response:', response);
+        return response;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        throw error;
+    });
 };

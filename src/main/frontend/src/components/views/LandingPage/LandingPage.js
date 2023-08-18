@@ -1,17 +1,21 @@
 import React from 'react';
-import { Row, Col, } from 'antd';
+import { Row, Col } from 'antd';
+import { useSelector } from 'react-redux'; // Import useSelector
+
 import WelcomeContent from './Sections/WelcomeContent';
 import Auth from '../Auth/Auth';
 import RecommendationCard from './Sections/RecommendationCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
 
-function LandingPage(props) {
+function LandingPage() {
+    // Use useSelector to access isAuthenticated state from Redux store
+    const isAuthenticated = useSelector(state => state.isAuthenticated);
 
     return (
         <div>
-            {/* componentToShow 값에 따른 조건부 렌더링 */}
-            {props.isLogin === false && (
+            {/* Conditional rendering based on authentication status */}
+            {!isAuthenticated && (
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
                         <WelcomeContent />
@@ -27,10 +31,10 @@ function LandingPage(props) {
                     </Col>
                 </Row>
             )}
-            {props.isLogin === true && (
+            {isAuthenticated && (
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
-                        {/** 로그인된 회원만 볼 수 있는 페이지 */}
+                        {/* This section is only visible to logged-in members */}
                         <Auth />
                     </Col>
                     <Col span={8}>

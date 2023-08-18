@@ -3,7 +3,6 @@
 // app.js는 node module을 로딩하고 초기 initialize해야 하는 변수나 Object를 선언하고 Router에 유입이 이루어지는 그 유입점의 역할을 하는 JavaScript
 
 
-import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import from React Router v6
 import MyHeader from './views/MyHeader/MyHeader';
 import LandingPage from "./views/LandingPage/LandingPage";
@@ -13,20 +12,18 @@ import './App.css';
 import logo from '../logo.svg';
 
 function App() {
-    const [isLogin, setIsLogin] = useState(false);    // 로그인 여부를 통해, 컴포넌트를 표시할지 여부를 제어하는 state 변수를 정의
-
     return (
         <Router>
             <div>
                 {/** 사이트 이름과 로고 모양, 을 인자로 넘김 */}
-                <MyHeader pageTitle="P!ck Me" logoSrc={logo} setIsLogin={setIsLogin}/>
+                <MyHeader pageTitle="P!ck Me" logoSrc={logo}/>
                 <div className="container-fluid">
                     <div className="row">
                         <div className="col">
                             <Routes>
-                                <Route path="/" element={<LandingPage isLogin={isLogin}/>} />
+                                <Route path="/" element={<LandingPage/>} />
                                 {/** isLogin === true이면 로그인 화면 안보이게, isLogin === false 이면 로그인 화면 보이게 */}
-                                <Route path="/login" element={<LoginPage isLogin={isLogin}/>} />
+                                <Route path="/login" element={<LoginPage/>} />
                             </Routes>
                         </div>
                     </div>

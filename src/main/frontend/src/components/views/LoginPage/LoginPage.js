@@ -11,9 +11,9 @@ function Login() {
 
     // 로그인 및 회원가입 폼의 상태를 관리할 state 변수들
     const [active, setActive] = useState('login'); // 로그인과 회원가입 탭을 전환하기 위한 활성 탭 상태
-    const [firstName, setFirstName] = useState(''); // 이름
-    const [lastName, setLastName] = useState('');   // 성
-    const [login, setLogin] = useState('');         // 사용자명
+    const [userName, setUserName] = useState(''); // 이름
+    const [nickName, setNickName] = useState('');   // 성
+    const [email, setEmail] = useState('');         // 사용자명
     const [password, setPassword] = useState('');   // 비밀번호
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
@@ -22,17 +22,17 @@ function Login() {
         const value = event.target.value;
         
         // 입력 필드마다 해당하는 state 변수를 업데이트
-        if (name === 'firstName') setFirstName(value);
-        else if (name === 'lastName') setLastName(value);
-        else if (name === 'login') setLogin(value);
+        if (name === 'userName') setUserName(value);
+        else if (name === 'nickName') setNickName(value);
+        else if (name === 'email') setEmail(value);
         else if (name === 'password') setPassword(value);
     };
 
-    const onLogin = (event, username, password) => {
+    const onLogin = (event, email, password) => {
         event.preventDefault();
     
         request('POST', '/login', {
-            login: username,
+            email: email,
             password: password
         })
             .then((response) => {
@@ -47,13 +47,13 @@ function Login() {
     
 
     // Login 컴포넌트 내에서 회원가입 액션을 처리하는 함수를 정의
-    const onRegister = (event, firstName, lastName, username, password) => {
+    const onRegister = (event, userName, nickName, username, password) => {
         event.preventDefault();
 
         request('POST', '/register', {
-            firstName: firstName,
-            lastName: lastName,
-            login: username,
+            userName: userName,
+            nickName: nickName,
+            email: email,
             password: password
         })
             // 회원가입 성공
@@ -71,7 +71,7 @@ function Login() {
     // 로그인 폼 제출 시 호출되는 이벤트 핸들러
     const onSubmitLogin = (e) => {
         e.preventDefault();
-        onLogin(e, login, password); // 부모 컴포넌트로부터 전달받은 onLogin 함수 호출
+        onLogin(e, email, password); // 부모 컴포넌트로부터 전달받은 onLogin 함수 호출
         navigate('/');
     };
 
@@ -79,7 +79,7 @@ function Login() {
     const onSubmitRegister = (e) => {
         e.preventDefault();
         // 부모 컴포넌트로부터 전달받은 onRegister 함수 호출
-        onRegister(e, firstName, lastName, login, password);
+        onRegister(e, userName, nickName, email, password);
         navigate('/');
     };
 
@@ -92,7 +92,7 @@ function Login() {
                             <div className="form-outline mb-4">
                                 <Input
                                     type="text"
-                                    name="login"
+                                    name="email"
                                     placeholder="Username"
                                     onChange={onChangeHandler}
                                 />
@@ -113,8 +113,8 @@ function Login() {
                             <div className="form-outline mb-4">
                                 <Input
                                     type="text"
-                                    name="firstName"
-                                    placeholder="First Name"
+                                    name="userName"
+                                    placeholder="User Name"
                                     onChange={onChangeHandler}
 
                                 />
@@ -122,16 +122,16 @@ function Login() {
                             <div className="form-outline mb-4">
                                 <Input
                                     type="text"
-                                    name="lastName"
-                                    placeholder="Last Name"
+                                    name="nickName"
+                                    placeholder="Nick Name"
                                     onChange={onChangeHandler}
                                 />
                             </div>
                             <div className="form-outline mb-4">
                                 <Input
                                     type="text"
-                                    name="login"
-                                    placeholder="Username"
+                                    name="email"
+                                    placeholder="Email"
                                     onChange={onChangeHandler}
                                 />
                             </div>

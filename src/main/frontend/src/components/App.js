@@ -51,7 +51,7 @@ function App() {
                             }
                         />
                         <Route
-                            path="/Study"
+                            path="/Recommendation"
                             element={
                                 <StudyPage />
                             }

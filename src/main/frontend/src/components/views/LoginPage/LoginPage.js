@@ -93,7 +93,7 @@ function LoginPage() {
                                 <Input
                                     type="text"
                                     name="email"
-                                    placeholder="Username"
+                                    placeholder="Email"
                                     onChange={onChangeHandler}
                                 />
                             </div>

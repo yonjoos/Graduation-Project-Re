@@ -5,7 +5,7 @@ import { request, setAuthHeader } from '../../../hoc/auth';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../_actions/actions'
 
-function Login() {
+function LoginPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -47,7 +47,7 @@ function Login() {
     
 
     // Login 컴포넌트 내에서 회원가입 액션을 처리하는 함수를 정의
-    const onRegister = (event, userName, nickName, username, password) => {
+    const onRegister = (event, userName, nickName, email, password) => {
         event.preventDefault();
 
         request('POST', '/register', {
@@ -58,12 +58,12 @@ function Login() {
         })
             // 회원가입 성공
             .then((response) => {
-                setAuthHeader(response.data.token);     // 헤더에 토큰 설정
+                //setAuthHeader(response.data.token);     // 헤더에 토큰 설정   -> 회원가입 시 토큰 설정 배제
                 alert("회원가입에 성공하였습니다.");
             })
             // 회원가입 실패
             .catch((error) => {
-                setAuthHeader(null);                    // 헤더에 토큰 지우기
+                //setAuthHeader(null);                    // 헤더에 토큰 지우기 -> 회원가입 시 토큰 설정 배제
                 alert("회원가입에 실패하였습니다.");
             });
     };
@@ -152,4 +152,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default LoginPage;

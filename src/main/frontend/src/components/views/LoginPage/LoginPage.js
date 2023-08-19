@@ -58,12 +58,12 @@ function Login() {
         })
             // 회원가입 성공
             .then((response) => {
-                setAuthHeader(response.data.token);     // 헤더에 토큰 설정
+                //setAuthHeader(response.data.token);     // 헤더에 토큰 설정 -> 뭔가 회원가입하면 바로 로그인 된다는 걸 가정하고 토큰 발행한듯?
                 alert("회원가입에 성공하였습니다.");
             })
             // 회원가입 실패
             .catch((error) => {
-                setAuthHeader(null);                    // 헤더에 토큰 지우기
+                //setAuthHeader(null);                    // 헤더에 토큰 지우기 -> 뭔가 회원가입하면 바로 로그인 된다는 걸 가정하고 토큰 발행한듯?
                 alert("회원가입에 실패하였습니다.");
             });
     };

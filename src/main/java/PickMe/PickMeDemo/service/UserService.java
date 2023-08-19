@@ -1,7 +1,6 @@
 package PickMe.PickMeDemo.service;
 
 import PickMe.PickMeDemo.dto.CredentialsDto;
-import PickMe.PickMeDemo.dto.LogoutDto;
 import PickMe.PickMeDemo.dto.SignUpDto;
 import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.entity.User;
@@ -27,7 +26,7 @@ public class UserService {
 
     public UserDto login(CredentialsDto credentialsDto) {
         // 인자로 넘어온 credentialsDto(아이디, 비번) 중 아이디를 찾아서 로그인 시도. 아이디가 없으면 Exception 발생
-        User user = userRepository.findByLogin(credentialsDto.getLogin())
+        User user = userRepository.findByEmail(credentialsDto.getEmail())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
         // 해당 아이디를 가진 유저를 살피되,
@@ -41,7 +40,7 @@ public class UserService {
 
     public UserDto register(SignUpDto userDto) {
         // 동일한 아이디가 있는지 확인(?)
-        Optional<User> optionalUser = userRepository.findByLogin(userDto.getLogin());
+        Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
 
         if (optionalUser.isPresent()) {
             throw new AppException("Login already exists", HttpStatus.BAD_REQUEST);
@@ -62,8 +61,8 @@ public class UserService {
         return userMapper.toUserDto(savedUser);
     }
 
-    public UserDto findByLogin(String login) {
-        User user = userRepository.findByLogin(login)
+    public UserDto findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         return userMapper.toUserDto(user);
     }

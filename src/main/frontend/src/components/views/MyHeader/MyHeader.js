@@ -29,10 +29,14 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     };
 
     const handleLogoClick = () => { //로고 클릭하면 홈 화면으로 다시 라우팅
-        console.log("go home");
+        console.log("go home by site logo");
         navigate('/');
     };
 
+    const handleSiteNameClick = () => { //사이트 이름 클릭하면 홈 화면으로 다시 라우팅
+        console.log("go home by site name");
+        navigate('/');
+    };
     return (
         <div>
             <Header className="App-header">
@@ -45,12 +49,12 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                             onClick={handleLogoClick}
                             style={{ cursor: 'pointer' }}
                         />
-                        <Title level={2} className="App-title" style={{color : 'whitesmoke'}}>
-                            <a href="/" style={{ display: "inline-block", fontSize: "30px", textDecoration: "none" }}>
+                        <Title level={2} className="App-title" style={{color : 'whitesmoke'}} onClick={handleSiteNameClick}>
+                            <div style={{ display: "inline-block", fontSize: "30px", textDecoration: "none" }}>
                                 <div style={{color : 'white', fontWeight: 'bold'}}>P
                                 <span style={{color : 'dodgerblue'}}>!</span>
                                 ck Me</div>
-                            </a>
+                            </div>
                         </Title>
                     </div>
                     <div>

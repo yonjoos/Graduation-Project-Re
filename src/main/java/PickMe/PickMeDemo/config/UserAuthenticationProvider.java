@@ -56,7 +56,7 @@ public class UserAuthenticationProvider {
 
         DecodedJWT decoded = verifier.verify(token);
 
-        UserDto user = userService.findByLogin(decoded.getIssuer());
+        UserDto user = userService.findByEmail(decoded.getIssuer());
 
         // 사용자가 내 데이터베이스에 존재하는지 확인
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());

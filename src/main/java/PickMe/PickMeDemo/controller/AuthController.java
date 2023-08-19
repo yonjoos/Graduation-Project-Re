@@ -2,7 +2,6 @@ package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.config.UserAuthenticationProvider;
 import PickMe.PickMeDemo.dto.CredentialsDto;
-import PickMe.PickMeDemo.dto.LogoutDto;
 import PickMe.PickMeDemo.dto.SignUpDto;
 import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.service.UserService;
@@ -12,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.net.URI;
 
 // 시홍 auth/AuthenticationController
 @RequiredArgsConstructor
@@ -29,7 +26,7 @@ public class AuthController {
         UserDto userDto = userService.login(credentialsDto);
         
         // 로그인하면, userDto의 아이디를 바탕으로 새로운 토큰을 생성한 후, userDto에 해당 토큰 세팅
-        userDto.setToken(userAuthenticationProvider.createToken(userDto.getLogin()));
+        userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
 
         // 토큰까지 세팅된 해당 userDto를 반환
         // ResponseEntity.ok : status 200
@@ -43,7 +40,7 @@ public class AuthController {
         UserDto createdUser = userService.register(user);
         
         // userDto 형식을 갖춘 createdUser 필드에 토큰을 세팅
-        createdUser.setToken(userAuthenticationProvider.createToken(user.getLogin()));
+        createdUser.setToken(userAuthenticationProvider.createToken(user.getEmail()));
 
         // 회원가입 완료된 애의 토큰이 담긴 DTO를 반환
          return ResponseEntity.ok().body(createdUser);

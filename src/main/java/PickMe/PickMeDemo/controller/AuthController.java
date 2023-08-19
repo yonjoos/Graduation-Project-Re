@@ -40,7 +40,8 @@ public class AuthController {
         UserDto createdUser = userService.register(user);
         
         // userDto 형식을 갖춘 createdUser 필드에 토큰을 세팅
-        createdUser.setToken(userAuthenticationProvider.createToken(user.getEmail()));
+        //createdUser.setToken(userAuthenticationProvider.createToken(user.getEmail()));
+        createdUser.setToken(null);
 
         // 회원가입 완료된 애의 토큰이 담긴 DTO를 반환
          return ResponseEntity.ok().body(createdUser);

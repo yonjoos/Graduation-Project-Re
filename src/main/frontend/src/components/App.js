@@ -3,34 +3,65 @@
 // app.js는 node module을 로딩하고 초기 initialize해야 하는 변수나 Object를 선언하고 Router에 유입이 이루어지는 그 유입점의 역할을 하는 JavaScript
 
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import from React Router v6
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Layout } from 'antd';
 import MyHeader from './views/MyHeader/MyHeader';
-import LandingPage from "./views/LandingPage/LandingPage";
-import LoginPage from "./views/LoginPage/LoginPage";
-
+import LandingPage from './views/LandingPage/LandingPage';
+import LoginPage from './views/LoginPage/LoginPage';
+import RecommendationPage from './views/RecommendationPage/RecommendationPage';
+import ProjectPage from './views/ProjectPage/ProjectPage';
+import StudyPage from './views/StudyPage/StudyPage';
+import Footer from './views/Footer/Footer';
 import './App.css';
 import logo from '../logo.svg';
+
+const { Content } = Layout;
 
 function App() {
     return (
         <Router>
-            <div>
-                {/** 사이트 이름과 로고 모양, 을 인자로 넘김 */}
-                <MyHeader pageTitle="P!ck Me" logoSrc={logo}/>
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col">
-                            <Routes>
-                                <Route path="/" element={<LandingPage/>} />
-                                {/** isLogin === true이면 로그인 화면 안보이게, isLogin === false 이면 로그인 화면 보이게 */}
-                                <Route path="/login" element={<LoginPage/>} />
-                            </Routes>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Layout>
+                {/** 로고 모양을 인자로 넘김 */}
+                <MyHeader logoSrc={logo} />
+                <Content style={{ padding: '20px' }}>
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <LandingPage />
+                            }
+                        />
+                        <Route
+                            path="/login"
+                            element={
+                                <LoginPage />
+                            }
+                        />
+                        <Route
+                            path="/Recommendation"
+                            element={
+                                <RecommendationPage />
+                            }
+                        />
+                        <Route
+                            path="/Project"
+                            element={
+                                <ProjectPage />
+                            }
+                        />
+                        <Route
+                            path="/Recommendation"
+                            element={
+                                <StudyPage />
+                            }
+                        />
+                    </Routes>
+                </Content>
+                <Footer />
+            </Layout>
         </Router>
-    )
+    );
 }
 
 // es6에서는 내보낼 단일객체를 위해 export를 사용하고, 그 이전 버전의 CommonJS에서는 module.exports를 사용한다.

@@ -41,7 +41,11 @@ function MyHeader(props) {
                             style={{ cursor: 'pointer' }}
                         />
                         <Title level={2} className="App-title" style={{color : 'whitesmoke'}}>
-                            {props.pageTitle}
+                            <a href="/" style={{ display: "inline-block", fontSize: "30px", textDecoration: "none" }}>
+                                <div style={{color : 'white', fontWeight: 'bold'}}>P
+                                <span style={{color : 'dodgerblue'}}>!</span>
+                                ck Me</div>
+                            </a>
                         </Title>
                     </div>
                     <div>

@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+// 시홍 config/JwtAuthenticationFilter
 @RequiredArgsConstructor
 // 이 JWT 필터가 요청당 한 번만 사용되기를 원하기 때문에, OncePerRequestFilter를 확장함
 public class JwtAuthFilter extends OncePerRequestFilter {

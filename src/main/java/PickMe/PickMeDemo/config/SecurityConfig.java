@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+// 시홍 config/SecurityConfiguration
 // JWT requests를 위한 필터를 위한 파일
 @RequiredArgsConstructor
 @Configuration

@@ -28,27 +28,6 @@ function Login() {
         else if (name === 'password') setPassword(value);
     };
 
-    // Login 컴포넌트 내에서 로그인 액션을 처리하는 함수를 정의
-    // const onLogin = (event, username, password) => {
-    //     event.preventDefault();
-
-    //     request('POST', '/login', {
-    //         login: username,
-    //         password: password
-    //     })
-    //         // 로그인 성공
-    //         .then((response) => {
-    //             setAuthHeader(response.data.token);         // 헤더에 토큰 설정
-    //             props.setIsLogin(true);                      // 로그인 상태로 설정
-    //             alert("로그인에 성공하였습니다.");
-    //         })
-    //         // 로그인 실패
-    //         .catch((error) => {
-    //             setAuthHeader(null);                        // 헤더에 토큰 지우기
-    //             alert("로그인에 실패하였습니다.");
-    //         });
-    // };
-
     const onLogin = (event, username, password) => {
         event.preventDefault();
     

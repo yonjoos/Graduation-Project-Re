@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
+// 시홍 auth/AuthenticationController
 @RequiredArgsConstructor
 @RestController
 public class AuthController {

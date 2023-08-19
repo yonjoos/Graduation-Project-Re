@@ -1,3 +1,6 @@
+//index.js 파일은 React 애플리케이션의 찐 진입점으로, Redux 스토어를 사용하여 애플리케이션을 렌더링하는 코드
+//Redux의 Provider 컴포넌트는 앱의 최상위 컴포넌트를 감싸며, 스토어의 상태를 하위 컴포넌트에 전달하는 역할 수행
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
@@ -8,7 +11,7 @@ import { Provider } from 'react-redux';
 import store from './components/_reducers/store';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <Provider store={store}>
+    <Provider store={store}> 
         <App />
     </Provider>
 );

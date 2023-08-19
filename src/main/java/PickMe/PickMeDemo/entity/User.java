@@ -35,6 +35,9 @@ public class User {
     @Size(max = 100)
     private String password;
 
+    @Enumerated(EnumType.STRING) //사용자 역할 (user/admin)으로 구분
+    private Role role;
+
     // created date, modified date, last login date 추가하기
     // role 추가하기
     // profile 사진 추가하기

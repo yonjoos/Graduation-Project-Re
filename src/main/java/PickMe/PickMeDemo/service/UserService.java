@@ -3,6 +3,7 @@ package PickMe.PickMeDemo.service;
 import PickMe.PickMeDemo.dto.CredentialsDto;
 import PickMe.PickMeDemo.dto.SignUpDto;
 import PickMe.PickMeDemo.dto.UserDto;
+import PickMe.PickMeDemo.entity.Role;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.mapper.UserMapper;
@@ -52,10 +53,13 @@ public class UserService {
         // 암호 인코더를 사용하여 암호를 일반 텍스트로 저장하지 않고, 해싱함.
         // 응용 프로그램에서 암호로 작업할 때 해싱은 매우 중요함.
         // 비밀번호는 따로 해싱하여 세팅
-        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
+        //user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
+        User registerUser = new User(user.getId(), user.getUserName(), user.getNickName(), user.getEmail(), passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())), Role.USER);
+        //user.setRole(Role.USER);
 
         // 해싱된 비밀번호와 나머지 필드들이 저장된 user를 디비에 저장
-        User savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(registerUser);
+        //User savedUser = userRepository.save(user);
 
         // 저장된 유저를 userDto로 변환하여 리턴
         return userMapper.toUserDto(savedUser);

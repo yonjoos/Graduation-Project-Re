@@ -4,10 +4,10 @@
 //로그인 성공 시 호출되는 액션을 생성합니다.
 // type 필드에는 액션의 유형을 나타내는 문자열 'LOGIN_SUCCESS'을 지정합니다.
 // payload 필드에는 로그인에 성공한 경우 토큰을 전달합니다.
-export const loginSuccess = (token) => {
+export const loginSuccess = (token, role) => {
     return {
         type: 'LOGIN_SUCCESS',
-        payload: { token }
+        payload: { token, role }
     };
 };
 

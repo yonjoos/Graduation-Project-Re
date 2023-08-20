@@ -9,12 +9,32 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 import
 import { Provider } from 'react-redux';
 import store from './components/_reducers/store';
+import { getAuthToken, getUserRole } from './hoc/auth';
+import { loginSuccess } from './components/_actions/actions';
 
+const storedAuthToken = getAuthToken();
+const userRole = getUserRole();
+
+const localStorageCleared = localStorage.getItem('localStorageCleared');
+
+if (!localStorageCleared) {
+    // Clear localStorage
+    localStorage.clear();
+    // Mark localStorage as cleared to avoid repeating clearing
+    localStorage.setItem('localStorageCleared', 'true');
+}
+
+if (storedAuthToken) {
+    // 저장된 토큰과 역할로 로그인 액션 디스패치
+    store.dispatch(loginSuccess(storedAuthToken, userRole));
+}
+    
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}> 
         <App />
     </Provider>
 );
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

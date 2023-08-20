@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Tabs, Input, Button } from 'antd';
-import { request, setAuthHeader } from '../../../hoc/auth';
+import { request, setAuthHeader, setUserRole } from '../../../hoc/auth';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../_actions/actions'
 
@@ -35,15 +35,16 @@ function LoginPage() {
             email: email,
             password: password
         })
-            .then((response) => {
-                dispatch(loginSuccess(response.data.token)); // 로그인 성공했으므로 actions.js의 loginSuccess호출, 그 후 store.js에 로그인 상태로 상태를 변경하도록 명령한다.
-                //즉 프런트 전역적으로 이 사람이 인증받은 사람이란 걸 인지하게 하기 위함)
-                setAuthHeader(response.data.token); // Set token in local storage(로컬 스토리지에 토큰 저장, 즉 인증받은 사람이므로 백의 api호출 가능)
-                alert("로그인에 성공하였습니다.");
-            })
-            .catch((error) => {
-                alert("로그인에 실패하였습니다.");
-            });
+        .then((response) => {
+            const { token, role } = response.data;
+            dispatch(loginSuccess(token, role)); // Dispatch login success action with role
+            setAuthHeader(token); // Set token in local storage
+            setUserRole(role);
+            alert("로그인에 성공하였습니다.");
+        })
+        .catch((error) => {
+            alert("로그인에 실패하였습니다.");
+        });
     };
     
 
@@ -106,7 +107,7 @@ function LoginPage() {
                                     onChange={onChangeHandler}
                                 />
                             </div>
-                            <Button type="primary" block htmlType="submit">Log In</Button>
+                            <Button type="primary" block htmlType="submit">Sign In</Button>
                         </form>
                     </Tabs>
                     <Tabs tab="Register" key="register">

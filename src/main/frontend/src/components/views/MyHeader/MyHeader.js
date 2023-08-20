@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Typography, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { setAuthHeader } from '../../../hoc/auth';
+import { setAuthHeader, setUserRole } from '../../../hoc/auth';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../_actions/actions'
 
@@ -17,6 +17,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     //즉 로그 아웃 버튼 누르면 로컬 스토리지의 'auth-token'필드를 null 로 채우고, action.js에 등록된 logout관련 액션을 수행하도록 dispatch(강제 명령) 날림. 그리고 그 상태 값이 store.js의 switch문에 의해 변경됨
     const handleLogout = () => { 
         setAuthHeader(null); // Clear token in local storage(로컬 스토리지에서 토큰 지우는 건 인증받지 못한 사람은 api호출을 못하게 하기 위함)
+        setUserRole(null);
         dispatch(logout()); // Dispatch logout action(이걸 하는 이유는 프런트 전역적으로 이 사람이 인증받지 못한 사람이란 걸 인지하게 하기 위함) 
 
         //여기서 navigate(/)해줘야할듯? -> 로그아웃 버튼 누르면 홈페이지로 가는게 맞을 것 같다

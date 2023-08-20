@@ -30,18 +30,21 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isAuthenticated: true,
-                authToken: action.payload.token
+                authToken: action.payload.token,
+                userRole: action.payload.role
             };
         case 'LOGOUT':
             return {
                 ...state,
                 isAuthenticated: false,
-                authToken: null
+                authToken: null,
+                userRole: null
             };
         default:
             return state;
     }
 };
+    
 
 
 // 3. 스토어 (store):

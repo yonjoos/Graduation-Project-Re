@@ -10,6 +10,7 @@ export const getAuthToken = () => {
     return window.localStorage.getItem('auth_token');
 };
 
+//로컬 스토리지에서 'user_roke'이라는 키로 저장된 사용자 역할을 가져오는 함수
 export const getUserRole = () => {
     return window.localStorage.getItem('user_role');
 }
@@ -20,6 +21,7 @@ export const setAuthHeader = (token) => {
     window.localStorage.setItem('auth_token', token);
 };
 
+//로컬 스토리지에 사용자 역할을 'user_role' 키로 저장하는 함수
 export const setUserRole = (role) => {
     window.localStorage.setItem('user_role', role);
 };

@@ -14,6 +14,8 @@ import StudyPage from './views/StudyPage/StudyPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
 import logo from '../logo.svg';
+import logo1 from '../pickme.PNG';
+import logo2 from '../pickme2.PNG'
 
 
 const { Content } = Layout;
@@ -31,7 +33,7 @@ function App() {
         <Router>
             <Layout>
                 {/** 로고 모양을 인자로 넘김 */}
-                <MyHeader logoSrc={logo} />
+                <MyHeader logoSrc={logo2} />
                 <Content style={{ padding: '20px' }}>
                     <Routes>
                         <Route
@@ -66,7 +68,7 @@ function App() {
                         />
                     </Routes>
                 </Content>
-                <Footer />
+                <Footer logoSrc={logo2}/>
             </Layout>
         </Router>
     );

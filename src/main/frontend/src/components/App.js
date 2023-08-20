@@ -21,7 +21,7 @@ const { Content } = Layout;
 
 function App() {
     useEffect(() => {
-        localStorage.clear();
+        localStorage.clear(); //프론트엔드가 재구동되면 로컬스토리지(토큰이 있으면 지움)를 비우고 시작하게 세팅
         // 또는 특정 key를 지우고 싶다면 localStorage.removeItem('key')를 사용합니다.
       }, []); // 빈 배열을 넘겨주면 컴포넌트가 처음 마운트될 때 한 번만 실행됩니다.
     return (

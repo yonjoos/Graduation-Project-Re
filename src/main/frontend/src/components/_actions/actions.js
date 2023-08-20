@@ -16,7 +16,7 @@ export const loginSuccess = (token, role) => {
 // 로그아웃 시 호출되는 액션을 생성합니다.
 // type 필드에는 액션의 유형을 나타내는 문자열 'LOGOUT'을 지정합니다.
 export const logout = () => {
-    window.localStorage.removeItem('auth_token');
+    //window.localStorage.removeItem('auth_token');
     return {
         type: 'LOGOUT'
     };

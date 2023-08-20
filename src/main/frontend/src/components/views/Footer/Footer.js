@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
 const { Footer } = Layout;
 const { Text } = Typography;
 
-function BottomFooter() {
+function BottomFooter(props) {
     const navigate = useNavigate(); // Initialize the useNavigate hook
 
     return (
@@ -13,7 +13,7 @@ function BottomFooter() {
             <Footer style={{ backgroundColor: "white", textAlign: "center", marginTop: "200px"}}>
                 <Row type="flex" justify="center">
                     <Col xs={8}>
-                        {/** Use the navigate function to navigate */}
+                        {/* * Use the navigate function to navigate
                         <div
                             onClick={() => navigate("/")} // Navigate to the root route
                             style={{ cursor: "pointer", display: "inline-block", fontSize: "20px", textDecoration: "none", marginLeft: "82%" }}
@@ -21,6 +21,15 @@ function BottomFooter() {
                             <div style={{ color: "black", fontWeight: "bold" }}>P
                             <span style={{ color: "dodgerblue" }}>!</span>
                             ck Me</div>
+                        </div> */}
+                        <div onClick={() => navigate("/")}>
+                        <img
+                            src={props.logoSrc}
+                            className="App-logo"
+                            alt="logo"
+                           
+                            style={{ cursor: 'pointer' }}
+                        />
                         </div>
                     </Col>
                     <Col xs={16}>

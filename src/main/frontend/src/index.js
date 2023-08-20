@@ -12,19 +12,21 @@ import store from './components/_reducers/store';
 import { getAuthToken, getUserRole } from './hoc/auth';
 import { loginSuccess } from './components/_actions/actions';
 
-const storedAuthToken = getAuthToken();
-const userRole = getUserRole();
+const storedAuthToken = getAuthToken(); //로컬스토리지에서 토큰이 있으면 가져옴
+const userRole = getUserRole(); //로컬스토리지에서 해당 유저의 역할 가져옴
 
-const localStorageCleared = localStorage.getItem('localStorageCleared');
+const localStorageCleared = localStorage.getItem('localStorageCleared'); //로컬 스토리지에서 클리어되었는지 여부 가져옴
 
-if (!localStorageCleared) {
+if (!localStorageCleared) { //만약 로컬 스토리지가 비워져있지 않다면(서버 재시작하면 클리어되어있지 않음),f5누르면 index.js로 다시오는데, 로그인 된 상태에서는 localStoragecleared가 true여도 storedToken이 있기 때문에 store에 로그인 상태로 다시 세팅 명령 시킬 수 있음
+    
     // Clear localStorage
-    localStorage.clear();
+    localStorage.clear();  //로컬스토리지를 비우고
     // Mark localStorage as cleared to avoid repeating clearing
-    localStorage.setItem('localStorageCleared', 'true');
+    localStorage.setItem('localStorageCleared', 'true'); //로컬 스토리지가 비워졌다고 명시
 }
 
-if (storedAuthToken) {
+if (storedAuthToken) { //저장된 토큰이 있다면 로그인완료 상태로 디스패치 -> f5누르면 index.js로 다시 오는데, 이거 때문에 로그인 상태가 유지되는 것임
+
     // 저장된 토큰과 역할로 로그인 액션 디스패치
     store.dispatch(loginSuccess(storedAuthToken, userRole));
 }

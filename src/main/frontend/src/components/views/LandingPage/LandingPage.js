@@ -14,6 +14,7 @@ function LandingPage() {
     //store.js에서 인증과 토큰에 대한 상태 관리를 맡고 있는데,
     //useSelector을 redux로부터 import한 후 갖고 오고 싶은 state를 갖고 올 수 있는듯 하다)
     const isAuthenticated = useSelector(state => state.isAuthenticated);
+    const userRole = useSelector(state => state.userRole);
 
     return (
         <div>
@@ -34,9 +35,10 @@ function LandingPage() {
                     </Col>
                 </Row>
             )}
-            {isAuthenticated && (
+            {isAuthenticated && userRole === 'ADMIN' && (
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
+                        <h2> THIS IS AN ADMIN PAGE </h2>
                         {/* This section is only visible to logged-in members */}
                         <Auth />
                     </Col>
@@ -50,6 +52,24 @@ function LandingPage() {
                         <StudyCard />
                     </Col>
                 </Row>
+            )}
+            {isAuthenticated && userRole === 'USER' && (
+                <Row gutter={[16, 16]}>
+                <Col span={24}>
+                    <h2> THIS IS AN USER PAGE </h2>
+                    {/* This section is only visible to logged-in members */}
+                    <Auth />
+                </Col>
+                <Col span={8}>
+                    <RecommendationCard />
+                </Col>
+                <Col span={8}>
+                    <ProjectCard />
+                </Col>
+                <Col span={8}>
+                    <StudyCard />
+                </Col>
+            </Row>
             )}
         </div>
     );

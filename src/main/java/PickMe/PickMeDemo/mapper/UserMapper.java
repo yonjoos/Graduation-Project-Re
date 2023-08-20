@@ -2,6 +2,7 @@ package PickMe.PickMeDemo.mapper;
 
 import PickMe.PickMeDemo.dto.SignUpDto;
 import PickMe.PickMeDemo.dto.UserDto;
+import PickMe.PickMeDemo.entity.Role;
 import PickMe.PickMeDemo.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,4 +24,8 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     User signUpToUser(SignUpDto signUpDto);
 
+    // Role enum을 매핑하기 위한 이 메서드를 추가하세요.
+    default String mapRole(Role role) {
+        return role != null ? role.name() : null;
+    }
 }

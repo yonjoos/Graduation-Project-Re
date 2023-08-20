@@ -29,16 +29,16 @@ const authReducer = (state = initialState, action) => {
         case 'LOGIN_SUCCESS':
             return {
                 ...state,
-                isAuthenticated: true,
-                authToken: action.payload.token,
-                userRole: action.payload.role
+                isAuthenticated: true, //로그인 상태로 가는 경우, 인증된 상태임
+                authToken: action.payload.token, //로그인 상태로 가는 경우, 토큰이 있는 상태임
+                userRole: action.payload.role //로그인 상태로 가는 경우,  role도 저장된 상태임
             };
         case 'LOGOUT':
             return {
                 ...state,
-                isAuthenticated: false,
-                authToken: null,
-                userRole: null
+                isAuthenticated: false, //로그아웃 상태로 가는 경우, 인증허가가 끝난 상태임
+                authToken: null, //로그아웃 상태로 가는 경우,토큰 반환
+                userRole: null //로그아웃 상태로 가는경우, role도 없음
             };
         default:
             return state;

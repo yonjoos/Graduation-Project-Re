@@ -28,7 +28,7 @@ function LandingPage() {
     return (
         <div style = {{ paddingLeft : '15%', paddingRight : '15%' }}>
             {/* Conditional rendering based on authentication status */}
-            {!isAuthenticated && (
+            {!isAuthenticated && ( //인증이 안된 아무나 볼 수 있는 컴포넌트
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
                         <WelcomeContent />
@@ -44,7 +44,7 @@ function LandingPage() {
                     </Col>
                 </Row>
             )}
-            {isAuthenticated && userRole === 'ADMIN' && (
+            {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
                         <h2> THIS IS AN ADMIN PAGE </h2>
@@ -69,7 +69,7 @@ function LandingPage() {
                     </Col>
                 </Row>
             )}
-            {isAuthenticated && userRole === 'USER' && (
+            {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
                 <Col span={24}>
                     <h2> THIS IS AN USER PAGE </h2>

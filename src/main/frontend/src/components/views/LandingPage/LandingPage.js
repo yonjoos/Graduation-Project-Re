@@ -1,12 +1,14 @@
-import React from 'react';
-import { Row, Col } from 'antd';
-import { useSelector } from 'react-redux'; // Import useSelector
+import React, { useState } from 'react';
+import { Row, Col, Input } from 'antd';
+import { useSelector } from 'react-redux';
 
 import WelcomeContent from './Sections/WelcomeContent';
 import Auth from '../Auth/Auth';
 import RecommendationCard from './Sections/RecommendationCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
+
+const { Search } = Input;
 
 function LandingPage() {
     // Use useSelector to access isAuthenticated state from Redux store
@@ -16,8 +18,15 @@ function LandingPage() {
     const isAuthenticated = useSelector(state => state.isAuthenticated);
     const userRole = useSelector(state => state.userRole);
 
+    // 검색 창에 글자를 한 개씩 입력할 때마다 SearchTerm이 달라짐
+    const [SearchTerm, setSearchTerm] = useState("")
+
+    const searchHandler = (event) => {
+        setSearchTerm(event.currentTarget.value)
+    }
+
     return (
-        <div>
+        <div style = {{ paddingLeft : '15%', paddingRight : '15%' }}>
             {/* Conditional rendering based on authentication status */}
             {!isAuthenticated && (
                 <Row gutter={[16, 16]}>
@@ -42,6 +51,13 @@ function LandingPage() {
                         {/* This section is only visible to logged-in members */}
                         <Auth />
                     </Col>
+                    <Col span={24} style={{ textAlign: 'center' }}>
+                        <Search
+                            placeholder="키워드를 검색해보세요!"
+                            onChange={searchHandler} // 바로 위에서 함수로 구현
+                            style={{ width: 800 }}
+                        />
+                    </Col>
                     <Col span={8}>
                         <RecommendationCard />
                     </Col>
@@ -60,6 +76,13 @@ function LandingPage() {
                     {/* This section is only visible to logged-in members */}
                     <Auth />
                 </Col>
+                <Col span={24} style={{ textAlign: 'center' }}>
+                        <Search
+                            placeholder="키워드를 검색해보세요!"
+                            onChange={searchHandler} // 바로 위에서 함수로 구현
+                            style={{ width: 800 }}
+                        />
+                    </Col>
                 <Col span={8}>
                     <RecommendationCard />
                 </Col>

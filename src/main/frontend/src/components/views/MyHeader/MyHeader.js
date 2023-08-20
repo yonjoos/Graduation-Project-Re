@@ -13,6 +13,23 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     const isAuthenticated = useSelector(state => state.isAuthenticated);
     const dispatch = useDispatch();
 
+
+    const handleScrap = () => {
+
+    }
+
+    const handlePortfolio = () => {
+
+    }
+
+    const handleGroup = () => {
+        
+    }
+
+    const handleMe = () => {
+        
+    }
+
     //로그아웃 버튼을 클릭하면 호출되며, 로컬 스토리지의 토큰을 삭제하고 로그아웃 액션을 디스패치합니다.
     //즉 로그 아웃 버튼 누르면 로컬 스토리지의 'auth-token'필드를 null 로 채우고, action.js에 등록된 logout관련 액션을 수행하도록 dispatch(강제 명령) 날림. 그리고 그 상태 값이 store.js의 switch문에 의해 변경됨
     const handleLogout = () => { 
@@ -22,7 +39,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
 
         //여기서 navigate(/)해줘야할듯? -> 로그아웃 버튼 누르면 홈페이지로 가는게 맞을 것 같다
         navigate('/');
-    };    
+    };
 
     const login = () => {
         navigate('/login');
@@ -38,10 +55,11 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         console.log("go home by site name");
         navigate('/');
     };
+
     return (
         <div>
             <Header className="App-header">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%', paddingLeft : '15%', paddingRight : '15%' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <img
                             src={props.logoSrc}
@@ -59,11 +77,29 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                         </Title>
                     </div>
                     <div>
-                        {/** 토글 형식 */}
+                        {/** 토글 형식, background: 'transparent' : 버튼 배경을 투명하게, padding: '20px 40px' : 각각 Top, Bottom 패딩 설정 */}
                         {isAuthenticated ? (
-                            <Button type="primary" onClick={handleLogout}>Logout</Button>
+                            <div>
+                            <Button type="text" value="large" style={{ color: 'white', background: 'transparent', fontSize: '18px', }} onClick={handleScrap}>
+                                Scrap
+                            </Button>
+                            <Button type="text" value="large" style={{ color: 'white', background: 'transparent', fontSize: '18px', }} onClick={handlePortfolio}>
+                                Portfolio
+                            </Button>
+                            <Button type="text" value="large" style={{ color: 'white', background: 'transparent', fontSize: '18px', }} onClick={handleGroup}>
+                                Group
+                            </Button>
+                            <Button type="text" value="large" style={{ color: 'white', background: 'transparent', fontSize: '18px', }} onClick={handleLogout}>
+                                Logout
+                            </Button>
+                            <Button type="text" value="large" style={{ color: 'white', background: 'transparent', fontSize: '18px', }} onClick={handleMe}>
+                                Me
+                            </Button>
+                            </div>
                         ) : (
-                            <Button type="primary" onClick={login}>Login</Button>
+                            <Button type="text" value="large" style={{ color: 'white', background: 'transparent', fontSize: '18px' }} onClick={login}>
+                                Login
+                            </Button>
                         )}
                     </div>
                 </div>

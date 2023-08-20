@@ -50,7 +50,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                             style={{ cursor: 'pointer' }}
                         />
                         <Title level={2} className="App-title" style={{color : 'whitesmoke'}} onClick={handleSiteNameClick}>
-                            <div style={{ display: "inline-block", fontSize: "30px", textDecoration: "none" }}>
+                            <div style={{ display: "inline-block", fontSize: "30px", textDecoration: "none", cursor: 'pointer' }}>
                                 <div style={{color : 'white', fontWeight: 'bold'}}>P
                                 <span style={{color : 'dodgerblue'}}>!</span>
                                 ck Me</div>

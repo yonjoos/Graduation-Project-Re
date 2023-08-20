@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Tabs, Input, Button } from 'antd';
-import { request, setAuthHeader } from '../../../hoc/auth';
+import { request, setAuthHeader, setUserRole } from '../../../hoc/auth';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../_actions/actions'
 
@@ -39,6 +39,7 @@ function LoginPage() {
             const { token, role } = response.data;
             dispatch(loginSuccess(token, role)); // Dispatch login success action with role
             setAuthHeader(token); // Set token in local storage
+            setUserRole(role);
             alert("로그인에 성공하였습니다.");
         })
         .catch((error) => {

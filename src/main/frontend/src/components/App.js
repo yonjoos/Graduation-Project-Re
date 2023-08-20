@@ -2,8 +2,7 @@
 
 // app.js는 node module을 로딩하고 초기 initialize해야 하는 변수나 Object를 선언하고 Router에 유입이 이루어지는 그 유입점의 역할을 하는 JavaScript
 
-
-import React, { useEffect }from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from 'antd';
 import MyHeader from './views/MyHeader/MyHeader';
@@ -20,10 +19,14 @@ import logo from '../logo.svg';
 const { Content } = Layout;
 
 function App() {
-    useEffect(() => {
-        localStorage.clear(); //프론트엔드가 재구동되면 로컬스토리지(토큰이 있으면 지움)를 비우고 시작하게 세팅
-        // 또는 특정 key를 지우고 싶다면 localStorage.removeItem('key')를 사용합니다.
-      }, []); // 빈 배열을 넘겨주면 컴포넌트가 처음 마운트될 때 한 번만 실행됩니다.
+    // 아래 코드의 문제점 : 
+    // 1. useNavigate를 사용하지 않으면 로그아웃 된다.
+    // 2. F5를 눌러 페이지 새로고침 시, 로그아웃 된다.
+    // useEffect(() => {
+    //     localStorage.clear(); //프론트엔드가 재구동되면 로컬스토리지(토큰이 있으면 지움)를 비우고 시작하게 세팅
+    //     // 또는 특정 key를 지우고 싶다면 localStorage.removeItem('key')를 사용합니다.
+    //   }, []); // 빈 배열을 넘겨주면 컴포넌트가 처음 마운트될 때 한 번만 실행됩니다.
+
     return (
         <Router>
             <Layout>

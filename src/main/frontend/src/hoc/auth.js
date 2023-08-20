@@ -10,10 +10,18 @@ export const getAuthToken = () => {
     return window.localStorage.getItem('auth_token');
 };
 
+export const getUserRole = () => {
+    return window.localStorage.getItem('user_role');
+}
+
 
 //로컬 스토리지에 JWT 토큰을 'auth_token' 키로 저장하는 함수
 export const setAuthHeader = (token) => {
     window.localStorage.setItem('auth_token', token);
+};
+
+export const setUserRole = (role) => {
+    window.localStorage.setItem('user_role', role);
 };
 
 //axios의 기본 설정을 지정. 

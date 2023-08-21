@@ -32,6 +32,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()        // "/login", "/register"은 인증(로그인 여부)이 필요하지 않은 유일한 엔드포인트
                         .anyRequest().authenticated())      // "/login", "/register"를 제외한 나머지 엔드포인트는 모두 인증이 필요
         ;
-        return http.build();
+        return http.build(); //
     }
 }

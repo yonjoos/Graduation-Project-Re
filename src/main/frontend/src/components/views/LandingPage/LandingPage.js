@@ -1,12 +1,13 @@
 import React from 'react';
 import { Row, Col } from 'antd';
-import { useSelector } from 'react-redux'; // Import useSelector
+import { useSelector } from 'react-redux';
 
 import WelcomeContent from './Sections/WelcomeContent';
 import Auth from '../Auth/Auth';
 import RecommendationCard from './Sections/RecommendationCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
+import Search from '../../utils/Search';
 
 function LandingPage() {
     // Use useSelector to access isAuthenticated state from Redux store
@@ -42,6 +43,7 @@ function LandingPage() {
                         {/* This section is only visible to logged-in members */}
                         <Auth />
                     </Col>
+                    <Search/>
                     <Col span={8}>
                         <RecommendationCard />
                     </Col>
@@ -55,21 +57,22 @@ function LandingPage() {
             )}
             {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <h2> THIS IS AN USER PAGE </h2>
-                    {/* This section is only visible to logged-in members */}
-                    <Auth />
-                </Col>
-                <Col span={8}>
-                    <RecommendationCard />
-                </Col>
-                <Col span={8}>
-                    <ProjectCard />
-                </Col>
-                <Col span={8}>
-                    <StudyCard />
-                </Col>
-            </Row>
+                    <Col span={24}>
+                        <h2> THIS IS AN USER PAGE </h2>
+                        {/* This section is only visible to logged-in members */}
+                        <Auth />
+                    </Col>
+                    <Search/>
+                    <Col span={8}>
+                        <RecommendationCard />
+                    </Col>
+                    <Col span={8}>
+                        <ProjectCard />
+                    </Col>
+                    <Col span={8}>
+                        <StudyCard />
+                    </Col>
+                </Row>
             )}
         </div>
     );

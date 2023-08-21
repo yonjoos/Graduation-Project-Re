@@ -8,9 +8,9 @@ import App from './components/App'; // components폴더의 App.js 가져오기
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 import
 import { Provider } from 'react-redux';
-import store from './components/_reducers/store';
-import { getAuthToken, getUserRole } from './hoc/auth';
-import { loginSuccess } from './components/_actions/actions';
+import store from './_reducers/store';
+import { getAuthToken, getUserRole } from './hoc/request';
+import { loginSuccess } from './_actions/actions';
 
 const storedAuthToken = getAuthToken(); //로컬스토리지에서 토큰이 있으면 가져옴
 const userRole = getUserRole(); //로컬스토리지에서 해당 유저의 역할 가져옴

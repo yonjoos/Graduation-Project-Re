@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Row, Col, Input } from 'antd';
+import React from 'react';
+import { Row, Col } from 'antd';
 import { useSelector } from 'react-redux';
 
 import WelcomeContent from './Sections/WelcomeContent';
@@ -7,8 +7,7 @@ import Auth from '../Auth/Auth';
 import RecommendationCard from './Sections/RecommendationCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
-
-const { Search } = Input;
+import Search from '../../utils/Search';
 
 function LandingPage() {
     // Use useSelector to access isAuthenticated state from Redux store
@@ -18,15 +17,8 @@ function LandingPage() {
     const isAuthenticated = useSelector(state => state.isAuthenticated);
     const userRole = useSelector(state => state.userRole);
 
-    // 검색 창에 글자를 한 개씩 입력할 때마다 SearchTerm이 달라짐
-    const [SearchTerm, setSearchTerm] = useState("")
-
-    const searchHandler = (event) => {
-        setSearchTerm(event.currentTarget.value)
-    }
-
     return (
-        <div style = {{ paddingLeft : '15%', paddingRight : '15%' }}>
+        <div>
             {/* Conditional rendering based on authentication status */}
             {!isAuthenticated && ( //인증이 안된 아무나 볼 수 있는 컴포넌트
                 <Row gutter={[16, 16]}>
@@ -51,13 +43,7 @@ function LandingPage() {
                         {/* This section is only visible to logged-in members */}
                         <Auth />
                     </Col>
-                    <Col span={24} style={{ textAlign: 'center' }}>
-                        <Search
-                            placeholder="키워드를 검색해보세요!"
-                            onChange={searchHandler} // 바로 위에서 함수로 구현
-                            style={{ width: 800 }}
-                        />
-                    </Col>
+                    <Search/>
                     <Col span={8}>
                         <RecommendationCard />
                     </Col>
@@ -71,28 +57,22 @@ function LandingPage() {
             )}
             {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <h2> THIS IS AN USER PAGE </h2>
-                    {/* This section is only visible to logged-in members */}
-                    <Auth />
-                </Col>
-                <Col span={24} style={{ textAlign: 'center' }}>
-                        <Search
-                            placeholder="키워드를 검색해보세요!"
-                            onChange={searchHandler} // 바로 위에서 함수로 구현
-                            style={{ width: 800 }}
-                        />
+                    <Col span={24}>
+                        <h2> THIS IS AN USER PAGE </h2>
+                        {/* This section is only visible to logged-in members */}
+                        <Auth />
                     </Col>
-                <Col span={8}>
-                    <RecommendationCard />
-                </Col>
-                <Col span={8}>
-                    <ProjectCard />
-                </Col>
-                <Col span={8}>
-                    <StudyCard />
-                </Col>
-            </Row>
+                    <Search/>
+                    <Col span={8}>
+                        <RecommendationCard />
+                    </Col>
+                    <Col span={8}>
+                        <ProjectCard />
+                    </Col>
+                    <Col span={8}>
+                        <StudyCard />
+                    </Col>
+                </Row>
             )}
         </div>
     );

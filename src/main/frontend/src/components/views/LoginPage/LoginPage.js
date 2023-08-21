@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Tabs, Input, Button } from 'antd';
-import { request, setAuthHeader, setUserRole } from '../../../hoc/auth';
+import { request, setAuthHeader, setUserRole } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../_actions/actions'
+import { loginSuccess } from '../../../_actions/actions'
 
 function LoginPage() {
     const navigate = useNavigate();

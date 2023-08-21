@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Card, Row, Col } from 'antd';
-import { request } from '../../../hoc/auth';
+import { request } from '../../../hoc/request';
 
 function ProjectPage() {
     const isAuthenticated = useSelector(state => state.isAuthenticated);

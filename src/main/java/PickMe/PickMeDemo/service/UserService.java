@@ -54,6 +54,7 @@ public class UserService {
         // 응용 프로그램에서 암호로 작업할 때 해싱은 매우 중요함.
         // 비밀번호는 따로 해싱하여 세팅
         //user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
+        //실제 user 객체 구체화 진행
         User registerUser = new User(user.getId(), user.getUserName(), user.getNickName(), user.getEmail(), passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())), Role.USER);
         //user.setRole(Role.USER);
 
@@ -65,6 +66,7 @@ public class UserService {
         return userMapper.toUserDto(savedUser);
     }
 
+    //email로 레포지토리에서 찾고, userDto로 user를 매핑해서 반환
     public UserDto findByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));

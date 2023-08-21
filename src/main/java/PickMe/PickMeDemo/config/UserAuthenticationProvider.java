@@ -34,6 +34,7 @@ public class UserAuthenticationProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
+    //토큰 생성 메서드
     public String createToken(String login) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + 3_600_000); // 내 JWT가 한 시간만 유효하기를 원할 때 60 * 60 = 3600초 + 000(?)
@@ -46,6 +47,7 @@ public class UserAuthenticationProvider {
                 .sign(algorithm);
     }
 
+    //토큰 검증 메서드
     public Authentication validateToken(String token) {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 

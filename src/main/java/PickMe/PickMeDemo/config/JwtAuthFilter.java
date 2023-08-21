@@ -29,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null) {
             String[] authElements = header.split(" ");
 
-            // 길이가 정확히 2이고, Bearer 토큰잉야 함.
+            // 길이가 정확히 2이고, Bearer 토큰이여야 함.
             if (authElements.length == 2 && "Bearer".equals(authElements[0])) {
                 try {
                     // 자격 증명이 유효하면 보안 컨텍스트에 인증 빈을 추가

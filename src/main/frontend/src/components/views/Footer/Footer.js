@@ -12,7 +12,7 @@ function BottomFooter(props) {
         <div style={{ width: "100%" }}>
             <Footer style={{ backgroundColor: "white", textAlign: "center", marginTop: "200px"}}>
                 <Row type="flex" justify="center">
-                    <Col xs={8}>
+                    <Col xs={16}>
                         {/* * Use the navigate function to navigate
                         <div
                             onClick={() => navigate("/")} // Navigate to the root route
@@ -23,13 +23,13 @@ function BottomFooter(props) {
                             ck Me</div>
                         </div> */}
                         <div onClick={() => navigate("/")}>
-                        <img
-                            src={props.logoSrc}
-                            className="App-logo"
-                            alt="logo"
+                            <img 
+                                src={props.logoSrc}
+                                className="App-logo"
+                                alt="logo"
                            
-                            style={{ cursor: 'pointer' }}
-                        />
+                                style={{ cursor: 'pointer',  width:'120px', height:'60px'}}
+                            />
                         </div>
                     </Col>
                     <Col xs={16}>

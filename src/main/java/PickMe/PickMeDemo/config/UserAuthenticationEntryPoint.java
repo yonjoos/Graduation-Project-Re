@@ -25,7 +25,7 @@ public class UserAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);    // 승인되지 않은 HTTP 코드를 반환
-        response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        OBJECT_MAPPER.writeValue(response.getOutputStream(), new ErrorDto("Unauthorized path"));    // Unauthorized path는 에러 메시지
+        response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE); //응답의 콘텐츠 유형을 JSON으로 설정
+        OBJECT_MAPPER.writeValue(response.getOutputStream(), new ErrorDto("Unauthorized path"));    // Unauthorized path는 에러 메시지를 dto로 생성해서 반환
     }
 }

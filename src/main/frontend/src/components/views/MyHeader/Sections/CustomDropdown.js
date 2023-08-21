@@ -85,7 +85,7 @@ function CustomDropdown(props) {
 
     return (
         <Dropdown overlay={menu} placement="bottomRight" arrow>
-            <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', }}>Me</Button>
+            <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }}>Me</Button>
         </Dropdown>
     );
 }

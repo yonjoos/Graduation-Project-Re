@@ -79,13 +79,13 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                         {/** 토글 형식, background: 'transparent' : 버튼 배경을 투명하게, padding: '20px 40px' : 각각 Top, Bottom 패딩 설정 */}
                         {isAuthenticated ? (
                             <div>
-                                <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', }} onClick={handleScrap}>
+                                <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={handleScrap}>
                                     Scrap
                                 </Button>
-                                <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', }} onClick={handlePortfolio}>
+                                <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={handlePortfolio}>
                                     Portfolio
                                 </Button>
-                                <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', }} onClick={handleGroup}>
+                                <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={handleGroup}>
                                     Group
                                 </Button>
                                 <CustomDropdown userRole={userRole} handleLogout={handleLogout}>

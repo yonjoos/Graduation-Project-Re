@@ -17,6 +17,7 @@ import LoginPage from './views/LoginPage/LoginPage';
 import RecommendationPage from './views/RecommendationPage/RecommendationPage';
 import ProjectPage from './views/ProjectPage/ProjectPage';
 import StudyPage from './views/StudyPage/StudyPage';
+import UploadPostPage from './views/UploadPostPage/UploadPostPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
 /*import logo from '../logo.svg';
@@ -44,20 +45,6 @@ function App() {
                     <div style={{ paddingLeft : '15%', paddingRight : '15%' }}>
                     <Routes>
                         {
-                            // higier order component, 즉 hoc(특별한 목적)인 Auth가 LandingPage 등을 감싸도록 한다.
-                            // 즉, 인증 여부를 거쳐야 페이지를 사용할 수 있는 권한을 부여하는 것이다.
-                            // Auth 함수는 auth.js와 관련 있는 함수다.
-                            // 해당 유저가 어떤 사람인지 파악하여, null, true, false 값을 지정한다.
-                            // null => 아무나 출입이 가능한 페이지
-                            // true => 로그인한 유저만 출입이 가능한 페이지
-                            // false => 로그인한 유저는 출입 불가능한 페이지
-                            // LandingPage는 아무나 들어갈 수 있으므로 null
-                            // LoginPage는 로그인한 유저는 출입할 수 없으므로 false
-                            // RegisterPage도 로그인한 유저는 출입할 수 없으므로 false
-                            // FavoritePage는 로그인한 유저만 볼 수 있으므로 true
-                            // admin한 유저(관리자)만 들어갈 수 있는 페이지를 만들기 위해서는 다음과 같이 코딩한다.
-                            // <Route  path="/" element={Auth(LandingPage, null, true)} />
-
                             /**
                              * 테스트 방법
                              * 
@@ -72,6 +59,20 @@ function App() {
                              * 
                              * Auth(페이지명, null, true) -> 관리자(ADMIN)만 들어갈 수 있는 페이지
                              * => 로그아웃 유저 및 일반 유저는 해당 EndPointer로 접근 불가. 관리자만 해당 Endpointer로 접근 가능
+                             * 
+                             * 
+                             * 
+                             * Auth(페이지명, null)인 페이지는 모든 사용자가 접근 가능하다.
+                             * 따라서 isAuthenticated && userRole === 'ADMIN'을 구체적으로 명시해서, 각 사용자(비회원, 회원, 관리자)마다 보이는 화면이 다르도록 구분한다.
+                             * 
+                             * Auth(페이지명, true)인 페이지는 로그인한 유저만 접근 가능하다.
+                             * 따라서 isAuthenticated && userRole === 'ADMIN'을 구체적으로 명시해서, 각 사용자(회원, 관리자)마다 보이는 화면이 다르도록 구분한다.
+                             * 
+                             * Auth(페이지명, false)인 페이지는 로그인한 유저가 접근 불가능하다.
+                             * 따라서 비회원만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
+                             * 
+                             * Auth(페이지명, null, true)인 페이지는 관리자만 접근 가능하다.
+                             * 따라서 경우를 나누지 않고 코딩한다.
                              */
                         }
                         <Route
@@ -123,6 +124,11 @@ function App() {
                             path="/Study"
                             // element={<StudyPage/>}
                             element={Auth(StudyPage, true)}
+                        />
+                        <Route
+                            path="/uploadPost"
+                            // element={<UploadPostPage/>}
+                            element={Auth(UploadPostPage, true)}
                         />
                     </Routes>
                     </div>

@@ -9,33 +9,33 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Portfolio extends BaseTimeEntity {
+public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는 클래스를 상속
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "portfolio_id")
-    private Long id;
+    private Long id; //포트폴리오 테이블의 기본키
 
-    @OneToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL) //여기서 cascade를 꼭 써야하나? (portfolio가 persist되면 user도 같이 persist됨)
     @JoinColumn(name="user_id")
-    private User user;
+    private User user; //포트폴리오의 대상이 되는 회원 - 연관관계의 주인, 회원 table과 엮임(회원의 외래키를 가지고 있음)
 
     // User와 1대1로 걸려있고, cascade 걸려있으므로, nullable = false에서 문제 생길 수 있음
     @Column(name = "web", nullable = false)
-    private Integer web;
+    private Integer web; //추천 시스템 - 선호도 관련
 
     @Column(name = "app", nullable = false)
-    private Integer app;
+    private Integer app; //추천 시스템 - 선호도 관련
 
     @Column(name = "game", nullable = false)
-    private Integer game;
+    private Integer game; //추천 시스템 - 선호도 관련
 
     @Column(name = "ai", nullable = false)
-    private Integer ai;
+    private Integer ai; //추천 시스템 - 선호도 관련
 
-    private String shortIntroduce;
+    private String shortIntroduce; //한줄 소개
 
-    private String introduce;
+    private String introduce; //소개
 
-    private String fileUrl;
+    private String fileUrl; //첨부 파일
 
 }

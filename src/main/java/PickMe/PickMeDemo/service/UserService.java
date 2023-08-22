@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -34,6 +35,10 @@ public class UserService {
         // 입력한 비밀번호를 해싱해서 해싱된 비밀번호가 저장되어있는 해싱된 비밀번호와 동일한지 확인
         // user를 userDto로 변환하여 반환
         if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.getPassword()), user.getPassword())) {
+
+            // Update the access date for the user and save the changes
+            user.modifyLastLoginDate(LocalDateTime.now());
+            userRepository.save(user);
             return userMapper.toUserDto(user);
         }
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
@@ -55,7 +60,8 @@ public class UserService {
         // 비밀번호는 따로 해싱하여 세팅
         //user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
         //실제 user 객체 구체화 진행
-        User registerUser = new User(user.getId(), user.getUserName(), user.getNickName(), user.getEmail(), passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())), Role.USER);
+        User registerUser = new User(user.getId(), user.getUserName(), user.getNickName(), user.getEmail(), passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())), Role.USER, null);
+        //회원가입 시엔 최근 접속일자 필드를 null로 세팅함!!
         //user.setRole(Role.USER);
 
         // 해싱된 비밀번호와 나머지 필드들이 저장된 user를 디비에 저장
@@ -72,4 +78,6 @@ public class UserService {
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         return userMapper.toUserDto(user);
     }
+
+
 }

@@ -22,7 +22,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // 초기 데이터 생성 및 저장
+        // 초기 데이터 생성 및 저장(관리자)
         User adminUser = User.builder()
                 .userName("admin")
                 .nickName("admin")
@@ -31,6 +31,18 @@ public class InitialDataLoader implements CommandLineRunner {
                 .role(Role.ADMIN)
                 .build();
 
+        // 초기 데이터 생성 및 저장(유저)
+        User generalUser = User.builder()
+                        .userName("user")
+                        .nickName("user")
+                        .email("user@gmail.com")
+                        .password(passwordEncoder.encode("user"))  // 비밀번호 해싱
+                        .role(Role.USER)
+                        .build();
+
+
+
         userRepository.save(adminUser);
+        userRepository.save(generalUser);
     }
 }

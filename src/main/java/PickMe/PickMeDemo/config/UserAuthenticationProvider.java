@@ -61,7 +61,8 @@ public class UserAuthenticationProvider {
         UserDto user = userService.findByEmail(decoded.getIssuer());
 
         // 사용자가 내 데이터베이스에 존재하는지 확인
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+        //return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList()); //
+        return new UsernamePasswordAuthenticationToken(decoded.getIssuer(), null, Collections.emptyList()); //토큰을 이메일 기반으로만 찾기 위함, 첫번쨰 파라미터가 principal임
     }
 
 }

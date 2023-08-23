@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.CharBuffer;
 import java.time.LocalDateTime;
@@ -80,4 +81,15 @@ public class UserService {
     }
 
 
+    @Transactional
+    public void signOut(String userEmail) {
+
+        // Implement your logic here to mark the user account as inactive or perform any other necessary actions.
+        // For example, you can update a flag in the user's entity to indicate that the account is deactivated.
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
+
+//        user.setActive(false); // Assuming you have an 'active' field in your User entity
+        userRepository.delete(user);
+    }
 }

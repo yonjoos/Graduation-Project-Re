@@ -15,7 +15,8 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
     @Column(name = "portfolio_id")
     private Long id; //포트폴리오 테이블의 기본키
 
-    @OneToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL) //여기서 cascade를 꼭 써야하나? (portfolio가 persist되면 user도 같이 persist됨)
+    // cascade 다 걷어냄. 일일이 코드 쳐주는 것으로 정책 변경.
+    @OneToOne (fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user; //포트폴리오의 대상이 되는 회원 - 연관관계의 주인, 회원 table과 엮임(회원의 외래키를 가지고 있음)
 

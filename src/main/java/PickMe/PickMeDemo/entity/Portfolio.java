@@ -39,4 +39,14 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
 
     private String fileUrl; //첨부 파일
 
+    public Portfolio(User user, Integer web, Integer app, Integer game, Integer ai, String shortIntroduce, String introduce, String fileUrl) {
+        this.user = user;
+        this.web = web;
+        this.app = app;
+        this.game = game;
+        this.ai = ai;
+        this.shortIntroduce = shortIntroduce;
+        this.introduce = introduce;
+        this.fileUrl = fileUrl;
+    }
 }

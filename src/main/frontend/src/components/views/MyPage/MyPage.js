@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Row, Col, Button } from 'antd';
-import { request, getAuthToken} from '../../../hoc/request';
+import { request } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
 import { setAuthHeader, setUserRole } from '../../../hoc/request';
@@ -49,15 +49,15 @@ function MyPage() {
                     <Col xs={24} sm={16} md={12} lg={8}>
                         <Card title="Backend Response in Project Page" style={{ width: '100%' }}>
                             <div>현재 계정 정보</div>
-                        {data && (
-                            <ul>
-                                <li><strong>ID:</strong> {data.id}</li>
-                                <li><strong>User Name:</strong> {data.userName}</li>
-                                <li><strong>Nick Name:</strong> {data.nickName}</li>
-                                <li><strong>Email:</strong> {data.email}</li>
-                                {/* Add other properties as needed */}
-                            </ul>
-                        )}
+                            {data && (
+                                <ul>
+                                    <li><strong>ID:</strong> {data.id}</li>
+                                    <li><strong>User Name:</strong> {data.userName}</li>
+                                    <li><strong>Nick Name:</strong> {data.nickName}</li>
+                                    <li><strong>Email:</strong> {data.email}</li>
+                                    {/* Add other properties as needed */}
+                                </ul>
+                            )}
                         </Card>
                     </Col>
                 </Row>

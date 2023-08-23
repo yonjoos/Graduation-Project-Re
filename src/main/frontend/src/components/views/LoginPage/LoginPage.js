@@ -91,6 +91,7 @@ function LoginPage() {
                 <Tabs activeKey={active} onChange={(key) => setActive(key)} centered>
                     <Tabs tab="Login" key="login">
                         <form onSubmit={onSubmitLogin}>
+                            {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
                             <div className="form-outline mb-4">
                                 <Input
                                     type="text"

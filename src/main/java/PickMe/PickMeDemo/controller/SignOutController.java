@@ -25,33 +25,33 @@ public class SignOutController {
     public SignOutController(UserService userService) {
         this.userService = userService;
     }
-    @GetMapping("/userInfo")
-    public ResponseEntity<UserDto> userInfo(Principal principal) {
-        String userEmail = principal.getName(); // Get the email from the JWT token
-        //api시 해당 회원의 이메일을 알아와서
-        //email기반으로 쿼리를 날리면 됨
-
-
-        //System.out.println(userEmail);
-        //UserDto userDto=(UserDto) principal;
-        // Retrieve user information from the userService based on the email
-        UserDto userDto = userService.findByEmail(userEmail);
-
-        return ResponseEntity.ok(userDto);
-    }
-
-
-    @PostMapping("/signOut")
-    public ResponseEntity<String> signOut(Principal principal) {
-        String userEmail = principal.getName(); // Get the email from the JWT token!
-
-        try {
-            // Call a method in your userService to handle the user withdrawal logic
-            userService.signOut(userEmail);
-            return ResponseEntity.ok("User has been successfully withdrawn.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to withdraw user.");
-        }
-    }
+//    @GetMapping("/userInfo")
+//    public ResponseEntity<UserDto> userInfo(Principal principal) {
+//        String userEmail = principal.getName(); // Get the email from the JWT token
+//        //api시 해당 회원의 이메일을 알아와서
+//        //email기반으로 쿼리를 날리면 됨
+//
+//
+//        //System.out.println(userEmail);
+//        //UserDto userDto=(UserDto) principal;
+//        // Retrieve user information from the userService based on the email
+//        UserDto userDto = userService.findByEmail(userEmail);
+//
+//        return ResponseEntity.ok(userDto);
+//    }
+//
+//
+//    @PostMapping("/signOut")
+//    public ResponseEntity<String> signOut(Principal principal) {
+//        String userEmail = principal.getName(); // Get the email from the JWT token!
+//
+//        try {
+//            // Call a method in your userService to handle the user withdrawal logic
+//            userService.signOut(userEmail);
+//            return ResponseEntity.ok("User has been successfully withdrawn.");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to withdraw user.");
+//        }
+//    }
 }

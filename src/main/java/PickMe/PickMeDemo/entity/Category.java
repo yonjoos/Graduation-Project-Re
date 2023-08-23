@@ -17,7 +17,8 @@ public class Category extends BaseTimeEntity{ //생성일, 수정일 다루는 �
     @Column(name="category_id")
     private Long id; //모집분야 id
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) //cascade옵션을 여기가 아닌 posts의 category엮는 부분에 넣어줘야할듯 싶음. 그래야 게시물이 persist되면 얘는 자동으로 persist됨(시홍생각)
+    // cascade 다 걷어냄. 일일이 코드 쳐주는 것으로 정책 변경.
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="posts_id")
     private Posts posts; //연관관계의 주인, 게시물 table과 엮임(게시물의 외래키를 가지고 있음)
 

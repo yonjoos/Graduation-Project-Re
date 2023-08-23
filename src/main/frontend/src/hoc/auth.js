@@ -2,18 +2,20 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-function Auth(SpecificComponent, option, adminRoute = null) {
+function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = false) {
 
     function AuthenticationCheck(props) {
         const isAuthenticated = useSelector(state => state.isAuthenticated);
         const userRole = useSelector(state => state.userRole);
+        const userPortfolio = useSelector(state => state.userPortfolio);
 
         const navigate = useNavigate();
 
         useEffect(() => {
-            //console.log("isAuthenticated : " + isAuthenticated);
-            //console.log("userRole : " + userRole);
-            //console.log("this : " + this);
+            console.log('isAuthenticated:', isAuthenticated);
+            console.log('userRole:', userRole);
+            console.log('userPortfolio:', userPortfolio);
+            console.log('hasPortfolio:', hasPortfolio);
 
             // 로그아웃 유저에 대해
             if (isAuthenticated === null || isAuthenticated === "null" || isAuthenticated === false) {
@@ -28,11 +30,21 @@ function Auth(SpecificComponent, option, adminRoute = null) {
                 if (adminRoute && userRole !== 'ADMIN') {
                     navigate('/')
                 } else {
-                    if (option === false)
+                    // option === false이면 로그인한 유저가 들어갈 수 없는 페이지
+                    if (option === false) {
                         navigate('/')
+                    }
+                    // userRole === 'USER'인 사람 중, 포트폴리오를 작성한 사람은 접근할 수 없는 페이지
+                    if (userPortfolio && hasPortfolio) {
+                        navigate('/portfolio')
+                    }
+                    // // userRole === 'USER'인 사람 중, 포트폴리오를 작성하지 않은 사람
+                    // else if (!userPortfolio && hasPortfolio) {
+                    //     navigate('/portfolio')
+                    // }
                 }
             }
-        }, [isAuthenticated, navigate, userRole])
+        }, [isAuthenticated, navigate, userRole, userPortfolio])
 
         return (
             <SpecificComponent {...props}/>

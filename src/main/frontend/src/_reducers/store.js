@@ -10,7 +10,9 @@ import thunk from 'redux-thunk';
 // initialState: 앱의 초기 상태를 정의하는 객체임. 여기서는 isAuthenticated와 authToken을 초기화 수행
 const initialState = {
     isAuthenticated: false,
-    authToken: null
+    authToken: null,
+    userRole: null,
+    userPortfolio: null
 };
 
 /**
@@ -31,15 +33,28 @@ const authReducer = (state = initialState, action) => {
                 ...state,
                 isAuthenticated: true, //로그인 상태로 가는 경우, 인증된 상태임
                 authToken: action.payload.token, //로그인 상태로 가는 경우, 토큰이 있는 상태임
-                userRole: action.payload.role //로그인 상태로 가는 경우,  role도 저장된 상태임
+                userRole: action.payload.role, //로그인 상태로 가는 경우,  role도 저장된 상태임
+                userPortfolio: action.payload.isCreated // 포트폴리오 유무 여부
             };
         case 'LOGOUT':
             return {
                 ...state,
                 isAuthenticated: false, //로그아웃 상태로 가는 경우, 인증허가가 끝난 상태임
                 authToken: null, //로그아웃 상태로 가는 경우,토큰 반환
-                userRole: null //로그아웃 상태로 가는경우, role도 없음
+                userRole: null, //로그아웃 상태로 가는경우, role도 없음
+                userPortfolio: null //로그아웃 상태로 가는경우, portfolio도 없음
             };
+        // 포트폴리오 생성 케이스 만들기.
+        case 'UPLOAD_PORTFOLIO_SUCCESS':
+            return {
+                ...state,
+                userPortfolio: true
+            };
+        // 포트폴리오 생성되면 userPortfolio: true로 바꾸기
+
+
+        // 포트폴리오 삭제 케이스 만들기.
+        // 포트폴리오 삭제되면 userPortfolio: false로 바꾸기
         default:
             return state;
     }

@@ -2,6 +2,7 @@ package PickMe.PickMeDemo.service;
 
 import PickMe.PickMeDemo.dto.CredentialsDto;
 import PickMe.PickMeDemo.dto.SignUpDto;
+import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
 import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.entity.Role;
 import PickMe.PickMeDemo.entity.User;
@@ -91,5 +92,30 @@ public class UserService {
 
 //        user.setActive(false); // Assuming you have an 'active' field in your User entity
         userRepository.delete(user);
+    }
+
+    @Transactional
+    public void updateUserBaseInfo(String userEmail, UserBaseInfoUpdateDto updateDto) {
+
+        //userEmail에 해당하는 user를 찾기
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
+
+        //user의 비밀번호를 복호화
+        //복호화된 비밀번호와 updateDto에 있는 비밀번호가 같은 경우
+        if (passwordEncoder.matches(CharBuffer.wrap(updateDto.getPassword()), user.getPassword()))
+        {
+            //user의 nickname을 변경
+            user.setNickName(updateDto.getNickName());
+            user.setUserName(updateDto.getUserName());
+            userRepository.save(user); //변경감지 기능 통해 업데이트 되게
+
+        }else {
+            throw new AppException("Passwords do not match", HttpStatus.BAD_REQUEST);
+        }
+
+
+
+
     }
 }

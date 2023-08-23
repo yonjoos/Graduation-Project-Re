@@ -11,6 +11,7 @@ import AdminPage from './views/AdminPage/AdminPage';
 import MyPage from './views/MyPage/MyPage';
 import ScrapPage from './views/ScrapPage/ScrapPage';
 import PortfolioPage from './views/PortfolioPage/PortfolioPage';
+import UploadPortfolioPage from './views/PortfolioPage/UploadPortfolioPage/UploadPortfolioPage'
 import GroupPage from './views/GroupPage/GroupPage';
 import LandingPage from './views/LandingPage/LandingPage';
 import LoginPage from './views/LoginPage/LoginPage';
@@ -99,6 +100,12 @@ function App() {
                             path="/portfolio"
                             // element={<PortfolioPage/>}
                             element={Auth(PortfolioPage, true)}
+                        />
+                        <Route
+                            // path 입력 시 / 빼먹는거 주의!! path="portfolio/upload" 아니라 path="/portfolio/upload"임!!
+                            path="/portfolio/upload"
+                            // 일단, 로그인 한 사람은 들어갈 수 있는 페이지로 해놨는데, 이걸 포트폴리오 상태를 가져와서 포트폴리오 작성 안된 사람만 들어갈 수 있는 페이지로 만들기
+                            element={Auth(UploadPortfolioPage, true)}
                         />
                         <Route
                             path="/group"

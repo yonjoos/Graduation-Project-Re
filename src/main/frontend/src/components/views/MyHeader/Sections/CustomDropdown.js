@@ -69,11 +69,9 @@ function CustomDropdown(props) {
     const menu = (
         <Menu>
             {props.userRole === 'USER' && userItems.map(item => (
-                <div>
-                    <Menu.Item key={item.key} onClick={item.onClick || (() => navigate(item.link))}>
-                        {item.label}
-                    </Menu.Item>
-                </div>
+                <Menu.Item key={item.key} onClick={item.onClick || (() => navigate(item.link))}>
+                    {item.label}
+                </Menu.Item>
             ))}
             {props.userRole === 'ADMIN' && adminItems.map(item => (
                 <Menu.Item key={item.key} onClick={item.onClick || (() => navigate(item.link))}>

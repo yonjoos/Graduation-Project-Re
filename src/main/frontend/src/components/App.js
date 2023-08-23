@@ -18,7 +18,6 @@ import RecommendationPage from './views/RecommendationPage/RecommendationPage';
 import ProjectPage from './views/ProjectPage/ProjectPage';
 import StudyPage from './views/StudyPage/StudyPage';
 import UploadPostPage from './views/UploadPostPage/UploadPostPage';
-import SignOutPage from './views/SignOutPage/SignOutPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
 /*import logo from '../logo.svg';
@@ -131,10 +130,7 @@ function App() {
                             // element={<UploadPostPage/>}
                             element={Auth(UploadPostPage, true)}
                         />
-                        <Route
-                            path="/signOut"
-                            element={Auth(SignOutPage,true)} //로그인된 사람만 signout할 수 있음
-                        />
+                        
                     </Routes>
                     </div>
                 </Content>

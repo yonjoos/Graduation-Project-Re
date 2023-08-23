@@ -45,10 +45,11 @@ public class PortfolioService {
 
         Portfolio portfolio = portfolioRepository.save(registerPortfolio);
 
-        // portfolioDto의 필드 : nickName, email, web, app, game, ai, shortIntroduce, introduce, fileUrl
+        // portfolioDto의 필드 : isCreated, nickName, email, web, app, game, ai, shortIntroduce, introduce, fileUrl
+        // 포트폴리오를 생성하는 것이므로, isCreated를 true로 바로 저장
 
         PortfolioDto portfolioDto = new PortfolioDto(
-                userDto.getNickName(), userDto.getEmail(), portfolio.getWeb(), portfolio.getApp(),
+                true, userDto.getNickName(), userDto.getEmail(), portfolio.getWeb(), portfolio.getApp(),
                 portfolio.getGame(), portfolio.getAi(), portfolio.getShortIntroduce(), portfolioFormDto.getIntroduce(),
                 portfolioFormDto.getFileUrl());
 
@@ -79,5 +80,15 @@ public class PortfolioService {
                 .build();
 
         return portfolioDto;
+    }
+
+    // Optional을 사용하여, portfolio를 찾았으면 true를 리턴, 찾지 못했으면 false를 리턴
+    public boolean hasPortfolio(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+
+        Optional<Portfolio> portfolioOptional = portfolioRepository.findByUser(user);
+
+        return portfolioOptional.isPresent();
     }
 }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Tabs, Input, Button } from 'antd';
-import { request, setAuthHeader, setUserRole } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
+import { Row, Col, Tabs, Input, Button } from 'antd';
+import { request, setAuthHeader, setHasPortfolio, setUserRole } from '../../../hoc/request';
 import { loginSuccess } from '../../../_actions/actions'
 
 function LoginPage() {
@@ -36,10 +36,11 @@ function LoginPage() {
             password: password
         })
         .then((response) => {
-            const { token, role } = response.data;
-            dispatch(loginSuccess(token, role)); // Dispatch login success action with role
+            const { token, role, isCreated } = response.data;
+            dispatch(loginSuccess(token, role, isCreated)); // Dispatch login success action with role
             setAuthHeader(token); // Set token in local storage
             setUserRole(role);
+            setHasPortfolio(isCreated);
             alert("로그인에 성공하였습니다.");
         })
         .catch((error) => {

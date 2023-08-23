@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class PortfolioDto {
 
     // 나중에 회원 사진 추가 필요
+    private Boolean isCreated;
     private String nickName;
     private String email;
     private Integer web;

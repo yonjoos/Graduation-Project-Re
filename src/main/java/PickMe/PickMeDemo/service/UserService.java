@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public UserDto register(SignUpDto userDto) {
-        // 동일한 아이디가 있는지 확인(?)
+        // 동일한 아이디가 있는지 확인
         Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
 
         if (optionalUser.isPresent()) {

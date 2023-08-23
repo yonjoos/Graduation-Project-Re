@@ -11,9 +11,9 @@ function Auth(SpecificComponent, option, adminRoute = null) {
         const navigate = useNavigate();
 
         useEffect(() => {
-            console.log("isAuthenticated : " + isAuthenticated);
-            console.log("userRole : " + userRole);
-            console.log("this : " + this);
+            //console.log("isAuthenticated : " + isAuthenticated);
+            //console.log("userRole : " + userRole);
+            //console.log("this : " + this);
 
             // 로그아웃 유저에 대해
             if (isAuthenticated === null || isAuthenticated === "null" || isAuthenticated === false) {

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Row, Col, Button, Menu } from 'antd';
-import { request, getAuthToken} from '../../../hoc/request';
+import { request} from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
 import { setAuthHeader, setUserRole } from '../../../hoc/request';

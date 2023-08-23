@@ -61,6 +61,9 @@ function App() {
                              * Auth(페이지명, null, true) -> 관리자(ADMIN)만 들어갈 수 있는 페이지
                              * => 로그아웃 유저 및 일반 유저는 해당 EndPointer로 접근 불가. 관리자만 해당 Endpointer로 접근 가능
                              * 
+                             * Auth(페이지명, true, null, true) -> 유저(USER) 중 포트폴리오가 이미 작성된 사람은 들어갈 수 없는 페이지
+                             * => 포트폴리오를 작성한 사람은 해당 Endpointer로 접근 불가
+                             * 
                              * 
                              * 
                              * Auth(페이지명, null)인 페이지는 모든 사용자가 접근 가능하다.
@@ -74,6 +77,9 @@ function App() {
                              * 
                              * Auth(페이지명, null, true)인 페이지는 관리자만 접근 가능하다.
                              * 따라서 경우를 나누지 않고 코딩한다.
+                             * 
+                             * Auth(페이지명, true, null, true)인 페이지는 로그인한 유저 중 포트폴리오가 이미 작성된 사람은 들어갈 수 없다.
+                             * 따라서 오직 포트폴리오를 작성하지 않은 유저만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
                              */
                         }
                         <Route
@@ -104,8 +110,8 @@ function App() {
                         <Route
                             // path 입력 시 / 빼먹는거 주의!! path="portfolio/upload" 아니라 path="/portfolio/upload"임!!
                             path="/portfolio/upload"
-                            // 일단, 로그인 한 사람은 들어갈 수 있는 페이지로 해놨는데, 이걸 포트폴리오 상태를 가져와서 포트폴리오 작성 안된 사람만 들어갈 수 있는 페이지로 만들기
-                            element={Auth(UploadPortfolioPage, true)}
+                            // User 중, Portfolio가 이미 작성되어있는 사람은 접근할 수 없는 페이지
+                            element={Auth(UploadPortfolioPage, true, null, true)}
                         />
                         <Route
                             path="/group"

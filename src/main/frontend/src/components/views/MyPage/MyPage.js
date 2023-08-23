@@ -84,7 +84,8 @@ function MyPage() {
                             <div>현재 계정 정보</div>
                             {data && (
                                 <ul>
-                                    <li><strong>ID:</strong> {data.id}</li>
+                                    {/** data로 받아온 Boolean 값은, data.isCreated만으로는 화면에 나타나지 않는다. */}
+                                    <li><strong>isCreated:</strong> {data.isCreated ? 'true' : 'false'}</li>
                                     <li><strong>User Name:</strong> {data.userName}</li>
                                     <li><strong>Nick Name:</strong> {data.nickName}</li>
                                     <li><strong>Email:</strong> {data.email}</li>

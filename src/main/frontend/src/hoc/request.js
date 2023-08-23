@@ -15,6 +15,10 @@ export const getUserRole = () => {
     return window.localStorage.getItem('user_role');
 }
 
+//로컬 스토리지에서 'user_portfolio'이라는 키로 저장된 사용자 역할을 가져오는 함수
+export const getHasPortfolio = () => {
+    return window.localStorage.getItem('user_portfolio');
+}
 
 //로컬 스토리지에 JWT 토큰을 'auth_token' 키로 저장하는 함수
 export const setAuthHeader = (token) => {
@@ -24,6 +28,11 @@ export const setAuthHeader = (token) => {
 //로컬 스토리지에 사용자 역할을 'user_role' 키로 저장하는 함수
 export const setUserRole = (role) => {
     window.localStorage.setItem('user_role', role);
+};
+
+//로컬 스토리지에 포트폴리오 생성여부를 'user_portfolio' 키로 저장하는 함수
+export const setHasPortfolio = (isCreated) => {
+    window.localStorage.setItem('user_portfolio', isCreated);
 };
 
 //axios의 기본 설정을 지정. 

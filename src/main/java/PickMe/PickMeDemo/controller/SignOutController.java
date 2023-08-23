@@ -43,7 +43,7 @@ public class SignOutController {
 
     @PostMapping("/signOut")
     public ResponseEntity<String> signOut(Principal principal) {
-        String userEmail = principal.getName(); // Get the email from the JWT token
+        String userEmail = principal.getName(); // Get the email from the JWT token!
 
         try {
             // Call a method in your userService to handle the user withdrawal logic

@@ -23,23 +23,27 @@ public class PortfolioController {
     private final UserService userService;
     private final PortfolioService portfolioService;
 
+    // 포트폴리오 생성하기
     @PostMapping("/uploadPortfolio")
     public ResponseEntity<PortfolioDto> uploadPortfolio(@RequestBody @Valid PortfolioFormDto portfolioFormDto, Principal principal) {
         String userEmail = principal.getName(); // Get the email from the JWT token
-        //api시 해당 회원의 이메일을 알아와서
-        //email기반으로 쿼리를 날리면 됨
 
+        // Email로 UserDTO 찾기
         UserDto userDto = userService.findByEmail(userEmail);
 
+        // portfolioFormDto : Portfolio 테이블에 저장하기 위해 필요
+        // userDto : User와 Portfolio를 연결하기 위해 User 테이블의 PK를 얻기 위해 필요
         PortfolioDto portfolioDto = portfolioService.uploadPortfolio(portfolioFormDto, userDto);
 
         return ResponseEntity.ok(portfolioDto);
     }
 
+    // 포트폴리오 정보 가져오기
     @GetMapping("/getPortfolio")
     public ResponseEntity<PortfolioDto> getPortfolio(Principal principal) {
         String userEmail = principal.getName(); // JWT 토큰에서 이메일 가져오기
 
+        // getPortfolio : 이메일을 통해 포트폴리오를 가져오는 함수
         PortfolioDto portfolio = portfolioService.getPortfolio(userEmail);
 
         return ResponseEntity.ok(portfolio);

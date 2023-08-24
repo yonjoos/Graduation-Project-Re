@@ -35,19 +35,21 @@ public class PortfolioService {
         // orElseThrow(...): 이 메서드는 Optional 객체에서 호출됩니다.
         // 비어있는 경우 예외 객체를 생성하고 던질 람다 표현식을 받습니다.
         // 이 경우 Optional이 비어있는 경우(사용자를 찾지 못한 경우) "사용자를 찾을 수 없습니다"라는 메시지와 BAD_REQUEST (400) HTTP 상태 코드를 가진 AppException이 생성됩니다.
-        User user = findUser.orElseThrow(() -> new AppException("User not found", HttpStatus.BAD_REQUEST));
+        User user = findUser.orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
+        // Setter대신 생성자를 사용하여 Portfolio 테이블을 채움
         Portfolio registerPortfolio =
                 new Portfolio(user, portfolioFormDto.getWeb(), portfolioFormDto.getApp(),
                         portfolioFormDto.getGame(), portfolioFormDto.getAi(),
                         portfolioFormDto.getShortIntroduce(), portfolioFormDto.getIntroduce(),
                         portfolioFormDto.getFileUrl());
 
+        // 포트폴리오 디비에 저장
         Portfolio portfolio = portfolioRepository.save(registerPortfolio);
 
+        // 디비에 저장과는 별개로, 화면에 다시 데이터를 뿌려줄 PortfolioDto를 생성해서 반환
         // portfolioDto의 필드 : isCreated, nickName, email, web, app, game, ai, shortIntroduce, introduce, fileUrl
         // 포트폴리오를 생성하는 것이므로, isCreated를 true로 바로 저장
-
         PortfolioDto portfolioDto = new PortfolioDto(
                 true, userDto.getNickName(), userDto.getEmail(), portfolio.getWeb(), portfolio.getApp(),
                 portfolio.getGame(), portfolio.getAi(), portfolio.getShortIntroduce(), portfolioFormDto.getIntroduce(),
@@ -61,12 +63,15 @@ public class PortfolioService {
     // 포트폴리오 조회
     @EntityGraph(attributePaths = "user")
     public PortfolioDto getPortfolio(String userEmail) {
+        // UserEmail을 통해 해당 User 찾기
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
+        // User를 통해 User가 갖고 있는 포트폴리오 찾기
         Portfolio portfolio = portfolioRepository.findByUser(user)
                 .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
+        // PortfolioDto를 빌더를 통해 생성
         PortfolioDto portfolioDto = PortfolioDto.builder()
                 .nickName(user.getNickName())
                 .email(user.getEmail())
@@ -89,6 +94,7 @@ public class PortfolioService {
 
         Optional<Portfolio> portfolioOptional = portfolioRepository.findByUser(user);
 
+        // 해당 유저의 포트폴리오가 존재하면 true, 존재하지 않으면 false
         return portfolioOptional.isPresent();
     }
 }

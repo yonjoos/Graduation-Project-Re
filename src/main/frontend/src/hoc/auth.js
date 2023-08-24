@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = false) {
+function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null) {
 
     function AuthenticationCheck(props) {
         const isAuthenticated = useSelector(state => state.isAuthenticated);
@@ -34,12 +34,18 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = false
                     if (option === false) {
                         navigate('/')
                     }
-                    // userRole === 'USER'인 사람 중, 포트폴리오를 작성한 사람은 접근할 수 없는 페이지
-                    if (userPortfolio && hasPortfolio) {
+                    
+                    // userRole === 'USER'인 사람 중, 포트폴리오가 있어야만 들어갈 수 있는 페이지인데 , 포트폴리오가 없으면(윤식)
+
+                    //user인데, 로그인이 되어있고, 포폴이 없는데, 포폴이 있어야만 접근 가능한 루트이고, 그 컴포넌트가 update또는 delete페이지이면 /portfolio로 이동(시홍)
+                    else if ((!userPortfolio && hasPortfolio && SpecificComponent.name==="UpdatePortfolioPage")
+                                || (!userPortfolio && hasPortfolio && SpecificComponent.name==="DeletePortfolioPage")) {
                         navigate('/portfolio')
                     }
-                    // userRole === 'USER'인 사람 중, 포트폴리오를 작성하지 않은 사람은 접근할 수 없는 페이지
-                    if (!userPortfolio && !hasPortfolio) {
+                    // userRole === 'USER'인 사람 중, 포트폴리오가 없어야 들어갈 수 있는 페이지인데, 포트폴리오가 있으면(윤식)
+
+                    //user인데, 로그인이 되어있고, 포폴이 있는데, 포폴이 없어야만 접근 가능한 루트이고, 그 컴포넌트가 upload페이지이면 /portfolio로 이동(시홍)
+                    else if (userPortfolio && !hasPortfolio && SpecificComponent.name==="UploadPortfolioPage") {
                         navigate('/portfolio')
                     }
                 }

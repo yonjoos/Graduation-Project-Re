@@ -1,47 +1,63 @@
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-// JWT를 저장하고 프론트엔드의 다음 요청에 사용.
-// 이를 위해 localstorage에서 JWT를 저장하고 읽도록 axios도우미 (axios_helper)를 다음과 같이 작성하였음.
-// 이제 로그인 또는 회원가입이 완료되면, JWT를 저장함.
+function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null) {
 
-export const getAuthToken = () => {
-    return window.localStorage.getItem('auth_token');
-};
+    function AuthenticationCheck(props) {
+        const isAuthenticated = useSelector(state => state.isAuthenticated);
+        const userRole = useSelector(state => state.userRole);
+        const userPortfolio = useSelector(state => state.userPortfolio);
 
-export const setAuthHeader = (token) => {
-    window.localStorage.setItem('auth_token', token);
-};
+        const navigate = useNavigate();
 
-axios.defaults.baseURL = 'http://localhost:9090';
-axios.defaults.headers.post['Content-Type'] = 'application/json';
+        useEffect(() => {
+            console.log('isAuthenticated:', isAuthenticated);
+            console.log('userRole:', userRole);
+            console.log('userPortfolio:', userPortfolio);
+            console.log('hasPortfolio:', hasPortfolio);
 
-// 로그인 성공시, getAuthToken()을 통해 로그인 정보를 가져오고, request틀을 만들어 준다.
-export const request = (method, url, data) => {
+            // 로그아웃 유저에 대해
+            if (isAuthenticated === null || isAuthenticated === "null" || isAuthenticated === false) {
+                // 로그인한 유저만 접근할 수 있는 곳이나 ADMIN만 접근할 수 있는 곳에 접근할 때 접근 못하도록
+                if (option === true || adminRoute) {
+                    navigate('/login')
+                }
+            }
+            // 로그인 유저 (USER, ADMIN)에 대해
+            else {
+                // userRole === 'USER"인 사람은 ADMIN만 접근할 수 있는 페이지에 접근 못하도록
+                if (adminRoute && userRole !== 'ADMIN') {
+                    navigate('/')
+                } else {
+                    // option === false이면 로그인한 유저가 들어갈 수 없는 페이지
+                    if (option === false) {
+                        navigate('/')
+                    }
+                    
+                    // userRole === 'USER'인 사람 중, 포트폴리오가 있어야만 들어갈 수 있는 페이지인데 , 포트폴리오가 없으면(윤식)
 
-    // 로그인되지 않은 유저라면, 헤더에 토큰을 달아주지 않는다.
-    let headers = {};
+                    //user인데, 로그인이 되어있고, 포폴이 없는데, 포폴이 있어야만 접근 가능한 루트이고, 그 컴포넌트가 update또는 delete페이지이면 /portfolio로 이동(시홍)
+                    else if ((!userPortfolio && hasPortfolio && SpecificComponent.name==="UpdatePortfolioPage")
+                                || (!userPortfolio && hasPortfolio && SpecificComponent.name==="DeletePortfolioPage")) {
+                        navigate('/portfolio')
+                    }
+                    // userRole === 'USER'인 사람 중, 포트폴리오가 없어야 들어갈 수 있는 페이지인데, 포트폴리오가 있으면(윤식)
 
-    const authToken = getAuthToken();
-    console.log('Token:', authToken);
+                    //user인데, 로그인이 되어있고, 포폴이 있는데, 포폴이 없어야만 접근 가능한 루트이고, 그 컴포넌트가 upload페이지이면 /portfolio로 이동(시홍)
+                    else if (userPortfolio && !hasPortfolio && SpecificComponent.name==="UploadPortfolioPage") {
+                        navigate('/portfolio')
+                    }
+                }
+            }
+        }, [isAuthenticated, navigate, userRole, userPortfolio])
 
-    // 로그인된 유저라면, 헤더에 토큰을 달아준다.
-    if (getAuthToken() !== null && getAuthToken() !== "null" && getAuthToken() !== "undefined") {
-        // Baerer 백틱 (`) 주의!
-        headers = {'Authorization': `Bearer ${getAuthToken()}`};
+        return (
+            <SpecificComponent {...props}/>
+        );
     }
 
-    return axios({
-        method: method,
-        url: url,
-        headers: headers,
-        data: data
-    })
-    .then(response => {
-        console.log('Response:', response);
-        return response;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        throw error;
-    });
-};
+    return <AuthenticationCheck />
+}
+
+export default Auth;

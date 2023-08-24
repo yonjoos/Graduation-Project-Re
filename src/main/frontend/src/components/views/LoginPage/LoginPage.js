@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Tabs, Input, Button } from 'antd';
-import { request, setAuthHeader } from '../../../hoc/auth';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../_actions/actions'
+import { Row, Col, Tabs, Input, Button } from 'antd';
+import { request, setAuthHeader, setHasPortfolio, setUserRole } from '../../../hoc/request';
+import { loginSuccess } from '../../../_actions/actions'
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -35,14 +35,17 @@ function LoginPage() {
             email: email,
             password: password
         })
-            .then((response) => {
-                dispatch(loginSuccess(response.data.token)); // Dispatch login success action
-                setAuthHeader(response.data.token); // Set token in local storage
-                alert("로그인에 성공하였습니다.");
-            })
-            .catch((error) => {
-                alert("로그인에 실패하였습니다.");
-            });
+        .then((response) => {
+            const { token, role, isCreated } = response.data;
+            dispatch(loginSuccess(token, role, isCreated)); // Dispatch login success action with role
+            setAuthHeader(token); // Set token in local storage
+            setUserRole(role);
+            setHasPortfolio(isCreated);
+            alert("로그인에 성공하였습니다.");
+        })
+        .catch((error) => {
+            alert("로그인에 실패하였습니다.");
+        });
     };
     
 
@@ -89,11 +92,12 @@ function LoginPage() {
                 <Tabs activeKey={active} onChange={(key) => setActive(key)} centered>
                     <Tabs tab="Login" key="login">
                         <form onSubmit={onSubmitLogin}>
+                            {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
                             <div className="form-outline mb-4">
                                 <Input
                                     type="text"
                                     name="email"
-                                    placeholder="Username"
+                                    placeholder="Email"
                                     onChange={onChangeHandler}
                                 />
                             </div>

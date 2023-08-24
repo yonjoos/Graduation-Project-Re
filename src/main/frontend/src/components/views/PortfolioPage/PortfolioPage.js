@@ -10,6 +10,7 @@ function PortfolioPage() {
     // 포트폴리오 저장 상태를 리덕스로 가져와서
     // 포트폴리오가 비어있으면 업로드 버튼 안보이고, 수정 버튼이 보여야 함
 
+    // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {
         request('GET', '/getPortfolio', {})
             .then((response) => {

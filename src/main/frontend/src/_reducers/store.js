@@ -45,12 +45,13 @@ const authReducer = (state = initialState, action) => {
                 userPortfolio: null //로그아웃 상태로 가는경우, portfolio도 없음
             };
         // 포트폴리오 생성 케이스 만들기.
+        // 포트폴리오 생성되면 userPortfolio: true로 바꾸기
         case 'UPLOAD_PORTFOLIO_SUCCESS':
             return {
-                ...state,
-                userPortfolio: true
+                ...state,               // 기존 상태는 그대로 가져오되,
+                userPortfolio: true     // userPortfolio의 상태를 true로 변경한다.
             };
-        // 포트폴리오 생성되면 userPortfolio: true로 바꾸기
+        
 
 
         // 포트폴리오 삭제 케이스 만들기.

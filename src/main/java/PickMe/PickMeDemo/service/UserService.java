@@ -62,7 +62,9 @@ public class UserService {
         // 비밀번호는 따로 해싱하여 세팅
         //user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
         //실제 user 객체 구체화 진행
-        User registerUser = new User(user.getId(), user.getUserName(), user.getNickName(), user.getEmail(), passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())), Role.USER, null);
+        User registerUser =
+                new User(user.getId(), user.getUserName(), user.getNickName(), user.getEmail(),
+                        passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())), Role.USER, null);
         //회원가입 시엔 최근 접속일자 필드를 null로 세팅함!!
         //user.setRole(Role.USER);
 
@@ -84,9 +86,7 @@ public class UserService {
 
     @Transactional
     public void signOut(String userEmail) {
-
-        // Implement your logic here to mark the user account as inactive or perform any other necessary actions.
-        // For example, you can update a flag in the user's entity to indicate that the account is deactivated.
+        // userEmail로 user 찾기
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
 
@@ -97,25 +97,18 @@ public class UserService {
     @Transactional
     public void updateUserBaseInfo(String userEmail, UserBaseInfoUpdateDto updateDto) {
 
-        //userEmail에 해당하는 user를 찾기
+        // userEmail에 해당하는 user를 찾기
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
 
-        //user의 비밀번호를 복호화
-        //복호화된 비밀번호와 updateDto에 있는 비밀번호가 같은 경우
-        if (passwordEncoder.matches(CharBuffer.wrap(updateDto.getPassword()), user.getPassword()))
-        {
-            //user의 nickname을 변경
+        // updateDto에서 가져온 비밀번호를 암호화
+        // user 테이블의 암호화되어 저장되어있는 비밀번호가 같은 경우
+        if (passwordEncoder.matches(CharBuffer.wrap(updateDto.getPassword()), user.getPassword())) {
             user.setNickName(updateDto.getNickName());
             user.setUserName(updateDto.getUserName());
             userRepository.save(user); //변경감지 기능 통해 업데이트 되게
-
-        }else {
+        } else {
             throw new AppException("Passwords do not match", HttpStatus.BAD_REQUEST);
         }
-
-
-
-
     }
 }

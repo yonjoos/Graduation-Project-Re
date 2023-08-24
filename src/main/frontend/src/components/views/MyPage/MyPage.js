@@ -1,18 +1,36 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Row, Col, Button, Menu } from 'antd';
+import { Card, Row, Col, Button, Menu, message } from 'antd';
 import { request } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
 import { setAuthHeader, setUserRole } from '../../../hoc/request';
 function MyPage() {
-    const [data, setData] = useState(null); //업데이트랑 기존 정보 받아올 떄 동시사용, 업데이트 할떄는 data에 비밀번호까지 실어서 보내고, 다시 effect로 getUserInfo할때는 userDto로 받음(비밀번호 필드 누락)
+    const [data, setData] = useState(null); // 업데이트랑 기존 정보 받아올 때 둘 다 사용, 업데이트 할 때는 data에 비밀번호까지 실어서 보내고, 다시 effect로 getUserInfo할때는 userDto로 받음(비밀번호 필드 누락)
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const [selectedOption, setSelectedOption] = useState('info'); // Default selected option
     const [isUpdateButtonEnabled, setIsUpdateButtonEnabled] = useState(false);
+
+    // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅
+    useEffect(() => {
+        request('GET', '/userInfo', {})
+            .then((response) => {
+                setData(response.data);
+            })
+            .catch((error) => {
+                // Handle error, e.g., redirect to login or display an error message
+                console.error("Error fetching data:", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        // 세 개의 입력 칸이 모두 입력되면 버튼 클릭 가능
+        const isRequiredFieldsFilled = data && data.nickName && data.password;
+        setIsUpdateButtonEnabled(isRequiredFieldsFilled);
+    }, [data]);
 
     const handleMenuClick = (e) => {
         setSelectedOption(e.key);
@@ -30,19 +48,16 @@ function MyPage() {
         .catch((error) => {
             // Handle error, e.g., display an error message
             console.error("Error updating information:", error);
-            alert('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요');
+            message.warning('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요');
         });
     };
 
+    // filedName : nickName, userName, password
+    // value : 변경하려는 값
     const handleInputChange = (fieldName, value) => {
+        // prevData로 이전의 상태 값을 가져오고, value를 사용하여 이름이 fieldName인 속성을 추가하거나 업데이트하여 새 상태 값을 반환
         setData((prevData) => ({ ...prevData, [fieldName]: value }));
     };
-
-    useEffect(() => {
-        // Enable the Update button only if required fields are filled
-        const isRequiredFieldsFilled = data && data.nickName && data.password;
-        setIsUpdateButtonEnabled(isRequiredFieldsFilled);
-    }, [data]);
 
     const onClickHandler = () => {
           // Assuming request function structure: request(method, endpoint, data)
@@ -59,21 +74,9 @@ function MyPage() {
             .catch((error) => {
                 // Handle error, e.g., display an error message
                 console.error("Error signing out:", error);
-                alert('회원 탈퇴에 실패했습니다.');
+                message.warning('회원 탈퇴에 실패했습니다.');
             });
     }
-
-    useEffect(() => {
-        request('GET', '/userInfo', {})
-            .then((response) => {
-                setData(response.data);
-            })
-            .catch((error) => {
-                // Handle error, e.g., redirect to login or display an error message
-                console.error("Error fetching data:", error);
-            });
-    }, []);
-
 
     return (
         <div>
@@ -84,7 +87,9 @@ function MyPage() {
                             <div>현재 계정 정보</div>
                             {data && (
                                 <ul>
-                                    {/** data로 받아온 Boolean 값은, data.isCreated만으로는 화면에 나타나지 않는다. */}
+                                    {/** data로 받아온 Boolean 값은, data.isCreated만으로는 화면에 나타나지 않는다.
+                                     * 따라서 ?를 사용하여 참일때 true가 보이고, 거짓일 때 false가 보이도록 설정한다.
+                                     */}
                                     <li><strong>isCreated:</strong> {data.isCreated ? 'true' : 'false'}</li>
                                     <li><strong>User Name:</strong> {data.userName}</li>
                                     <li><strong>Nick Name:</strong> {data.nickName}</li>

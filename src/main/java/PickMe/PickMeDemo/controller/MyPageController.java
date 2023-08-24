@@ -2,7 +2,9 @@ package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
 import PickMe.PickMeDemo.dto.UserDto;
+import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +33,16 @@ public class MyPageController {
 
     //닉네임, 이름 변경 관련
     @PutMapping("/updateUserInfo")
-    public ResponseEntity<String> updateUserInfo(@RequestBody UserBaseInfoUpdateDto updateDto, Principal principal) {
+    public ResponseEntity<String> updateUserInfo(@RequestBody @Valid UserBaseInfoUpdateDto updateDto, Principal principal) {
         String userEmail = principal.getName();
 
         try {
             // Call a method in your userService to handle the user base info update logic
             userService.updateUserBaseInfo(userEmail, updateDto);
             return ResponseEntity.ok("User information has been successfully updated.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update user information.");
+        } catch (AppException ex) {
+
+            return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
         }
     }
 

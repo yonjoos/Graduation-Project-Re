@@ -104,6 +104,15 @@ public class UserService {
         // updateDto에서 가져온 비밀번호를 암호화
         // user 테이블의 암호화되어 저장되어있는 비밀번호가 같은 경우
         if (passwordEncoder.matches(CharBuffer.wrap(updateDto.getPassword()), user.getPassword())) {
+
+            // 변경하려는 닉네임이 이미 다른 사용자에게서 사용되는지 확인
+            Optional<User> existingUserWithNickname = userRepository.findByNickName(updateDto.getNickName());
+
+            //만약 같은 닉네임을 쓰는 회원이 존재하고, 기존에 해당 닉네임을 쓰는 사람이 현재 같은 닉네임으로 바꾸려는 사람의 pk가 다르다면, 이를 거부
+            if (existingUserWithNickname.isPresent() && !existingUserWithNickname.get().getId().equals(user.getId())) {
+                throw new AppException("Nickname already in use", HttpStatus.CONFLICT);
+            }
+
             user.setNickName(updateDto.getNickName());
             user.setUserName(updateDto.getUserName());
             userRepository.save(user); //변경감지 기능 통해 업데이트 되게

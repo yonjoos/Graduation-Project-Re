@@ -132,6 +132,30 @@ function UpdatePortfolioPage() {
     return (
         <Row justify="center">
             <Col span={12}>
+            {/* Existing input fields */}
+                {/* ... */}
+                <div className="form-outline mb-4">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Web</td>
+                                <td>{renderRadioGroup('web')}</td>
+                            </tr>
+                            <tr>
+                                <td>App</td>
+                                <td>{renderRadioGroup('app')}</td>
+                            </tr>
+                            <tr>
+                                <td>Game</td>
+                                <td>{renderRadioGroup('game')}</td>
+                            </tr>
+                            <tr>
+                                <td>AI</td>
+                                <td>{renderRadioGroup('ai')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <form onSubmit={onSubmitPortfolio}>
                     {/* Short Introduce */}
                     <div className="form-outline mb-4">
@@ -162,30 +186,6 @@ function UpdatePortfolioPage() {
                             value={existingFileUrl}
                             onChange={onChangeHandler}
                         />
-                    </div>
-                    {/* Existing input fields */}
-                    {/* ... */}
-                    <div className="form-outline mb-4">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Web</td>
-                                    <td>{renderRadioGroup('web')}</td>
-                                </tr>
-                                <tr>
-                                    <td>App</td>
-                                    <td>{renderRadioGroup('app')}</td>
-                                </tr>
-                                <tr>
-                                    <td>Game</td>
-                                    <td>{renderRadioGroup('game')}</td>
-                                </tr>
-                                <tr>
-                                    <td>AI</td>
-                                    <td>{renderRadioGroup('ai')}</td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                     {/* Submit button */}
                     <Button type="primary" block htmlType="submit">Update Portfolio</Button>

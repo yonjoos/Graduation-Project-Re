@@ -1,10 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../_actions/actions';
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button } from 'antd';
-import { request, setHasPortfolio } from '../../../hoc/request';
+import { request } from '../../../hoc/request';
 
 function PortfolioPage() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [data, setData] = useState(null);
     const userPortfolio = useSelector(state => state.userPortfolio);
@@ -17,13 +20,17 @@ function PortfolioPage() {
         request('GET', '/getPortfolio', {})
             .then((response) => {
                 setData(response.data);
-                setHasPortfolio(response.data.isCreated);
+                // dispatch를 통해 현재 상태를 세팅해줘야 F5 눌렀을 때 에러가 안남!!
+                if (response.data.isCreated) {
+                    dispatch(uploadPortfolioSuccess(true));
+                } else {
+                    dispatch(deletePortfolioSuccess());
+                }
             })
             .catch((error) => {
-                // Handle error, e.g., redirect to login or display an error message
                 console.error("Error fetching data:", error);
             });
-    }, []);
+    }, [dispatch]);
 
     const onClickUploadHandler = () => {
         navigate('/portfolio/upload');

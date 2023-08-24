@@ -33,7 +33,7 @@ if (storedAuthToken) { //저장된 토큰이 있다면 로그인완료 상태로
 }
     
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <Provider store={store}> 
+    <Provider store={store}>
         <App />
     </Provider>
 );

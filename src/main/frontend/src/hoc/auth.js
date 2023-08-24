@@ -9,10 +9,6 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null)
         const userRole = useSelector(state => state.userRole);
         const userPortfolio = useSelector(state => state.userPortfolio);
 
-        const getAuthToken = getAuthToken(); //로컬스토리지에서 토큰이 있으면 가져옴
-        const getUserRole = getUserRole(); //로컬스토리지에서 해당 유저의 역할 가져옴
-        const getHasPortfolio = getHasPortfolio(); // 로컬스토리지에서 해당 유저의 포트폴리오 유무 여부를 가져옴
-
         const navigate = useNavigate();
 
         useEffect(() => {

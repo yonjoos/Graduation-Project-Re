@@ -41,6 +41,7 @@ function LoginPage() {
             setAuthHeader(token); // Set token in local storage
             setUserRole(role);
             setHasPortfolio(isCreated);
+            localStorage.setItem('localStorageCleared', 'true'); //로컬 스토리지가 비워졌다고 명시. F5문제를 위해 설정한 임시 방편
             alert("로그인에 성공하였습니다.");
         })
         .catch((error) => {

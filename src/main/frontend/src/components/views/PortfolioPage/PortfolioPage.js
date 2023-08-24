@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button } from 'antd';
-import { request } from '../../../hoc/request';
+import { request, setHasPortfolio } from '../../../hoc/request';
 
 function PortfolioPage() {
     const navigate = useNavigate();
@@ -17,6 +17,7 @@ function PortfolioPage() {
         request('GET', '/getPortfolio', {})
             .then((response) => {
                 setData(response.data);
+                setHasPortfolio(response.data.isCreated);
             })
             .catch((error) => {
                 // Handle error, e.g., redirect to login or display an error message

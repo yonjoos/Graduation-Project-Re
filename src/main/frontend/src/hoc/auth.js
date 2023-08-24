@@ -9,6 +9,10 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null)
         const userRole = useSelector(state => state.userRole);
         const userPortfolio = useSelector(state => state.userPortfolio);
 
+        const getAuthToken = getAuthToken(); //로컬스토리지에서 토큰이 있으면 가져옴
+        const getUserRole = getUserRole(); //로컬스토리지에서 해당 유저의 역할 가져옴
+        const getHasPortfolio = getHasPortfolio(); // 로컬스토리지에서 해당 유저의 포트폴리오 유무 여부를 가져옴
+
         const navigate = useNavigate();
 
         useEffect(() => {
@@ -34,15 +38,12 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null)
                     if (option === false) {
                         navigate('/')
                     }
-                    
-                    // userRole === 'USER'인 사람 중, 포트폴리오가 있어야만 들어갈 수 있는 페이지인데 , 포트폴리오가 없으면(윤식)
 
                     //user인데, 로그인이 되어있고, 포폴이 없는데, 포폴이 있어야만 접근 가능한 루트이고, 그 컴포넌트가 update또는 delete페이지이면 /portfolio로 이동(시홍)
                     else if ((!userPortfolio && hasPortfolio && SpecificComponent.name==="UpdatePortfolioPage")
                                 || (!userPortfolio && hasPortfolio && SpecificComponent.name==="DeletePortfolioPage")) {
                         navigate('/portfolio')
                     }
-                    // userRole === 'USER'인 사람 중, 포트폴리오가 없어야 들어갈 수 있는 페이지인데, 포트폴리오가 있으면(윤식)
 
                     //user인데, 로그인이 되어있고, 포폴이 있는데, 포폴이 없어야만 접근 가능한 루트이고, 그 컴포넌트가 upload페이지이면 /portfolio로 이동(시홍)
                     else if (userPortfolio && !hasPortfolio && SpecificComponent.name==="UploadPortfolioPage") {

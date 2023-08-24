@@ -68,21 +68,40 @@ public class PortfolioService {
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         // User를 통해 User가 갖고 있는 포트폴리오 찾기
-        Portfolio portfolio = portfolioRepository.findByUser(user)
-                .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+        Optional<Portfolio> findPortfolio = portfolioRepository.findByUser(user);
 
         // PortfolioDto를 빌더를 통해 생성
-        PortfolioDto portfolioDto = PortfolioDto.builder()
-                .nickName(user.getNickName())
-                .email(user.getEmail())
-                .web(portfolio.getWeb())
-                .app(portfolio.getApp())
-                .game(portfolio.getGame())
-                .ai(portfolio.getAi())
-                .shortIntroduce(portfolio.getShortIntroduce())
-                .introduce(portfolio.getIntroduce())
-                .fileUrl(portfolio.getFileUrl())
-                .build();
+        PortfolioDto portfolioDto;
+
+        if (findPortfolio.isPresent()) {
+            // PortfolioDto를 빌더를 통해 생성
+            portfolioDto = PortfolioDto.builder()
+                    .isCreated(true)
+                    .nickName(user.getNickName())
+                    .email(user.getEmail())
+                    .web(findPortfolio.get().getWeb())
+                    .app(findPortfolio.get().getApp())
+                    .game(findPortfolio.get().getGame())
+                    .ai(findPortfolio.get().getAi())
+                    .shortIntroduce(findPortfolio.get().getShortIntroduce())
+                    .introduce(findPortfolio.get().getIntroduce())
+                    .fileUrl(findPortfolio.get().getFileUrl())
+                    .build();
+        }
+        else {
+            portfolioDto = PortfolioDto.builder()
+                    .isCreated(false)
+                    .nickName(user.getNickName())
+                    .email(user.getEmail())
+                    .web(null)
+                    .app(null)
+                    .game(null)
+                    .ai(null)
+                    .shortIntroduce(null)
+                    .introduce(null)
+                    .fileUrl(null)
+                    .build();
+        }
 
         return portfolioDto;
     }
@@ -147,5 +166,20 @@ public class PortfolioService {
         portfolio.setFileUrl(portfolioFormDto.getFileUrl());
 
         portfolioRepository.save(portfolio);
+    }
+
+
+    // 포트폴리오 삭제
+    @EntityGraph(attributePaths = "user")
+    public void deletePortfolio(String userEmail) {
+        // userEmail로 user 찾기
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
+
+        // User를 통해 User가 갖고 있는 포트폴리오 찾기
+        Portfolio portfolio = portfolioRepository.findByUser(user)
+                .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        portfolioRepository.delete(portfolio);
     }
 }

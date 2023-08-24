@@ -40,48 +40,19 @@ function MyPage() {
     };
 
     const updateInfo = (updatedData) => {
-        if (updatedData.nickName && updatedData.userName && updatedData.password) {
-            request('PUT', '/updateUserInfo', updatedData) // Adjust the endpoint and data accordingly
-            .then((response) => {
-                if(response.data === "User information has been successfully updated.")
-                {
-                    // Handle success, e.g., show a success message
-                    alert('정보가 업데이트되었습니다.');
-                    setData((prevData) => ({ ...prevData, ...updatedData, password: '' })); // Update password to empty string
-                    navigate('/myPage');
-                }
-
-                else
-                {
-                    // Handle other response scenarios
-                    console.error('Unknown response:', response.data);
-                    message.error('정보 업데이트에 실패했습니다.');
-                }
+        request('PUT', '/updateUserInfo', updatedData) // Adjust the endpoint and data accordingly
+        .then((response) => {
+            // Handle success, e.g., show a success message
+            alert('정보가 업데이트되었습니다.');
+            setData((prevData) => ({ ...prevData, ...updatedData, password: '' })); // Update password to empty string
             
-                }) 
-            .catch((error) => {
-                if (error.response && error.response.data) {
-                    const errorMessage = error.response.data;
-    
-                    if (errorMessage === "Passwords do not match") {
-                        message.warning('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요.');
-
-                    } else if (errorMessage === "Nickname already in use") {
-                        message.error('닉네임이 이미 사용 중입니다. 다른 닉네임을 선택하세요.');
-
-                    } else {
-                        message.error('정보 업데이트에 실패했습니다.');
-                    }
-                } else {
-                    // Handle other errors or network issues
-                    console.error('Error updating information:', error);
-                    message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
-                }
-            });
-        } else {
-            // Handle the case where required fields are not filled
-            message.warning('모든 필수 정보를 입력하세요.');
-        }
+            navigate('/myPage');
+        })
+        .catch((error) => {
+            // Handle error, e.g., display an error message
+            console.error("Error updating information:", error);
+            message.warning('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요');
+        });
     };
 
     // filedName : nickName, userName, password
@@ -111,10 +82,7 @@ function MyPage() {
     }
 
     return (
-        <div>
-            
-            <div>
-               
+        <div>      
             <div>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <div style={{ width: '25%' }}>
@@ -188,7 +156,6 @@ function MyPage() {
                     </div>
                 </div>
             </div>
-            </div>
             <div>
                 <Row justify="center" style={{ marginTop: '20px' }}>
                     <Col xs={24} sm={16} md={12} lg={8}>
@@ -209,9 +176,7 @@ function MyPage() {
                         </Card>
                     </Col>
                 </Row>
-            </div>     
-
-            
+            </div>         
         </div>
     );
     

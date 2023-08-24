@@ -34,15 +34,12 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null)
                     if (option === false) {
                         navigate('/')
                     }
-                    
-                    // userRole === 'USER'인 사람 중, 포트폴리오가 있어야만 들어갈 수 있는 페이지인데 , 포트폴리오가 없으면(윤식)
 
                     //user인데, 로그인이 되어있고, 포폴이 없는데, 포폴이 있어야만 접근 가능한 루트이고, 그 컴포넌트가 update또는 delete페이지이면 /portfolio로 이동(시홍)
                     else if ((!userPortfolio && hasPortfolio && SpecificComponent.name==="UpdatePortfolioPage")
                                 || (!userPortfolio && hasPortfolio && SpecificComponent.name==="DeletePortfolioPage")) {
                         navigate('/portfolio')
                     }
-                    // userRole === 'USER'인 사람 중, 포트폴리오가 없어야 들어갈 수 있는 페이지인데, 포트폴리오가 있으면(윤식)
 
                     //user인데, 로그인이 되어있고, 포폴이 있는데, 포폴이 없어야만 접근 가능한 루트이고, 그 컴포넌트가 upload페이지이면 /portfolio로 이동(시홍)
                     else if (userPortfolio && !hasPortfolio && SpecificComponent.name==="UploadPortfolioPage") {

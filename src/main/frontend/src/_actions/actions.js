@@ -31,8 +31,8 @@ export const logout = () => {
 // 포트폴리오 작성 시 호출되는 액션 생성
 export const uploadPortfolioSuccess = (isCreated) => {
     return {
-        type: 'UPLOAD_PORTFOLIO_SUCCESS',
-        payload: { isCreated }
+        type: 'UPLOAD_PORTFOLIO_SUCCESS',   // type의 이름
+        payload: { isCreated }              // 인자로 받아온 isCreated를 payload로 설정
     };
 }
 

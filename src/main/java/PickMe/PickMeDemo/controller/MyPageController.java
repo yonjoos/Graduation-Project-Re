@@ -3,6 +3,7 @@ package PickMe.PickMeDemo.controller;
 import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
 import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,21 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
+@RequiredArgsConstructor
 public class MyPageController {
 
     private final UserService userService;
-
-    public MyPageController(UserService userService) {
-        this.userService = userService;
-    }
 
     //유저 정보 가져오기 관련
     @GetMapping("/userInfo")
     public ResponseEntity<UserDto> userInfo(Principal principal) {
         String userEmail = principal.getName(); // Get the email from the JWT token
-        //api시 해당 회원의 이메일을 알아와서
-        //email기반으로 쿼리를 날리면 됨
-
 
         //System.out.println(userEmail);
         //UserDto userDto=(UserDto) principal;

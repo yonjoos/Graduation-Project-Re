@@ -41,7 +41,7 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
     @Size(max = 100)
     private String userName; //회원의 이름
 
-    @Column(name = "nick_name", nullable = false)
+    @Column(name = "nick_name", nullable = false, unique = true)
     @Size(max = 100)
     private String nickName; //회원의 닉네임
 

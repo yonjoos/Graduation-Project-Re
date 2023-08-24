@@ -148,4 +148,19 @@ public class PortfolioService {
 
         portfolioRepository.save(portfolio);
     }
+
+
+    // 포트폴리오 삭제
+    @EntityGraph(attributePaths = "user")
+    public void deletePortfolio(String userEmail) {
+        // userEmail로 user 찾기
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
+
+        // User를 통해 User가 갖고 있는 포트폴리오 찾기
+        Portfolio portfolio = portfolioRepository.findByUser(user)
+                .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        portfolioRepository.delete(portfolio);
+    }
 }

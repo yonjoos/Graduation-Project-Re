@@ -51,11 +51,13 @@ const authReducer = (state = initialState, action) => {
                 ...state,               // 기존 상태는 그대로 가져오되,
                 userPortfolio: true     // userPortfolio의 상태를 true로 변경한다.
             };
-        
-
-
         // 포트폴리오 삭제 케이스 만들기.
         // 포트폴리오 삭제되면 userPortfolio: false로 바꾸기
+        case 'DELETE_PORTFOLIO_SUCCESS':
+            return {
+                ...state,
+                userPortfolio: false
+            }
         default:
             return state;
     }

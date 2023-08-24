@@ -37,4 +37,13 @@ export const uploadPortfolioSuccess = (isCreated) => {
 }
 
 
+
+// 포트폴리오 삭제 시 호출되는 액션 생성
+export const deletePortfolioSuccess = () => {
+    return {
+        type: 'DELETE_PORTFOLIO_SUCCESS',   // type의 이름
+    };
+}
+
+
 //이렇게 정의된 액션 생성자 함수들은 리덕스 액션 객체를 반환하며, 이들 액션은 리듀서 함수를 통해 상태의 변화를 관리합니다. 이를 통해 로그인 상태와 로그아웃 상태를 효과적으로 관리할 수 있습니다.

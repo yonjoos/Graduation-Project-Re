@@ -63,7 +63,7 @@ public class PortfolioController {
 
     // 포트폴리오 수정
     @PutMapping("/updatePortfolio")
-    public ResponseEntity<String> updateUserInfo(@RequestBody PortfolioFormDto portfolioFormDto, Principal principal) {
+    public ResponseEntity<String> updatePortfolioInfo(@RequestBody PortfolioFormDto portfolioFormDto, Principal principal) {
         String userEmail = principal.getName();
 
         try {
@@ -73,6 +73,22 @@ public class PortfolioController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update portfolio information.");
+        }
+    }
+
+
+    // 포트폴리오 삭제
+    @PostMapping("/deletePortfolio")
+    public ResponseEntity<String> deletePortfolioInfo(@RequestBody PortfolioFormDto portfolioFormDto, Principal principal) {
+        String userEmail = principal.getName(); // Get the email from the JWT token!
+
+        try {
+            // Call a method in your userService to handle the user withdrawal logic
+            portfolioService.deletePortfolio(userEmail);
+            return ResponseEntity.ok("Portfolio has been successfully withdrawn.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to withdraw portfolio.");
         }
     }
 }

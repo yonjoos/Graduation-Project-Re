@@ -37,48 +37,19 @@ function MyPage() {
     };
 
     const updateInfo = (updatedData) => {
-        if (updatedData.nickName && updatedData.userName && updatedData.password) {
-            request('PUT', '/updateUserInfo', updatedData) // Adjust the endpoint and data accordingly
-            .then((response) => {
-                if(response.data === "User information has been successfully updated.")
-                {
-                    // Handle success, e.g., show a success message
-                    alert('정보가 업데이트되었습니다.');
-                    setData((prevData) => ({ ...prevData, ...updatedData, password: '' })); // Update password to empty string
-                    navigate('/myPage');
-                }
-
-                else
-                {
-                    // Handle other response scenarios
-                    console.error('Unknown response:', response.data);
-                    message.error('정보 업데이트에 실패했습니다.');
-                }
+        request('PUT', '/updateUserInfo', updatedData) // Adjust the endpoint and data accordingly
+        .then((response) => {
+            // Handle success, e.g., show a success message
+            alert('정보가 업데이트되었습니다.');
+            setData((prevData) => ({ ...prevData, ...updatedData, password: '' })); // Update password to empty string
             
-                }) 
-            .catch((error) => {
-                if (error.response && error.response.data) {
-                    const errorMessage = error.response.data;
-    
-                    if (errorMessage === "Passwords do not match") {
-                        message.warning('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요.');
-
-                    } else if (errorMessage === "Nickname already in use") {
-                        message.error('닉네임이 이미 사용 중입니다. 다른 닉네임을 선택하세요.');
-
-                    } else {
-                        message.error('정보 업데이트에 실패했습니다.');
-                    }
-                } else {
-                    // Handle other errors or network issues
-                    console.error('Error updating information:', error);
-                    message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
-                }
-            });
-        } else {
-            // Handle the case where required fields are not filled
-            message.warning('모든 필수 정보를 입력하세요.');
-        }
+            navigate('/myPage');
+        })
+        .catch((error) => {
+            // Handle error, e.g., display an error message
+            console.error("Error updating information:", error);
+            message.warning('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요');
+        });
     };
 
     // filedName : nickName, userName, password
@@ -147,48 +118,48 @@ function MyPage() {
                         {selectedOption === 'info' && (
                             <Card title="정보 수정" style={{ width: '100%' }}>
                                 {data && (
-                        <form>
-                            <div>
-                                <label>등록된 이메일 주소:</label>
-                                <input
-                                    type="email"
-                                    value={data.email}
-                                    readOnly
-                                    disabled // Prevent interaction with the field
-                                    style={{ backgroundColor: '#f0f0f0' }}
-                                />
-                            </div>
-                            <div>
-                                <label>닉네임:</label>
-                                <input
-                                    type="text"
-                                    value={data.nickName}
-                                    onChange={(e) => handleInputChange('nickName', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label>이름:</label>
-                                <input
-                                    type="text"
-                                    value={data.userName}
-                                    onChange={(e) => handleInputChange('userName', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label>패스워드:</label>
-                                <input
-                                    type="password"
-                                    value={data.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
-                                    onChange={(e) => handleInputChange('password', e.target.value)}
-                                />
-                            </div>
-                            
-                            <Button type="primary" onClick={() => updateInfo(data)}
-                                    disabled={!isUpdateButtonEnabled}>
-                                정보 업데이트
-                            </Button>
-                        </form>
-                    )}
+                                    <form>
+                                        <div>
+                                            <label>등록된 이메일 주소:</label>
+                                            <input
+                                                type="email"
+                                                value={data.email}
+                                                readOnly
+                                                disabled // Prevent interaction with the field
+                                                style={{ backgroundColor: '#f0f0f0' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label>닉네임:</label>
+                                            <input
+                                                type="text"
+                                                value={data.nickName}
+                                                onChange={(e) => handleInputChange('nickName', e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label>이름:</label>
+                                            <input
+                                                type="text"
+                                                value={data.userName}
+                                                onChange={(e) => handleInputChange('userName', e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label>패스워드:</label>
+                                            <input
+                                                type="password"
+                                                value={data.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
+                                                onChange={(e) => handleInputChange('password', e.target.value)}
+                                            />
+                                        </div>
+                                        
+                                        <Button type="primary" onClick={() => updateInfo(data)}
+                                                disabled={!isUpdateButtonEnabled}>
+                                            정보 업데이트
+                                        </Button>
+                                    </form>
+                                )}
                             </Card>
                         )}
                         {selectedOption === 'password' && (

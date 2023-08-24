@@ -12,6 +12,8 @@ import MyPage from './views/MyPage/MyPage';
 import ScrapPage from './views/ScrapPage/ScrapPage';
 import PortfolioPage from './views/PortfolioPage/PortfolioPage';
 import UploadPortfolioPage from './views/PortfolioPage/UploadPortfolioPage/UploadPortfolioPage'
+import UpdatePortfolioPage from './views/PortfolioPage/UpdatePortfolioPage/UpdatePortfolioPage';
+import DeletePortfolioPage from './views/PortfolioPage/DeletePortfolioPage/DeletePortfolioPage';
 import GroupPage from './views/GroupPage/GroupPage';
 import LandingPage from './views/LandingPage/LandingPage';
 import LoginPage from './views/LoginPage/LoginPage';
@@ -64,6 +66,10 @@ function App() {
                              * Auth(페이지명, true, null, true) -> 유저(USER) 중 포트폴리오가 이미 작성된 사람은 들어갈 수 없는 페이지
                              * => 포트폴리오를 작성한 사람은 해당 Endpointer로 접근 불가
                              * 
+                             * Auth(페이지명, true, null, false) -> 유저(USER) 중 포트폴리오가 없는 사람은 들어갈 수 없는 페이지
+                             * => 포트폴리오를 작성하지 않은 사람은 해당 Endpointer로 접근 불가
+                             * 
+                             * 
                              * 
                              * 
                              * Auth(페이지명, null)인 페이지는 모든 사용자가 접근 가능하다.
@@ -80,6 +86,10 @@ function App() {
                              * 
                              * Auth(페이지명, true, null, true)인 페이지는 로그인한 유저 중 포트폴리오가 이미 작성된 사람은 들어갈 수 없다.
                              * 따라서 오직 포트폴리오를 작성하지 않은 유저만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
+                             * 
+                             * Auth(페이지명, true, null, false)인 페이지는 로그인한 유저 중 포트폴리오가 없는 사람은 들어갈 수 없다.
+                             * 따라서 오직 포트폴리오를 작성한 유저만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
+                             * 
                              */
                         }
                         <Route
@@ -112,6 +122,16 @@ function App() {
                             path="/portfolio/upload"
                             // User 중, Portfolio가 이미 작성되어있는 사람은 접근할 수 없는 페이지
                             element={Auth(UploadPortfolioPage, true, null, true)}
+                        />
+                        <Route
+                            path="/portfolio/update"
+                            // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
+                            element={Auth(UpdatePortfolioPage, true, null, false)}
+                        />
+                        <Route
+                            path="/portfolio/delete"
+                            // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
+                            element={Auth(DeletePortfolioPage, true, null, false)}
                         />
                         <Route
                             path="/group"

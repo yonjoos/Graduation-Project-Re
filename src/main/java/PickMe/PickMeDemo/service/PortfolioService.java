@@ -60,7 +60,7 @@ public class PortfolioService {
 
 
 
-    // 포트폴리오 조회
+    // 포트폴리오 전체 조회
     @EntityGraph(attributePaths = "user")
     public PortfolioDto getPortfolio(String userEmail) {
         // UserEmail을 통해 해당 User 찾기
@@ -87,6 +87,33 @@ public class PortfolioService {
         return portfolioDto;
     }
 
+
+    // 포트폴리오 폼 조회
+    @EntityGraph(attributePaths = "user")
+    public PortfolioFormDto getPortfolioForm(String userEmail) {
+        // UserEmail을 통해 해당 User 찾기
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // User를 통해 User가 갖고 있는 포트폴리오 찾기
+        Portfolio portfolio = portfolioRepository.findByUser(user)
+                .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // PortfolioDto를 빌더를 통해 생성
+        PortfolioFormDto portfolioFormDto = PortfolioFormDto.builder()
+                .web(portfolio.getWeb())
+                .app(portfolio.getApp())
+                .game(portfolio.getGame())
+                .ai(portfolio.getAi())
+                .shortIntroduce(portfolio.getShortIntroduce())
+                .introduce(portfolio.getIntroduce())
+                .fileUrl(portfolio.getFileUrl())
+                .build();
+
+        return portfolioFormDto;
+    }
+
+
     // Optional을 사용하여, portfolio를 찾았으면 true를 리턴, 찾지 못했으면 false를 리턴
     public boolean hasPortfolio(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
@@ -96,5 +123,29 @@ public class PortfolioService {
 
         // 해당 유저의 포트폴리오가 존재하면 true, 존재하지 않으면 false
         return portfolioOptional.isPresent();
+    }
+
+
+    // 포트폴리오 업데이트
+    @EntityGraph(attributePaths = "user")
+    public void updatePortfolio(String userEmail, PortfolioFormDto portfolioFormDto) {
+
+        // UserEmail을 통해 해당 User 찾기
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // User를 통해 User가 갖고 있는 포트폴리오 찾기
+        Portfolio portfolio = portfolioRepository.findByUser(user)
+                .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        portfolio.setWeb(portfolioFormDto.getWeb());
+        portfolio.setApp(portfolioFormDto.getApp());
+        portfolio.setGame(portfolioFormDto.getGame());
+        portfolio.setAi(portfolioFormDto.getAi());
+        portfolio.setShortIntroduce(portfolioFormDto.getShortIntroduce());
+        portfolio.setIntroduce(portfolioFormDto.getIntroduce());
+        portfolio.setFileUrl(portfolioFormDto.getFileUrl());
+
+        portfolioRepository.save(portfolio);
     }
 }

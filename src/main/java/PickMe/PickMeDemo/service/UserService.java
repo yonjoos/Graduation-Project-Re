@@ -4,10 +4,12 @@ import PickMe.PickMeDemo.dto.CredentialsDto;
 import PickMe.PickMeDemo.dto.SignUpDto;
 import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
 import PickMe.PickMeDemo.dto.UserDto;
+import PickMe.PickMeDemo.entity.Portfolio;
 import PickMe.PickMeDemo.entity.Role;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.mapper.UserMapper;
+import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PortfolioRepository portfolioRepository;
     private final PasswordEncoder passwordEncoder;  // PasswordEncoder를 사용하여 비밀번호가 일반 텍스트로 저장되는 것을 방지하지만 해싱된 비밀번호는 읽을 수 없음.
     private final UserMapper userMapper;
 
@@ -84,15 +87,23 @@ public class UserService {
     }
 
 
-    @Transactional
     public void signOut(String userEmail) {
         // userEmail로 user 찾기
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
 
-//        user.setActive(false); // Assuming you have an 'active' field in your User entity
+        // 회원의 포트폴리오 찾기
+        Portfolio portfolio = user.getPortfolio();
+
+        if (portfolio != null) {
+            // 포트폴리오가 존재하면, 포트폴리오 먼저 삭제
+            portfolioRepository.delete(portfolio);
+        }
+
+        // 회원 삭제
         userRepository.delete(user);
     }
+
 
     @Transactional
     public void updateUserBaseInfo(String userEmail, UserBaseInfoUpdateDto updateDto) {

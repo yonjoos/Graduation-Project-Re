@@ -63,11 +63,11 @@ function App() {
                              * Auth(페이지명, null, true) -> 관리자(ADMIN)만 들어갈 수 있는 페이지
                              * => 로그아웃 유저 및 일반 유저는 해당 EndPointer로 접근 불가. 관리자만 해당 Endpointer로 접근 가능
                              * 
-                             * Auth(페이지명, true, null, true) -> 유저(USER) 중 포트폴리오가 이미 작성된 사람은 들어갈 수 없는 페이지
-                             * => 포트폴리오를 작성한 사람은 해당 Endpointer로 접근 불가
-                             * 
-                             * Auth(페이지명, true, null, false) -> 유저(USER) 중 포트폴리오가 없는 사람은 들어갈 수 없는 페이지
+                             * Auth(페이지명, true, null, true) -> 유저(USER) 중 포트폴리오가 이미 작성된 사람이어야 들어갈 수 있는 페이지
                              * => 포트폴리오를 작성하지 않은 사람은 해당 Endpointer로 접근 불가
+                             * 
+                             * Auth(페이지명, true, null, false) -> 유저(USER) 중 포트폴리오가 없는 사람이어야 들어갈 수 있는 페이지
+                             * => 포트폴리오를 작성한 사람은 해당 Endpointer로 접근 불가
                              * 
                              * 
                              * 
@@ -84,11 +84,11 @@ function App() {
                              * Auth(페이지명, null, true)인 페이지는 관리자만 접근 가능하다.
                              * 따라서 경우를 나누지 않고 코딩한다.
                              * 
-                             * Auth(페이지명, true, null, true)인 페이지는 로그인한 유저 중 포트폴리오가 이미 작성된 사람은 들어갈 수 없다.
-                             * 따라서 오직 포트폴리오를 작성하지 않은 유저만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
+                             * Auth(페이지명, true, null, true)인 페이지는 로그인한 유저 중 포트폴리오가 이미 작성된 사람만 들어갈 수 있다.
+                             * 따라서 오직 포트폴리오를 작성하지 않은 유저는 접근 불가능하므로, 경우를 나누지 않고 코딩한다.
                              * 
-                             * Auth(페이지명, true, null, false)인 페이지는 로그인한 유저 중 포트폴리오가 없는 사람은 들어갈 수 없다.
-                             * 따라서 오직 포트폴리오를 작성한 유저만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
+                             * Auth(페이지명, true, null, false)인 페이지는 로그인한 유저 중 포트폴리오가 없는 사람만 들어갈 수 있다.
+                             * 따라서 오직 포트폴리오를 작성한 유저는 접근 불가능하므로, 경우를 나누지 않고 코딩한다.
                              * 
                              */
                         }
@@ -120,18 +120,19 @@ function App() {
                         <Route
                             // path 입력 시 / 빼먹는거 주의!! path="portfolio/upload" 아니라 path="/portfolio/upload"임!!
                             path="/portfolio/upload"
-                            // User 중, Portfolio가 이미 작성되어있는 사람은 접근할 수 없는 페이지
-                            element={Auth(UploadPortfolioPage, true, null, true)}
+                            // User 중, Portfolio가 이미 작성되어있는 사람은 접근할 수 없는 페이지 : 윤식 comment
+                            // 이쪽 해석할 때 option: true -> 로그인된 사람만 접근 가능한 페이지인가? adminRoute : true -> 관리자만 접근 가능한가?  hasPortfolio : true -> 포폴 있는 사람만 접근 가능한가? 로 해석 (시홍)
+                            element={Auth(UploadPortfolioPage, true, null, false)} //로그인 되어있고, 역할 상관없이, 포폴 없는 사람만 접근 가능한 페이지
                         />
                         <Route
                             path="/portfolio/update"
                             // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
-                            element={Auth(UpdatePortfolioPage, true, null, false)}
+                            element={Auth(UpdatePortfolioPage, true, null, true)} //로그인 되어있고, 역할 상관없이, 포폴 있는 사람만 접근 가능한 페이지(시홍)
                         />
                         <Route
                             path="/portfolio/delete"
                             // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
-                            element={Auth(DeletePortfolioPage, true, null, false)}
+                            element={Auth(DeletePortfolioPage, true, null, true)} //로그인 되어있고, 역할 상관없이, 포폴 있는 사람만 접근 가능한 페이지(시홍)
                         />
                         <Route
                             path="/group"

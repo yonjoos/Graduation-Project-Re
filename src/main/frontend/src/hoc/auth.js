@@ -16,20 +16,10 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null)
         const navigate = useNavigate();
 
         useEffect(() => {
-            console.log("===================================================");
-            console.log("useSelector");
-            console.log("---------------------------------------------------");
             console.log('isAuthenticated:', isAuthenticated);
             console.log('userRole:', userRole);
             console.log('userPortfolio:', userPortfolio);
             console.log('hasPortfolio:', hasPortfolio);
-            console.log("---------------------------------------------------");
-            console.log("getMethod");
-            console.log("---------------------------------------------------");
-            console.log('getAuthToken:', getAuthToken);
-            console.log('getUserRole:', getUserRole);
-            console.log('getHasPortfolio:', getHasPortfolio);
-            console.log("===================================================");
 
             // 로그아웃 유저에 대해
             if (isAuthenticated === null || isAuthenticated === "null" || isAuthenticated === false) {
@@ -48,12 +38,15 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null)
                     if (option === false) {
                         navigate('/')
                     }
-                    // userRole === 'USER'인 사람 중, 포트폴리오를 작성한 사람은 접근할 수 없는 페이지
-                    else if (userPortfolio && hasPortfolio) {
+
+                    //user인데, 로그인이 되어있고, 포폴이 없는데, 포폴이 있어야만 접근 가능한 루트이고, 그 컴포넌트가 update또는 delete페이지이면 /portfolio로 이동(시홍)
+                    else if ((!userPortfolio && hasPortfolio && SpecificComponent.name==="UpdatePortfolioPage")
+                                || (!userPortfolio && hasPortfolio && SpecificComponent.name==="DeletePortfolioPage")) {
                         navigate('/portfolio')
                     }
-                    // userRole === 'USER'인 사람 중, 포트폴리오를 작성하지 않은 사람은 접근할 수 없는 페이지
-                    else if (!userPortfolio && !hasPortfolio) {
+
+                    //user인데, 로그인이 되어있고, 포폴이 있는데, 포폴이 없어야만 접근 가능한 루트이고, 그 컴포넌트가 upload페이지이면 /portfolio로 이동(시홍)
+                    else if (userPortfolio && !hasPortfolio && SpecificComponent.name==="UploadPortfolioPage") {
                         navigate('/portfolio')
                     }
                 }

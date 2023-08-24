@@ -1,12 +1,15 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Row, Col, Button, Menu, message } from 'antd';
+import { Card, Row, Col, Button, Menu, message, Form, Input } from 'antd';
 import { request } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
 import { setAuthHeader, setUserRole } from '../../../hoc/request';
+
+const { Item } = Form;
 function MyPage() {
+    
     const [data, setData] = useState(null); // 업데이트랑 기존 정보 받아올 때 둘 다 사용, 업데이트 할 때는 data에 비밀번호까지 실어서 보내고, 다시 effect로 getUserInfo할때는 userDto로 받음(비밀번호 필드 누락)
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -79,7 +82,80 @@ function MyPage() {
     }
 
     return (
-        <div>
+        <div>      
+            <div>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <div style={{ width: '25%' }}>
+                        <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
+                            <Menu.Item key="info">정보 수정</Menu.Item>
+                            <Menu.Item key="password">비밀번호 변경</Menu.Item>
+                            <Menu.Item key="withdrawal">회원 탈퇴</Menu.Item>
+                        </Menu>
+                    </div>
+                    <div style={{ width: '75%' }}>
+                        {selectedOption === 'info' && (
+                            <Card title="정보 수정" style={{ width: '100%' }}>
+                                {data && (
+                        <Form>
+                            <div>
+                                <Item label = "등록된 이메일 주소">
+                                    <Input
+                                        type="email"
+                                        value={data.email}
+                                        readOnly
+                                        disabled // Prevent interaction with the field
+                                        style={{ backgroundColor: '#f0f0f0' }}/>
+                                </Item>
+                            </div>
+                            <div>
+                                <Item label = "닉네임">
+                                    <Input
+                                        type="text"
+                                        value={data.nickName}
+                                        onChange={(e) => handleInputChange('nickName', e.target.value)}/>
+                                </Item>
+                            </div>
+                            <div>
+                                <Item label = "이름">
+                                    <Input
+                                        type="text"
+                                        value={data.userName}
+                                        onChange={(e) => handleInputChange('userName', e.target.value)}/>
+                                </Item>
+                            </div>
+                            <div>
+                                <Item label = "패스워드">
+                                    <Input
+                                        type="password"
+                                        value={data.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
+                                        onChange={(e) => handleInputChange('password', e.target.value)}/>
+                                </Item>
+                            </div>
+                            
+                            <Button type="primary" onClick={() => updateInfo(data)}
+                                    disabled={!isUpdateButtonEnabled}>
+                                정보 업데이트
+                            </Button>
+                        </Form>
+                    )}
+                            </Card>
+                        )}
+                        {selectedOption === 'password' && (
+                            <Card title="비밀번호 변경" style={{ width: '100%' }}>
+                                {/* Render your password change form here */}
+                            </Card>
+                        )}
+                        {selectedOption === 'withdrawal' && (
+                            <Card title="회원 탈퇴" style={{ width: '100%' }}>
+                                {/* Render your membership withdrawal form here */}
+                                <Button type="primary" onClick={onClickHandler}>
+                                탈퇴하기
+                                </Button>
+                            </Card>
+                        )}
+                    </div>
+                </div>
+            </div>
             <div>
                 <Row justify="center" style={{ marginTop: '20px' }}>
                     <Col xs={24} sm={16} md={12} lg={8}>
@@ -100,87 +176,7 @@ function MyPage() {
                         </Card>
                     </Col>
                 </Row>
-            </div>     
-            <div>
-                <h2>
-                    This is a My Page
-                </h2>
-            <div>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <div style={{ width: '25%' }}>
-                        <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
-                            <Menu.Item key="info">정보 수정</Menu.Item>
-                            <Menu.Item key="password">비밀번호 변경</Menu.Item>
-                            <Menu.Item key="withdrawal">회원 탈퇴</Menu.Item>
-                        </Menu>
-                    </div>
-                    <div style={{ width: '75%' }}>
-                        {selectedOption === 'info' && (
-                            <Card title="정보 수정" style={{ width: '100%' }}>
-                                {data && (
-                                    <form>
-                                        <div>
-                                            <label>등록된 이메일 주소:</label>
-                                            <input
-                                                type="email"
-                                                value={data.email}
-                                                readOnly
-                                                disabled // Prevent interaction with the field
-                                                style={{ backgroundColor: '#f0f0f0' }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label>닉네임:</label>
-                                            <input
-                                                type="text"
-                                                value={data.nickName}
-                                                onChange={(e) => handleInputChange('nickName', e.target.value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label>이름:</label>
-                                            <input
-                                                type="text"
-                                                value={data.userName}
-                                                onChange={(e) => handleInputChange('userName', e.target.value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label>패스워드:</label>
-                                            <input
-                                                type="password"
-                                                value={data.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
-                                                onChange={(e) => handleInputChange('password', e.target.value)}
-                                            />
-                                        </div>
-                                        
-                                        <Button type="primary" onClick={() => updateInfo(data)}
-                                                disabled={!isUpdateButtonEnabled}>
-                                            정보 업데이트
-                                        </Button>
-                                    </form>
-                                )}
-                            </Card>
-                        )}
-                        {selectedOption === 'password' && (
-                            <Card title="비밀번호 변경" style={{ width: '100%' }}>
-                                {/* Render your password change form here */}
-                            </Card>
-                        )}
-                        {selectedOption === 'withdrawal' && (
-                            <Card title="회원 탈퇴" style={{ width: '100%' }}>
-                                {/* Render your membership withdrawal form here */}
-                                <Button type="primary" onClick={onClickHandler}>
-                                탈퇴하기
-                                </Button>
-                            </Card>
-                        )}
-                    </div>
-                </div>
-            </div>
-            </div>
-
-            
+            </div>         
         </div>
     );
     

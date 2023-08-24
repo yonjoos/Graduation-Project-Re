@@ -93,13 +93,13 @@ public class PortfolioService {
                     .isCreated(false)
                     .nickName(user.getNickName())
                     .email(user.getEmail())
-                    .web(findPortfolio.get().getWeb())
-                    .app(findPortfolio.get().getApp())
-                    .game(findPortfolio.get().getGame())
-                    .ai(findPortfolio.get().getAi())
-                    .shortIntroduce(findPortfolio.get().getShortIntroduce())
-                    .introduce(findPortfolio.get().getIntroduce())
-                    .fileUrl(findPortfolio.get().getFileUrl())
+                    .web(null)
+                    .app(null)
+                    .game(null)
+                    .ai(null)
+                    .shortIntroduce(null)
+                    .introduce(null)
+                    .fileUrl(null)
                     .build();
         }
 

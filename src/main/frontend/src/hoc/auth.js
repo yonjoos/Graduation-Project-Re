@@ -38,10 +38,10 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = false
                     if (userPortfolio && hasPortfolio) {
                         navigate('/portfolio')
                     }
-                    // // userRole === 'USER'인 사람 중, 포트폴리오를 작성하지 않은 사람은 접근할 수 없는 페이지
-                    // else if (!userPortfolio && hasPortfolio) {
-                    //     navigate('/portfolio')
-                    // }
+                    // userRole === 'USER'인 사람 중, 포트폴리오를 작성하지 않은 사람은 접근할 수 없는 페이지
+                    if (!userPortfolio && !hasPortfolio) {
+                        navigate('/portfolio')
+                    }
                 }
             }
         }, [isAuthenticated, navigate, userRole, userPortfolio])

@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@RequiredArgsConstructor
+
 @RestController
+@RequiredArgsConstructor
 public class PortfolioController {
 
     // portfolio controller가 user service에 의존하게 된다는 문제..

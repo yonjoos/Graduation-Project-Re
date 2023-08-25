@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Row, Col, Button } from 'antd';
 import { request } from '../../../hoc/request';
+import Search from '../../utils/Search';
 
 function StudyPage() {
     const [data, setData] = useState([]);
     const navigate = useNavigate();
 
     const onClickHandler = () => {
-      navigate('/uploadPost');
+      navigate('/study/upload');
     }
 
     useEffect(() => {
@@ -26,34 +27,24 @@ function StudyPage() {
 
     return (
         <div>
-            <div>
-                <Row justify="center" style={{ marginTop: '20px' }}>
-                    <Col xs={24} sm={16} md={12} lg={8}>
-                        <Card title="Backend Response in Study Page" style={{ width: '100%' }}>
-                            <p>Content:</p>
-                            <ul>
-                                {data.map((line, index) => (
-                                    <li key={index}>{line}</li>
-                                ))}
-                            </ul>
-                        </Card>
-                    </Col>
-                </Row>
-            </div>
-
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-
-            {/** justifyContent: 'center'를 적용시키려면 display: 'flex'가 함께 있어야 한다. */}
-            <div style = {{ display: 'flex', justifyContent: 'center', }}> 
-                <Button type="primary" onClick={onClickHandler}>
-                    Upload Post
-                </Button>
-            </div>
+            <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                <Col xs={24} sm={16} md={12} lg={8}>
+                    <Card title="Backend Response in Study Page" style={{ width: '100%' }}>
+                        <p>Content:</p>
+                        <ul>
+                            {data.map((line, index) => (
+                                <li key={index}>{line}</li>
+                            ))}
+                        </ul>
+                    </Card>
+                </Col>
+                <Search/>
+                <Col>
+                    <Button type="primary" onClick={onClickHandler}>
+                        Upload Study
+                    </Button>
+                </Col>
+            </Row>
         </div>
     );
 }

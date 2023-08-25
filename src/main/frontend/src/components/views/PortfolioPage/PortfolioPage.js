@@ -46,65 +46,62 @@ function PortfolioPage() {
 
     return (
         <div>
-            {/** 포트폴리오가 없는 사람에게는 업로드 버튼만 보이게 */}
+            {/* 포트폴리오가 없는 사람에게는 업로드 버튼만 보이게 */}
             {!userPortfolio && (
-            <div>
-                <h2>
-                    This page is for users who don't have a portfolio.
-                </h2>
-                <br/>
-                <br/>
-                <div style={{ display : 'flex', justifyContent : 'center'}}>
-                    <Button type="primary" onClick={onClickUploadHandler}>
-                        포트폴리오 업로드
-                    </Button>
-                </div>
-            </div>)}
-
-
-
-            {/** 포트폴리오가 있는 사람에게는 업데이트, 삭제 버튼이 보이게 */}
-            {userPortfolio && (
                 <div>
-                    <h2>
-                        This page is for users with a portfolio.
-                    </h2>
-                    <div>
-                        <Row justify="center" style={{ marginTop: '20px' }}>
-                            <Col xs={24} sm={16} md={12} lg={8}>
-                                <Card title="저장된 포트폴리오 정보 백엔드에서 가져오기" style={{ width: '100%' }}>
-                                    {data && (
-                                        <ul>
-                                            <li><strong>Nick Name:</strong> {data.nickName}</li>
-                                            <li><strong>Email:</strong> {data.email}</li>
-                                            <li><strong>Web:</strong> {data.web}</li>
-                                            <li><strong>App:</strong> {data.app}</li>
-                                            <li><strong>Game:</strong> {data.game}</li>
-                                            <li><strong>AI:</strong> {data.ai}</li>
-                                            <li><strong>ShortIntroduce:</strong> {data.shortIntroduce}</li>
-                                            <li><strong>Introduce:</strong> {data.introduce}</li>
-                                            <li><strong>FileUrl:</strong> {data.fileUrl}</li>
-                                            {/* Add other properties as needed */}
-                                        </ul>
-                                    )}
-                                </Card>
-                            </Col>
-                        </Row>
-                    </div>
-                    <br/>
-                    <br/>
-                    <div style={{ display: 'flex', justifyContent: 'center'}}>
-                        <Button type="primary" style={{ marginRight: '10px' }} onClick={onClickUpdateHandler}>
-                            포트폴리오 수정
-                        </Button>
-                        <Button type="primary" style={{ marginLeft: '10px' }} onClick={onClickDeleteHandler}>
-                            포트폴리오 삭제
-                        </Button>
-                    </div>
+                    <h2>This page is for users who don't have a portfolio.</h2>
+                    <br />
+                    <br />
+                    <Row justify="center">
+                        <Col>
+                            <Button type="primary" onClick={onClickUploadHandler}>
+                                포트폴리오 업로드
+                            </Button>
+                        </Col>
+                    </Row>
                 </div>
             )}
-    </div>
-    )
+
+            {/* 포트폴리오가 있는 사람에게는 업데이트, 삭제 버튼이 보이게 */}
+            {userPortfolio && (
+                <div>
+                    <h2>This page is for users with a portfolio.</h2>
+                    <Row gutter={[16, 16]} justify="center" style={{ marginTop: '20px' }}>
+                        <Col xs={24} sm={16} md={12} lg={8}>
+                            <Card title="저장된 포트폴리오 정보 백엔드에서 가져오기" style={{ width: '100%' }}>
+                                {data && (
+                                    <ul>
+                                        <li><strong>Nick Name:</strong> {data.nickName}</li>
+                                        <li><strong>Email:</strong> {data.email}</li>
+                                        <li><strong>Web:</strong> {data.web}</li>
+                                        <li><strong>App:</strong> {data.app}</li>
+                                        <li><strong>Game:</strong> {data.game}</li>
+                                        <li><strong>AI:</strong> {data.ai}</li>
+                                        <li><strong>ShortIntroduce:</strong> {data.shortIntroduce}</li>
+                                        <li><strong>Introduce:</strong> {data.introduce}</li>
+                                        <li><strong>FileUrl:</strong> {data.fileUrl}</li>
+                                        {/* Add other properties as needed */}
+                                    </ul>
+                                )}
+                            </Card>
+                        </Col>
+                    </Row>
+                    <br />
+                    <br />
+                    <Row justify="center">
+                        <Col>
+                            <Button type="primary" style={{ marginRight: '10px' }} onClick={onClickUpdateHandler}>
+                                포트폴리오 수정
+                            </Button>
+                            <Button type="primary" style={{ marginLeft: '10px' }} onClick={onClickDeleteHandler}>
+                                포트폴리오 삭제
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default PortfolioPage;

@@ -6,7 +6,7 @@ function RecommendationCard(props) {
   const navigate = useNavigate();
 
   const onClickHandler = () => {
-    navigate('/Recommendation')
+    navigate('/recommendation')
   }
 
   return (

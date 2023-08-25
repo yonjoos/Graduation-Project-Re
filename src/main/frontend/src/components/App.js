@@ -19,8 +19,9 @@ import LandingPage from './views/LandingPage/LandingPage';
 import LoginPage from './views/LoginPage/LoginPage';
 import RecommendationPage from './views/RecommendationPage/RecommendationPage';
 import ProjectPage from './views/ProjectPage/ProjectPage';
+import UploadProjectPage from './views/ProjectPage/UploadProjectPage/UploadProjectPage';
 import StudyPage from './views/StudyPage/StudyPage';
-import UploadPostPage from './views/UploadPostPage/UploadPostPage';
+import UploadStudyPage from './views/StudyPage/UploadStudyPage/UploadStudyPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
 /*import logo from '../logo.svg';
@@ -94,27 +95,22 @@ function App() {
                         }
                         <Route
                             path="/"
-                            // element={<LandingPage/>}
                             element={Auth(LandingPage, null)}
                         />
                         <Route
                             path="/adminPage"
-                            // element={<AdminPage/>}
                             element={Auth(AdminPage, null, true)}
                         />
                         <Route
                             path="/myPage"
-                            // element={<MyPage/>}
                             element={Auth(MyPage, true)}
                         />
                         <Route
                             path="/scrap"
-                            // element={<ScrapPage/>}
                             element={Auth(ScrapPage, true)}
                         />
                         <Route
                             path="/portfolio"
-                            // element={<PortfolioPage/>}
                             element={Auth(PortfolioPage, true)}
                         />
                         <Route
@@ -136,35 +132,32 @@ function App() {
                         />
                         <Route
                             path="/group"
-                            // element={<GroupPage/>}
                             element={Auth(GroupPage, true)}
                         />
                         <Route
                             path="/login"
-                            // element={<LoginPage/>}
                             element={Auth(LoginPage, false)}
                         />
                         <Route
-                            path="/Recommendation"
-                            // element={<RecommendationPage/>}
+                            path="/recommendation"
                             element={Auth(RecommendationPage, true)}
                         />
                         <Route
-                            path="/Project"
-                            // element={<ProjectPage/>}
+                            path="/project"
                             element={Auth(ProjectPage, true)}
                         />
                         <Route
-                            path="/Study"
-                            // element={<StudyPage/>}
+                            path="/project/upload"
+                            element={Auth(UploadProjectPage, true)}
+                        />
+                        <Route
+                            path="/study"
                             element={Auth(StudyPage, true)}
                         />
                         <Route
-                            path="/uploadPost"
-                            // element={<UploadPostPage/>}
-                            element={Auth(UploadPostPage, true)}
+                            path="/study/upload"
+                            element={Auth(UploadStudyPage, true)}
                         />
-                        
                     </Routes>
                     </div>
                 </Content>

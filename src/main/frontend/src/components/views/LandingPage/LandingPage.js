@@ -21,6 +21,16 @@ function LandingPage() {
         <div>
             {/* Conditional rendering based on authentication status */}
             {!isAuthenticated && ( //인증이 안된 아무나 볼 수 있는 컴포넌트
+                // Row, Col : 그리드(창의 크기에 맞춘 반응형)를 위해 사용되는 애.
+                
+                //  gutter : Row의 열 사이의 간격을 지정함.
+                // [가로, 세로]라는 두 개의 값을 갖는 배열임.
+                // gutter={[16, 16]}는 열 사이의 가로 및 세로 간격을 각각 16픽셀로 설정
+                // 즉, 세로로 따지면 <br/>을 사용하지 않고도, Col 간의 간격이 알아서 16px로 설정됨.
+
+                // span : Col 구성 요소가 확장되어야 하는 열 수를 지정함.
+                // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
+                // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
                         <WelcomeContent />

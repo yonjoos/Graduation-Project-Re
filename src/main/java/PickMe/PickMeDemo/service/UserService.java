@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 // 로그인 및 회원 등록을 처리
 public class UserService {
@@ -77,6 +78,7 @@ public class UserService {
     }
 
     //email로 레포지토리에서 찾고, userDto로 user를 매핑해서 반환
+
     public UserDto findByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
@@ -84,7 +86,6 @@ public class UserService {
     }
 
 
-    @Transactional
     public void signOut(String userEmail, String currentPasswordForSignOut) {
         // userEmail에 해당하는 user를 찾기
         User user = userRepository.findByEmail(userEmail)
@@ -110,7 +111,6 @@ public class UserService {
     }
 
 
-    @Transactional
     public void updateUserBaseInfo(String userEmail, UserBaseInfoUpdateDto updateDto) {
 
         // userEmail에 해당하는 user를 찾기
@@ -145,7 +145,7 @@ public class UserService {
         }
     }
 
-    @Transactional
+    
     public void updateUserPassword(String userEmail, String currentPassword, String password) {
         //userEmail에 해당하는 회원 찾기
         User user = userRepository.findByEmail(userEmail)

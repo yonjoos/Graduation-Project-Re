@@ -65,7 +65,7 @@ function PortfolioPage() {
         e.preventDefault();
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
         submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, fileUrl);
-        navigate('/');
+        navigate('/portfolio');
     };
 
 

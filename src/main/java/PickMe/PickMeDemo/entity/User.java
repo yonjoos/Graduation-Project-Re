@@ -26,7 +26,7 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
     private Portfolio portfolio; //회원의 포트폴리오 - 연관관계의 거울로 작용, 포트폴리오 table과 엮임(db필드에 안들어감)
 
     @OneToMany(mappedBy = "user")
-    private List<UserCreatedPosts> userCreatedPosts = new ArrayList<>(); //연관관계의 거울로 작용, 작성한 게시물 table과 엮임(db필드에 안들어감)
+    private List<Posts> posts = new ArrayList<>();  // 연관관계의 거울로 작용, 게시물 (Posts) table과 엮임(db필드에 안들어감)
 
     @OneToMany(mappedBy = "user")
     private List<Comments> comments = new ArrayList<>(); //연관관계의 거울로 작용, 게시물 댓글 table과 엮임(db필드에 안들어감)

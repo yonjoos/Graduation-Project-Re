@@ -21,8 +21,8 @@ import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 // 로그인 및 회원 등록을 처리
 public class UserService {
 

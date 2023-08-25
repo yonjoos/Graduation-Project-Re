@@ -6,7 +6,7 @@ function StudyCard(props) {
   const navigate = useNavigate();
 
   const onClickHandler = () => {
-    navigate('/Study')
+    navigate('/study')
   }
 
   return (

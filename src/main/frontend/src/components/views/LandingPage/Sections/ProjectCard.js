@@ -6,7 +6,7 @@ function ProjectCard(props) {
   const navigate = useNavigate();
 
   const onClickHandler = () => {
-    navigate('/Project')
+    navigate('/project')
   }
 
   return (

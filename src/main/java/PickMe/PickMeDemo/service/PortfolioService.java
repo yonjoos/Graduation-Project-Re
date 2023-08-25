@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import java.nio.CharBuffer;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;

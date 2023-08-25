@@ -15,17 +15,33 @@ function LoginPage() {
     const [nickName, setNickName] = useState('');   // 성
     const [email, setEmail] = useState('');         // 사용자명
     const [password, setPassword] = useState('');   // 비밀번호
+    const [nicknameAvailability, setNicknameAvailability] = useState(null); //닉네임 중복 여부
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
     const onChangeHandler = (event) => {
         const name = event.target.name;
         const value = event.target.value;
-        
+
         // 입력 필드마다 해당하는 state 변수를 업데이트
         if (name === 'userName') setUserName(value);
-        else if (name === 'nickName') setNickName(value);
+        else if (name === 'nickName') { //닉네임 필드를 입력할 때
+            setNickName(value); //현재 입력 값을 닉네임 변수에 세팅
+            setNicknameAvailability(null); //새로운 값을 입력할 떄는 닉네임 사용 가능 여부를 null로 초기화
+        }
         else if (name === 'email') setEmail(value);
         else if (name === 'password') setPassword(value);
+    };
+
+    // 중복 확인 버튼을 누르면 호출되는 이벤트 핸들러
+    const handleDuplicateCheck = () => {
+        request('GET', `/nicknameDuplicate?nickname=${nickName}`) //백엔드에 현재 입력받은 nickname을 가진 회원이 있는 지 찾고, 백엔드는 해당 닉네임으로 유저 생성 가능하면 available:true /불가능하면 available:false 반환
+            .then((response) => {
+                const isAvailable = response.data.available; 
+                setNicknameAvailability(isAvailable); //닉네임 사용 가능 여부 값을 상태변수에 저장
+            })
+            .catch((error) => {
+                alert("잠시 후 다시 시도해보세요.");
+            });
     };
 
 
@@ -49,25 +65,25 @@ function LoginPage() {
 
     const onLogin = (event, email, password) => {
         event.preventDefault();
-    
+
         request('POST', '/login', {
             email: email,
             password: password
         })
-        .then((response) => {
-            const { token, role, isCreated } = response.data;
-            dispatch(loginSuccess(token, role, isCreated)); // Dispatch login success action with role
-            setAuthHeader(token); // Set token in local storage
-            setUserRole(role);
-            setHasPortfolio(isCreated);
-            localStorage.setItem('localStorageCleared', 'true'); //로컬 스토리지가 비워졌다고 명시. F5문제를 위해 설정한 임시 방편
-            alert("로그인에 성공하였습니다.");
-        })
-        .catch((error) => {
-            alert("로그인에 실패하였습니다.");
-        });
+            .then((response) => {
+                const { token, role, isCreated } = response.data;
+                dispatch(loginSuccess(token, role, isCreated)); // Dispatch login success action with role
+                setAuthHeader(token); // Set token in local storage
+                setUserRole(role);
+                setHasPortfolio(isCreated);
+                localStorage.setItem('localStorageCleared', 'true'); //로컬 스토리지가 비워졌다고 명시. F5문제를 위해 설정한 임시 방편
+                alert("로그인에 성공하였습니다.");
+            })
+            .catch((error) => {
+                alert("로그인에 실패하였습니다.");
+            });
     };
-    
+
 
 
     // 회원가입 폼 제출 시 호출되는 이벤트 핸들러
@@ -80,6 +96,10 @@ function LoginPage() {
         }
         if (!nickName) {
             message.warning('닉네임을 입력해주세요.');
+            return;
+        }
+        if (nicknameAvailability === false) { //만약 닉네임 중복인 걸 아는데도 불구하고 회원가입 버튼을 누르는 경우
+            message.warning('이미 사용 중인 닉네임입니다. 닉네임 변경 후 다시 시도하세요.');
             return;
         }
         if (!email) {
@@ -117,6 +137,8 @@ function LoginPage() {
                 alert("회원가입에 실패하였습니다.");
             });
     };
+
+
 
 
     return (
@@ -157,12 +179,36 @@ function LoginPage() {
                                 />
                             </div>
                             <div className="form-outline mb-4">
-                                <Input
-                                    type="text"
-                                    name="nickName"
-                                    placeholder="Nick Name"
-                                    onChange={onChangeHandler}
-                                />
+                                <div style={{ display: "flex" }}>
+                                    <Input
+                                        type="text"
+                                        name="nickName"
+                                        placeholder="Nick Name"
+                                        onChange={onChangeHandler}
+                                    />
+                                    <Button onClick={handleDuplicateCheck}>닉네임 중복 확인</Button> 
+                                </div>
+                                {nicknameAvailability !== null && ( // 중복 확인 버튼 눌러서 중복 확인 여부를 알아왔을 때,
+                                    // 사용 가능한 닉네임인 경우 초록색으로 아래에 사용 가능하단 문구를 렌더링
+                                    // 사용 불가능한 닉네임인 경우 빨간색으로 아래에 사용 불가능하단 문구를 렌더링
+                                    // 빈 문자열로 중복확인 한 경우 빨간색으로 다시 입력하라는 문구를 렌더링
+                                    <div className={nicknameAvailability ? "verification-success" : "verification-failure"} style={{ color: (nickName === "" || !nicknameAvailability) ? "#ff4d4f" : "#00cc00" }}>
+                                        {(() => {
+                                            if (nickName === "") {
+                                                return "빈 문자열로는 닉네임을 생성할 수 없습니다. 다시 입력하세요"
+                                            }
+                                            else if (!nicknameAvailability) {
+                                                return "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요."
+                                            }
+                                            else {
+                                                return "사용 가능한 닉네임입니다!"
+                                            }
+                                        })()}
+
+                                    </div>
+
+
+                                )}
                             </div>
                             <div className="form-outline mb-4">
                                 <Input

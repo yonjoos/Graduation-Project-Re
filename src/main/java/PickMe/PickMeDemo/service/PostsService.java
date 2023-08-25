@@ -64,5 +64,8 @@ public class PostsService {
         categoryRepository.save(category);
     }
 
+
+    // get으로 데이터 가져올 경우, @Transactional(readOnly = true) 추가하기!!
+
 }
 

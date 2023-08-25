@@ -9,7 +9,7 @@ function UpdatePortfolioPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    // State variables to hold existing portfolio data
+    // 기존의 포트폴리오 데이터를 가져오고, 새로운 데이터를 입력할 수 있도록 하기 위한 useState
     const [existingShortIntroduce, setExistingShortIntroduce] = useState('');
     const [existingIntroduce, setExistingIntroduce] = useState('');
     const [existingFileUrl, setExistingFileUrl] = useState('');
@@ -109,22 +109,22 @@ function UpdatePortfolioPage() {
                 fileUrl: fileUrl
             });
 
-            dispatch(uploadPortfolioSuccess(response.data.isCreated)); // Dispatch login success action with role
-            setHasPortfolio(response.data.isCreated);
+            dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess 를 통해 디스패치
+            setHasPortfolio(response.data.isCreated);       // 로컬 스토리지에 isCreated 세팅
             alert('포트폴리오가 성공적으로 업데이트되었습니다.');
         } catch (error) {
             alert('포트폴리오 업데이트에 실패하였습니다.');
         }
     };
 
-    // Handle preference change similar to your PortfolioPage component
+    // 선호도 체크
     const handlePreferenceChange = (field, value) => {
-        // 0 selection is allowed and doesn't require checking for duplicates
+        // 0은 중복해서 선택할 수 있지만, 다른 값들은 중복해서 선택할 수 없도록 함
         if (value === 0 || !Object.values(existingPreferences).includes(value)) {
-            const newPreferences = { ...existingPreferences, [field]: value };
-            setExistingPreferences(newPreferences);
+            const newPreferences = { ...existingPreferences, [field]: value };      // 기존의 상태를 가져온 후, 필드에 값 세팅. ex) [Web] : 1
+            setExistingPreferences(newPreferences);     // 새롭게 변경된 상태를 로컬스토리지에 저장
         } else {
-            // Show a warning message if duplicate preference is selected
+            // 0 이외의 값을 중복 체크하면 warning 띄우기
             message.warning('Please select unique preferences for each field.');
         }
     };

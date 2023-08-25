@@ -13,11 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.CharBuffer;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PortfolioService {
 
@@ -61,6 +63,7 @@ public class PortfolioService {
 
 
     // 포트폴리오 전체 조회
+    @Transactional(readOnly = true)
     @EntityGraph(attributePaths = "user")
     public PortfolioDto getPortfolio(String userEmail) {
         // UserEmail을 통해 해당 User 찾기
@@ -108,6 +111,7 @@ public class PortfolioService {
 
 
     // 포트폴리오 폼 조회
+    @Transactional(readOnly = true)
     @EntityGraph(attributePaths = "user")
     public PortfolioFormDto getPortfolioForm(String userEmail) {
         // UserEmail을 통해 해당 User 찾기
@@ -134,6 +138,7 @@ public class PortfolioService {
 
 
     // Optional을 사용하여, portfolio를 찾았으면 true를 리턴, 찾지 못했으면 false를 리턴
+    @Transactional(readOnly = true)
     public boolean hasPortfolio(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));

@@ -1,5 +1,6 @@
-//index.js 파일은 React 애플리케이션의 찐 진입점으로, Redux 스토어를 사용하여 애플리케이션을 렌더링하는 코드
-//Redux의 Provider 컴포넌트는 앱의 최상위 컴포넌트를 감싸며, 스토어의 상태를 하위 컴포넌트에 전달하는 역할 수행
+// index.js 파일은 React 애플리케이션의 찐 진입점으로, Redux 스토어를 사용하여 애플리케이션을 렌더링하는 코드
+// Redux의 Provider 컴포넌트는 앱의 최상위 컴포넌트를 감싸며, 스토어의 상태를 하위 컴포넌트에 전달하는 역할 수행
+// localStorage : 웹 스토리지 중 하나로, 클라이언트 측에서 데이터를 저장하는 메커니즘을 제공
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';

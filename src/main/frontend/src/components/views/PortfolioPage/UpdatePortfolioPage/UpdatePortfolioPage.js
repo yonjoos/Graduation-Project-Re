@@ -133,7 +133,6 @@ function UpdatePortfolioPage() {
         <Row justify="center">
             <Col span={12}>
             {/* Existing input fields */}
-                {/* ... */}
                 <div className="form-outline mb-4">
                     <table>
                         <tbody>

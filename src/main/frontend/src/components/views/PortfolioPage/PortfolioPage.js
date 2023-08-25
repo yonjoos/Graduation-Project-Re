@@ -32,14 +32,17 @@ function PortfolioPage() {
             });
     }, [dispatch]);
 
+    // 포트폴리오 업로드 버튼 클릭 시 해당 엔드포인터로 이동
     const onClickUploadHandler = () => {
         navigate('/portfolio/upload');
     }
 
+    // 포트폴리오 업데이트 버튼 클릭 시 해당 엔드포인터로 이동
     const onClickUpdateHandler = () => {
         navigate('/portfolio/update');
     }
 
+    // 포트폴리오 삭제 버튼 클릭 시 해당 엔드포인터로 이동
     const onClickDeleteHandler = () => {
         navigate('/portfolio/delete');
     }

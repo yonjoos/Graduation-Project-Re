@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Row, Col, Tabs, Input, Button } from 'antd';
+import { Row, Col, Tabs, Input, Button, message } from 'antd';
 import { request, setAuthHeader, setHasPortfolio, setUserRole } from '../../../hoc/request';
 import { loginSuccess } from '../../../_actions/actions'
 
@@ -28,6 +28,25 @@ function LoginPage() {
         else if (name === 'password') setPassword(value);
     };
 
+
+
+    // 로그인 폼 제출 시 호출되는 이벤트 핸들러
+    const onSubmitLogin = (e) => {
+        e.preventDefault();
+
+        if (!email) {
+            message.warning('이메일을 입력해주세요.');
+            return;
+        }
+        if (!password) {
+            message.warning('비밀번호를 입력해주세요.');
+            return;
+        }
+
+        onLogin(e, email, password); // 부모 컴포넌트로부터 전달받은 onLogin 함수 호출
+        navigate('/');
+    };
+
     const onLogin = (event, email, password) => {
         event.preventDefault();
     
@@ -49,6 +68,33 @@ function LoginPage() {
         });
     };
     
+
+
+    // 회원가입 폼 제출 시 호출되는 이벤트 핸들러
+    const onSubmitRegister = (e) => {
+        e.preventDefault();
+
+        if (!userName) {
+            message.warning('이름을 입력해주세요.');
+            return;
+        }
+        if (!nickName) {
+            message.warning('닉네임을 입력해주세요.');
+            return;
+        }
+        if (!email) {
+            message.warning('이메일을 입력해주세요.');
+            return;
+        }
+        if (!password) {
+            message.warning('비밀번호를 설정해주세요.');
+            return;
+        }
+
+        // 부모 컴포넌트로부터 전달받은 onRegister 함수 호출
+        onRegister(e, userName, nickName, email, password);
+        navigate('/');
+    };
 
     // Login 컴포넌트 내에서 회원가입 액션을 처리하는 함수를 정의
     const onRegister = (event, userName, nickName, email, password) => {
@@ -72,20 +118,6 @@ function LoginPage() {
             });
     };
 
-    // 로그인 폼 제출 시 호출되는 이벤트 핸들러
-    const onSubmitLogin = (e) => {
-        e.preventDefault();
-        onLogin(e, email, password); // 부모 컴포넌트로부터 전달받은 onLogin 함수 호출
-        navigate('/');
-    };
-
-    // 회원가입 폼 제출 시 호출되는 이벤트 핸들러
-    const onSubmitRegister = (e) => {
-        e.preventDefault();
-        // 부모 컴포넌트로부터 전달받은 onRegister 함수 호출
-        onRegister(e, userName, nickName, email, password);
-        navigate('/');
-    };
 
     return (
         <Row justify="center">

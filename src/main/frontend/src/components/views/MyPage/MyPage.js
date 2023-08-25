@@ -1,7 +1,7 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Row, Col, Button, Menu, message, Form, Input } from 'antd';
+import { Card, Row, Col, Button, Menu, message, Form, Input, Modal } from 'antd';
 import { request } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
@@ -31,6 +31,8 @@ function MyPage() {
     //회원 탈퇴 관련
     const [currentPasswordForSignOut, setCurrentPasswordForSignOut] = useState(''); //기존 비밀번호를 입력하는 필드
     const [isSignOutButtonEnabled, setIsSignOutButtonEnabled] = useState(false); //기존 비밀번호를 입력하는 필드가 입력되어야 탈퇴하기 버튼이 활성화됨
+    const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false); // 정말로 삭제하시겠습니까? 라는 내용을 보여주는 모달 창을 보여줄지 말지 여부 설정
+
 
     // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅 -> userDto값이 세팅되어짐
     useEffect(() => {
@@ -204,6 +206,18 @@ function MyPage() {
             });
     }
 
+    // 확인 버튼을 누른 경우
+    const handleWithdrawConfirm = () => {
+        setIsWithdrawModalVisible(false); // Close the modal
+        onSignOutHandler(); // Call the function to perform account withdrawal
+    };
+    
+    // 취소 버튼을 누른 경우
+    const handleWithdrawCancel = () => {
+        setIsWithdrawModalVisible(false); // Close the modal
+    };
+    
+
     return (
         <div>
             <div>
@@ -323,13 +337,24 @@ function MyPage() {
                                         onChange={(e) => setCurrentPasswordForSignOut(e.target.value)}
                                     />
                                 </Item>
-                                {/* Render your membership withdrawal form here */}
+                                {/* 탈퇴 버튼 */}
                                 <Button
                                     type="primary"
-                                    onClick={onSignOutHandler}
+                                    onClick={() => setIsWithdrawModalVisible(true)}
                                     disabled={!isSignOutButtonEnabled}>
                                     탈퇴하기
                                 </Button>
+                                {/** Ok와 Cancel 함수가 크로스 되어 있음 */}
+                                <Modal
+                                    title="회원 탈퇴 확인"
+                                    open={isWithdrawModalVisible}
+                                    onOk={handleWithdrawCancel}
+                                    onCancel={handleWithdrawConfirm}
+                                    okText="아니오"
+                                    cancelText="네"
+                                >
+                                    <p>정말로 탈퇴하시겠습니까?</p>
+                                </Modal>
                             </Card>
                         )}
                     </div>

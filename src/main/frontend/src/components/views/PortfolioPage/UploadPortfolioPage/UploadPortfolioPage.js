@@ -10,7 +10,7 @@ function PortfolioPage() {
     const dispatch = useDispatch();
     
     // 포트폴리오 폼의 상태를 관리할 state 변수들
-    const [shortIntroduce, setShortIntroduce] = useState('login'); // 한 줄 소개
+    const [shortIntroduce, setShortIntroduce] = useState(''); // 한 줄 소개
     const [introduce, setIntoduce] = useState(''); // 소개 및 커리어
     const [fileUrl, setFileUrl] = useState('');   // 파일 경로
     const [preferences, setPreferences] = useState({    // 각 분야의 선호도
@@ -36,8 +36,8 @@ function PortfolioPage() {
     const handlePreferenceChange = (field, value) => {
         // 0 선택은 중복을 허용. 이외의 값들에 대해서는 중복을 허용하지 않음.
         if (value === 0 || !Object.values(preferences).includes(value)) {
-            const newPreferences = { ...preferences, [field]: value };
-            setPreferences(newPreferences);
+            const newPreferences = { ...preferences, [field]: value };  // ...을 통해 기존의 preferences 상태를 가져오고, field를 value값으로 세팅. ex) [web] = 1
+            setPreferences(newPreferences); // 새롭게 설정된 newPreferences를 Preferences로 세팅
         }
         else {
             // 중복된 값을 선택하면 경고 문구 띄움.
@@ -73,6 +73,7 @@ function PortfolioPage() {
     const submitPortfolio = (event, web, app, game, ai, shortIntroduce, introduce, fileUrl) => {
         event.preventDefault();
 
+        // body에 내용을 채워서 백에 전송
         request('POST', '/uploadPortfolio', {
             web: web,
             app: app,
@@ -83,8 +84,8 @@ function PortfolioPage() {
             fileUrl: fileUrl
         })
             .then((response) => {
-                dispatch(uploadPortfolioSuccess(response.data.isCreated)); // Dispatch login success action with role
-                setHasPortfolio(response.data.isCreated);
+                dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess을 디스패치
+                setHasPortfolio(response.data.isCreated);   // 포트폴리오 생성 상태를 로컬 스토리지에 세팅
                 alert('포트폴리오가 성공적으로 생성되었습니다.');
             })
             .catch((error) => {

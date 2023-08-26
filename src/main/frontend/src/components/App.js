@@ -19,8 +19,10 @@ import LandingPage from './views/LandingPage/LandingPage';
 import LoginPage from './views/LoginPage/LoginPage';
 import RecommendationPage from './views/RecommendationPage/RecommendationPage';
 import ProjectPage from './views/ProjectPage/ProjectPage';
+import DetailProjectPage from './views/ProjectPage/DetailProjectPage/DetailProjectPage';
 import UploadProjectPage from './views/ProjectPage/UploadProjectPage/UploadProjectPage';
 import StudyPage from './views/StudyPage/StudyPage';
+import DetailStudyPage from './views/StudyPage/DetailStudyPage/DetailStudyPage';
 import UploadStudyPage from './views/StudyPage/UploadStudyPage/UploadStudyPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
@@ -147,8 +149,16 @@ function App() {
                             element={Auth(ProjectPage, true)}
                         />
                         <Route
+                            path="/project/detail/:projectId"
+                            element={Auth(DetailProjectPage, true)}
+                        />
+                        <Route
                             path="/project/upload"
                             element={Auth(UploadProjectPage, true)}
+                        />
+                        <Route
+                            path="/study/detail/:studyId"
+                            element={Auth(DetailStudyPage, true)}
                         />
                         <Route
                             path="/study"

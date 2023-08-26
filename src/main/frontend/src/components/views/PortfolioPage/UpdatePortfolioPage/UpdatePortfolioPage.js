@@ -108,9 +108,6 @@ function UpdatePortfolioPage() {
                 introduce: introduce,
                 fileUrl: fileUrl
             });
-
-            dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess 를 통해 디스패치
-            setHasPortfolio(response.data.isCreated);       // 로컬 스토리지에 isCreated 세팅
             alert('포트폴리오가 성공적으로 업데이트되었습니다.');
         } catch (error) {
             alert('포트폴리오 업데이트에 실패하였습니다.');

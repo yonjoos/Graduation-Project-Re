@@ -40,9 +40,37 @@ public class InitialDataLoader implements CommandLineRunner {
                         .role(Role.USER)
                         .build();
 
+        // 초기 데이터 생성 및 저장(1)
+        User user1 = User.builder()
+                .userName("1")
+                .nickName("1")
+                .email("1")
+                .password(passwordEncoder.encode("1"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
 
+        // 초기 데이터 생성 및 저장(2)
+        User user2 = User.builder()
+                .userName("2")
+                .nickName("2")
+                .email("2")
+                .password(passwordEncoder.encode("2"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        // 초기 데이터 생성 및 저장(3)
+        User user3 = User.builder()
+                .userName("3")
+                .nickName("3")
+                .email("3")
+                .password(passwordEncoder.encode("3"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
 
         userRepository.save(adminUser);
         userRepository.save(generalUser);
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
     }
 }

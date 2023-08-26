@@ -8,11 +8,9 @@ import './ProjectPage.css';
 function ProjectPage() {
     const [data, setData] = useState([]); // data is changed by setData.
     const navigate = useNavigate();
-
-    const onClickHandler = () => {
-        navigate('/project/upload');
-    }
     
+    // useEffect의 마지막 []에 [data]를 넣어주어야, 업로드 완료 후에도 방금 업로드한 게시물이 바로 업데이트 되어 올라옴.
+    // 하지만, http://localhost:3000/project에 계속 머물러 있으면, 계속해서 백엔드에서 쿼리를 날린다는 문제가 발생함.
     useEffect(() => {
         request('GET', '/getProjectList', {})
             .then((response) => {
@@ -22,10 +20,18 @@ function ProjectPage() {
                 // Handle error, e.g., redirect to login or display an error message
                 console.error("Error fetching data:", error);
             });
-    }, [data]);
+    }, []);
 
 
-    // Function to format the date
+    const handleRowClick = (projectId) => {
+        navigate(`/project/detail/${projectId}`);
+    }
+
+    const onClickHandler = () => {
+        navigate('/project/upload');
+    }
+
+    // 2023826 -> 2023년 8월 26일 형식으로 변환
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -43,7 +49,7 @@ function ProjectPage() {
                     {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                     <Divider className="bold-divider" />
 
-                    <div>
+                    <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                         <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
                             <Col span={6}>
                                 <div style={{ borderRight: '1px' }}>

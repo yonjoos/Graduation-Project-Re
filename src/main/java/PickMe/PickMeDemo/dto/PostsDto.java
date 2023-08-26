@@ -6,19 +6,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostFormDto {
+public class PostsDto {
 
+    private Boolean writer;
+    private String nickName;
     private String title;
-    private List<String> postType; // Assuming postType is an array of strings
-    private Integer recruitmentCount;
-    private LocalDate endDate;
+    private Boolean web;
+    private Boolean app;
+    private Boolean game;
+    private Boolean ai;
     private String content;
     private String promoteImageUrl;
     private String fileUrl;
+    private Integer recruitmentCount;
+    private LocalDate endDate;
+
 }

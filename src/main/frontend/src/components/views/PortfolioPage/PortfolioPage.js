@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../_actions/actions';
 import { useState, useEffect } from 'react';
-import { Card, Row, Col, Button, Radio } from 'antd';
+import { Card, Row, Col, Button, Radio, Progress } from 'antd';
 import { request } from '../../../hoc/request';
 
 function PortfolioPage() {
@@ -59,6 +59,34 @@ function PortfolioPage() {
         </Radio.Group>
     );
 
+    // 선호도 그래프 관련
+    const renderPreferenceBar = (field) => {
+        const preferenceValue = data && existingPreferences[field];
+        return (
+            <div style={{ marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                    <div style={{ width: '100px', textAlign: 'left', marginRight: '10px' }}>{field}:</div>
+                    <Progress percent={preferenceValue * 25} showInfo={false} strokeColor={getBarColor(field)} />
+                </div>
+            </div>
+        );
+    };
+
+    // 선호도 그래프 관련
+    const getBarColor = (field) => {
+        if (field === "web") {
+            return '#FE708F';
+        } else if (field === "app") {
+            return '#f9f56e';
+        } else if (field === "game") {
+            return '#83edff';
+        } else {
+            return '#91e2c3';
+        }
+    };
+
+
+
 
     // 포트폴리오 업로드 버튼 클릭 시 해당 엔드포인터로 이동
     const onClickUploadHandler = () => {
@@ -102,36 +130,52 @@ function PortfolioPage() {
                     </div>
 
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
-                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '2px solid black' }}/>
+                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '2px solid black' }} />
 
                     <div style={{ marginLeft: '20%', fontSize: '15px' }}><strong>첨부 파일:</strong> {data && data.fileUrl}</div>
 
-                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '2px solid black' }}/>
+                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '2px solid black' }} />
 
                     <Row justify="center" style={{ marginTop: '20px' }}>
                         <Col span={16}>
-                            <Card title="관심 분야">
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>Web</td>
-                                            <td>{renderRadioGroup('web')}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>App</td>
-                                            <td>{renderRadioGroup('app')}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Game</td>
-                                            <td>{renderRadioGroup('game')}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>AI</td>
-                                            <td>{renderRadioGroup('ai')}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </Card>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Card title="관심 분야" style={{ height: '100%' }}>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Web</td>
+                                                    <td>{renderRadioGroup('web')}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>App</td>
+                                                    <td>{renderRadioGroup('app')}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Game</td>
+                                                    <td>{renderRadioGroup('game')}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>AI</td>
+                                                    <td>{renderRadioGroup('ai')}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </Card>
+
+
+                                </Col>
+                                <Col span={12}>
+                                    <Card title="관심 분야 선호도 그래프" style={{ height: '100%' }}>
+                                        {renderPreferenceBar('web')}
+                                        {renderPreferenceBar('app')}
+                                        {renderPreferenceBar('game')}
+                                        {renderPreferenceBar('ai')}
+                                    </Card>
+
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
 
@@ -153,7 +197,7 @@ function PortfolioPage() {
 
                     <br />
                     <br />
-                    
+
                     <Row justify="center">
                         <Col>
                             <Button type="primary" style={{ marginRight: '10px' }} onClick={onClickUpdateHandler}>

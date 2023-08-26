@@ -50,12 +50,10 @@ function ProjectPage() {
         console.log(selectedBanners);
 
         if (!selectedBanners.includes('all')) {
-            filteredPosts = data.filter((item) =>
-            ((selectedBanners.includes('web') && item.web) ||
-                (selectedBanners.includes('app') && item.app) ||
-                (selectedBanners.includes('game') && item.game) ||
-                (selectedBanners.includes('ai') && item.ai)
-            ));
+            filteredPosts = data.filter((item) => {
+                const selectedCategoryMatches = selectedBanners.every((banner) => item[banner]);
+                return selectedCategoryMatches;
+            });
         }
         console.log(filteredPosts);
         console.log(selectedBanners);

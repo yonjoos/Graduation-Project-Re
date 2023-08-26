@@ -145,7 +145,7 @@ public class UserService {
         }
     }
 
-    
+
     public void updateUserPassword(String userEmail, String currentPassword, String password) {
         //userEmail에 해당하는 회원 찾기
         User user = userRepository.findByEmail(userEmail)

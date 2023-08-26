@@ -2,8 +2,6 @@ package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.dto.PortfolioDto;
 import PickMe.PickMeDemo.dto.PortfolioFormDto;
-import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
-import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.service.PortfolioService;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
@@ -28,12 +26,9 @@ public class PortfolioController {
     public ResponseEntity<PortfolioDto> uploadPortfolio(@RequestBody @Valid PortfolioFormDto portfolioFormDto, Principal principal) {
         String userEmail = principal.getName(); // Get the email from the JWT token
 
-        // Email로 UserDTO 찾기
-        UserDto userDto = userService.findByEmail(userEmail);
-
         // portfolioFormDto : Portfolio 테이블에 저장하기 위해 필요
-        // userDto : User와 Portfolio를 연결하기 위해 User 테이블의 PK를 얻기 위해 필요
-        PortfolioDto portfolioDto = portfolioService.uploadPortfolio(portfolioFormDto, userDto);
+        // userEmail : User와 Portfolio를 연결하기 위해 User 테이블의 PK를 얻기 위해 필요
+        PortfolioDto portfolioDto = portfolioService.uploadPortfolio(portfolioFormDto, userEmail);
 
         return ResponseEntity.ok(portfolioDto);
     }
@@ -65,11 +60,10 @@ public class PortfolioController {
     // 포트폴리오 수정
     @PutMapping("/updatePortfolio")
     public ResponseEntity<String> updatePortfolioInfo(@RequestBody PortfolioFormDto portfolioFormDto, Principal principal) {
-        String userEmail = principal.getName();
+        String userEmail = principal.getName();         // JWT 토큰으로부터 이메일 파싱
 
         try {
-            // Call a method in your userService to handle the user base info update logic
-            portfolioService.updatePortfolio(userEmail, portfolioFormDto);
+            portfolioService.updatePortfolio(userEmail, portfolioFormDto);          // userEmail을 가지고 업데이트 로직 진행
             return ResponseEntity.ok("Portfolio information has been successfully updated.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,11 +75,10 @@ public class PortfolioController {
     // 포트폴리오 삭제
     @PostMapping("/deletePortfolio")
     public ResponseEntity<String> deletePortfolioInfo(@RequestBody PortfolioFormDto portfolioFormDto, Principal principal) {
-        String userEmail = principal.getName(); // Get the email from the JWT token!
+        String userEmail = principal.getName();         // JWT 토큰으로부터 이메일 파싱
 
         try {
-            // Call a method in your userService to handle the user withdrawal logic
-            portfolioService.deletePortfolio(userEmail);
+            portfolioService.deletePortfolio(userEmail);        // userEmail을 가지고 삭제 로직 진행
             return ResponseEntity.ok("Portfolio has been successfully withdrawn.");
         } catch (Exception e) {
             e.printStackTrace();

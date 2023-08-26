@@ -138,7 +138,7 @@ function PortfolioPage() {
 
                     <Row justify="center" style={{ marginTop: '20px' }}>
                         <Col span={16}>
-                            <Row gutter={16}>
+                            <Row>
                                 <Col span={12}>
                                     <Card title="관심 분야" style={{ height: '100%' }}>
                                         <table>

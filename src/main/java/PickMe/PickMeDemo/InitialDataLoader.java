@@ -133,6 +133,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category1.validateFieldCount();
         categoryRepository.save(category1);
 
         String initialEndDate2 = "2023-10-10";
@@ -157,9 +158,10 @@ public class InitialDataLoader implements CommandLineRunner {
                 .web(true)
                 .app(true)
                 .game(false)
-                .ai(true)
+                .ai(false)
                 .build();
 
+        category2.validateFieldCount();
         categoryRepository.save(category2);
 
         String initialEndDate3 = "2023-09-16";
@@ -187,6 +189,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category3.validateFieldCount();
         categoryRepository.save(category3);
 
         // 초기 데이터 생성 및 저장(3)
@@ -239,6 +242,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category4.validateFieldCount();
         categoryRepository.save(category4);
 
         String initialEndDate5 = "2023-09-23";
@@ -266,6 +270,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category5.validateFieldCount();
         categoryRepository.save(category5);
 
 
@@ -294,6 +299,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category6.validateFieldCount();
         categoryRepository.save(category6);
 
         // 초기 데이터 생성 및 저장(4)
@@ -346,6 +352,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category7.validateFieldCount();
         categoryRepository.save(category7);
 
         String initialEndDate8 = "2023-09-28";
@@ -373,6 +380,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category8.validateFieldCount();
         categoryRepository.save(category8);
 
 
@@ -396,11 +404,12 @@ public class InitialDataLoader implements CommandLineRunner {
         Category category9 = Category.builder()
                 .posts(posts9)
                 .web(true)
-                .app(true)
-                .game(true)
+                .app(false)
+                .game(false)
                 .ai(true)
                 .build();
 
+        category9.validateFieldCount();
         categoryRepository.save(category9);
 
         // 초기 데이터 생성 및 저장(5)
@@ -453,6 +462,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category10.validateFieldCount();
         categoryRepository.save(category10);
 
         String initialEndDate11 = "2023-10-01";
@@ -480,6 +490,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category11.validateFieldCount();
         categoryRepository.save(category11);
 
 
@@ -508,6 +519,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category12.validateFieldCount();
         categoryRepository.save(category12);
     }
 }

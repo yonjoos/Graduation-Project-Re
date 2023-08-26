@@ -34,4 +34,18 @@ public class Category extends BaseTimeEntity{ //생성일, 수정일 다루는 �
 
     @Column(name = "ai", nullable = false)
     private Boolean ai; //ai와 관련된 게시물이면 true
+
+
+
+    public void validateFieldCount() {
+        int trueFieldCount = 0;
+        if (web) trueFieldCount++;
+        if (app) trueFieldCount++;
+        if (game) trueFieldCount++;
+        if (ai) trueFieldCount++;
+
+        if (trueFieldCount > 2) {
+            throw new IllegalArgumentException("Maximum of 2 true values are allowed among web, app, game, and ai fields.");
+        }
+    }
 }

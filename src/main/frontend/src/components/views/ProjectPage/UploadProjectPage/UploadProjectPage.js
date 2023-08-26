@@ -18,8 +18,15 @@ function UploadProjectPage() {
     const [promoteImageUrl, setPromoteImageUrl] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
 
+    // 선택 가능한 모집 분야 개수 제한
+    const MAX_POST_TYPE_COUNT = 2;
+
     const handlePostTypeChange = (selectedOptions) => {
-        setPostType(selectedOptions);
+        if (selectedOptions.length <= MAX_POST_TYPE_COUNT) {
+            setPostType(selectedOptions);
+        } else {
+            message.warning(`최대 ${MAX_POST_TYPE_COUNT}개의 모집 분야만 선택할 수 있습니다.`);
+        }
     };
 
     const handleRecruitsChange = (value) => {
@@ -97,7 +104,11 @@ function UploadProjectPage() {
 
                     <div className="form-outline mb-1">모집 분야</div>
                     <div className="form-outline mb-4">
-                        <Checkbox.Group options={['Web', 'App', 'Game', 'AI']} value={postType} onChange={handlePostTypeChange} />
+                        <Checkbox.Group
+                            options={['Web', 'App', 'Game', 'AI']}
+                            value={postType}
+                            onChange={handlePostTypeChange}
+                        />
                     </div>
 
                     <div style = {{ display: 'flex', justifyContent: 'space-between' }}>

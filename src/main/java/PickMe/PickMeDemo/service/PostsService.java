@@ -66,6 +66,9 @@ public class PostsService {
                 .ai(postsFormDto.getPostType().contains("AI"))
                 .build();
 
+        // Web, App, Game, AI 중 3개 이상 체크했는지 확인
+        category.validateFieldCount();
+
         categoryRepository.save(category);
     }
 

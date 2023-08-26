@@ -5,6 +5,8 @@ import { Row, Col, Input, Button, Checkbox, InputNumber, /*Upload,*/ DatePicker,
 import { request } from '../../../../hoc/request';
 import moment from 'moment';    // 달력 관련 업로드를 위해 필요. moment 라이브러리 설치하기 (npm install moment)
 
+const { TextArea } = Input;
+
 function UploadProjectPage() {
     const navigate = useNavigate();
 
@@ -128,7 +130,7 @@ function UploadProjectPage() {
 
                     <div className="form-outline mb-1">프로젝트 내용</div>
                     <div className="form-outline mb-4">
-                        <Input.TextArea
+                        <TextArea
                             placeholder="프로젝트 내용"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}

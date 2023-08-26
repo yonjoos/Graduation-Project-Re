@@ -1,0 +1,11 @@
+.vertical-line {
+    border-left: 2px solid #ccc; /* Adjust the color and width as needed */
+    padding-left: 5px; /* Add padding for a gap between the content and the border */
+}
+
+.bold-divider {
+    font-weight: bold;
+    border-color: #ccc; /* Change the color of the Divider */
+    border-width: 2px; /* Increase the thickness of the Divider */
+    color: #ccc; /* Change the text color of the Divider */
+}

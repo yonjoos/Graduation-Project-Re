@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Row, Col, Input, Button, Radio, message } from 'antd';
 // import { request, setHasPortfolio } from '../../../../hoc/request';
 // import { uploadPortfolioSuccess } from '../../../../_actions/actions';
-import { request} from '../../../../hoc/request';
+import { request } from '../../../../hoc/request';
+
+const { TextArea } = Input;
 
 function UpdatePortfolioPage() {
     const navigate = useNavigate();
@@ -166,7 +168,7 @@ function UpdatePortfolioPage() {
                     </div>
                     {/* Introduce */}
                     <div className="form-outline mb-4">
-                        <Input
+                        <TextArea
                             type="text"
                             name="introduce"
                             placeholder="Edit Introduce"

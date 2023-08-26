@@ -102,6 +102,11 @@ function LoginPage() {
             message.warning('이미 사용 중인 닉네임입니다. 닉네임 변경 후 다시 시도하세요.');
             return;
         }
+        if (nicknameAvailability === null) 
+        {
+            message.warning('닉네임 중복 확인을 먼저 해주세요.');
+            return;
+        }
         if (!email) {
             message.warning('이메일을 입력해주세요.');
             return;

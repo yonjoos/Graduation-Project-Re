@@ -25,7 +25,7 @@ function ProjectPage() {
             });
     }, []);
 
-    
+
     const handleRowClick = (projectId) => {
         navigate(`/project/detail/${projectId}`);
     }
@@ -98,13 +98,13 @@ function ProjectPage() {
                             <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
                                 <Col span={6}>
                                     <div style={{ borderRight: '1px' }}>
-                                        닉네임: {item.nickName}
+                                        <strong style={{ fontSize: '18px' }}> {item.nickName} </strong>
                                     </div>
                                 </Col>
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                                 <Col span={12} className="vertical-line">
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        제목: {item.title}
+                                        <strong style={{ fontSize: '18px' }}>{item.title}</strong>
                                     </div>
                                     {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
                                     <div style={{ marginLeft: '3px' }}>

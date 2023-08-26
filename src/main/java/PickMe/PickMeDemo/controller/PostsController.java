@@ -3,7 +3,6 @@ package PickMe.PickMeDemo.controller;
 import PickMe.PickMeDemo.dto.PostsDto;
 import PickMe.PickMeDemo.dto.PostsFormDto;
 import PickMe.PickMeDemo.dto.PostsListDto;
-import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.entity.PostType;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.PostsService;

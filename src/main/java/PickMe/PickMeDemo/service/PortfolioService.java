@@ -29,10 +29,10 @@ public class PortfolioService {
     
     
     // 포트폴리오 등록
-    public PortfolioDto uploadPortfolio(PortfolioFormDto portfolioFormDto, UserDto userDto) {
+    public PortfolioDto uploadPortfolio(PortfolioFormDto portfolioFormDto, String userEmail) {
 
         // Optional이므로, 해당 유저가 발견되면 유저를 반환, 해당 유저가 없으면 null 반환
-        Optional<User> findUser = userRepository.findByEmail(userDto.getEmail());
+        Optional<User> findUser = userRepository.findByEmail(userEmail);
 
         // orElseThrow(...): 이 메서드는 Optional 객체에서 호출됩니다.
         // 비어있는 경우 예외 객체를 생성하고 던질 람다 표현식을 받습니다.
@@ -53,7 +53,7 @@ public class PortfolioService {
         // portfolioDto의 필드 : isCreated, nickName, email, web, app, game, ai, shortIntroduce, introduce, fileUrl
         // 포트폴리오를 생성하는 것이므로, isCreated를 true로 바로 저장
         PortfolioDto portfolioDto = new PortfolioDto(
-                true, userDto.getNickName(), userDto.getEmail(), portfolio.getWeb(), portfolio.getApp(),
+                true, user.getNickName(), user.getEmail(), portfolio.getWeb(), portfolio.getApp(),
                 portfolio.getGame(), portfolio.getAi(), portfolio.getShortIntroduce(), portfolioFormDto.getIntroduce(),
                 portfolioFormDto.getFileUrl());
 

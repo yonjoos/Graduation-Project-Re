@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+//import { useDispatch } from 'react-redux';
 import { Row, Col, Input, Button, Radio, message } from 'antd';
-import { request, setHasPortfolio } from '../../../../hoc/request';
-import { uploadPortfolioSuccess } from '../../../../_actions/actions';
+// import { request, setHasPortfolio } from '../../../../hoc/request';
+// import { uploadPortfolioSuccess } from '../../../../_actions/actions';
+import { request} from '../../../../hoc/request';
 
 function UpdatePortfolioPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
 
     // 기존의 포트폴리오 데이터를 가져오고, 새로운 데이터를 입력할 수 있도록 하기 위한 useState
     const [existingShortIntroduce, setExistingShortIntroduce] = useState('');
@@ -28,7 +29,7 @@ function UpdatePortfolioPage() {
         fetchExistingPortfolioData();
     }, []);
 
-    // Function to fetch existing portfolio data
+    // Function to fetch existing portfolio data - db에서 기존의 포트폴리오를 가져오기
     const fetchExistingPortfolioData = async () => {
         try {
             const response = await request('GET', '/getPortfolioForm');

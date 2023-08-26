@@ -126,7 +126,7 @@ public class PostsService {
         PostsDto postsDto;
 
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
-        if (posts.getUser().getEmail() == userEmail) {
+        if (posts.getUser().getEmail().equals(userEmail) ) {
              postsDto = PostsDto.builder()
                      .writer(true)      // writer에 true를 리턴
                     .nickName(posts.getUser().getNickName())
@@ -172,7 +172,7 @@ public class PostsService {
         PostsDto postsDto;
 
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
-        if (posts.getUser().getEmail() == userEmail) {
+        if (posts.getUser().getEmail().equals(userEmail)) {
             postsDto = PostsDto.builder()
                     .writer(true)      // writer에 true를 리턴
                     .nickName(posts.getUser().getNickName())

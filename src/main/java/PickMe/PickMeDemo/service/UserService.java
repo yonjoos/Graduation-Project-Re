@@ -161,4 +161,13 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(password))); //변경 감지에 의해 패스워드가 변경되도록 함
         userRepository.save(user); //변경감지 기능 통해 업데이트
     }
+
+    @Transactional(readOnly = true) //단순 조회 후에 중복 여부 값만 반환하므로
+    public boolean isNicknameAvailable(String nickname) {
+
+        //사용자에게 입력받은 nickname을 기반으로 같은 닉네임을 가진 사용자를 찾아보기
+        Optional<User> existingUserWithNickname = userRepository.findByNickName(nickname);
+
+        return existingUserWithNickname.isEmpty(); //비어있으면 available: true / 비어있지 않으면 available: false
+    }
 }

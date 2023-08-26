@@ -1,18 +1,13 @@
 package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.config.UserAuthenticationProvider;
-import PickMe.PickMeDemo.dto.CredentialsDto;
-import PickMe.PickMeDemo.dto.PortfolioDto;
-import PickMe.PickMeDemo.dto.SignUpDto;
-import PickMe.PickMeDemo.dto.UserDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.service.PortfolioService;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,5 +50,16 @@ public class AuthController {
 
         // 회원가입 완료된 애의 토큰이 담긴 DTO를 반환
          return ResponseEntity.ok().body(createdUser);
+    }
+
+    // 닉네임 중복인 지에 대한 여부를 확인하는 컨트롤러 (회원가입 관련이므로 여기에 넣었음)
+    @GetMapping("/nicknameDuplicate")
+    public ResponseEntity<NickNameDuplicateDto> checkNicknameAvailability(@RequestParam String nickname) {
+
+        // userService로부터 닉네임이 사용 가능한지를 알아옴 (isAvailable==true: 중복 아니어서 사용 가능 / isAvailable==false: 중복이어서 사용 불가능)
+        boolean isAvailable = userService.isNicknameAvailable(nickname);
+
+        //NickNameDuplicateDto에 isAvailable값을 실어서 반환
+        return ResponseEntity.ok(new NickNameDuplicateDto(isAvailable));
     }
 }

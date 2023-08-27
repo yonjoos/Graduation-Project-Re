@@ -4,6 +4,7 @@ import PickMe.PickMeDemo.dto.InquirePostConditionDto;
 import PickMe.PickMeDemo.dto.PostsDto;
 import PickMe.PickMeDemo.dto.PostsFormDto;
 import PickMe.PickMeDemo.dto.PostsListDto;
+import PickMe.PickMeDemo.dto.PostsUpdateFormDto;
 import PickMe.PickMeDemo.entity.PostType;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.PostsService;
@@ -116,6 +117,72 @@ public class PostsController {
         return ResponseEntity.ok(postsDto);
     }
 
+
+    // 프로젝트 수정 시 사용할 프로젝트 폼 정보만 가져오기
+    // 여기서 본인이 아닌 사람은 이 페이지로 접근 불가능
+    @GetMapping("/getProjectForm/{projectId}")
+    public ResponseEntity<PostsUpdateFormDto> getPortfolioForm(@PathVariable Long projectId, Principal principal) {
+        String userEmail = principal.getName(); // JWT 토큰에서 이메일 가져오기
+
+        // getPortfolio : 이메일을 통해 포트폴리오를 가져오는 함수
+        // ** 중요 **
+        // postType을 Boolean 리스트로 받아오는 PostsUpdateFormDto 사용!
+        PostsUpdateFormDto projectUpdateForm = postsService.getProjectForm(userEmail, projectId);
+
+        return ResponseEntity.ok(projectUpdateForm);
+    }
+
+
+    // 스터디 수정 시 사용할 프로젝트 폼 정보만 가져오기
+    // 여기서 본인이 아닌 사람은 이 페이지로 접근 불가능
+    @GetMapping("/getStudyForm/{studyId}")
+    public ResponseEntity<PostsUpdateFormDto> getStudyForm(@PathVariable Long studyId, Principal principal) {
+        String userEmail = principal.getName(); // JWT 토큰에서 이메일 가져오기
+
+        // getPortfolio : 이메일을 통해 포트폴리오를 가져오는 함수
+        // ** 중요 **
+        // postType을 Boolean 리스트로 받아오는 PostsUpdateFormDto 사용!
+        PostsUpdateFormDto projectUpdateForm = postsService.getStudyForm(userEmail, studyId);
+
+        return ResponseEntity.ok(projectUpdateForm);
+    }
+
+
+
+    // 프로젝트 수정.
+    // 어차피 프로젝트 수정 페이지는 바로 위의 메서드에서 /getProjectForm/{projectId}를 거치면서, 본인만 수정할 수 있는 페이지에 들어가므로 해당 유저가 누구인지 알 필요가 없음.
+    // 즉, 본인 확인이 get 메서드를 통해 이미 확인되므로, 무조건 수정 가능함.
+    // ** 중요 **
+    // postType을 String 리스트로 받아오는 PostsFormDto 사용!
+    @PutMapping("/project/update/{projectId}")
+    public ResponseEntity<String> updateProject(@PathVariable Long projectId, @RequestBody PostsFormDto postsFormDto) {
+
+        try {
+            postsService.updateProject(projectId, postsFormDto);
+            return ResponseEntity.ok("프로젝트가 성공적으로 업데이트 되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("프로젝트 업데이트에 실패했습니다.");
+        }
+    }
+
+
+    // 스터디 수정
+    @PutMapping("/study/update/{studyId}")
+    public ResponseEntity<String> updateStudy(@PathVariable Long studyId, @RequestBody PostsFormDto postsFormDto) {
+
+        try {
+            postsService.updateStudy(studyId, postsFormDto);
+            return ResponseEntity.ok("스터디가 성공적으로 업데이트 되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("스터디 업데이트에 실패했습니다.");
+        }
+
+    }
+
+
+    
     // 프로젝트 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
     // 추후에 Study쪽 페이징 동적쿼리 할 때, 이를 재활용할지, 별도로 api를 분리할 지 결정해야할 듯 함
     @GetMapping("/getFilteredPosts")
@@ -131,5 +198,6 @@ public class PostsController {
 
         return ResponseEntity.ok(filteredPosts);
     }
+
 }
 

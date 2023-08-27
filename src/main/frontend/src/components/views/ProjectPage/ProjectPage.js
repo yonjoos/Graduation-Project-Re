@@ -4,6 +4,7 @@ import { Divider, Row, Col, Button, Card } from 'antd';
 import { request } from '../../../hoc/request';
 import Search from '../../utils/Search';
 import './ProjectPage.css';
+import { right } from '@popperjs/core';
 
 
 function ProjectPage() {
@@ -60,7 +61,7 @@ function ProjectPage() {
         return filteredPosts;
     }
 
-    // 배너를 선택할 떄마다 selectedBanners가 추가되거나 변경됨
+    // 배너를 선택할 때마다 selectedBanners가 추가되거나 변경됨
     // 처음엔 all(모든 게시물 상태)
     // all이 아닌 다른 게시물을 선택하는 순간 all은 selectedBanners에서 지워지고, 선택된 배너가 selectedBanners에 추가됨
     // 선택된 배너를 다시 클릭하면 해당 배너를 selectedBanners에서 제외
@@ -68,11 +69,11 @@ function ProjectPage() {
     const toggleBanner = (banner) => {
         if (banner === 'all') {
             setSelectedBanners(['all']);
-        } else if (selectedBanners.includes('all')) {
+        }
+        else if (selectedBanners.includes('all')) {
             setSelectedBanners([banner]);
         }
         else {
-
             const updatedBanners = selectedBanners.includes(banner)
                 ? selectedBanners.filter((b) => b !== banner)
                 : [...selectedBanners, banner];
@@ -91,7 +92,7 @@ function ProjectPage() {
                 {posts.map((item, index) => (
                     <Card key={index} style={{ margin: '10px 0' }}> {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <Divider className="ball-divider" />
+                        <Divider className="bold-divider" />
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                             <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
                                 <Col span={6}>
@@ -119,7 +120,7 @@ function ProjectPage() {
                                 </Col>
                             </Row>
                         </div>
-                        <Divider className="ball-divider" />
+                        <Divider className="bold-divider" />
                     </Card>
 
                 ))}
@@ -132,47 +133,52 @@ function ProjectPage() {
             <Search />
 
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                <Button
-                    type={selectedBanners.includes('all') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('all')}
-                    style={{ marginRight: '10px' }}
-                >
-                    전체
-                </Button>
-                <Button
-                    type={selectedBanners.includes('web') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('web')}
-                >
-                    웹
-                </Button>
-                <Button
-                    type={selectedBanners.includes('app') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('app')}
-                >
-                    앱
-                </Button>
-                <Button
-                    type={selectedBanners.includes('game') ? 'primary' : 'default'}
-
-                    onClick={() => toggleBanner('game')}
-                >
-                    게임
-                </Button>
-                <Button
-                    type={selectedBanners.includes('ai') ? 'primary' : 'default'}
-
-                    onClick={() => toggleBanner('ai')}
-                >
-                    AI
-                </Button>
+                <Row>
+                    {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}
+                    <Col span={6}>
+                    </Col>
+                    <Col span={12} style={{ textAlign: 'center' }}>
+                        <Button
+                            type={selectedBanners.includes('all') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('all')}
+                            style={{ marginRight: '10px' }}
+                        >
+                            전체
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('web') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('web')}
+                        >
+                            웹
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('app') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('app')}
+                        >
+                            앱
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('game') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('game')}
+                        >
+                            게임
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('ai') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('ai')}
+                        >
+                            AI
+                        </Button>
+                    </Col>
+                    <Col span={6} style={{ textAlign: 'right' }}>
+                        <Button type="primary" onClick={onClickHandler}>
+                            Upload Project
+                        </Button>
+                    </Col>
+                </Row>
             </div>
 
             {renderPosts(filterPostsBySelectedBanners())}
-            <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                <Button type="primary" onClick={onClickHandler}>
-                    Upload Project
-                </Button>
-            </Row>
         </div>
     );
 }

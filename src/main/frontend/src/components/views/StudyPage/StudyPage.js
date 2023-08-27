@@ -132,47 +132,54 @@ function StudyPage() {
             <Search />
 
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                <Button
-                    type={selectedBanners.includes('all') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('all')}
-                    style={{ marginRight: '10px' }}
-                >
-                    전체
-                </Button>
-                <Button
-                    type={selectedBanners.includes('web') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('web')}
-                >
-                    웹
-                </Button>
-                <Button
-                    type={selectedBanners.includes('app') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('app')}
-                >
-                    앱
-                </Button>
-                <Button
-                    type={selectedBanners.includes('game') ? 'primary' : 'default'}
-
-                    onClick={() => toggleBanner('game')}
-                >
-                    게임
-                </Button>
-                <Button
-                    type={selectedBanners.includes('ai') ? 'primary' : 'default'}
-
-                    onClick={() => toggleBanner('ai')}
-                >
-                    AI
-                </Button>
+                <Row>
+                    {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}
+                    <Col span={6}>
+                    </Col>
+                    <Col span={12} style={{ textAlign: 'center' }}>
+                        <Button
+                            type={selectedBanners.includes('all') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('all')}
+                            style={{ marginRight: '10px' }}
+                        >
+                            전체
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('web') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('web')}
+                        >
+                            웹
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('app') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('app')}
+                        >
+                            앱
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('game') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('game')}
+                        >
+                            게임
+                        </Button>
+                        <Button
+                            type={selectedBanners.includes('ai') ? 'primary' : 'default'}
+                            onClick={() => toggleBanner('ai')}
+                        >
+                            AI
+                        </Button>
+                    </Col>
+                    <Col span={6} style={{ textAlign: 'right' }}>
+                        <Button type="primary" onClick={onClickHandler}>
+                            Upload Study
+                        </Button>
+                    </Col>
+                </Row>
+                
             </div>
 
             {renderPosts(filterPostsBySelectedBanners())}
-            <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                <Button type="primary" onClick={onClickHandler}>
-                    Upload Study
-                </Button>
-            </Row>
+
         </div>
     );
 }

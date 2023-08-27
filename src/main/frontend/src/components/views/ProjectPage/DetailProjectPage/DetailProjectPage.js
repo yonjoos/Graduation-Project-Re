@@ -34,64 +34,152 @@ function DetailProjectPage() {
     
 
     return (
-        <div>
-            <div style={{ marginLeft: '10%', marginRight: '10%' }}>
-                {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                <Divider className="bold-divider" />
+        <div style={{ marginLeft: '10%', marginRight: '10%' }}>
+            {/** 게시물 작성자에게만 보이는 화면. 우측 상단데 게시물 수정, 삭제 버튼이 보임. */}
+            {data.writer && (
+                <div>
+                    <Row>
+                        <Col span={12}>
+                            <Button>
+                                프로젝트 목록
+                            </Button>
+                        </Col>
+                        <Col span={12} style={{ textAlign: 'right' }}>
+                            <Button type="primary">
+                                게시물 수정
+                            </Button>
+                            <Button>
+                                게시물 삭제
+                            </Button>
+                        </Col>
+                    </Row>
+                    {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
+                    <Divider className="bold-divider" />
 
-                <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                    <Col span={16}>
-                        <div style={{ marginLeft: '5%' }}>
-                            제목: {data.title}
-                        </div>
-                    </Col>
-                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                    <Col span={8} className="vertical-line">
-                        <div  style={{ marginLeft: '3px' }}>
-                            {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                            분류: &nbsp; {data.web?" Web ":""}{data.app?" App ":""}{data.game?" Game ":""}{data.ai?" AI ":""}
-                        </div>
-                    </Col>
-                </Row>
+                    <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                        <Col span={16}>
+                            <div style={{ marginLeft: '5%' }}>
+                                제목: {data.title}
+                            </div>
+                        </Col>
+                        {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                        <Col span={8} className="vertical-line">
+                            <div  style={{ marginLeft: '3px' }}>
+                                {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                                분류: &nbsp; {data.web?" Web ":""}{data.app?" App ":""}{data.game?" Game ":""}{data.ai?" AI ":""}
+                            </div>
+                        </Col>
+                    </Row>
 
-                <Divider className="simple-divider" />
+                    <Divider className="simple-divider" />
 
-                <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                    <Col span={16}>
-                        <div style={{ marginLeft: '5%', borderRight: '1px' }}>
-                            닉네임: {data.nickName}
-                        </div>
-                    </Col>
-                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                    <Col span={8} className="vertical-line">
-                        <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                            모집 인원: {data.recruitmentCount}
-                        </div>
-                        <div  style={{ marginLeft: '3px' }}>
-                            모집 마감일: {formatDate(data.endDate)}
-                        </div>
-                    </Col>
-                </Row>
+                    <Row gutter={[16, 16]} justify="center" align="middle">
+                        <Col span={16}>
+                            <div style={{ marginLeft: '5%', borderRight: '1px' }}>
+                                닉네임: {data.nickName}
+                            </div>
+                        </Col>
+                        {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                        <Col span={8} className="vertical-line">
+                            <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
+                                모집 인원: {data.recruitmentCount}
+                            </div>
+                            <div  style={{ marginLeft: '3px' }}>
+                                모집 마감일: {formatDate(data.endDate)}
+                            </div>
+                        </Col>
+                    </Row>
 
-                <Divider className="bold-divider" />
+                    <Divider className="bold-divider" />
 
-                <div style={{ marginLeft: '5px' }}>
-                    첨부 파일: {data.fileUrl}
+                    <div style={{ marginLeft: '5px' }}>
+                        첨부 파일: {data.fileUrl}
+                    </div>
+
+                    <Divider className="bold-divider" />
+
+                    <div style={{ marginLeft: '5px' }}>
+                        홍보 사진: {data.promoteImageUrl}
+                    </div>
+
+                    <Divider className="bold-divider" />
+
+                    <div style={{ marginLeft: '5px' }}>
+                        내용: {data.content}
+                    </div>
                 </div>
+            )}
+            {/** 일반 유저에게 보이는 화면. 우측 상단데 신청 버튼이 보임. */}
+            {!data.writer && (
+                <div>
+                    <Row>
+                        <Col span={12}>
+                            <Button>
+                                프로젝트 목록
+                            </Button>
+                        </Col>
+                        <Col span={12} style={{ textAlign: 'right' }}>
+                            <Button type="primary">
+                                지원하기
+                            </Button>
+                        </Col>
+                    </Row>
+                    {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
+                    <Divider className="bold-divider" />
 
-                <Divider className="bold-divider" />
+                    <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                        <Col span={16}>
+                            <div style={{ marginLeft: '5%' }}>
+                                제목: {data.title}
+                            </div>
+                        </Col>
+                        {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                        <Col span={8} className="vertical-line">
+                            <div  style={{ marginLeft: '3px' }}>
+                                {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                                분류: &nbsp; {data.web?" Web ":""}{data.app?" App ":""}{data.game?" Game ":""}{data.ai?" AI ":""}
+                            </div>
+                        </Col>
+                    </Row>
 
-                <div style={{ marginLeft: '5px' }}>
-                    홍보 사진: {data.promoteImageUrl}
+                    <Divider className="simple-divider" />
+
+                    <Row gutter={[16, 16]} justify="center" align="middle">
+                        <Col span={16}>
+                            <div style={{ marginLeft: '5%', borderRight: '1px' }}>
+                                닉네임: {data.nickName}
+                            </div>
+                        </Col>
+                        {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                        <Col span={8} className="vertical-line">
+                            <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
+                                모집 인원: {data.recruitmentCount}
+                            </div>
+                            <div  style={{ marginLeft: '3px' }}>
+                                모집 마감일: {formatDate(data.endDate)}
+                            </div>
+                        </Col>
+                    </Row>
+
+                    <Divider className="bold-divider" />
+
+                    <div style={{ marginLeft: '5px' }}>
+                        첨부 파일: {data.fileUrl}
+                    </div>
+
+                    <Divider className="bold-divider" />
+
+                    <div style={{ marginLeft: '5px' }}>
+                        홍보 사진: {data.promoteImageUrl}
+                    </div>
+
+                    <Divider className="bold-divider" />
+
+                    <div style={{ marginLeft: '5px' }}>
+                        내용: {data.content}
+                    </div>
                 </div>
-
-                <Divider className="bold-divider" />
-
-                <div style={{ marginLeft: '5px' }}>
-                    내용: {data.content}
-                </div>
-
-            </div>
+            )}
         </div>
     )
 }

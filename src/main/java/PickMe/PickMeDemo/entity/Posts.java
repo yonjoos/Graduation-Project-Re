@@ -43,8 +43,11 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @Column(name = "title", nullable = false)
     private String title; //게시물 이름
 
+    @Column(name = "counts", nullable = false)
+    private Integer counts;
+
     @Column(name = "recruitmentCount", nullable = false)
-    private Integer recruitmentCount; //지원한 사람 수
+    private Integer recruitmentCount; // 총 지원자 수
 
     @Column(name = "content", nullable = false)
     private String content; //내용
@@ -58,11 +61,12 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @Column(name = "endDate", nullable = false)
     private LocalDate endDate; //모집 마감 기간
 
-    public Posts(User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate) {
+    public Posts(User user, PostType postType, String title, Integer recruitmentCount, Integer counts, String content, String promoteImageUrl, String fileUrl, LocalDate endDate) {
         this.user = user;
         this.postType = postType;
         this.title = title;
         this.recruitmentCount = recruitmentCount;
+        this.counts = counts;
         this.content = content;
         this.promoteImageUrl = promoteImageUrl;
         this.fileUrl = fileUrl;

@@ -5,7 +5,9 @@ import { Row, Col, Input, Button, Radio, message } from 'antd';
 import { request, setHasPortfolio } from '../../../../hoc/request';
 import { uploadPortfolioSuccess } from '../../../../_actions/actions';
 
-function PortfolioPage() {
+const { TextArea } = Input;
+
+function UploadPortfolioPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
@@ -131,7 +133,7 @@ function PortfolioPage() {
                         />
                     </div>
                     <div className="form-outline mb-4">
-                        <Input
+                        <TextArea
                             type="text"
                             name="introduce"
                             placeholder="소개 및 커리어를 작성해주세요."
@@ -153,4 +155,4 @@ function PortfolioPage() {
     );
 }
 
-export default PortfolioPage;
+export default UploadPortfolioPage;

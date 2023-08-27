@@ -1,9 +1,6 @@
 package PickMe.PickMeDemo.service;
 
-import PickMe.PickMeDemo.dto.PostsDto;
-import PickMe.PickMeDemo.dto.PostsFormDto;
-import PickMe.PickMeDemo.dto.PostsListDto;
-import PickMe.PickMeDemo.dto.UserDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.CategoryRepository;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -168,6 +166,8 @@ public class PostsService {
     }
 
 
+    @Transactional(readOnly = true)
+    @EntityGraph(attributePaths = {"user", "category"})
     public PostsDto getStudy(String userEmail, Long studyId) {
 
         Posts posts = postsRepository.findByIdAndPostType(studyId, PostType.STUDY)
@@ -211,6 +211,132 @@ public class PostsService {
         }
 
         return postsDto;
+    }
+
+
+    // ** 중요 **
+    // postType을 Boolean 리스트로 받아오는 PostsUpdateFormDto 사용!
+    @Transactional(readOnly = true)
+    @EntityGraph(attributePaths = {"user", "category"})
+    public PostsUpdateFormDto getProjectForm(String userEmail, Long projectId) {
+
+        // projectId와 userEmail로 Project 찾기
+        Posts findProject = postsRepository.findByIdAndUser_Email(projectId, userEmail)
+                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // postUpdateFormDto에 맞는 postType을 위해 List로 변환한다.
+        List<Boolean> postTypeList = Arrays.asList(
+                findProject.getCategory().getWeb(),
+                findProject.getCategory().getApp(),
+                findProject.getCategory().getGame(),
+                findProject.getCategory().getAi()
+        );
+
+        // Create and populate PostsFormDto from project
+        PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
+                .title(findProject.getTitle())
+                .postType(postTypeList)     // 리스트로 변환된 postType을 반환
+                .recruitmentCount(findProject.getRecruitmentCount())
+                .endDate(findProject.getEndDate())
+                .content(findProject.getContent())
+                .promoteImageUrl(findProject.getPromoteImageUrl())
+                .fileUrl(findProject.getFileUrl())
+                .build();
+
+        return formDto;
+    }
+
+    // ** 중요 **
+    // postType을 Boolean 리스트로 받아오는 PostsUpdateFormDto 사용!
+    @Transactional(readOnly = true)
+    @EntityGraph(attributePaths = {"user", "category"})
+    public PostsUpdateFormDto getStudyForm(String userEmail, Long studyId) {
+
+        // projectId와 userEmail로 Study 찾기
+        Posts findStudy = postsRepository.findByIdAndUser_Email(studyId, userEmail)
+                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // postUpdateFormDto에 맞는 postType을 위해 List로 변환한다.
+        List<Boolean> postTypeList = Arrays.asList(
+                findStudy.getCategory().getWeb(),
+                findStudy.getCategory().getApp(),
+                findStudy.getCategory().getGame(),
+                findStudy.getCategory().getAi()
+        );
+
+        // Create and populate PostsFormDto from study
+        PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
+                .title(findStudy.getTitle())
+                .postType(postTypeList)     // 리스트로 변환된 postType을 반환
+                .recruitmentCount(findStudy.getRecruitmentCount())
+                .endDate(findStudy.getEndDate())
+                .content(findStudy.getContent())
+                .promoteImageUrl(findStudy.getPromoteImageUrl())
+                .fileUrl(findStudy.getFileUrl())
+                .build();
+
+        return formDto;
+    }
+
+
+
+    // ** 중요 **
+    // postType을 String 리스트로 받아오는 PostsFormDto 사용!
+    @EntityGraph(attributePaths = {"category"})
+    public void updateProject(Long projectId, PostsFormDto postsFormDto) {
+
+        // projectId로 Project 찾기
+        Posts project = postsRepository.findById(projectId)
+                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // 변경 감지를 통한 업데이트
+        project.setTitle(postsFormDto.getTitle());
+        project.setRecruitmentCount(postsFormDto.getRecruitmentCount());
+        project.setContent(postsFormDto.getContent());
+        project.setPromoteImageUrl(postsFormDto.getPromoteImageUrl());
+        project.setFileUrl(postsFormDto.getFileUrl());
+        project.setEndDate(postsFormDto.getEndDate());
+
+        project.getCategory().setWeb(postsFormDto.getPostType().contains("Web"));
+        project.getCategory().setApp(postsFormDto.getPostType().contains("App"));
+        project.getCategory().setGame(postsFormDto.getPostType().contains("Game"));
+        project.getCategory().setAi(postsFormDto.getPostType().contains("AI"));
+
+        // 카운트 검증 (recruitmentCount의 개수가 2개 이하인가?를 검증)
+        project.getCategory().validateFieldCount();
+
+        // 저장
+        postsRepository.save(project);
+    }
+
+
+    // ** 중요 **
+    // postType을 String 리스트로 받아오는 PostsFormDto 사용!
+    @EntityGraph(attributePaths = {"category"})
+    public void updateStudy(Long studyId, PostsFormDto postsFormDto) {
+
+        // projectId로 Project 찾기
+        Posts study = postsRepository.findById(studyId)
+                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // 변경 감지를 통한 업데이트
+        study.setTitle(postsFormDto.getTitle());
+        study.setRecruitmentCount(postsFormDto.getRecruitmentCount());
+        study.setContent(postsFormDto.getContent());
+        study.setPromoteImageUrl(postsFormDto.getPromoteImageUrl());
+        study.setFileUrl(postsFormDto.getFileUrl());
+        study.setEndDate(postsFormDto.getEndDate());
+
+        study.getCategory().setWeb(postsFormDto.getPostType().contains("Web"));
+        study.getCategory().setApp(postsFormDto.getPostType().contains("App"));
+        study.getCategory().setGame(postsFormDto.getPostType().contains("Game"));
+        study.getCategory().setAi(postsFormDto.getPostType().contains("AI"));
+
+        // 카운트 검증 (recruitmentCount의 개수가 2개 이하인가?를 검증)
+        study.getCategory().validateFieldCount();
+
+        // 저장
+        postsRepository.save(study);
     }
 }
 

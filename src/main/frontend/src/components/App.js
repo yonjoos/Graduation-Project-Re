@@ -21,9 +21,11 @@ import RecommendationPage from './views/RecommendationPage/RecommendationPage';
 import ProjectPage from './views/ProjectPage/ProjectPage';
 import DetailProjectPage from './views/ProjectPage/DetailProjectPage/DetailProjectPage';
 import UploadProjectPage from './views/ProjectPage/UploadProjectPage/UploadProjectPage';
+import UpdateProjectPage from './views/ProjectPage/UpdateProjectPage/UpdateProjectPage';
 import StudyPage from './views/StudyPage/StudyPage';
 import DetailStudyPage from './views/StudyPage/DetailStudyPage/DetailStudyPage';
 import UploadStudyPage from './views/StudyPage/UploadStudyPage/UploadStudyPage';
+import UpdateStudyPage from './views/StudyPage/UpdateStudyPage/UpdateStudyPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
 /*import logo from '../logo.svg';
@@ -157,16 +159,24 @@ function App() {
                             element={Auth(UploadProjectPage, true)}
                         />
                         <Route
-                            path="/study/detail/:studyId"
-                            element={Auth(DetailStudyPage, true)}
+                            path="/project/update/:projectId"
+                            element={Auth(UpdateProjectPage, true)}
                         />
                         <Route
                             path="/study"
                             element={Auth(StudyPage, true)}
                         />
                         <Route
+                            path="/study/detail/:studyId"
+                            element={Auth(DetailStudyPage, true)}
+                        />
+                        <Route
                             path="/study/upload"
                             element={Auth(UploadStudyPage, true)}
+                        />
+                        <Route
+                            path="/study/update/:studyId"
+                            element={Auth(UpdateStudyPage, true)}
                         />
                     </Routes>
                     </div>

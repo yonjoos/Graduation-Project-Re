@@ -108,6 +108,7 @@ function UploadProjectPage() {
                             options={['Web', 'App', 'Game', 'AI']}
                             value={postType}
                             onChange={handlePostTypeChange}
+                            disabled={postType.length > MAX_POST_TYPE_COUNT}
                         />
                     </div>
 

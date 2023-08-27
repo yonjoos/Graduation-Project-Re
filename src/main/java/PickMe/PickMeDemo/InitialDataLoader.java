@@ -117,6 +117,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.PROJECT)
                 .title("졸프 팀원 구해요~")
                 .recruitmentCount(3)
+                .counts(1)
                 .content("졸업 프로젝트 팀원을 모집합니다. 현재 저는 풀스택 개발 가능하고, Spring Boot 가능한 백엔드 개발자 한 분과, React 및 Redux 사용 가능한 프론트 개발자 두 분을 모십니다.")
                 .promoteImageUrl(null)
                 .fileUrl(null)
@@ -133,6 +134,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category1.validateFieldCount();
         categoryRepository.save(category1);
 
         String initialEndDate2 = "2023-10-10";
@@ -143,7 +145,8 @@ public class InitialDataLoader implements CommandLineRunner {
                 .user(user2)
                 .postType(PostType.PROJECT)
                 .title("토이 플젝 하실분?")
-                .recruitmentCount(1)
+                .recruitmentCount(2)
+                .counts(1)
                 .content("토이 프로젝트 팀원을 모집합니다. 주제는 아직 정해지지 않았습니다. 현재 저는 백엔드 개발 가능하고, React 및 Redux 사용 가능한 프론트 개발자 두 분을 모십니다.")
                 .promoteImageUrl("사진 없음")
                 .fileUrl("파일 없음")
@@ -157,9 +160,10 @@ public class InitialDataLoader implements CommandLineRunner {
                 .web(true)
                 .app(true)
                 .game(false)
-                .ai(true)
+                .ai(false)
                 .build();
 
+        category2.validateFieldCount();
         categoryRepository.save(category2);
 
         String initialEndDate3 = "2023-09-16";
@@ -170,7 +174,8 @@ public class InitialDataLoader implements CommandLineRunner {
                 .user(user2)
                 .postType(PostType.STUDY)
                 .title("배자구 스터디")
-                .recruitmentCount(3)
+                .recruitmentCount(4)
+                .counts(1)
                 .content("배자구 스터디 구합니다. 감자도 환영합니다. 저도 자구알못이에요..ㅠㅠ")
                 .promoteImageUrl("사진")
                 .fileUrl("파일")
@@ -187,6 +192,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category3.validateFieldCount();
         categoryRepository.save(category3);
 
         // 초기 데이터 생성 및 저장(3)
@@ -222,7 +228,8 @@ public class InitialDataLoader implements CommandLineRunner {
                 .user(user3)
                 .postType(PostType.PROJECT)
                 .title("권교수님과 졸프 하실분!")
-                .recruitmentCount(2)
+                .recruitmentCount(3)
+                .counts(1)
                 .content("권건우 교수님과 함께할 졸업 프로젝트 팀원을 모집합니다. 주제는 먹거리 관련 입니다. 현재 저는 풀스택 개발 가능하고, Spring Boot 가능한 백엔드 개발자 한 분과, React 및 Redux 사용 가능한 프론트 개발자 한 분을 모십니다.")
                 .promoteImageUrl(null)
                 .fileUrl(null)
@@ -239,6 +246,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category4.validateFieldCount();
         categoryRepository.save(category4);
 
         String initialEndDate5 = "2023-09-23";
@@ -250,6 +258,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.STUDY)
                 .title("알골 스터디 팀원 구함")
                 .recruitmentCount(4)
+                .counts(1)
                 .content("알고리즘 스터디 구함. 란골 배골 곤골 모두 환영. 백준 플래티넘이 목표.")
                 .promoteImageUrl("사진 없음")
                 .fileUrl("파일 없음")
@@ -266,6 +275,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category5.validateFieldCount();
         categoryRepository.save(category5);
 
 
@@ -278,6 +288,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.STUDY)
                 .title("프린스 송")
                 .recruitmentCount(3)
+                .counts(1)
                 .content("송프언 프롤로그, 렉스, 야크, 리스프 과제 같이 고민해요")
                 .promoteImageUrl("사진")
                 .fileUrl("파일")
@@ -294,6 +305,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category6.validateFieldCount();
         categoryRepository.save(category6);
 
         // 초기 데이터 생성 및 저장(4)
@@ -330,6 +342,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.PROJECT)
                 .title("유니티 활용한 졸프")
                 .recruitmentCount(2)
+                .counts(1)
                 .content("유니티 잘 쓸 줄 아시는 분 두 분 구해봐용..")
                 .promoteImageUrl("사진 뭐하지")
                 .fileUrl("나도 몰라")
@@ -346,6 +359,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category7.validateFieldCount();
         categoryRepository.save(category7);
 
         String initialEndDate8 = "2023-09-28";
@@ -357,6 +371,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.STUDY)
                 .title("알골 스터디 하실 분~")
                 .recruitmentCount(3)
+                .counts(1)
                 .content("알고리즘 스터디 구해여. 매일 백준 한 문제씩 푸는 것이 목표에용.")
                 .promoteImageUrl("사진 없음")
                 .fileUrl("파일 없음")
@@ -373,6 +388,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category8.validateFieldCount();
         categoryRepository.save(category8);
 
 
@@ -385,6 +401,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.STUDY)
                 .title("송하윤 교수님의 길찾기 놀이")
                 .recruitmentCount(3)
+                .counts(1)
                 .content("두 길이 주어지면, 가운데 길을 예측해서 이어 보아요.. 지리에 관심있는 분 환영. AI 관심있는 분 대 환영")
                 .promoteImageUrl("사진")
                 .fileUrl("파일")
@@ -396,11 +413,12 @@ public class InitialDataLoader implements CommandLineRunner {
         Category category9 = Category.builder()
                 .posts(posts9)
                 .web(true)
-                .app(true)
-                .game(true)
+                .app(false)
+                .game(false)
                 .ai(true)
                 .build();
 
+        category9.validateFieldCount();
         categoryRepository.save(category9);
 
         // 초기 데이터 생성 및 저장(5)
@@ -437,6 +455,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.PROJECT)
                 .title("게임이나 만들자.")
                 .recruitmentCount(2)
+                .counts(1)
                 .content("유니티, 언리얼 사용할 줄 아는 사람 환영. C# 잘 쓰고 C++ 잘하는 사람도 환영.")
                 .promoteImageUrl(null)
                 .fileUrl(null)
@@ -453,6 +472,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(false)
                 .build();
 
+        category10.validateFieldCount();
         categoryRepository.save(category10);
 
         String initialEndDate11 = "2023-10-01";
@@ -463,7 +483,8 @@ public class InitialDataLoader implements CommandLineRunner {
                 .user(user5)
                 .postType(PostType.PROJECT)
                 .title("인공지능 마스터")
-                .recruitmentCount(2)
+                .recruitmentCount(3)
+                .counts(1)
                 .content("인공지능 잘 활용하시는 분과 함께 프로젝트 하고 싶어요.")
                 .promoteImageUrl(null)
                 .fileUrl(null)
@@ -480,6 +501,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category11.validateFieldCount();
         categoryRepository.save(category11);
 
 
@@ -492,6 +514,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .postType(PostType.STUDY)
                 .title("유니티랑 C# 같이 공부하실 분 구합니다.")
                 .recruitmentCount(5)
+                .counts(1)
                 .content("같이 열심히 공부해서, 플젝도 만들어봐요!!")
                 .promoteImageUrl("사진")
                 .fileUrl("파일")
@@ -508,6 +531,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(true)
                 .build();
 
+        category12.validateFieldCount();
         categoryRepository.save(category12);
     }
 }

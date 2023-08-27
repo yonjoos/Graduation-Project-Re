@@ -50,6 +50,7 @@ public class PostsService {
                 .postType(postType)
                 .title(postsFormDto.getTitle())
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
+                .counts(1)      // 맨 처음 지원자 수는 1명 (본인)
                 .content(postsFormDto.getContent())
                 .promoteImageUrl(postsFormDto.getPromoteImageUrl())
                 .fileUrl(postsFormDto.getFileUrl())
@@ -65,6 +66,9 @@ public class PostsService {
                 .game(postsFormDto.getPostType().contains("Game"))
                 .ai(postsFormDto.getPostType().contains("AI"))
                 .build();
+
+        // Web, App, Game, AI 중 3개 이상 체크했는지 확인. 3개 이상 체크했으면 에러가 발생함.
+        category.validateFieldCount();
 
         categoryRepository.save(category);
     }

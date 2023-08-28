@@ -13,7 +13,7 @@ import ScrapPage from './views/ScrapPage/ScrapPage';
 import PortfolioPage from './views/PortfolioPage/PortfolioPage';
 import UploadPortfolioPage from './views/PortfolioPage/UploadPortfolioPage/UploadPortfolioPage'
 import UpdatePortfolioPage from './views/PortfolioPage/UpdatePortfolioPage/UpdatePortfolioPage';
-import DeletePortfolioPage from './views/PortfolioPage/DeletePortfolioPage/DeletePortfolioPage';
+//import DeletePortfolioPage from './views/PortfolioPage/DeletePortfolioPage/DeletePortfolioPage';
 import GroupPage from './views/GroupPage/GroupPage';
 import LandingPage from './views/LandingPage/LandingPage';
 import LoginPage from './views/LoginPage/LoginPage';
@@ -129,11 +129,11 @@ function App() {
                             // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
                             element={Auth(UpdatePortfolioPage, true, null, true)} //로그인 되어있고, 역할 상관없이, 포폴 있는 사람만 접근 가능한 페이지(시홍)
                         />
-                        <Route
+                        {/* <Route
                             path="/portfolio/delete"
                             // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
                             element={Auth(DeletePortfolioPage, true, null, true)} //로그인 되어있고, 역할 상관없이, 포폴 있는 사람만 접근 가능한 페이지(시홍)
-                        />
+                        /> */}
                         <Route
                             path="/group"
                             element={Auth(GroupPage, true)}

@@ -6,8 +6,6 @@ import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.CategoryRepository;
 import PickMe.PickMeDemo.repository.PostsRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
-import com.querydsl.core.QueryResults;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -26,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static PickMe.PickMeDemo.entity.QPortfolio.portfolio;
 
 @Service
 @Transactional

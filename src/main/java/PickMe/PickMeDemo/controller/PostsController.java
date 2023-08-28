@@ -1,6 +1,5 @@
 package PickMe.PickMeDemo.controller;
 
-import PickMe.PickMeDemo.dto.InquirePostConditionDto;
 import PickMe.PickMeDemo.dto.PostsDto;
 import PickMe.PickMeDemo.dto.PostsFormDto;
 import PickMe.PickMeDemo.dto.PostsListDto;
@@ -13,8 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

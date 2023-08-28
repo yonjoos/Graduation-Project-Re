@@ -2,9 +2,7 @@ package PickMe.PickMeDemo.service;
 
 import PickMe.PickMeDemo.dto.PortfolioDto;
 import PickMe.PickMeDemo.dto.PortfolioFormDto;
-import PickMe.PickMeDemo.dto.UserDto;
 import PickMe.PickMeDemo.entity.Portfolio;
-import PickMe.PickMeDemo.entity.Role;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
@@ -15,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.CharBuffer;
 import java.util.Optional;
 
 @Service

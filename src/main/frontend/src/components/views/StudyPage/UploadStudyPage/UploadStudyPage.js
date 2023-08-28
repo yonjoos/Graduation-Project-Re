@@ -18,14 +18,30 @@ function UploadStudyPage() {
     const [promoteImageUrl, setPromoteImageUrl] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
 
-    // 선택 가능한 모집 분야 개수 제한
-    const MAX_POST_TYPE_COUNT = 2;
+    
+    const options = ['Web', 'App', 'Game', 'AI'];   // 체크박스에서 선택 가능한 옵션들
+    const MAX_SELECTED_CHECKBOXES = 2;  // 선택 가능한 모집 분야 개수 제한
 
-    const handlePostTypeChange = (selectedOptions) => {
-        if (selectedOptions.length <= MAX_POST_TYPE_COUNT) {
-            setPostType(selectedOptions);
-        } else {
-            message.warning(`최대 ${MAX_POST_TYPE_COUNT}개의 모집 분야만 선택할 수 있습니다.`);
+    const renderCheckboxGroup = () => (
+        <Checkbox.Group
+            value={postType}
+            onChange={(checkedValues) => handleCheckboxChange(checkedValues)}   // 체크박스 선택 시, handleCheckboxChange 실행.
+        >
+            {options.map((option, index) => (
+                <Checkbox
+                    key={index}
+                    value={option}
+                    disabled={postType.length === MAX_SELECTED_CHECKBOXES && !postType.includes(option)}
+                >
+                    {option}
+                </Checkbox>
+            ))}
+        </Checkbox.Group>
+    )
+
+    const handleCheckboxChange = (checkedValues) => {
+        if (checkedValues.length <= MAX_SELECTED_CHECKBOXES) {
+            setPostType(checkedValues); // setPostType 함수를 호출하여 postType 상태 업데이트
         }
     };
 
@@ -104,11 +120,7 @@ function UploadStudyPage() {
 
                     <div className="form-outline mb-1">모집 분야</div>
                     <div className="form-outline mb-4">
-                        <Checkbox.Group
-                            options={['Web', 'App', 'Game', 'AI']}
-                            value={postType}
-                            onChange={handlePostTypeChange}
-                        />
+                        {renderCheckboxGroup()}
                     </div>
 
                     <div style = {{ display: 'flex', justifyContent: 'space-between' }}>
@@ -128,8 +140,7 @@ function UploadStudyPage() {
                             <div className="form-outline mb-1">모집 마감일</div>
                             <div className="form-outline mb-4">
                             <DatePicker
-                                value={endDate ? moment(endDate) : null}
-                                onChange={(date, dateString) => setEndDate(dateString)}
+                                onChange={(dateString) => setEndDate(dateString)}
                                 placeholder="모집 마감일"
                                 // disabledDate prop은 현재 날짜(current)가 오늘 날짜 이전인 경우에 true를 반환하도록 설정되어 있습니다.
                                 // 따라서 선택할 수 없는 날짜는 비활성화됩니다. moment().endOf('day')는 오늘 날짜의 끝 시간을 나타냅니다.

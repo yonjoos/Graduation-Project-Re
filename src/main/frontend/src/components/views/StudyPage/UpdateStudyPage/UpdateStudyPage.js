@@ -194,6 +194,7 @@ function UpdateStudyPage() {
                             placeholder="내용 변경"
                             value={data.content}
                             onChange={onChangeHandler}
+                            autoSize={{ minRows: 20 }}
                         />
                     </div>
 

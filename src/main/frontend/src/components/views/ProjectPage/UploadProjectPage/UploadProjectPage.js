@@ -157,6 +157,7 @@ function UploadProjectPage() {
                             placeholder="프로젝트 내용"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
+                            autoSize={{ minRows: 20 }}
                         />
                     </div>
 

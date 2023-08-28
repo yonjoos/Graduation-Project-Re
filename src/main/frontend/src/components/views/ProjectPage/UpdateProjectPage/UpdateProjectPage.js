@@ -197,6 +197,7 @@ function UpdateProjectPage() {
                             placeholder="프로젝트 내용 변경"
                             value={data.content}
                             onChange={onChangeHandler}
+                            autoSize={{ minRows: 20 }}
                         />
                     </div>
 

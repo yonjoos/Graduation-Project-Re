@@ -35,6 +35,7 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
 
     private String shortIntroduce; //한줄 소개
 
+    @Lob
     private String introduce; //소개
 
     private String fileUrl; //첨부 파일

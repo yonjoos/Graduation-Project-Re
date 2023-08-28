@@ -19,8 +19,6 @@ function PortfolioPage() {
         ai: 0
     });
 
-    // 포트폴리오 저장 상태를 리덕스로 가져와서
-    // 포트폴리오가 비어있으면 업로드 버튼 안보이고, 수정 버튼이 보여야 함
 
     // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {
@@ -187,10 +185,26 @@ function PortfolioPage() {
                         </Col>
                     </Row>
 
+                {/**멀티라인 콘텐츠를 데이터베이스에 저장된 대로 프론트엔드에서 줄바꿈(새 줄 문자)을 포함하여 표시하려면
+                 *  <pre> HTML 태그나 CSS 스타일을 사용하여 공백 및 줄바꿈 형식을 보존할 수 있다.
+                 * 
+                 * <Row justify="center">
+                 *     <Col span={16}>
+                 *         <Card title="한 줄 소개">
+                 *             //<pre> 태그를 사용하여 형식과 줄바꿈을 보존합니다
+                 *             <pre>{data && data.introduce}</pre>
+                 *         </Card>
+                 *     </Col>
+                 * </Row>
+                 *
+                 * 
+                 * 스타일링에 대한 더 많은 제어를 원하는 경우 CSS를 사용하여 동일한 효과를 얻을 수 있다.
+                 * 즉, style={{ whiteSpace: 'pre-wrap' }} 을 사용한다.
+                 *  */}
                     <Row justify="center">
                         <Col span={16}>
-                            <Card title="경력">
-                                <p>{data && data.introduce}</p>
+                            <Card title="한 줄 소개">
+                                <div style={{ whiteSpace: 'pre-wrap' }}>{data && data.introduce}</div>
                             </Card>
                         </Col>
                     </Row>

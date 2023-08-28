@@ -58,7 +58,7 @@ public class PostsService {
                 .title(postsFormDto.getTitle())
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
                 .counts(1)      // 맨 처음 지원자 수는 1명 (본인)
-                .content(postsFormDto.getContent())
+                .content(postsFormDto.getContent().replace("<br>", "\n"))
                 .promoteImageUrl(postsFormDto.getPromoteImageUrl())
                 .fileUrl(postsFormDto.getFileUrl())
                 .endDate(postsFormDto.getEndDate())
@@ -302,7 +302,7 @@ public class PostsService {
         // 변경 감지를 통한 업데이트
         project.setTitle(postsFormDto.getTitle());
         project.setRecruitmentCount(postsFormDto.getRecruitmentCount());
-        project.setContent(postsFormDto.getContent());
+        project.setContent(postsFormDto.getContent().replace("<br>", "\n"));
         project.setPromoteImageUrl(postsFormDto.getPromoteImageUrl());
         project.setFileUrl(postsFormDto.getFileUrl());
         project.setEndDate(postsFormDto.getEndDate());
@@ -332,7 +332,7 @@ public class PostsService {
         // 변경 감지를 통한 업데이트
         study.setTitle(postsFormDto.getTitle());
         study.setRecruitmentCount(postsFormDto.getRecruitmentCount());
-        study.setContent(postsFormDto.getContent());
+        study.setContent(postsFormDto.getContent().replace("<br>", "\n"));
         study.setPromoteImageUrl(postsFormDto.getPromoteImageUrl());
         study.setFileUrl(postsFormDto.getFileUrl());
         study.setEndDate(postsFormDto.getEndDate());

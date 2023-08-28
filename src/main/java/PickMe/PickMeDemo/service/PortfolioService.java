@@ -37,11 +37,16 @@ public class PortfolioService {
         User user = findUser.orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
         // Setter대신 생성자를 사용하여 Portfolio 테이블을 채움
-        Portfolio registerPortfolio =
-                new Portfolio(user, portfolioFormDto.getWeb(), portfolioFormDto.getApp(),
-                        portfolioFormDto.getGame(), portfolioFormDto.getAi(),
-                        portfolioFormDto.getShortIntroduce(), portfolioFormDto.getIntroduce(),
-                        portfolioFormDto.getFileUrl());
+        Portfolio registerPortfolio = Portfolio.builder()
+                .user(user)
+                .web(portfolioFormDto.getWeb())
+                .app(portfolioFormDto.getApp())
+                .game(portfolioFormDto.getGame())
+                .ai(portfolioFormDto.getAi())
+                .shortIntroduce(portfolioFormDto.getShortIntroduce())
+                .introduce(portfolioFormDto.getIntroduce().replace("<br>", "\n"))
+                .fileUrl(portfolioFormDto.getFileUrl())
+                .build();
 
         // 포트폴리오 디비에 저장
         Portfolio portfolio = portfolioRepository.save(registerPortfolio);
@@ -49,10 +54,18 @@ public class PortfolioService {
         // 디비에 저장과는 별개로, 화면에 다시 데이터를 뿌려줄 PortfolioDto를 생성해서 반환
         // portfolioDto의 필드 : isCreated, nickName, email, web, app, game, ai, shortIntroduce, introduce, fileUrl
         // 포트폴리오를 생성하는 것이므로, isCreated를 true로 바로 저장
-        PortfolioDto portfolioDto = new PortfolioDto(
-                true, user.getNickName(), user.getEmail(), portfolio.getWeb(), portfolio.getApp(),
-                portfolio.getGame(), portfolio.getAi(), portfolio.getShortIntroduce(), portfolioFormDto.getIntroduce(),
-                portfolioFormDto.getFileUrl());
+        PortfolioDto portfolioDto = PortfolioDto.builder()
+                .isCreated(true)
+                .nickName(user.getNickName())
+                .email(user.getEmail())
+                .web(portfolio.getWeb())
+                .app(portfolio.getApp())
+                .game(portfolio.getGame())
+                .ai(portfolio.getAi())
+                .shortIntroduce(portfolio.getShortIntroduce())
+                .introduce(portfolio.getIntroduce())
+                .fileUrl(portfolio.getFileUrl())
+                .build();
 
         return portfolioDto;
     }

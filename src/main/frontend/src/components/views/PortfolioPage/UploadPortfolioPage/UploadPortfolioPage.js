@@ -65,6 +65,7 @@ function UploadPortfolioPage() {
     // 포트폴리오 폼 제출 시 호출되는 이벤트 핸들러
     const onSubmitPortfolio = (e) => {
         e.preventDefault();
+
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
         submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, fileUrl);
         navigate('/portfolio');
@@ -138,6 +139,7 @@ function UploadPortfolioPage() {
                             name="introduce"
                             placeholder="소개 및 커리어를 작성해주세요."
                             onChange={onChangeHandler}
+                            autoSize={{ minRows: 20 }}
                         />
                     </div>
                     <div className="form-outline mb-4">

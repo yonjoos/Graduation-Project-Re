@@ -156,6 +156,7 @@ function UploadStudyPage() {
                             placeholder="스터디 내용"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
+                            autoSize={{ minRows: 20 }}
                         />
                     </div>
 

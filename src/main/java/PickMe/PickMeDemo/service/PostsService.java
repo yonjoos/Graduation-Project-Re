@@ -6,8 +6,6 @@ import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.CategoryRepository;
 import PickMe.PickMeDemo.repository.PostsRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
-import com.querydsl.core.QueryResults;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -15,6 +13,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static PickMe.PickMeDemo.entity.QPortfolio.portfolio;
+
 
 @Service
 @Transactional
@@ -389,7 +388,7 @@ public class PostsService {
     
     //게시물 조회 동적쿼리 + 페이징 in 프로젝트 게시물
     @Transactional(readOnly = true) //읽기 전용
-    public Page<PostsListDto> getFilteredPosts(List<String> selectedBanners, String sortOption, Pageable pageable) {
+    public Page<PostsListDto> getFilteredProjects(List<String> selectedBanners, String sortOption, Pageable pageable) {
 
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
@@ -397,8 +396,8 @@ public class PostsService {
         //System.out.println("pageable.getOffset() = " + pageable.getOffset());
         //System.out.println("pageable.getPageSize() = " + pageable.getPageSize());
 
-        // buildBannerConditions 메서드를 사용하여 선택한 배너를 기반으로 BooleanExpression을 구성
-        BooleanExpression bannerConditions = buildBannerConditions(category, selectedBanners);
+        // buildBannerConditionsInProjects 메서드를 사용하여 선택한 배너를 기반으로 BooleanExpression을 구성
+        BooleanExpression bannerConditions = buildBannerConditionsInProjects(category, selectedBanners);
 
         // 데이터를 가져오는 쿼리
         JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
@@ -451,7 +450,8 @@ public class PostsService {
     }
 
     // 프로젝트 게시물 조회에서 동적 쿼리의 where절에 들어갈 조건 생성하기
-    private BooleanExpression buildBannerConditions(QCategory category, List<String> selectedBanners) {
+    // 스터디는 카테고리에 추가 필드가 생길 여지가 있으므로 별도로 필터링 조건을 프로젝트 필터링과 구분하였음
+    private BooleanExpression buildBannerConditionsInProjects(QCategory category, List<String> selectedBanners) {
 
         // 카테고리가 null상태가 아닌 게시물만 쿼리에서 고려하기 위해 세팅
         // 즉 해당 condition이 반환되면 카테고리가 널이 아닌 모든 게시물에 대해 조회됨
@@ -505,5 +505,125 @@ public class PostsService {
         // 최종적으로 where절에 들거갈 조건 완성해서 반환
         return condition.and(bannerExpression);
     }
+
+    //게시물 조회 동적쿼리 + 페이징 in 스터디 게시물
+    @Transactional(readOnly = true) //읽기 전용
+    public Page<PostsListDto> getFilteredStudies(List<String> selectedBanners, String sortOption, Pageable pageable) {
+
+        QPosts posts = QPosts.posts;
+        QCategory category = QCategory.category;
+
+        // buildBannerConditionsInStudies 메서드를 사용하여 선택한 배너를 기반으로 BooleanExpression을 구성
+        BooleanExpression bannerConditions = buildBannerConditionsInStudies(category, selectedBanners);
+
+        // 데이터를 가져오는 쿼리
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
+                .join(posts.category, category) // 게시물을 카테고리와 조인한 형태로 가져올거임
+                .where(bannerConditions) // (where로 조건 추가 1.) 근데 조건은 이러하고 (밑에 있음)
+                .where(posts.postType.eq(PostType.valueOf("STUDY"))) // (where로 조건 추가 2.) 게시물의 TYPE이 프로젝트인 것만 가져옴
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
+        //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
+
+        // 카운트 쿼리 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
+        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
+                .join(posts.category, category) // Join with category
+                .where(bannerConditions)
+                .where(posts.postType.eq(PostType.valueOf("STUDY")));
+        // .orderBy(posts.createdDate.desc()); 카운트 쿼리에선 정렬 필요없음
+
+        long total = countQuery.fetchCount(); // Count쿼리에 의해 전체 데이터 개수 알아냄
+
+        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
+        List<Posts> filteredPosts = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        List<PostsListDto> postsListDtoList = new ArrayList<>(); // 빈 컬렉션 생성
+
+        // 동적 쿼리의 결과를 순회하며 dto로 변환
+        for (Posts post : filteredPosts) {
+            Category postCategory = post.getCategory();        // posts라는 연결고리를 통해 연결고리로 접근
+            User user = post.getUser();                    // posts라는 연결고리를 통해 연결고리로 접근
+
+            PostsListDto postsListDto = PostsListDto.builder()
+                    .id(post.getId())
+                    .nickName(user.getNickName())   // user = posts.getUser()
+                    .title(post.getTitle())
+                    .web(postCategory.getWeb())     // category = posts.getCategory()
+                    .app(postCategory.getApp())
+                    .game(postCategory.getGame())
+                    .ai(postCategory.getAi())
+                    .recruitmentCount(post.getRecruitmentCount())
+                    .endDate(post.getEndDate())
+                    .build();
+
+            postsListDtoList.add(postsListDto);     // 컬렉션에 추가
+        }
+
+        return new PageImpl<>(postsListDtoList, pageable, total); // 동적쿼리의 결과를 반환
+
+    }
+
+    // 스터디 게시물 조회에서 동적 쿼리의 where절에 들어갈 조건 생성하기
+    private BooleanExpression buildBannerConditionsInStudies(QCategory category, List<String> selectedBanners) {
+
+        // 카테고리가 null상태가 아닌 게시물만 쿼리에서 고려하기 위해 세팅
+        // 즉 해당 condition이 반환되면 카테고리가 널이 아닌 모든 게시물에 대해 조회됨
+        BooleanExpression condition = category.isNotNull();
+
+//        System.out.println("condition = " + condition);
+//        System.out.println("selectedBanners = " + selectedBanners);
+
+//        선택한 배너에 "all"이 포함되어 있으면
+//        사용자가 모든 카테고리에서 게시물을 검색하기를 원한다는 의미이므로 메서드는 단순히 초기 조건을 반환
+        if (selectedBanners.contains("all")) {
+            return condition;
+        }
+
+        // 앞선 condition에 별도로 더 추가할 condition인 bannerExpression
+        // 여기서 각 배너가 어떻게 선택되었는지에 따라 where절에 들어갈 조건이 결정됨
+        BooleanExpression bannerExpression = null;
+
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 web필드가 true인 걸 찾으라는 조건을 추가
+        // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 web필드가 true인 걸 찾으라는 조건을 처음 세팅함
+        if (selectedBanners.contains("web")) {
+            bannerExpression = bannerExpression != null
+                    ? bannerExpression.and(category.web.isTrue())
+                    : category.web.isTrue();
+        }
+
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 app필드가 true인 걸 찾으라는 조건을 추가
+        // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 app필드가 true인 걸 찾으라는 조건을 처음 세팅함
+        if (selectedBanners.contains("app")) {
+            bannerExpression = bannerExpression != null
+                    ? bannerExpression.and(category.app.isTrue())
+                    : category.app.isTrue();
+        }
+
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 game필드가 true인 걸 찾으라는 조건을 추가
+        // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 game필드가 true인 걸 찾으라는 조건을 처음 세팅함
+        if (selectedBanners.contains("game")) {
+            bannerExpression = bannerExpression != null
+                    ? bannerExpression.and(category.game.isTrue())
+                    : category.game.isTrue();
+        }
+
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 ai필드가 true인 걸 찾으라는 조건을 추가
+        // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 ai필드가 true인 걸 찾으라는 조건을 처음 세팅함
+        if (selectedBanners.contains("ai")) {
+            bannerExpression = bannerExpression != null
+                    ? bannerExpression.and(category.ai.isTrue())
+                    : category.ai.isTrue();
+        }
+
+        // 최종적으로 where절에 들거갈 조건 완성해서 반환
+        return condition.and(bannerExpression);
+    }
+
+
+
+
 }
 

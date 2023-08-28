@@ -197,7 +197,7 @@ public class PostsController {
     }
 
 
-    // 스터디 삭제=
+    // 스터디 삭제
     // 삭제는 디테일페이지에서 진행되므로, 본인만 삭제할 수 있다. 따라서 Principal이 필요 없음
     @PostMapping("/study/delete/{studyId}")
     public ResponseEntity<String> deleteStudy(@PathVariable Long studyId) {

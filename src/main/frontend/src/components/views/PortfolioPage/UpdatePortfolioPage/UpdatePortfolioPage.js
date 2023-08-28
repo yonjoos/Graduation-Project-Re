@@ -102,7 +102,7 @@ function UpdatePortfolioPage() {
         event.preventDefault();
 
         try {
-            const response = await request('PUT', '/updatePortfolio', {
+            await request('PUT', '/updatePortfolio', {
                 web: web,
                 app: app,
                 game: game,

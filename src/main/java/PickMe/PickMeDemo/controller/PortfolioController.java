@@ -74,7 +74,7 @@ public class PortfolioController {
 
     // 포트폴리오 삭제
     @PostMapping("/deletePortfolio")
-    public ResponseEntity<String> deletePortfolioInfo(@RequestBody PortfolioFormDto portfolioFormDto, Principal principal) {
+    public ResponseEntity<String> deletePortfolioInfo(Principal principal) {
         String userEmail = principal.getName();         // JWT 토큰으로부터 이메일 파싱
 
         try {

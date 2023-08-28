@@ -42,8 +42,14 @@ function DetailStudyPage() {
     
     const handleModalConfirm = () => {
         if (modalAction === 'delete') {
-            // Add code here to perform the delete action
-            // After successful deletion, navigate to the study list page
+            request('POST', `/study/delete/${studyId}`, {})
+            .then((response) => {
+                console.log("Fetched project data:", response.data); // Log the fetched data
+                setData(response.data); // Update the project state
+            })
+            .catch((error) => {
+                console.error("Error fetching project data:", error);
+            });
             navigate('/study');
         } else if (modalAction === 'apply') {
             // Add code here to handle applying for the study

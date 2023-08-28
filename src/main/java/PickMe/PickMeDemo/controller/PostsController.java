@@ -182,6 +182,34 @@ public class PostsController {
     }
 
 
+
+    // 프로젝트 삭제
+    // 삭제는 디테일페이지에서 진행되므로, 본인만 삭제할 수 있다. 따라서 Principal이 필요 없음
+    @PostMapping("/project/delete/{projectId}")
+    public ResponseEntity<String> deleteProject(@PathVariable Long projectId) {
+        try {
+            postsService.deleteProject(projectId);
+            return ResponseEntity.ok("프로젝트가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("프로젝트 삭제에 실패했습니다.");
+        }
+    }
+
+
+    // 스터디 삭제
+    // 삭제는 디테일페이지에서 진행되므로, 본인만 삭제할 수 있다. 따라서 Principal이 필요 없음
+    @PostMapping("/study/delete/{studyId}")
+    public ResponseEntity<String> deleteStudy(@PathVariable Long studyId) {
+        try {
+            postsService.deleteStudy(studyId);
+            return ResponseEntity.ok("스터디가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("스터디 삭제에 실패했습니다.");
+        }
+    }
+
     
     // 프로젝트 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
     // 추후에 Study쪽 페이징 동적쿼리 할 때, 이를 재활용할지, 별도로 api를 분리할 지 결정해야할 듯 함

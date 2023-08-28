@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static PickMe.PickMeDemo.entity.QPortfolio.portfolio;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -348,8 +350,41 @@ public class PostsService {
 
         // 저장
         postsRepository.save(study);
-
     }
+
+
+    // 프로젝트 삭제
+    public void deleteProject(Long projectId) {
+        // projectId로 해당 게시물 찾기
+        Posts posts = postsRepository.findById(projectId)
+                .orElseThrow(() -> new AppException("Project not found", HttpStatus.NOT_FOUND));
+
+        // projectId와 연관된 카테고리 찾기
+        Category category = categoryRepository.findCategoryById(projectId)
+                .orElseThrow(() -> new AppException("Category not found", HttpStatus.NOT_FOUND));
+
+        // 카테고리 먼저 지워야
+        categoryRepository.delete(category);
+        // 프로젝트도 삭제 가능
+        postsRepository.delete(posts);
+    }
+
+    // 스터디 삭제
+    public void deleteStudy(Long studyId) {
+        // studyId로 해당 게시물 찾기
+        Posts posts = postsRepository.findById(studyId)
+                .orElseThrow(() -> new AppException("Study not found", HttpStatus.NOT_FOUND));
+
+        // studyId와 연관된 카테고리 찾기
+        Category category = categoryRepository.findCategoryById(studyId)
+                .orElseThrow(() -> new AppException("Category not found", HttpStatus.NOT_FOUND));
+
+        // 카테고리 먼저 지워야
+        categoryRepository.delete(category);
+        // 스터디도 삭제 가능
+        postsRepository.delete(posts);
+    }
+
 
     
     //게시물 조회 동적쿼리 + 페이징 in 프로젝트 게시물
@@ -368,8 +403,8 @@ public class PostsService {
         // 데이터를 가져오는 쿼리
         JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
                 .join(posts.category, category) // 게시물을 카테고리와 조인한 형태로 가져올거임
-                .where(bannerConditions) // 근데 조건은 이러하고 (밑에 있음)
-                .where(posts.postType.eq(PostType.valueOf("PROJECT"))) // 게시물의 TYPE이 프로젝트인 것만 가져옴
+                .where(bannerConditions) // (where로 조건 추가 1.) 근데 조건은 이러하고 (밑에 있음)
+                .where(posts.postType.eq(PostType.valueOf("PROJECT"))) // (where로 조건 추가 2.) 게시물의 TYPE이 프로젝트인 것만 가져옴
                 .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
                 //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
 
@@ -435,7 +470,7 @@ public class PostsService {
         // 여기서 각 배너가 어떻게 선택되었는지에 따라 where절에 들어갈 조건이 결정됨
         BooleanExpression bannerExpression = null;
 
-        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 web필드가 true인 걸 찾으라는 조건을 추기
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 web필드가 true인 걸 찾으라는 조건을 추가
         // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 web필드가 true인 걸 찾으라는 조건을 처음 세팅함
         if (selectedBanners.contains("web")) {
             bannerExpression = bannerExpression != null
@@ -443,7 +478,7 @@ public class PostsService {
                     : category.web.isTrue();
         }
 
-        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 app필드가 true인 걸 찾으라는 조건을 추기
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 app필드가 true인 걸 찾으라는 조건을 추가
         // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 app필드가 true인 걸 찾으라는 조건을 처음 세팅함
         if (selectedBanners.contains("app")) {
             bannerExpression = bannerExpression != null
@@ -451,7 +486,7 @@ public class PostsService {
                     : category.app.isTrue();
         }
 
-        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 game필드가 true인 걸 찾으라는 조건을 추기
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 game필드가 true인 걸 찾으라는 조건을 추가
         // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 game필드가 true인 걸 찾으라는 조건을 처음 세팅함
         if (selectedBanners.contains("game")) {
             bannerExpression = bannerExpression != null
@@ -459,7 +494,7 @@ public class PostsService {
                     : category.game.isTrue();
         }
 
-        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 ai필드가 true인 걸 찾으라는 조건을 추기
+        // bannerExpression에 이미 어떤 조건이 들어가있다면 현재 bannerExpression에 ai필드가 true인 걸 찾으라는 조건을 추가
         // bannerExpression에 어떠한 조건도 아직 들어가있지 않다면 bannerExpression에 ai필드가 true인 걸 찾으라는 조건을 처음 세팅함
         if (selectedBanners.contains("ai")) {
             bannerExpression = bannerExpression != null
@@ -469,7 +504,6 @@ public class PostsService {
 
         // 최종적으로 where절에 들거갈 조건 완성해서 반환
         return condition.and(bannerExpression);
-        }
-
+    }
 }
 

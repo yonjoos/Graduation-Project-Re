@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +49,7 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     private Integer recruitmentCount; // 총 지원자 수
 
     @Column(name = "content", nullable = false)
+    @Lob
     private String content; //내용
 
     @Column(name = "promoteImageUrl")

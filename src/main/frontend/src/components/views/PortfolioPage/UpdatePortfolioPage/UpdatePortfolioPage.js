@@ -174,6 +174,7 @@ function UpdatePortfolioPage() {
                             placeholder="Edit Introduce"
                             value={existingIntroduce}
                             onChange={onChangeHandler}
+                            autoSize={{ minRows: 20 }}
                         />
                     </div>
                     {/* File URL */}

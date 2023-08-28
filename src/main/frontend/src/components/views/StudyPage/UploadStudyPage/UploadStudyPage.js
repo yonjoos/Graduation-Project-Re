@@ -139,13 +139,13 @@ function UploadStudyPage() {
                         <div style = {{ marginRight : '40%' }}>
                             <div className="form-outline mb-1">모집 마감일</div>
                             <div className="form-outline mb-4">
-                            <DatePicker
-                                onChange={(dateString) => setEndDate(dateString)}
-                                placeholder="모집 마감일"
-                                // disabledDate prop은 현재 날짜(current)가 오늘 날짜 이전인 경우에 true를 반환하도록 설정되어 있습니다.
-                                // 따라서 선택할 수 없는 날짜는 비활성화됩니다. moment().endOf('day')는 오늘 날짜의 끝 시간을 나타냅니다.
-                                disabledDate={(current) => current && current < moment().endOf('day')}
-                            />
+                                <DatePicker
+                                    onChange={(dateString) => setEndDate(dateString)}
+                                    placeholder="모집 마감일"
+                                    // disabledDate prop은 현재 날짜(current)가 오늘 날짜 이전인 경우에 true를 반환하도록 설정되어 있습니다.
+                                    // 따라서 선택할 수 없는 날짜는 비활성화됩니다. moment().endOf('day')는 오늘 날짜의 끝 시간을 나타냅니다.
+                                    disabledDate={(current) => current && current < moment().endOf('day')}
+                                />
                             </div>
                         </div>
                     </div>

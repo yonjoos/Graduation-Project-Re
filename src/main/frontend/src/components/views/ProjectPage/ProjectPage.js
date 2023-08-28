@@ -4,7 +4,6 @@ import { Divider, Row, Col, Button, Card } from 'antd';
 import { request } from '../../../hoc/request';
 import Search from '../../utils/Search';
 import './ProjectPage.css';
-import { right } from '@popperjs/core';
 import { Pagination } from 'antd';
 
 
@@ -17,20 +16,6 @@ function ProjectPage() {
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
     const navigate = useNavigate();
 
-    // useEffect의 마지막 []에 [data]를 넣어주어야, 업로드 완료 후에도 방금 업로드한 게시물이 바로 업데이트 되어 올라옴.
-    // 하지만, http://localhost:3000/project에 계속 머물러 있으면, 계속해서 백엔드에서 쿼리를 날린다는 문제가 발생함.
-
-    // useEffect(() => {
-    //     request('GET', '/getProjectList', {})
-    //         .then((response) => {
-    //             setData(response.data); // Assuming the response.data is an array of objects
-    //         })
-    //         .catch((error) => {
-    //             // Handle error, e.g., redirect to login or display an error message
-    //             console.error("Error fetching data:", error);
-    //         });
-    // }, []);
-
     // 페이지가 새로 마운트 될 때마다 실행됨. 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 현재 사용자가 하이라이트한 페이지 번호 상태, 최신일순/마감일순를 기반으로 백엔드에 동적쿼리 보냄
     useEffect(() => {
         console.log('현재 선택된 배너 정보', selectedBanners);
@@ -39,18 +24,6 @@ function ProjectPage() {
 
     // 실제 백엔드에 동적 쿼리 보내는 곳
     const fetchFilteredPosts = async () => {
-        // try {
-        //     const response = await request('POST', `/getFilteredPosts?page=${currentPage}&size=${pageSize}`, {
-        //         selectedBanners: selectedBanners
-
-
-        //     });
-
-        //     setData(response.data.content);
-        //     setTotalPages(response.data.totalPages); // Set total pages from the response
-        // } catch (error) {
-        //     console.error("Error fetching data:", error);
-        // }
 
         try {
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
@@ -61,7 +34,7 @@ function ProjectPage() {
             });
 
             //현재 사용자가 선택한 페이지와 배너 정보를 queryParams에 넣어서 백엔드에 요청
-            const response = await request('GET', `/getFilteredPosts?${queryParams}`);
+            const response = await request('GET', `/getFilteredProjects?${queryParams}`);
 
             setData(response.data.content); //백엔드에서 받은 게시물 목록을 data에 저장
             setTotalPages(response.data.totalPages); //백엔드에서 받은 전체 페이지 수 정보를 totalPages에 저장
@@ -69,26 +42,6 @@ function ProjectPage() {
             console.error("Error fetching data:", error);
         }
     };
-
-    // 동적으로 쿼리 날렸을 때 페이지 하단에 보이는 페이지 버튼도 동적으로 구성해야 함 -> 백엔드에서 받아온 totalPages를 기반으로 페이지 버튼 수를 만들어 넣어줌
-    // 백엔드에서는 페이징을 0부터 시작하지만, 프론트에서는 페이지 버튼을 1부터 세팅해줘야하므로 이를 위한 코드
-    // antd의 페이지네이션을 사용하면 필요 없는 코드임
-
-    // const renderPageNumbers = () => {
-    //     const pageNumbers = [];
-    //     for (let i = 0; i < totalPages; i++) { // Use '<' instead of '<='
-    //         pageNumbers.push(
-    //             <Button
-    //                 key={i}
-    //                 type={currentPage === i ? 'primary' : 'default'}
-    //                 onClick={() => setCurrentPage(i)} // 사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
-    //             >
-    //                 {i + 1}
-    //             </Button>
-    //         );
-    //     }
-    //     return pageNumbers;
-    // };
 
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
     const handleRowClick = (projectId) => {
@@ -109,24 +62,6 @@ function ProjectPage() {
         return `${year}년 ${month}월 ${day}일`;
     };
 
-    // 선택된 배너에 따라 게시물을 필터링하는 작업 수행
-    const filterPostsBySelectedBanners = () => {
-        let filteredPosts = data;
-
-        // 아마 백엔드에서 이미 다 필터링하기 떄문에 아래와 같이 프런트에서는 더 이상 필터링할 필요가 없음
-        //console.log(filteredPosts);
-        // //console.log(selectedBanners);
-
-        // if (!selectedBanners.includes('all')) {
-        //     filteredPosts = data.filter((item) => {
-        //         const selectedCategoryMatches = selectedBanners.every((banner) => item[banner]);
-        //         return selectedCategoryMatches;
-        //     });
-        // }
-        // //console.log(filteredPosts);
-        // console.log(selectedBanners);
-        return filteredPosts;
-    }
 
     // 배너를 선택할 때마다 selectedBanners가 추가되거나 변경됨
     // 처음엔 all(모든 게시물 상태)
@@ -268,23 +203,8 @@ function ProjectPage() {
                     </Col>
                 </Row>
             </div>
-            {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                <Button disabled={currentPage === 0} onClick={() => setCurrentPage(currentPage - 1)}>
-                    Previous Page
-                </Button>
-                <Button
-                    style={{ margin: '0 10px' }}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                    Next Page
-                </Button>
-            </div> */}
-            {renderPosts(filterPostsBySelectedBanners())}
-            {/* antd의 페이지네이션 사용으로 버튼으로 렌더링할 필요 x
-            <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                {renderPageNumbers()}
-            </div>
-            */}
+          
+            {renderPosts(data)}
 
             {/* antd페이지네이션 적용 */}
             {/* 동적으로 쿼리 날렸을 때 페이지 하단에 보이는 페이지 버튼도 동적으로 구성해야 함 -> 백엔드에서 받아온 totalPages를 기반으로 페이지 버튼 수를 만들어 넣어줌 */}

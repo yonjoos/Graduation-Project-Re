@@ -102,7 +102,7 @@ function UpdatePortfolioPage() {
         event.preventDefault();
 
         try {
-            const response = await request('PUT', '/updatePortfolio', {
+            await request('PUT', '/updatePortfolio', {
                 web: web,
                 app: app,
                 game: game,
@@ -174,6 +174,7 @@ function UpdatePortfolioPage() {
                             placeholder="Edit Introduce"
                             value={existingIntroduce}
                             onChange={onChangeHandler}
+                            autoSize={{ minRows: 20 }}
                         />
                     </div>
                     {/* File URL */}

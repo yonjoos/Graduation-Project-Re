@@ -151,7 +151,8 @@ function DetailProjectPage() {
 
             <Divider className="bold-divider" />
 
-            <div style={{ marginLeft: '5px' }}>
+            {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
+            <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
                 내용: {data.content}
             </div>
 

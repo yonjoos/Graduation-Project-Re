@@ -123,7 +123,7 @@ function UpdateStudyPage() {
         event.preventDefault();
         
         try {
-            const response = await request('PUT', `/study/update/${studyId}`, {
+            await request('PUT', `/study/update/${studyId}`, {
                 title: title,
                 postType: postType,
                 recruitmentCount: recruitmentCount,

@@ -124,7 +124,7 @@ function UpdateProjectPage() {
         event.preventDefault();
         
         try {
-            const response = await request('PUT', `/project/update/${projectId}`, {
+            await request('PUT', `/project/update/${projectId}`, {
                 title: title,
                 postType: postType,
                 recruitmentCount: recruitmentCount,

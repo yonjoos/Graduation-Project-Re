@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static PickMe.PickMeDemo.entity.QPortfolio.portfolio;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -348,8 +350,41 @@ public class PostsService {
 
         // 저장
         postsRepository.save(study);
-
     }
+
+
+    // 프로젝트 삭제
+    public void deleteProject(Long projectId) {
+        // projectId로 해당 게시물 찾기
+        Posts posts = postsRepository.findById(projectId)
+                .orElseThrow(() -> new AppException("Project not found", HttpStatus.NOT_FOUND));
+
+        // projectId와 연관된 카테고리 찾기
+        Category category = categoryRepository.findCategoryById(projectId)
+                .orElseThrow(() -> new AppException("Category not found", HttpStatus.NOT_FOUND));
+
+        // 카테고리 먼저 지워야
+        categoryRepository.delete(category);
+        // 프로젝트도 삭제 가능
+        postsRepository.delete(posts);
+    }
+
+    // 스터디 삭제
+    public void deleteStudy(Long studyId) {
+        // studyId로 해당 게시물 찾기
+        Posts posts = postsRepository.findById(studyId)
+                .orElseThrow(() -> new AppException("Study not found", HttpStatus.NOT_FOUND));
+
+        // studyId와 연관된 카테고리 찾기
+        Category category = categoryRepository.findCategoryById(studyId)
+                .orElseThrow(() -> new AppException("Category not found", HttpStatus.NOT_FOUND));
+
+        // 카테고리 먼저 지워야
+        categoryRepository.delete(category);
+        // 스터디도 삭제 가능
+        postsRepository.delete(posts);
+    }
+
 
     
     //게시물 조회 동적쿼리 + 페이징 in 프로젝트 게시물
@@ -470,6 +505,5 @@ public class PostsService {
         // 최종적으로 where절에 들거갈 조건 완성해서 반환
         return condition.and(bannerExpression);
         }
-
 }
 

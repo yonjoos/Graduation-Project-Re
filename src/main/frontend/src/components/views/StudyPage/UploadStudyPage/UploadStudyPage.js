@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { Row, Col, Input, Button, Checkbox, InputNumber, /*Upload,*/ DatePicker, message } from 'antd';
 //import { UploadOutlined } from '@ant-design/icons';
 import { request } from '../../../../hoc/request';
-import moment from 'moment';    // 달력 관련 업로드를 위해 필요. moment 라이브러리 설치하기 (npm install moment)
+import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
 const { TextArea } = Input;
 
@@ -78,7 +78,7 @@ function UploadStudyPage() {
             return;
         }
 
-        const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
+        const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD');
         submitStudy(title, postType, recruitmentCount, formattedEndDate, content, promoteImageUrl, fileUrl);
         navigate('/study');
     };
@@ -143,8 +143,8 @@ function UploadStudyPage() {
                                     onChange={(dateString) => setEndDate(dateString)}
                                     placeholder="모집 마감일"
                                     // disabledDate prop은 현재 날짜(current)가 오늘 날짜 이전인 경우에 true를 반환하도록 설정되어 있습니다.
-                                    // 따라서 선택할 수 없는 날짜는 비활성화됩니다. moment().endOf('day')는 오늘 날짜의 끝 시간을 나타냅니다.
-                                    disabledDate={(current) => current && current < moment().endOf('day')}
+                                    // 따라서 선택할 수 없는 날짜는 비활성화됩니다. dayjs().endOf('day')는 오늘 날짜의 끝 시간을 나타냅니다.
+                                    disabledDate={(current) => current && current < dayjs().endOf('day')}
                                 />
                             </div>
                         </div>

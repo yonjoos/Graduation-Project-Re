@@ -257,7 +257,8 @@ function PortfolioPage() {
                         <Col span={16}>
                             <Card title="경력">
                                 <div style={{ whiteSpace: 'pre-wrap' }}>
-                                    {/** 받아온 데이터에 공백이 없으면, 51번째 글자 이후에 공백을 넣어주는 함수 */}
+                                    {/** 받아온 데이터에 공백이 없으면, 40번째 글자 이후에 강제로 공백을 넣어주는 함수 */}
+                                    {/** Card안에 데이터를 넣는 경우 발생하는 문제인 것 같음. */}
                                     {data && insertLineBreaks(data.introduce, 45)}
                                 </div>
                             </Card>

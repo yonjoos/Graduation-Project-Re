@@ -13,6 +13,8 @@ function MyPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const [isInputClicked, setIsInputClicked] = useState(false);
+
     //드롭다운 관련
     const [selectedOption, setSelectedOption] = useState('info'); //드롭다운(정보수정, 비번 변경, 탈퇴)에서 해당 배너를 클릭할떄마다 selectOption값은 바뀜
 
@@ -249,7 +251,9 @@ function MyPage() {
                                                 <Input
                                                     type="text"
                                                     value={userBaseInfo.nickName}
-                                                    onChange={(e) => handleInputChange('nickName', e.target.value)} />
+                                                    placeholder = "닉네임을 입력해주세요"
+                                                    onChange={(e) => handleInputChange('nickName', e.target.value)} 
+                                                    />
                                             </Item>
                                         </div>
                                         <div>
@@ -257,6 +261,7 @@ function MyPage() {
                                                 <Input
                                                     type="text"
                                                     value={userBaseInfo.userName}
+                                                    placeholder="이름을 입력해주세요"
                                                     onChange={(e) => handleInputChange('userName', e.target.value)} />
                                             </Item>
                                         </div>
@@ -265,6 +270,7 @@ function MyPage() {
                                                 <Input
                                                     type="password"
                                                     value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
+                                                    placeholder="비밀번호를 입력해주세요"
                                                     onChange={(e) => handleInputChange('password', e.target.value)} />
                                             </Item>
                                         </div>
@@ -296,6 +302,7 @@ function MyPage() {
                                             <Input
                                                 type="password"
                                                 value={currentPassword}
+                                                placeholder="기존에 사용하던 비밀번호를 입력해주세요"
                                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                             />
                                         </Item>
@@ -305,6 +312,7 @@ function MyPage() {
                                             <Input
                                                 type="password"
                                                 value={newPassword}
+                                                placeholder = "기존 비밀번호와 다른 비밀번호를 입력해주세요"
                                                 onChange={(e) => setNewPassword(e.target.value)}
                                             />
                                         </Item>

@@ -88,7 +88,7 @@ function LoginPage() {
 
     // 회원가입 폼 제출 시 호출되는 이벤트 핸들러
     const onSubmitRegister = (e) => {
-        e.preventDefault();
+        e.preventDefault(); //페이지에서 새로고침하면..
 
         if (!userName) {
             message.warning('이름을 입력해주세요.');

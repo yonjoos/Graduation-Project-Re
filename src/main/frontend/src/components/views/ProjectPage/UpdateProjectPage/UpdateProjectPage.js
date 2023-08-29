@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Row, Col, Input, Button, Checkbox, DatePicker, message, InputNumber } from 'antd';
 import { request } from '../../../../hoc/request';
-import moment from 'moment';    // 달력 관련 업로드를 위해 필요. moment 라이브러리 설치하기 (npm install moment)
+import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
 const { TextArea } = Input;
 
@@ -35,7 +35,7 @@ function UpdateProjectPage() {
             setData({
                 ...existingData,
                 postType: postTypeStrings,
-                endDate: moment(existingData.endDate) // Make sure endDate is a valid moment object
+                endDate: dayjs(existingData.endDate) // Make sure endDate is a valid dayjs object
             });
         } catch (error) {
             console.error('Error fetching existing project data:', error);
@@ -102,7 +102,7 @@ function UpdateProjectPage() {
             return;
         }
 
-        const formattedEndDate = moment(data.endDate).format('YYYY-MM-DD');
+        const formattedEndDate = dayjs(data.endDate).format('YYYY-MM-DD');
 
         try {
             await submitProject(e,
@@ -184,7 +184,7 @@ function UpdateProjectPage() {
                                     onChange={(date) => onChangeHandler({ target: { name: 'endDate', value: date } })}
                                     placeholder="모집 마감일 변경"
                                     format="YYYY-MM-DD"
-                                    disabledDate={(current) => current && current < moment().endOf('day')}
+                                    disabledDate={(current) => current && current < dayjs().endOf('day')}
                                 />
                             </div>
                         </div>

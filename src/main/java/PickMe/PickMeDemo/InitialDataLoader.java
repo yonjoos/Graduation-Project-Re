@@ -310,8 +310,8 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(4)
         User user4 = User.builder()
-                .userName("정연주")
-                .nickName("yonjoos")
+                .userName("BlackConsumer")
+                .nickName("악성유저")
                 .email("4")
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
@@ -321,18 +321,29 @@ public class InitialDataLoader implements CommandLineRunner {
 
         Portfolio user4Portfolio = Portfolio.builder()
                 .user(user4)
-                .web(4)
+                .web(0)
                 .app(0)
                 .game(0)
-                .ai(3)
-                .shortIntroduce("시각디자인과에서의 경험을 바탕으로 미적 감각이 뛰어납니다. 하지만 백엔드를 희망합니다.")
-                .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js \n- 픽미 프로젝트 (React + SpringBoot + JPA) \n- 졸업 프로젝트 (Unity)")
+                .ai(0)
+                .shortIntroduce("나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.짧은소개글이지만길게쓴다.왜냐면난악성유저니까...")
+                .introduce("나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까...")
                 .fileUrl("")
                 .build();
 
         portfolioRepository.save(user4Portfolio);
 
-        String initialEndDate7 = "2023-09-15"; // 원하는 종료 날짜를 스트링으로 받음
+        // 악성유저는 모집 기간이 이미 지난 날짜로 세팅되어있음.
+        String initialEndDate7 = "2023-08-15"; // 원하는 종료 날짜를 스트링으로 받음
         DateTimeFormatter dateFormatter7 = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // 날짜 포맷터를 사용하여 날짜 문자열을 'LocalDate' 개체로 변환
         LocalDate endDate7 = LocalDate.parse(initialEndDate7, dateFormatter7);
 
@@ -340,12 +351,28 @@ public class InitialDataLoader implements CommandLineRunner {
         Posts posts7 = Posts.builder()
                 .user(user4)
                 .postType(PostType.PROJECT)
-                .title("유니티 활용한 졸프")
+                .title("나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.제목도길게쓴다.왜냐면난악성유저니까..." +
+                        "제목도내맘대로두번이나쓴다ㅋㅋ.나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.제목도길게쓴다.왜냐면난악성유저니까...")
                 .recruitmentCount(2)
                 .counts(1)
-                .content("유니티 잘 쓸 줄 아시는 분 두 분 구해봐용..\nC#도 잘하면 좋아요..")
-                .promoteImageUrl("사진 뭐하지")
-                .fileUrl("나도 몰라")
+                .content("나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까...")
+                .promoteImageUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 사진은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
+                .fileUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 파일은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
                 .endDate(endDate7)
                 .build();
 
@@ -362,20 +389,36 @@ public class InitialDataLoader implements CommandLineRunner {
         category7.validateFieldCount();
         categoryRepository.save(category7);
 
-        String initialEndDate8 = "2023-09-28";
+        String initialEndDate8 = "2023-08-30";
         DateTimeFormatter dateFormatter8 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate8 = LocalDate.parse(initialEndDate8, dateFormatter8);
 
         Posts posts8 = Posts.builder()
                 .user(user4)
                 .postType(PostType.STUDY)
-                .title("알골 스터디 하실 분~")
+                .title("나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.제목도길게쓴다.왜냐면난악성유저니까..." +
+                        "제목도내맘대로두번이나쓴다ㅋㅋ.나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.제목도길게쓴다.왜냐면난악성유저니까...")
                 .recruitmentCount(3)
                 .counts(1)
-                .content("알고리즘 스터디 구해여.\n매일 백준 한 문제씩 푸는 것이 목표에여.")
-                .promoteImageUrl("사진 없음")
-                .fileUrl("파일 없음")
-                .endDate(endDate7)
+                .content("나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
+                        "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까...")
+                .promoteImageUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 사진은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
+                .fileUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 파일은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
+                .endDate(endDate8)
                 .build();
 
         postsRepository.save(posts8);
@@ -399,13 +442,13 @@ public class InitialDataLoader implements CommandLineRunner {
         Posts posts9 = Posts.builder()
                 .user(user4)
                 .postType(PostType.STUDY)
-                .title("송하윤 교수님의 길찾기 놀이")
+                .title("악성유저의 정상적인 게시물ㅋㅋ")
                 .recruitmentCount(3)
                 .counts(1)
-                .content("두 길이 주어지면, 가운데 길을 예측해서 이어 보아요..\n지리에 관심있는 분 환영.\nAI에 관심있는 분 대 환영")
-                .promoteImageUrl("사진")
-                .fileUrl("파일")
-                .endDate(endDate6)
+                .content("웬일이래? 내가 정상적인 게시물도 달고 말이야. 고마워해라.")
+                .promoteImageUrl("")
+                .fileUrl("")
+                .endDate(endDate9)
                 .build();
 
         postsRepository.save(posts9);
@@ -533,5 +576,121 @@ public class InitialDataLoader implements CommandLineRunner {
 
         category12.validateFieldCount();
         categoryRepository.save(category12);
+
+        // 초기 데이터 생성 및 저장(6)
+        // 초기 데이터 생성 및 저장(7)
+
+        // 초기 데이터 생성 및 저장(8)
+        User user7 = User.builder()
+                .userName("정연주")
+                .nickName("yonjoos")
+                .email("7")
+                .password(passwordEncoder.encode("7"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user7);
+
+        Portfolio user7Portfolio = Portfolio.builder()
+                .user(user7)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("시각디자인과에서의 경험을 바탕으로 미적 감각이 뛰어납니다. 하지만 백엔드를 희망합니다.")
+                .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js \n- 픽미 프로젝트 (React + SpringBoot + JPA) \n- 졸업 프로젝트 (Unity)")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7Portfolio);
+
+        String initialEndDate19 = "2023-09-15"; // 원하는 종료 날짜를 스트링으로 받음
+        DateTimeFormatter dateFormatter19 = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // 날짜 포맷터를 사용하여 날짜 문자열을 'LocalDate' 개체로 변환
+        LocalDate endDate19 = LocalDate.parse(initialEndDate19, dateFormatter19);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts19 = Posts.builder()
+                .user(user7)
+                .postType(PostType.PROJECT)
+                .title("유니티 활용한 졸프")
+                .recruitmentCount(2)
+                .counts(1)
+                .content("유니티 잘 쓸 줄 아시는 분 두 분 구해봐용..\nC#도 잘하면 좋아요..")
+                .promoteImageUrl("사진 뭐하지")
+                .fileUrl("나도 몰라")
+                .endDate(endDate19)
+                .build();
+
+        postsRepository.save(posts19);
+
+        Category category19 = Category.builder()
+                .posts(posts19)
+                .web(false)
+                .app(false)
+                .game(true)
+                .ai(true)
+                .build();
+
+        category19.validateFieldCount();
+        categoryRepository.save(category19);
+
+        String initialEndDate20 = "2023-09-28";
+        DateTimeFormatter dateFormatter20 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate20 = LocalDate.parse(initialEndDate20, dateFormatter20);
+
+        Posts posts20 = Posts.builder()
+                .user(user7)
+                .postType(PostType.STUDY)
+                .title("알골 스터디 하실 분~")
+                .recruitmentCount(4)
+                .counts(1)
+                .content("알고리즘 스터디 구해여.\n매일 백준 한 문제씩 푸는 것이 목표에여.")
+                .promoteImageUrl("사진 없음")
+                .fileUrl("파일 없음")
+                .endDate(endDate20)
+                .build();
+
+        postsRepository.save(posts20);
+
+        Category category20 = Category.builder()
+                .posts(posts20)
+                .web(false)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category20.validateFieldCount();
+        categoryRepository.save(category20);
+
+
+        String initialEndDate21 = "2023-09-20";
+        DateTimeFormatter dateFormatter21 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate21 = LocalDate.parse(initialEndDate21, dateFormatter21);
+
+        Posts posts21 = Posts.builder()
+                .user(user7)
+                .postType(PostType.STUDY)
+                .title("송하윤 교수님의 길찾기 놀이")
+                .recruitmentCount(5)
+                .counts(1)
+                .content("두 길이 주어지면, 가운데 길을 예측해서 이어 보아요..\n지리에 관심있는 분 환영.\nAI에 관심있는 분 대 환영")
+                .promoteImageUrl("사진")
+                .fileUrl("파일")
+                .endDate(endDate21)
+                .build();
+
+        postsRepository.save(posts21);
+
+        Category category21 = Category.builder()
+                .posts(posts21)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category21.validateFieldCount();
+        categoryRepository.save(category21);
     }
 }

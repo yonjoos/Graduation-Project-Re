@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 //연주 첫 주석!
+//시홍 첫 주석!
 @SpringBootApplication
 @EnableJpaAuditing //이게 있어야 datajpa에서 수정일자, 생성일자, 생성자, 수정자 관리할 수 있음!!!!!!!
 public class PickMeDemoApplication {

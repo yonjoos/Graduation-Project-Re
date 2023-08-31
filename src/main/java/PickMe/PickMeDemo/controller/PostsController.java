@@ -369,7 +369,7 @@ public class PostsController {
 
         Page<GroupPostsListDto> groupPosts;
 
-        if (postsOption.equals("writer")) {
+        if ("writer".equals(postsOption)) {
             groupPosts = postsService.getWriterPosts(userEmail, sortOption, PageRequest.of(page, size));
         }
         else {

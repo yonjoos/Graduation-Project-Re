@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Divider, Row, Col, Button, Card } from 'antd';
+import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInProjectPage from './SearchInProjectPage';
 import './ProjectPage.css';
-import { Pagination } from 'antd';
 
 
 function ProjectPage() {
@@ -109,7 +108,7 @@ function ProjectPage() {
         navigate('/recommendation'); // Navigate to RecommendationPage
     };
 
-    // 스터디 버트을 누르면 스터디 페이지로 이동
+    // 스터디 버튼을 누르면 스터디 페이지로 이동
     const handleStudyPage = () => {
         navigate('/study'); // Navigate to StudyPage
     };
@@ -243,6 +242,7 @@ function ProjectPage() {
             </div>
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
             <div style={{ textAlign: 'left', margin: "0 0" }}>
+                {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                     Project
                 </Button>

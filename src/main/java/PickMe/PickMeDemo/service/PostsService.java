@@ -6,7 +6,6 @@ import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.CategoryRepository;
 import PickMe.PickMeDemo.repository.PostsRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -20,7 +19,6 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +58,7 @@ public class PostsService {
                 .postType(postType)
                 .title(postsFormDto.getTitle())
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
-                .counts(1)      // 맨 처음 지원자 수는 1명 (본인)
+                .counts(0)      // 맨 처음 지원자 수는 0명 (본인 제외)
                 .content(postsFormDto.getContent().replace("<br>", "\n"))
                 .promoteImageUrl(postsFormDto.getPromoteImageUrl())
                 .fileUrl(postsFormDto.getFileUrl())
@@ -142,7 +140,7 @@ public class PostsService {
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
         if (posts.getUser().getEmail().equals(userEmail) ) {
              postsDto = PostsDto.builder()
-                     .writer(true)      // writer에 true를 리턴
+                    .writer(true)      // writer에 true를 리턴
                     .nickName(posts.getUser().getNickName())
                     .title(posts.getTitle())
                     .web(posts.getCategory().getWeb())
@@ -392,7 +390,7 @@ public class PostsService {
     }
 
 
-    
+
     //게시물 조회 동적쿼리 + 페이징 in 프로젝트 게시물
     @Transactional(readOnly = true) //읽기 전용
     public Page<PostsListDto> getFilteredProjects(List<String> selectedBanners, String sortOption, String searchTerm, Pageable pageable) {
@@ -679,6 +677,191 @@ public class PostsService {
 
         // 최종적으로 where절에 들거갈 조건 완성해서 반환
         return condition.and(bannerExpression);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    // GroupPage에 데이터를 가져오는 메서드
+    @Transactional(readOnly = true) //읽기 전용
+    // PageRequest.of(page, size)을 인자로 받을 때, 파라미터의 이름은 pageable로 바꾸어 설정
+    public Page<GroupPostsListDto> getGroupPosts(String userEmail, String postsOption, String sortOption, Pageable pageable) {
+
+        QPosts posts = QPosts.posts;
+        QCategory category = QCategory.category;
+
+        // '데이터'를 가져오는 쿼리
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
+                .join(posts.category, category); // 게시물을 카테고리와 조인한 형태로 가져올거임
+
+
+        // 만약 postsOption이 writer라면, userEmail과 같은 애들로 쿼리를 만들 것임.
+        // postsOption == "writer"로 하면, 작동하지 않음! equals 써줄 것.
+        if ("writer".equals(postsOption)) {
+            query = query.where(posts.user.email.eq(userEmail));
+        }
+        // 만약 postsOption이 aplicant라면, userEmail과 같지 않은 애들로 쿼리를 만들 것임.
+        // postsOption != "writer"로 하면, 작동하지 않음! equals 써줄 것.
+        if (!"writer".equals(postsOption)) {
+            // 지원한 게시물 긁어오기. 지원 테이블을 찾은 후, 해당 게시물 가져오는 로직 추가.
+            query = query.where(posts.user.email.ne(userEmail));
+        }
+
+        // 정렬 옵션에 따른 조건 추가
+        query=query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
+        //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
+
+
+        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
+        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
+                .join(posts.category, category); // Join with category
+
+        // 만약 postsOption이 writer라면, userEmail과 같은 애들로 쿼리를 만들 것임.
+        // postsOption == "writer"로 하면, 작동하지 않음! equals 써줄 것.
+        if ("writer".equals(postsOption)) {
+            countQuery = countQuery.where(posts.user.email.eq(userEmail));
+        }
+        // 만약 postsOption이 aplicant라면, userEmail과 같지 않은 애들로 쿼리를 만들 것임.
+        // postsOption != "writer"로 하면, 작동하지 않음! equals 써줄 것.
+        else if (!"writer".equals(postsOption)) {
+            countQuery = countQuery.where(posts.user.email.ne(userEmail));
+        }
+
+        long total = countQuery.fetchCount(); // Count쿼리에 의해 전체 데이터 개수 알아냄
+
+        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
+        List<Posts> filteredPosts = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+
+        // 동적 쿼리의 결과를 순회하며 dto로 변환
+        for (Posts post : filteredPosts) {
+            Category postCategory = post.getCategory();        // posts라는 연결고리를 통해 연결고리로 접근
+            User user = post.getUser();                    // posts라는 연결고리를 통해 연결고리로 접근
+
+            GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
+                    .id(post.getId())
+                    .nickName(user.getNickName())   // user = posts.getUser()
+                    .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
+                    .title(post.getTitle())
+                    .web(postCategory.getWeb())     // category = posts.getCategory()
+                    .app(postCategory.getApp())
+                    .game(postCategory.getGame())
+                    .ai(postCategory.getAi())
+                    .recruitmentCount(post.getRecruitmentCount())
+                    .endDate(post.getEndDate())
+                    .build();
+
+            groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
+        }
+
+        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
     }
 }
 

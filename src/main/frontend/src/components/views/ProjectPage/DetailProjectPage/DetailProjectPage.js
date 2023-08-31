@@ -73,6 +73,7 @@ function DetailProjectPage() {
     };
     
     const handleModalConfirm = () => {
+        // writer가 게시물 삭제 버튼을 누른 경우
         if (modalAction === 'delete') {
             request('POST', `/project/delete/${projectId}`, {})
             .then((response) => {
@@ -83,9 +84,19 @@ function DetailProjectPage() {
                 console.error("Error fetching project data:", error);
             });
             navigate('/project');
-        } else if (modalAction === 'apply') {
-            // Add code here to handle applying for the project
-            // You can show a success message and keep the user on the same page
+        }
+        
+        // writer가 아닌 사람이 지원하기 버튼을 누른 경우
+        else if (modalAction === 'apply') {
+            request('POST', `/project/apply/${projectId}`, {})
+            .then((response) => {
+                console.log("Fetched project data:", response.data); // Log the fetched data
+                setData(response.data); // Update the project state
+            })
+            .catch((error) => {
+                console.error("Error fetching project data:", error);
+            });
+            navigate(`/project/detail/${projectId}`);
         }
         setIsModalVisible(false);
     };
@@ -97,6 +108,8 @@ function DetailProjectPage() {
     // 글 작성자인지, 아닌지에 따라 다르게 보이도록 설정
     const renderButtons = () => {
         const isWriter = data.writer;
+        const isApplying = data.applying;
+        const isApplied = data.applied;
 
         return (
             <Row>
@@ -106,8 +119,8 @@ function DetailProjectPage() {
                     </Button>
                 </Col>
                 <Col span={12} style={{ textAlign: 'right' }}>
-                    {/** 삼항 연산자를 통해, isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
-                    {isWriter ? (
+                    {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
+                    {isWriter && (
                         <div>
                             <Button type="primary" onClick={() => navigate(`/project/update/${projectId}`)}>
                                 게시물 수정
@@ -116,10 +129,29 @@ function DetailProjectPage() {
                                 게시물 삭제
                             </Button>
                         </div>
-                    ) : (
+                    )}
+                    {/** 게시물에 지원 안한 사람 */}
+                    {!isWriter && !isApplying && !isApplied && (
                         <Button type="primary" onClick={() => showModal('apply')}>
                             지원하기
                         </Button>
+                    )}
+                    {/** 지원은 했으나, 승인 대기 중인 사람 */}
+                    {!isWriter && isApplying && (
+                        <div>
+                            <Button type="text" disabled>
+                                승인 대기 중..
+                            </Button>
+                        </div>
+
+                    )}
+                    {/** 승인 허가난 사람 */}
+                    {!isWriter && isApplied && (
+                        <div>
+                            <Button type="text" disabled>
+                                승인 완료
+                            </Button>
+                        </div>
                     )}
                 </Col>
             </Row>
@@ -130,7 +162,9 @@ function DetailProjectPage() {
         <div style={{ marginLeft: '10%', marginRight: '10%' }}>
             {/** 게시물 작성자에게만 보이는 화면. 우측 상단데 게시물 수정, 삭제 버튼이 보임. */}
             {data.writer && renderButtons()}
-            {!data.writer && renderButtons()}
+            {!data.writer && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 */}
+            {!data.writer && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 */}
+            {!data.writer && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 */}
             
             {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
             <Divider className="bold-divider" />
@@ -161,7 +195,7 @@ function DetailProjectPage() {
                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                 <Col span={8} className="vertical-line">
                     <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                        모집 인원: {data.recruitmentCount}
+                        인원: {data.counts} / {data.recruitmentCount}
                     </div>
                     <div  style={{ marginLeft: '3px' }}>
                         모집 마감일: {formatDate(data.endDate)}

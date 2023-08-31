@@ -72,7 +72,7 @@ public class PortfolioService {
 
 
 
-    // 포트폴리오 전체 조회
+    // 나의 포트폴리오 조회
     @Transactional(readOnly = true)
     @EntityGraph(attributePaths = "user")
     public PortfolioDto getPortfolio(String userEmail) {
@@ -189,12 +189,57 @@ public class PortfolioService {
     public void deletePortfolio(String userEmail) {
         // userEmail로 user 찾기
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new AppException("User not found",HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다.",HttpStatus.NOT_FOUND));
 
         // User를 통해 User가 갖고 있는 포트폴리오 찾기
         Portfolio portfolio = portfolioRepository.findByUser(user)
                 .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         portfolioRepository.delete(portfolio);
+    }
+
+    @Transactional(readOnly = true)
+    public PortfolioDto getUserPortfolio(String nickName) {
+
+        User user = userRepository.findByNickName(nickName)
+                .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+
+        // User를 통해 User가 갖고 있는 포트폴리오 찾기
+        Optional<Portfolio> findUserPortfolio = portfolioRepository.findByUser(user);
+
+        // PortfolioDto를 빌더를 통해 생성
+        PortfolioDto portfolioDto;
+
+        if (findUserPortfolio.isPresent()) {
+            // PortfolioDto를 빌더를 통해 생성
+            portfolioDto = PortfolioDto.builder()
+                    .isCreated(true)
+                    .nickName(user.getNickName())
+                    .email(user.getEmail())
+                    .web(findUserPortfolio.get().getWeb())
+                    .app(findUserPortfolio.get().getApp())
+                    .game(findUserPortfolio.get().getGame())
+                    .ai(findUserPortfolio.get().getAi())
+                    .shortIntroduce(findUserPortfolio.get().getShortIntroduce())
+                    .introduce(findUserPortfolio.get().getIntroduce())
+                    .fileUrl(findUserPortfolio.get().getFileUrl())
+                    .build();
+        }
+        else {
+            portfolioDto = PortfolioDto.builder()
+                    .isCreated(false)
+                    .nickName(user.getNickName())
+                    .email(user.getEmail())
+                    .web(null)
+                    .app(null)
+                    .game(null)
+                    .ai(null)
+                    .shortIntroduce(null)
+                    .introduce(null)
+                    .fileUrl(null)
+                    .build();
+        }
+
+        return portfolioDto;
     }
 }

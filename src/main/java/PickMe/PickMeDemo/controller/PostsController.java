@@ -367,12 +367,31 @@ public class PostsController {
         // Email 찾기
         String userEmail = principal.getName();
 
+        Page<GroupPostsListDto> groupPosts;
+
+        if ("writer".equals(postsOption)) {
+            groupPosts = postsService.getWriterPosts(userEmail, sortOption, PageRequest.of(page, size));
+        }
+        else {
+            groupPosts = postsService.getApplicantPosts(userEmail, sortOption, PageRequest.of(page, size));
+        }
+
         // 페이지 넘버, 페이지 사이즈를 통해 PageRequest,
         // 두 개의 정렬 옵션 (글쓴이인가? 최신의 글인가?)
         // 을 parameter로 넣어서 서비스 계층 수행
-        Page<GroupPostsListDto> groupPosts = postsService.getGroupPosts(userEmail, postsOption, sortOption, PageRequest.of(page, size));
+        // Page<GroupPostsListDto> groupPosts = postsService.getGroupPosts(userEmail, postsOption, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
+    }
+
+    // 특정 프로젝트 지원
+    @PostMapping("/project/apply/{projectId}") // Use path variable to get project ID from URL
+    private ResponseEntity<PostsDto> applyProject(@PathVariable Long projectId, Principal principal) {
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.applyProject(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
     }
 }
 

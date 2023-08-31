@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Row, Col, Tabs, Input, Button, message } from 'antd';
@@ -16,6 +16,23 @@ function LoginPage() {
     const [email, setEmail] = useState('');         // 사용자명
     const [password, setPassword] = useState('');   // 비밀번호
     const [nicknameAvailability, setNicknameAvailability] = useState(null); //닉네임 중복 여부
+    const [verificationCode, setVerificationCode] = useState(''); // 백엔드에서 받은 인증번호
+    const [userInputCode, setUserInputCode] = useState(''); // 유저가 입력한 인증번호
+    const [verificationSuccess, setVerificationSuccess] = useState(null); // 인증번호 확인 성공 여부
+    
+
+/*    useEffect(() => {
+        if (userInputCode==='' || verificationCode==='')
+        {
+            setVerificationSuccess(null);
+        }
+        else if (userInputCode === verificationCode) {
+            setVerificationSuccess(true);
+        } else {
+            setVerificationSuccess(false);
+        }
+    }, [userInputCode, verificationCode]);
+*/
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
     const onChangeHandler = (event) => {
@@ -30,19 +47,63 @@ function LoginPage() {
         }
         else if (name === 'email') setEmail(value);
         else if (name === 'password') setPassword(value);
+        else if (name === 'userInputCode') setUserInputCode(value);
     };
 
     // 중복 확인 버튼을 누르면 호출되는 이벤트 핸들러
     const handleDuplicateCheck = () => {
         request('GET', `/nicknameDuplicate?nickname=${nickName}`) //백엔드에 현재 입력받은 nickname을 가진 회원이 있는 지 찾고, 백엔드는 해당 닉네임으로 유저 생성 가능하면 available:true /불가능하면 available:false 반환
             .then((response) => {
-                const isAvailable = response.data.available; 
+                const isAvailable = response.data.available;
                 setNicknameAvailability(isAvailable); //닉네임 사용 가능 여부 값을 상태변수에 저장
             })
             .catch((error) => {
                 alert("잠시 후 다시 시도해보세요.");
             });
     };
+
+    const handleSendVerificationCode = () => {
+        if (!email) {
+            message.warning('이메일을 입력해주세요.');
+            return;
+        }
+
+        const emailParams = new URLSearchParams({ email: email });
+        console.log('email',email);
+
+        request('POST', `/mailConfirm?${emailParams}`)
+            .then((response) => {
+                message.success('해당 이메일로 인증코드가 발송되었습니다.');
+                setVerificationCode(response.data.code);
+            })
+            .catch((error) => {
+                alert("인증코드 발송에 실패했습니다. 다시 시도하세요.");
+            });
+    };
+
+    const handleVerifyCode = () => {
+        if (!userInputCode || userInputCode==='') {
+            message.warning('인증코드를 입력해주세요');
+            setVerificationSuccess(null);
+            return;
+        }
+
+        console.log('입력한 인증번호: ',userInputCode );
+        console.log('실제 인증번호: ',verificationCode);
+        if(userInputCode===verificationCode)
+        {
+            setVerificationSuccess(true);
+        }
+
+        else{
+            setVerificationSuccess(false);
+        }
+
+        console.log('둘이 같나? ',verificationSuccess);
+
+    };
+
+    
 
 
 
@@ -102,8 +163,7 @@ function LoginPage() {
             message.warning('이미 사용 중인 닉네임입니다. 닉네임 변경 후 다시 시도하세요.');
             return;
         }
-        if (nicknameAvailability === null) 
-        {
+        if (nicknameAvailability === null) {
             message.warning('닉네임 중복 확인을 먼저 해주세요.');
             return;
         }
@@ -111,10 +171,21 @@ function LoginPage() {
             message.warning('이메일을 입력해주세요.');
             return;
         }
+        if (verificationSuccess === null) {
+            message.warning('이메일 인증 확인이 아직 되지 않았습니다. 이메일 인증 후 다시 시도해주세요.')
+            return;
+        }
+        if (verificationSuccess === false) {
+            message.warning('이메일 인증 코드가 제대로 입력되지 않았습니다. 인증 번호를 다시 입력해주세요.')
+            return;
+        }
+
         if (!password) {
             message.warning('비밀번호를 설정해주세요.');
             return;
         }
+      
+
 
         // 부모 컴포넌트로부터 전달받은 onRegister 함수 호출
         onRegister(e, userName, nickName, email, password);
@@ -169,7 +240,7 @@ function LoginPage() {
                                     onChange={onChangeHandler}
                                 />
                             </div>
-                            <Button type="primary" block htmlType="submit">Sign In</Button>
+                            <Button type="primary" block htmlType="submit">Log In</Button>
                         </form>
                     </Tabs>
                     <Tabs tab="Register" key="register">
@@ -191,7 +262,7 @@ function LoginPage() {
                                         placeholder="Nick Name"
                                         onChange={onChangeHandler}
                                     />
-                                    <Button onClick={handleDuplicateCheck}>닉네임 중복 확인</Button> 
+                                    <Button onClick={handleDuplicateCheck}>닉네임 중복 확인</Button>
                                 </div>
                                 {nicknameAvailability !== null && ( // 중복 확인 버튼 눌러서 중복 확인 여부를 알아왔을 때,
                                     // 사용 가능한 닉네임인 경우 초록색으로 아래에 사용 가능하단 문구를 렌더링
@@ -216,13 +287,33 @@ function LoginPage() {
                                 )}
                             </div>
                             <div className="form-outline mb-4">
-                                <Input
+                                <div style={{ display: "flex" }}>
+                                    <Input
+                                        type="text"
+                                        name="email"
+                                        placeholder="Email"
+                                        onChange={onChangeHandler}
+                                    />
+                                    <Button onClick={handleSendVerificationCode}>인증코드 발송</Button>
+                                </div>
+                            </div>
+                            <div className="form-outline mb-4">
+                                <div style={{ display: "flex" }}>
+                                <Input disabled={verificationSuccess} // 확인 버튼 눌렀을 때 이메일 인증번호가 맞으면 폼 자체가 disable됨
                                     type="text"
-                                    name="email"
-                                    placeholder="Email"
+                                    name="userInputCode"
+                                    placeholder="Verification Code"
                                     onChange={onChangeHandler}
                                 />
+                                <Button onClick={handleVerifyCode}>확인</Button>
+                                </div>
+                                <div className={verificationSuccess ? "verification-success" : "verification-failure"} style={{ color: verificationSuccess ? "#00cc00" : "#ff4d4f" }}>
+                                {verificationSuccess !== null && (
+                                    verificationSuccess ? "인증 완료되었습니다." : "인증코드가 맞지 않습니다. 다시 입력하세요"
+                                )}
                             </div>
+                            </div>
+                            
                             <div className="form-outline mb-4">
                                 <Input
                                     type="password"

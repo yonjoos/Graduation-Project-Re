@@ -1,9 +1,6 @@
 package PickMe.PickMeDemo.controller;
 
-import PickMe.PickMeDemo.dto.PostsDto;
-import PickMe.PickMeDemo.dto.PostsFormDto;
-import PickMe.PickMeDemo.dto.PostsListDto;
-import PickMe.PickMeDemo.dto.PostsUpdateFormDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.PostType;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.PostsService;
@@ -208,7 +205,7 @@ public class PostsController {
         }
     }
 
-    
+
     // 프로젝트 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
     @GetMapping("/getFilteredProjects")
     public ResponseEntity<Page<PostsListDto>> getFilteredProjects(
@@ -245,5 +242,137 @@ public class PostsController {
         return ResponseEntity.ok(filteredStudies);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Group 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
+    @GetMapping("/getGroupPosts")
+    public ResponseEntity<Page<GroupPostsListDto>> getGroupPosts(
+            @RequestParam(defaultValue = "writer") String postsOption, //프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 글쓴이
+            @RequestParam(defaultValue = "latestPosts") String sortOption, //프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
+            @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
+            @RequestParam(name = "size", defaultValue = "3") int size, //프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
+            Principal principal) {      // 본인이 쓴 글인지, 남이 쓴 글인지 구분하기 위해 현재 유저의 정보 가져오기
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        // 페이지 넘버, 페이지 사이즈를 통해 PageRequest,
+        // 두 개의 정렬 옵션 (글쓴이인가? 최신의 글인가?)
+        // 을 parameter로 넣어서 서비스 계층 수행
+        Page<GroupPostsListDto> groupPosts = postsService.getGroupPosts(userEmail, postsOption, sortOption, PageRequest.of(page, size));
+
+        return ResponseEntity.ok(groupPosts);
+    }
 }
 

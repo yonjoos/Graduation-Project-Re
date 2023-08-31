@@ -23,4 +23,7 @@ public class UserApplyPosts extends BaseTimeEntity {  //생성일, 수정일 다
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "posts_id")
     private Posts posts; //지원한 게시물 - 연관관계의 주인, 게시물 table과 엮임(게시물의 외래키를 가지고 있음)
+
+    @Column(nullable = false)
+    private Boolean confirm;    // 지원은 했으나, 승인이 안난 경우 confirm = false, 승인 완료되면 true.
 }

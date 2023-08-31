@@ -13,7 +13,9 @@ import java.time.LocalDate;
 @Builder
 public class PostsDto {
 
-    private Boolean writer;
+    private Boolean writer;     // 게시물의 작성자인가?
+    private Boolean applying;      // 게시물에 지원은 했으나, 승인은 안됨
+    private Boolean applied;        // 게시물에 지원했고, 승인도 됨
     private String nickName;
     private String title;
     private Boolean web;
@@ -23,6 +25,7 @@ public class PostsDto {
     private String content;
     private String promoteImageUrl;
     private String fileUrl;
+    private Integer counts;
     private Integer recruitmentCount;
     private LocalDate endDate;
 

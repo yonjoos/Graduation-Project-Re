@@ -5,6 +5,7 @@ import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.CategoryRepository;
 import PickMe.PickMeDemo.repository.PostsRepository;
+import PickMe.PickMeDemo.repository.UserApplyPostsRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +34,7 @@ public class PostsService {
     private final UserRepository userRepository;
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
+    private final UserApplyPostsRepository userApplyPostsRepository;
     private final JPAQueryFactory queryFactory;
 
     public void uploadProjectPost(PostsFormDto postsFormDto, String userEmail) {
@@ -49,16 +50,15 @@ public class PostsService {
     // 디비에 저장할 때 다른 부분은 오직 PostType이다.
     // 따라서 두 함수의 저장 로직 중 겹치는 부분을 따로 함수로 떼어냈다.
     public void uploadPost(PostsFormDto postsFormDto, String userEmail, PostType postType) {
-        Optional<User> findUser = userRepository.findByEmail(userEmail);
-
-        User user = findUser.orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
         Posts posts = Posts.builder()
                 .user(user)
                 .postType(postType)
                 .title(postsFormDto.getTitle())
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
-                .counts(0)      // 맨 처음 지원자 수는 0명 (본인 제외)
+                .counts(1)      // 맨 처음 지원자 수는 1명 (본인 포함)
                 .content(postsFormDto.getContent().replace("<br>", "\n"))
                 .promoteImageUrl(postsFormDto.getPromoteImageUrl())
                 .fileUrl(postsFormDto.getFileUrl())
@@ -115,6 +115,7 @@ public class PostsService {
                     .app(category.getApp())
                     .game(category.getGame())
                     .ai(category.getAi())
+                    .counts(posts.getCounts())
                     .recruitmentCount(posts.getRecruitmentCount())
                     .endDate(posts.getEndDate())
                     .build();
@@ -138,7 +139,7 @@ public class PostsService {
         PostsDto postsDto;
 
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
-        if (posts.getUser().getEmail().equals(userEmail) ) {
+        if (posts.getUser().getEmail().equals(userEmail)) {
              postsDto = PostsDto.builder()
                     .writer(true)      // writer에 true를 리턴
                     .nickName(posts.getUser().getNickName())
@@ -150,26 +151,85 @@ public class PostsService {
                     .content(posts.getContent())
                     .promoteImageUrl(posts.getPromoteImageUrl())
                     .fileUrl(posts.getFileUrl())
+                    .counts(posts.getCounts())
                     .recruitmentCount(posts.getRecruitmentCount())
                     .endDate(posts.getEndDate())
                     .build();
         }
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
         else {
-            postsDto = PostsDto.builder()
-                    .writer(false)      // writer에 false를 리턴
-                    .nickName(posts.getUser().getNickName())
-                    .title(posts.getTitle())
-                    .web(posts.getCategory().getWeb())
-                    .app(posts.getCategory().getApp())
-                    .game(posts.getCategory().getGame())
-                    .ai(posts.getCategory().getAi())
-                    .content(posts.getContent())
-                    .promoteImageUrl(posts.getPromoteImageUrl())
-                    .fileUrl(posts.getFileUrl())
-                    .recruitmentCount(posts.getRecruitmentCount())
-                    .endDate(posts.getEndDate())
-                    .build();
+            boolean hasApplied = false;     // 지원 여부
+            boolean isConfirmed = false;    // 승인 여부
+
+            for (UserApplyPosts apply : posts.getUserApplyPosts()) {
+                // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
+                if (apply.getUser().getEmail().equals(userEmail)) {
+                    hasApplied = true;      // 지원 여부는 true
+                    isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
+                    break; // Exit the loop since we found a matching entry
+                }
+            }
+
+            // 게시물에 지원 안한 사람
+            if (!hasApplied) {
+                postsDto = PostsDto.builder()
+                        .writer(false)      // writer에 false를 리턴
+                        .applying(false)    // 지원중이지도 않고
+                        .applied(false)     // 지원 승인되지도 않았음
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .fileUrl(posts.getFileUrl())
+                        .counts(posts.getCounts())
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .build();
+            }
+            // 게시물에 지원했으나, 승인이 안난 사람
+            else if (!isConfirmed) {
+                postsDto = PostsDto.builder()
+                        .writer(false)      // writer에 false를 리턴
+                        .applying(true)     // 지원은 했으나 (지원 중이지만),
+                        .applied(false)     // 지원이 승인된 것은 아님.
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .fileUrl(posts.getFileUrl())
+                        .counts(posts.getCounts())
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .build();
+            }
+            // writer로부터 승인이 난 사람
+            else {
+                postsDto = PostsDto.builder()
+                        .writer(false)      // writer에 false를 리턴
+                        .applying(false)     // 지원 중은 아니고,
+                        .applied(true)     // 지원이 승인되었음.
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .fileUrl(posts.getFileUrl())
+                        .counts(posts.getCounts())
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .build();
+            }
         }
 
         return postsDto;
@@ -198,26 +258,77 @@ public class PostsService {
                     .content(posts.getContent())
                     .promoteImageUrl(posts.getPromoteImageUrl())
                     .fileUrl(posts.getFileUrl())
+                    .counts(posts.getCounts())
                     .recruitmentCount(posts.getRecruitmentCount())
                     .endDate(posts.getEndDate())
                     .build();
         }
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
         else {
-            postsDto = PostsDto.builder()
-                    .writer(false)      // writer에 false를 리턴
-                    .nickName(posts.getUser().getNickName())
-                    .title(posts.getTitle())
-                    .web(posts.getCategory().getWeb())
-                    .app(posts.getCategory().getApp())
-                    .game(posts.getCategory().getGame())
-                    .ai(posts.getCategory().getAi())
-                    .content(posts.getContent())
-                    .promoteImageUrl(posts.getPromoteImageUrl())
-                    .fileUrl(posts.getFileUrl())
-                    .recruitmentCount(posts.getRecruitmentCount())
-                    .endDate(posts.getEndDate())
-                    .build();
+            // 게시물에 지원 안한 사람
+            if (posts.getUserApplyPosts().isEmpty()) {
+                postsDto = PostsDto.builder()
+                        .writer(false)      // writer에 false를 리턴
+                        .applying(false)    // 지원중이지도 않고
+                        .applied(false)     // 지원 승인되지도 않았음
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .fileUrl(posts.getFileUrl())
+                        .counts(posts.getCounts())
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .build();
+            }
+            else {
+                UserApplyPosts post = userApplyPostsRepository.findByPosts_Id(studyId)
+                        .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+                // 게시물에 지원했으나, 승인이 안난 사람
+                if (!post.getConfirm()) {
+                    postsDto = PostsDto.builder()
+                            .writer(false)      // writer에 false를 리턴
+                            .applying(true)     // 지원은 했으나 (지원 중이지만),
+                            .applied(false)     // 지원이 승인된 것은 아님.
+                            .nickName(posts.getUser().getNickName())
+                            .title(posts.getTitle())
+                            .web(posts.getCategory().getWeb())
+                            .app(posts.getCategory().getApp())
+                            .game(posts.getCategory().getGame())
+                            .ai(posts.getCategory().getAi())
+                            .content(posts.getContent())
+                            .promoteImageUrl(posts.getPromoteImageUrl())
+                            .fileUrl(posts.getFileUrl())
+                            .counts(posts.getCounts())
+                            .recruitmentCount(posts.getRecruitmentCount())
+                            .endDate(posts.getEndDate())
+                            .build();
+                }
+                else {
+                    postsDto = PostsDto.builder()
+                            .writer(false)      // writer에 false를 리턴
+                            .applying(false)     // 지원 중은 아니고,
+                            .applied(true)     // 지원이 승인되었음.
+                            .nickName(posts.getUser().getNickName())
+                            .title(posts.getTitle())
+                            .web(posts.getCategory().getWeb())
+                            .app(posts.getCategory().getApp())
+                            .game(posts.getCategory().getGame())
+                            .ai(posts.getCategory().getAi())
+                            .content(posts.getContent())
+                            .promoteImageUrl(posts.getPromoteImageUrl())
+                            .fileUrl(posts.getFileUrl())
+                            .counts(posts.getCounts())
+                            .recruitmentCount(posts.getRecruitmentCount())
+                            .endDate(posts.getEndDate())
+                            .build();
+                }
+            }
         }
 
         return postsDto;
@@ -494,6 +605,7 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
+                    .counts(post.getCounts())
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .build();
@@ -783,51 +895,29 @@ public class PostsService {
 
 
 
-    
-    // GroupPage에 데이터를 가져오는 메서드
+
+    // GroupPage에 내가 작성한 게시물 데이터를 가져오는 메서드
     @Transactional(readOnly = true) //읽기 전용
     // PageRequest.of(page, size)을 인자로 받을 때, 파라미터의 이름은 pageable로 바꾸어 설정
-    public Page<GroupPostsListDto> getGroupPosts(String userEmail, String postsOption, String sortOption, Pageable pageable) {
+    public Page<GroupPostsListDto> getWriterPosts(String userEmail, String sortOption, Pageable pageable) {
 
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
+        QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
 
         // '데이터'를 가져오는 쿼리
         JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
-                .join(posts.category, category); // 게시물을 카테고리와 조인한 형태로 가져올거임
-
-
-        // 만약 postsOption이 writer라면, userEmail과 같은 애들로 쿼리를 만들 것임.
-        // postsOption == "writer"로 하면, 작동하지 않음! equals 써줄 것.
-        if ("writer".equals(postsOption)) {
-            query = query.where(posts.user.email.eq(userEmail));
-        }
-        // 만약 postsOption이 aplicant라면, userEmail과 같지 않은 애들로 쿼리를 만들 것임.
-        // postsOption != "writer"로 하면, 작동하지 않음! equals 써줄 것.
-        if (!"writer".equals(postsOption)) {
-            // 지원한 게시물 긁어오기. 지원 테이블을 찾은 후, 해당 게시물 가져오는 로직 추가.
-            query = query.where(posts.user.email.ne(userEmail));
-        }
-
-        // 정렬 옵션에 따른 조건 추가
-        query=query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
+                .join(posts.category, category) // 게시물을 카테고리와 조인한 형태 +
+                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인한 형태로 가져올 것임. userApplyPosts가 비어있을 경우, join의 결과가 null이므로, leftJoin으로 묶어준다!!
+                .where(posts.user.email.eq(userEmail))     // 단, 현재 로그인한 유저가 올린 글이어야 함
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
         //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
-
 
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
-                .join(posts.category, category); // Join with category
-
-        // 만약 postsOption이 writer라면, userEmail과 같은 애들로 쿼리를 만들 것임.
-        // postsOption == "writer"로 하면, 작동하지 않음! equals 써줄 것.
-        if ("writer".equals(postsOption)) {
-            countQuery = countQuery.where(posts.user.email.eq(userEmail));
-        }
-        // 만약 postsOption이 aplicant라면, userEmail과 같지 않은 애들로 쿼리를 만들 것임.
-        // postsOption != "writer"로 하면, 작동하지 않음! equals 써줄 것.
-        else if (!"writer".equals(postsOption)) {
-            countQuery = countQuery.where(posts.user.email.ne(userEmail));
-        }
+                .join(posts.category, category) // 게시물과 카테고리를 조인
+                .join(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인
+                .where(posts.user.email.eq(userEmail));
 
         long total = countQuery.fetchCount(); // Count쿼리에 의해 전체 데이터 개수 알아냄
 
@@ -837,23 +927,30 @@ public class PostsService {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-
         List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
 
         // 동적 쿼리의 결과를 순회하며 dto로 변환
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // posts라는 연결고리를 통해 연결고리로 접근
-            User user = post.getUser();                    // posts라는 연결고리를 통해 연결고리로 접근
+            User user = post.getUser();
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();
+
+            // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.
+            List<String> applyNickNames = userApplyPost.stream()
+                    .map(userApply -> userApply.getUser().getNickName())  // Get the nickname of each user who applied
+                    .collect(Collectors.toList());
 
             GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
                     .id(post.getId())
-                    .nickName(user.getNickName())   // user = posts.getUser()
+                    .writerNickName(user.getNickName())   // user = posts.getUser()
+                    .applyNickNames(applyNickNames)
                     .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
                     .title(post.getTitle())
                     .web(postCategory.getWeb())     // category = posts.getCategory()
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
+                    .counts(post.getCounts())
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .build();
@@ -862,6 +959,189 @@ public class PostsService {
         }
 
         return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
+    }
+
+
+    // GroupPage에 내가 지원한 게시물 데이터를 가져오는 메서드
+    @Transactional(readOnly = true) //읽기 전용
+    // PageRequest.of(page, size)을 인자로 받을 때, 파라미터의 이름은 pageable로 바꾸어 설정
+    public Page<GroupPostsListDto> getApplicantPosts(String userEmail, String sortOption, Pageable pageable) {
+
+        QUser user = QUser.user;
+        QPosts posts = QPosts.posts;
+        QCategory category = QCategory.category;
+        QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
+
+        // '데이터'를 가져오는 쿼리
+        JPAQuery<UserApplyPosts> query = queryFactory.selectFrom(userApplyPosts) // 게시물을 추출할 건데,
+                .join(userApplyPosts.posts, posts)  // 게시물을 카테고리와 조인한 형태로 가져올거임
+                .join(posts.category, category)
+                .where(userApplyPosts.user.email.eq(userEmail))  // 근데 userEmail과 지원한 이메일이 같아야 해.
+                .orderBy(sortOption.equals("nearDeadline") ? userApplyPosts.posts.endDate.asc() : userApplyPosts.posts.createdDate.desc()); // 정렬 옵션에 따른 조건 추가
+                //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
+
+        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
+        JPQLQuery<UserApplyPosts> countQuery = queryFactory.selectFrom(userApplyPosts)
+                .join(userApplyPosts.posts, posts)
+                .join(posts.category, category)
+                .where(userApplyPosts.user.email.eq(userEmail));
+
+        long total = countQuery.fetchCount(); // Count쿼리에 의해 전체 데이터 개수 알아냄
+
+        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
+        List<UserApplyPosts> filteredPosts = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+
+
+        // 동적 쿼리의 결과를 순회하며 dto로 변환
+        for (UserApplyPosts userApplyPost : filteredPosts) {
+            Posts post = userApplyPost.getPosts();          // posts에 접근
+            Category postCategory = userApplyPost.getPosts().getCategory();        // posts라는 연결고리를 통해 category로 접근
+
+            GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
+                    .id(post.getId())
+                    .writerNickName(post.getUser().getNickName())   // post = userApplyPost.getPosts()
+                    .applyNickNames(null)
+                    .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
+                    .title(post.getTitle())
+                    .web(postCategory.getWeb())     // category = posts.getCategory()
+                    .app(postCategory.getApp())
+                    .game(postCategory.getGame())
+                    .ai(postCategory.getAi())
+                    .counts(post.getCounts())
+                    .recruitmentCount(post.getRecruitmentCount())
+                    .endDate(post.getEndDate())
+                    .build();
+
+            groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
+        }
+
+        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
+    }
+
+//    public Page<GroupPostsListDto> getGroupPosts(String userEmail, String postsOption, String sortOption, Pageable pageable) {
+//
+//        QPosts posts = QPosts.posts;
+//        QCategory category = QCategory.category;
+//
+//        // '데이터'를 가져오는 쿼리
+//        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
+//                .join(posts.category, category); // 게시물을 카테고리와 조인한 형태로 가져올거임
+//
+//
+//        // 만약 postsOption이 writer라면, userEmail과 같은 애들로 쿼리를 만들 것임.
+//        // postsOption == "writer"로 하면, 작동하지 않음! equals 써줄 것.
+//        if ("writer".equals(postsOption)) {
+//            query = query.where(posts.user.email.eq(userEmail));
+//        }
+//        // 만약 postsOption이 aplicant라면, userEmail과 같지 않은 애들로 쿼리를 만들 것임.
+//        // postsOption != "writer"로 하면, 작동하지 않음! equals 써줄 것.
+//        if (!"writer".equals(postsOption)) {
+//            // 지원한 게시물 긁어오기. 지원 테이블을 찾은 후, 해당 게시물 가져오는 로직 추가.
+//            query = query.join(posts.userApplyPosts, userApplyPosts);
+//        }
+//
+//        // 정렬 옵션에 따른 조건 추가
+//        query=query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
+//        //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
+//
+//
+//        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
+//        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
+//                .join(posts.category, category); // Join with category
+//
+//        // 만약 postsOption이 writer라면, userEmail과 같은 애들로 쿼리를 만들 것임.
+//        // postsOption == "writer"로 하면, 작동하지 않음! equals 써줄 것.
+//        if ("writer".equals(postsOption)) {
+//            countQuery = countQuery.where(posts.user.email.eq(userEmail));
+//        }
+//        // 만약 postsOption이 aplicant라면, userEmail과 같지 않은 애들로 쿼리를 만들 것임.
+//        // postsOption != "writer"로 하면, 작동하지 않음! equals 써줄 것.
+//        else if (!"writer".equals(postsOption)) {
+//            countQuery = countQuery.where(posts.user.email.ne(userEmail));
+//        }
+//
+//        long total = countQuery.fetchCount(); // Count쿼리에 의해 전체 데이터 개수 알아냄
+//
+//        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
+//        List<Posts> filteredPosts = query
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//
+//        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+//
+//        // 동적 쿼리의 결과를 순회하며 dto로 변환
+//        for (Posts post : filteredPosts) {
+//            Category postCategory = post.getCategory();        // posts라는 연결고리를 통해 연결고리로 접근
+//            User user = post.getUser();                    // posts라는 연결고리를 통해 연결고리로 접근
+//
+//            GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
+//                    .id(post.getId())
+//                    .nickName(user.getNickName())   // user = posts.getUser()
+//                    .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
+//                    .title(post.getTitle())
+//                    .web(postCategory.getWeb())     // category = posts.getCategory()
+//                    .app(postCategory.getApp())
+//                    .game(postCategory.getGame())
+//                    .ai(postCategory.getAi())
+//                    .counts(post.getCounts())
+//                    .recruitmentCount(post.getRecruitmentCount())
+//                    .endDate(post.getEndDate())
+//                    .build();
+//
+//            groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
+//        }
+//
+//        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
+//    }
+
+
+
+    // 프로젝트에 지원하는 것과 관련된 메서드
+    public PostsDto applyProject(String userEmail, Long projectId) {
+
+        // email로 현재 유저 찾기
+        User findUser = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        // projectId로 게시물 찾기
+        Posts findProject = postsRepository.findById(projectId)
+                .orElseThrow(() -> new AppException("프로젝트를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        // UserApplyPosts 테이블에 들어갈 내용 채우기
+        UserApplyPosts userApplyPosts = UserApplyPosts.builder()
+                .user(findUser)
+                .posts(findProject)
+                .confirm(false)     // 초기에는 승인되지 않았으므로, false
+                .build();
+
+        UserApplyPosts savedUserApplyPosts = userApplyPostsRepository.save(userApplyPosts);
+
+        PostsDto postsDto = PostsDto.builder()
+                .writer(false)      // writer에 false를 리턴
+                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                .applied(false)     // 지원이 승인된 것은 아님.
+                .nickName(savedUserApplyPosts.getPosts().getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedUserApplyPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
+                .title(savedUserApplyPosts.getPosts().getTitle())
+                .web(savedUserApplyPosts.getPosts().getCategory().getWeb())
+                .app(savedUserApplyPosts.getPosts().getCategory().getApp())
+                .game(savedUserApplyPosts.getPosts().getCategory().getGame())
+                .ai(savedUserApplyPosts.getPosts().getCategory().getAi())
+                .content(savedUserApplyPosts.getPosts().getContent())
+                .promoteImageUrl(savedUserApplyPosts.getPosts().getPromoteImageUrl())
+                .fileUrl(savedUserApplyPosts.getPosts().getFileUrl())
+                .counts(savedUserApplyPosts.getPosts().getCounts())
+                .recruitmentCount(savedUserApplyPosts.getPosts().getRecruitmentCount())
+                .endDate(savedUserApplyPosts.getPosts().getEndDate())
+                .build();
+
+        return postsDto;
     }
 }
 

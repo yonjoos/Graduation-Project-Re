@@ -37,6 +37,7 @@ function GroupPage() {
             //현재 사용자가 선택한 페이지와 배너 정보를 queryParams에 넣어서 백엔드에 요청
             const response = await request('GET', `/getGroupPosts?${queryParams}`);
 
+            console.log("response.data : " + response.data);
             setData(response.data.content); //백엔드에서 받은 게시물 목록을 data에 저장
             setTotalPages(response.data.totalPages); //백엔드에서 받은 전체 페이지 수 정보를 totalPages에 저장
         } catch (error) {
@@ -45,6 +46,7 @@ function GroupPage() {
     };
 
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
+    // 스터디 네비게이트할 때에는 다르게 설정!
     const handleRowClick = (projectId) => {
         navigate(`/project/detail/${projectId}`);
     }
@@ -70,20 +72,11 @@ function GroupPage() {
         setCurrentPage(0);
     };
 
-    // 추천버튼을 누르면 추천 페이지로 이동
-    const handleRecommendationPage = () => {
-        navigate('/recommendation'); // Navigate to RecommendationPage
-    };
-
-    // 스터디 버튼을 누르면 스터디 페이지로 이동
-    const handleStudyPage = () => {
-        navigate('/study'); // Navigate to StudyPage
-    };
-
-    // 프로젝트 버튼을 누르면 프로젝트 페이지로 이동
-    const handleProjectPage = () => {
-        navigate('/project'); // Navigate to StudyPage
-    };
+    
+    const handleNickNameClick = (nickName) => {
+        // 해당 사용자 포트폴리오 페이지로 이동
+        navigate('/')
+    }
 
 
     const renderPosts = (posts) => {
@@ -109,18 +102,37 @@ function GroupPage() {
                                 </Col>
                                 <Col span={6} className="vertical-line2"  onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        모집 인원: {item.recruitmentCount}
+                                        인원: {item.counts} / {item.recruitmentCount}
                                     </div>
                                     <div style={{ marginLeft: '3px' }}>
                                         모집 마감일: {formatDate(item.endDate)}
                                     </div>
                                 </Col>
                                 <Col span={6}>
-                                    <div className="shape-outline mb-1" style={{ borderRight: '1px' }}>
-                                        지원자 목록
-                                    </div>
                                     <div style={{ borderRight: '1px' }}>
-                                        {item.nickName}
+                                        {postsOption === 'writer' ? (
+                                            // writer에게는 지원자 목록을 보여주어야 한다.
+                                            <div>
+                                                <div>
+                                                    지원자
+                                                </div>
+                                                {item.applyNickNames.map((nickName, index) => (
+                                                    <div key={index} onClick={() => handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
+                                                        {nickName}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            // applicant에게는 게시물 작성자를 보여주어야 한다.
+                                            <div>
+                                                <div>
+                                                    작성자
+                                                </div>
+                                                <div onClick={() => handleNickNameClick(item.writerNickName)} style={{ cursor: 'pointer' }}>
+                                                    {item.writerNickName}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </Col>
                             </Row>
@@ -157,7 +169,7 @@ function GroupPage() {
                     </Col>
                     <Col span={12} style={{ textAlign: 'right' }}>
 
-                        {/* Sort buttons - 최신등록순, 마감일자 순 버튼*/}
+                        {/** Sort buttons - 최신등록순, 마감일자 순 버튼 */}
                         <Button
                             type={postsOption === 'writer' ? 'primary' : 'default'}
                             onClick={() => handlePostsOptionChange('writer')}

@@ -153,7 +153,7 @@ function ProjectPage() {
                                 </Col>
                                 <Col span={6} className="vertical-line">
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        모집 인원: {item.recruitmentCount}
+                                        인원: {item.counts} / {item.recruitmentCount}
                                     </div>
                                     <div style={{ marginLeft: '3px' }}>
                                         모집 마감일: {formatDate(item.endDate)}

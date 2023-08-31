@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
 import { request } from '../../../hoc/request';
+import './GroupPage.css';
 
 function GroupPage() {
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
@@ -94,27 +95,19 @@ function GroupPage() {
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <Divider className="bold-divider" />
-                        <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                             <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                                <Col span={6}>
-                                    <div className="shape-outline mb-1" style={{ borderRight: '1px' }}>
-                                        <strong style={{ fontSize: '18px' }}> {item.nickName} </strong>
-                                    </div>
-                                    <div style={{ borderRight: '1px' }}>
-                                        {item.postType}
-                                    </div>
-                                </Col>
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={12} className="vertical-line">
+                                {/** JS 최신 버전에서 css는 import 안해도 전역에 적용되는듯..?? vertical-line의 이름은 똑같고, 내용을 바꿨더니, 둘 다 적용되는 버그가 발생해서 이런 의심이 생겼음. */}
+                                <Col span={12} className="vertical-line2" onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         <strong style={{ fontSize: '18px' }}>{item.title}</strong>
                                     </div>
                                     {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
                                     <div style={{ marginLeft: '3px' }}>
-                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                        게시판 이름: {item.postType} &nbsp;/&nbsp; 분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
                                     </div>
                                 </Col>
-                                <Col span={6} className="vertical-line">
+                                <Col span={6} className="vertical-line2"  onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         모집 인원: {item.recruitmentCount}
                                     </div>
@@ -122,8 +115,15 @@ function GroupPage() {
                                         모집 마감일: {formatDate(item.endDate)}
                                     </div>
                                 </Col>
+                                <Col span={6}>
+                                    <div className="shape-outline mb-1" style={{ borderRight: '1px' }}>
+                                        지원자 목록
+                                    </div>
+                                    <div style={{ borderRight: '1px' }}>
+                                        {item.nickName}
+                                    </div>
+                                </Col>
                             </Row>
-                        </div>
                         <Divider className="bold-divider" />
                     </Card>
 

@@ -58,7 +58,7 @@ public class PostsService {
                 .postType(postType)
                 .title(postsFormDto.getTitle())
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
-                .counts(1)      // 맨 처음 지원자 수는 1명 (본인)
+                .counts(0)      // 맨 처음 지원자 수는 0명 (본인 제외)
                 .content(postsFormDto.getContent().replace("<br>", "\n"))
                 .promoteImageUrl(postsFormDto.getPromoteImageUrl())
                 .fileUrl(postsFormDto.getFileUrl())
@@ -140,7 +140,7 @@ public class PostsService {
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
         if (posts.getUser().getEmail().equals(userEmail) ) {
              postsDto = PostsDto.builder()
-                     .writer(true)      // writer에 true를 리턴
+                    .writer(true)      // writer에 true를 리턴
                     .nickName(posts.getUser().getNickName())
                     .title(posts.getTitle())
                     .web(posts.getCategory().getWeb())
@@ -680,6 +680,110 @@ public class PostsService {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     // GroupPage에 데이터를 가져오는 메서드
     @Transactional(readOnly = true) //읽기 전용
     // PageRequest.of(page, size)을 인자로 받을 때, 파라미터의 이름은 pageable로 바꾸어 설정

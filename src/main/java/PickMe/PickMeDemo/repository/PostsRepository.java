@@ -7,19 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.repository.query.Param;
 
-
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-
-
-
-
-
-
-
 import java.util.List;
 import java.util.Optional;
 
-public interface PostsRepository extends JpaRepository<Posts, Long>, QuerydslPredicateExecutor<Posts> {
+public interface PostsRepository extends JpaRepository<Posts, Long> {
 
     // User와 PostType을 통해 특정 게시물 단건 조회
     Optional<Posts> findByUserAndPostType(User user, PostType postType);

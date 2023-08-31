@@ -35,7 +35,7 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
 
     private String shortIntroduce; //한줄 소개
 
-    @Lob
+    @Column(columnDefinition = "TEXT") // @Lob 대신 Text로 변경 -> 1gb까지 저장 가능
     private String introduce; //소개
 
     private String fileUrl; //첨부 파일

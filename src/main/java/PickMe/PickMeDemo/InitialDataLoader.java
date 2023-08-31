@@ -187,9 +187,9 @@ public class InitialDataLoader implements CommandLineRunner {
         Category category3 = Category.builder()
                 .posts(posts3)
                 .web(false)
-                .app(false)
+                .app(true)
                 .game(false)
-                .ai(false)
+                .ai(true)
                 .build();
 
         category3.validateFieldCount();
@@ -269,10 +269,10 @@ public class InitialDataLoader implements CommandLineRunner {
 
         Category category5 = Category.builder()
                 .posts(posts5)
-                .web(false)
+                .web(true)
                 .app(false)
                 .game(false)
-                .ai(false)
+                .ai(true)
                 .build();
 
         category5.validateFieldCount();
@@ -299,9 +299,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         Category category6 = Category.builder()
                 .posts(posts6)
-                .web(false)
+                .web(true)
                 .app(false)
-                .game(false)
+                .game(true)
                 .ai(false)
                 .build();
 
@@ -381,9 +381,9 @@ public class InitialDataLoader implements CommandLineRunner {
         Category category7 = Category.builder()
                 .posts(posts7)
                 .web(false)
-                .app(false)
+                .app(true)
                 .game(true)
-                .ai(true)
+                .ai(false)
                 .build();
 
         category7.validateFieldCount();
@@ -425,9 +425,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         Category category8 = Category.builder()
                 .posts(posts8)
-                .web(false)
+                .web(true)
                 .app(false)
-                .game(false)
+                .game(true)
                 .ai(false)
                 .build();
 
@@ -655,8 +655,8 @@ public class InitialDataLoader implements CommandLineRunner {
         Category category20 = Category.builder()
                 .posts(posts20)
                 .web(false)
-                .app(false)
-                .game(false)
+                .app(true)
+                .game(true)
                 .ai(false)
                 .build();
 

@@ -48,8 +48,7 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @Column(name = "recruitmentCount", nullable = false)
     private Integer recruitmentCount; // 총 지원자 수
 
-    @Column(name = "content", nullable = false)
-    @Lob
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT") // @Lob 대신 Text로 변경 -> 1gb까지 저장 가능
     private String content; //내용
 
     @Column(name = "promoteImageUrl")

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Divider, Row, Col, Button, Card } from 'antd';
 import { request } from '../../../hoc/request';
 import Search from '../../utils/Search';
@@ -15,6 +15,7 @@ function StudyPage() {
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
     const navigate = useNavigate();
+    const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
     // 페이지가 새로 마운트 될 때마다 실행됨. 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 현재 사용자가 하이라이트한 페이지 번호 상태, 최신일순/마감일순를 기반으로 백엔드에 동적쿼리 보냄
     useEffect(() => {
@@ -95,12 +96,27 @@ function StudyPage() {
         setCurrentPage(0);
     };
 
+     // 추천버튼을 누르면 추천 페이지로 이동
+    const handleRecommendationPage = () => {
+        navigate('/recommendation'); // Navigate to RecommendationPage
+    };
+
+    // 스터디 페이지를 누르면 스터디 페이지로 이동
+    const handleStudyPage = () => {
+        navigate('/study'); // Navigate to StudyPage
+    };
+
+    // 프로젝트 페이지를 누르면 프로젝트 페이지로 이동
+    const handleProjectPage = () => {
+        navigate('/project'); // Navigate to StudyPage
+    };
+
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
             <div>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '10px 0' }}> {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
+                    <Card key={index} style={{ margin: '0 0 10px 0' }}> {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <Divider className="bold-divider" />
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
@@ -202,6 +218,18 @@ function StudyPage() {
                         </Button>
                     </Col>
                 </Row>               
+            </div>
+            <div style={{ textAlign: 'left', margin:"0 0" }}>
+                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
+                    Project
+                </Button>
+                <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
+                    Study
+                </Button>
+                <Button type={location.pathname === '/recommendation' ? 'primary' : 'default'} onClick={handleRecommendationPage} style={{ marginRight: '10px' }}>
+                    Recommendation
+                </Button>
+
             </div>
 
             {renderPosts(data)}

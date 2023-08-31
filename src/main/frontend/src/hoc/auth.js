@@ -2,6 +2,35 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+
+/*
+=======================================================================================================================================
+=============================================  /  HOC file - auth.js  /  ==============================================================
+=======================================================================================================================================
+
+** HOC file : Redux 라이브러리를 사용함에 있어서 encapsulate를 위한 패턴이라고 GPT 씨가 말씀하심
+
+** What HOC Does : 컴포넌트에 어떤 것을 추가해서 새로운 컴포넌트로 내보내는 역할
+    ex >> 로그인 정보에 인증 정보를 추가해서 새로운 컴포넌트로 내보냄 (아닐 수도....)
+
+** 이 프로젝트에서의 Auth 함수 :
+
+    < 매개변수 >
+    1) SpecificationComponent : Components such as '...Page'
+     - Auth 함수의 로직을 통과하면 navigate 정보가 추가로 입혀짐.
+     - 기존의 데이터(<Html> 소스코드) 에 무언가가 추가된(navigate + else) 새로운 컴포넌트로 내보내짐
+
+    2)
+    3)
+    4)
+     
+     
+    < return 값 >
+        return값(Html코드 + else) 은 App.js의 <Rout>의 element 속성의 값으로 들어가게 됨
+
+=======================================================================================================================================
+*/
+
 function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null) {
 
     function AuthenticationCheck(props) {

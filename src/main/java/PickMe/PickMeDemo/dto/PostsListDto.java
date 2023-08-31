@@ -19,6 +19,7 @@ public class PostsListDto {
     private Boolean app;
     private Boolean game;
     private Boolean ai;
+    private Integer counts;
     private Integer recruitmentCount;
     private LocalDate endDate;
 

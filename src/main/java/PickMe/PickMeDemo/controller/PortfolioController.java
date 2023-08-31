@@ -33,7 +33,7 @@ public class PortfolioController {
         return ResponseEntity.ok(portfolioDto);
     }
 
-    // 포트폴리오 전체 정보 가져오기
+    // 나의 포트폴리오 정보 가져오기
     @GetMapping("/getPortfolio")
     public ResponseEntity<PortfolioDto> getPortfolio(Principal principal) {
         String userEmail = principal.getName(); // JWT 토큰에서 이메일 가져오기
@@ -84,5 +84,16 @@ public class PortfolioController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to withdraw portfolio.");
         }
+    }
+
+
+    // 닉네임으로 상대방 포트폴리오 정보 가져오기
+    @GetMapping("/getUserPortfolio")
+    public ResponseEntity<PortfolioDto> getPortfolioByNickName(@RequestParam String nickName) {
+
+        // getUserPortfolio : 유저의 닉네임을 통해 해당 유저의 포트폴리오를 가져오는 함수
+        PortfolioDto portfolio = portfolioService.getUserPortfolio(nickName);
+
+        return ResponseEntity.ok(portfolio);
     }
 }

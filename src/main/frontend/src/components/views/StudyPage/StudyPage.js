@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Divider, Row, Col, Button, Card } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
 import { request } from '../../../hoc/request';
-import Search from '../../utils/Search';
+import SearchInStudyPage from './SearchInStudyPage';
 import './StudyPage.css';
-import { Pagination } from 'antd';
 
 
 function StudyPage() {
@@ -13,14 +12,22 @@ function StudyPage() {
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
+    const [searchTerm, setSearchTerm] = useState(""); //프로젝트 페이지 내의 검색어 키워드
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
     const navigate = useNavigate();
+    const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
-    // 페이지가 새로 마운트 될 때마다 실행됨. 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 현재 사용자가 하이라이트한 페이지 번호 상태, 최신일순/마감일순를 기반으로 백엔드에 동적쿼리 보냄
+    // 페이지가 새로 마운트 될 때마다 실행됨. 
+    // 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 
+    // 현재 사용자가 하이라이트한 페이지 번호 상태, 
+    // 최신일순/마감일순에 대한 정렬 옵션,
+    // 검색어 키워드 문자열
+    // 를 기반으로 백엔드에 동적쿼리 보냄
     useEffect(() => {
         console.log('현재 선택된 배너 정보', selectedBanners);
+        console.log('현재 검색된 키워드: ', searchTerm);
         fetchFilteredPosts();
-    }, [selectedBanners, currentPage, sortOption]);
+    }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
     // 실제 백엔드에 동적 쿼리 보내는 곳
     const fetchFilteredPosts = async () => {
@@ -30,7 +37,8 @@ function StudyPage() {
                 selectedBanners: selectedBanners.join(','), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-                sortOption: sortOption // 최신 등록순, 모집일자 마감순 
+                sortOption: sortOption, // 최신 등록순, 모집일자 마감순
+                searchTerm: searchTerm // 검색어 키워드 문자열 
             });
 
             //현재 사용자가 선택한 페이지와 배너 정보를 queryParams에 넣어서 백엔드에 요청
@@ -95,12 +103,35 @@ function StudyPage() {
         setCurrentPage(0);
     };
 
+    // 추천버튼을 누르면 추천 페이지로 이동
+    const handleRecommendationPage = () => {
+        navigate('/recommendation'); // Navigate to RecommendationPage
+    };
+
+    // 스터디 페이지를 누르면 스터디 페이지로 이동
+    const handleStudyPage = () => {
+        navigate('/study'); // Navigate to StudyPage
+    };
+
+    // 프로젝트 페이지를 누르면 프로젝트 페이지로 이동
+    const handleProjectPage = () => {
+        navigate('/project'); // Navigate to StudyPage
+    };
+
+    // 검색어가 새로이 입력되거나 변경되면 여기서 감지해서 백엔드에 보낼 searchTerm을 세팅함
+    const handleSearch = (value) => {
+        setSearchTerm(value); // 검색어를 세팅
+        setCurrentPage(0); // 검색어가 변경되면 0페이지로 이동
+    };
+
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
             <div>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '10px 0' }}> {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
+                    <Card key={index} style={{ margin: '0 0 10px 0' }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
+
+                        {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <Divider className="bold-divider" />
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
@@ -140,14 +171,20 @@ function StudyPage() {
 
     return (
         <div>
-            <Search />
+            <SearchInStudyPage setSearchTerm={handleSearch} />
+            {/* 스터디 페이지에서 전용으로 사용할 하위 컴포넌트인 SearchInProjectPage에서 검색어 입력받고
+                검색 완료 후 돋보기 클릭이나 엔터하는 기능을 위임.
+                만약 엔터나 돋보기 버튼 클릭하면 하위 컴포넌트의 handleSearch 동작 후에 
+                다시 상위 컴포넌트인 StudyPage의 handleSearch도 동작하면서 백엔드에 보낼 searchTerm을 세팅하고, 
+                0페이지로 보내는 것 같음
+            */}
 
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Row>
                     {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}
                     <Col span={6}>
 
-                    {/* Sort buttons - 최신등록순, 마감일자 순 버튼*/}
+                        {/* Sort buttons - 최신등록순, 마감일자 순 버튼*/}
                         <Button
                             type={sortOption === 'latestPosts' ? 'primary' : 'default'}
                             onClick={() => handleSortOptionChange('latestPosts')}
@@ -201,7 +238,21 @@ function StudyPage() {
                             Upload Study
                         </Button>
                     </Col>
-                </Row>               
+                </Row>
+            </div>
+            {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
+            <div style={{ textAlign: 'left', margin: "0 0" }}>
+                {/** 현재 경로가 localhost:3000/study이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
+                    Project
+                </Button>
+                <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
+                    Study
+                </Button>
+                <Button type={location.pathname === '/recommendation' ? 'primary' : 'default'} onClick={handleRecommendationPage} style={{ marginRight: '10px' }}>
+                    Recommendation
+                </Button>
+
             </div>
 
             {renderPosts(data)}

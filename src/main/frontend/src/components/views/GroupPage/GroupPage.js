@@ -92,7 +92,7 @@ function GroupPage() {
                             <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                                 {/** JS 최신 버전에서 css는 import 안해도 전역에 적용되는듯..?? vertical-line의 이름은 똑같고, 내용을 바꿨더니, 둘 다 적용되는 버그가 발생해서 이런 의심이 생겼음. */}
-                                <Col span={12} className="vertical-line2" onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
+                                <Col span={12} className="vertical-line2" onClick={handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         <strong style={{ fontSize: '18px' }}>{item.title}</strong>
                                     </div>
@@ -101,7 +101,7 @@ function GroupPage() {
                                         게시판 이름: {item.postType} &nbsp;/&nbsp; 분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
                                     </div>
                                 </Col>
-                                <Col span={6} className="vertical-line2"  onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
+                                <Col span={6} className="vertical-line2"  onClick={handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         인원: {item.counts} / {item.recruitmentCount}
                                     </div>
@@ -122,11 +122,11 @@ function GroupPage() {
                                                     <div>
                                                     {item.applyNickNames.map((nickName, index) => (
                                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                            <div key={index} onClick={() => handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
+                                                            <div key={index} onClick={handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
                                                                 {nickName}
                                                             </div>
                                                             <div>
-                                                                <Button size="small" onClick={() => handleNickNameClick(nickName)} style={{ marginRight: '5px' }}>
+                                                                <Button size="small" onClick={handleNickNameClick(nickName)} style={{ marginRight: '5px' }}>
                                                                     포트폴리오
                                                                 </Button>
                                                                 <Button size="small">

@@ -1,11 +1,16 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import { useState, useEffect } from 'react';
-import { Card, Row, Col } from 'antd';
+import { Card, Row, Col, Divider } from 'antd';
 import { request } from '../../../hoc/request';
+import { useNavigate } from 'react-router-dom';
+
+
 
 function RecommendationPage() {
     const [data, setData] = useState([]);
-    
+    const navigate = useNavigate();
+
+
 
     useEffect(() => {
         request('GET', '/messages', {})
@@ -17,7 +22,63 @@ function RecommendationPage() {
                 console.error("Error fetching data:", error);
             });
     }, []);
+
+    const onClickHandler = () => {
+        navigate('/portfolio');
+      }
     
+    const testfunction = () => {
+        
+        return (
+            <div>
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={8}>
+                        <Card onClick={onClickHandler} title = "hi">
+                            <h2>TEST 1</h2>
+                            <p>
+                                as this is a test comp,
+                                won't consider actual texts.
+                                <br></br>
+                                <br></br>
+
+                                I apologize for any inconvenience.
+                                sincerely, yonjoo.
+                            </p>
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={8}>
+                        <Card title = "hi">
+                            <h2>TEST 2</h2>
+                            <p>
+                                as this is a test comp,
+                                won't consider actual texts.
+                                <br></br>
+                                <br></br>
+
+                                I apologize for any inconvenience.
+                                sincerely, yonjoo.
+                            </p>
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={8}>
+                        <Card title = "hi">
+                            <h3>TEST 3</h3>
+                            <p>
+                                as this is a test comp,
+                                won't consider actual texts.
+                                <br></br>
+                                <br></br>
+
+                                I apologize for any inconvenience.
+                                sincerely, yonjoo.
+                            </p>
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+        )
+
+    }
 
     return (
         <div>
@@ -33,6 +94,8 @@ function RecommendationPage() {
                     </Card>
                 </Col>
             </Row>
+            <Divider></Divider>
+            {testfunction()}
         </div>
     );
 }

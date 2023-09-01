@@ -54,13 +54,13 @@ function LandingPage() {
                         <Auth />
                     </Col>
                     <Search/>
-                    <Col span={8}>
+                    <Col xs={24} sm={8}>
                         <RecommendationCard />
                     </Col>
-                    <Col span={8}>
+                    <Col xs={24} sm={8}>
                         <ProjectCard />
                     </Col>
-                    <Col span={8}>
+                    <Col xs={24} sm={8}>
                         <StudyCard />
                     </Col>
                 </Row>

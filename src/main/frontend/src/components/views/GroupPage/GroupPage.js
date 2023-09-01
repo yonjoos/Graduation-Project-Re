@@ -117,6 +117,7 @@ function GroupPage() {
                                                 <div>
                                                     지원자
                                                 </div>
+                                                {/** item.applyNickNames가 비어있는 경우 (null인 경우)를 반드시 처리해주기!! */}
                                                 {item.applyNickNames ? (
                                                     <div>
                                                     {item.applyNickNames.map((nickName, index) => (

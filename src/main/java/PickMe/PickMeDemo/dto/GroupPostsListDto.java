@@ -17,7 +17,6 @@ public class GroupPostsListDto {
     private Long id;
     private String writerNickName;
     private List<String> applyNickNames;
-    //private String nickName;
     private String title;
     private String postType;
     private Boolean web;
@@ -27,5 +26,7 @@ public class GroupPostsListDto {
     private Integer counts;
     private Integer recruitmentCount;
     private LocalDate endDate;
+    private List<Boolean> approved; // 한 게시물에 대해 모든 유저에 대한 승인 여부. writer가 보는 용도로 사용
+    private Boolean isApproved; // 특정 유저의 승인 여부. applicant가 보는 용도로 사용
 
 }

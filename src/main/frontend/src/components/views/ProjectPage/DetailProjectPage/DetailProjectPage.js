@@ -10,7 +10,9 @@ function DetailProjectPage() {
 
     const [data, setData] = useState({}); // State to hold project details
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);    // 지원 취소 관련 모달
     const [modalAction, setModalAction] = useState('');
+    const [cancelAction, setCancelAction] = useState('');   // 승인 허가된 사람과, 승인 허가되지 않은 사람의 지원 취소 request 매커니즘을 다르게 하기 위해 세팅.
 
     useEffect(() => {
         // Make a request to fetch the project details using projectId
@@ -71,6 +73,12 @@ function DetailProjectPage() {
         setIsModalVisible(true);
         setModalAction(action);
     };
+
+    // 지원 취소 모달 띄우기
+    const showCancelModal = (action) => {
+        setIsCancelModalVisible(true);
+        setCancelAction(action);    // 지원 취소 모달 띄울 때, cancelAction이 applying인지 approved인지 세팅함
+    };
     
     const handleModalConfirm = () => {
         // writer가 게시물 삭제 버튼을 누른 경우
@@ -100,17 +108,35 @@ function DetailProjectPage() {
         }
         setIsModalVisible(false);
     };
+
+    const handleCancelModalConfirm = async () => {
+        try {
+            const response = await request('POST', `/project/cancelApply/${projectId}`, {
+                // 여기는 requestBody부분. requestParam을 쓰려면 new URLSearchParams을 써야 한다!
+                action: cancelAction
+            });
+
+            setData(response.data);
+            setIsCancelModalVisible(false);
+        } catch (error) {
+            console.error("Error approving user:", error);
+        }
+    };
     
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
+
+    const handleCancelModalCancel = () => {
+        setIsCancelModalVisible(false);
+    };      
 
     // 글 작성자인지, 아닌지에 따라 다르게 보이도록 설정
     const renderButtons = () => {
         const isWriter = data.writer;
         const isApplying = data.applying;
         const isApplied = data.applied;
-
+    
         return (
             <Row>
                 <Col span={12}>
@@ -132,24 +158,53 @@ function DetailProjectPage() {
                     )}
                     {/** 게시물에 지원 안한 사람 */}
                     {!isWriter && !isApplying && !isApplied && (
-                        <Button type="primary" onClick={() => showModal('apply')}>
-                            지원하기
-                        </Button>
+                        data.counts === data.recruitmentCount ? (
+                            // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
+                            <div>
+                                <Button type="text" disabled>
+                                    모집 마감
+                                </Button>
+                            </div>
+                        ) : (
+                            <div>
+                                <Button type="primary" onClick={() => showModal('apply')}>
+                                    지원하기
+                                </Button>
+                            </div>
+                        )
                     )}
                     {/** 지원은 했으나, 승인 대기 중인 사람 */}
                     {!isWriter && isApplying && (
-                        <div>
-                            <Button type="text" disabled>
-                                승인 대기 중..
-                            </Button>
-                        </div>
-
+                        data.counts === data.recruitmentCount ? (
+                            // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
+                            <div>
+                                <Button type="text" disabled>
+                                    모집 마감
+                                </Button>
+                                <Button type="primary" onClick={() => showCancelModal('applying')}>
+                                    지원 취소
+                                </Button>
+                            </div>
+                        ) : (
+                            // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
+                            <div>
+                                <Button type="text" disabled>
+                                    승인 대기 중..
+                                </Button>
+                                <Button type="primary" onClick={() => showCancelModal('applying')}>
+                                    지원 취소
+                                </Button>
+                            </div>
+                        )
                     )}
-                    {/** 승인 허가난 사람 */}
+                    {/** 승인 허가된 사람 */}
                     {!isWriter && isApplied && (
                         <div>
                             <Button type="text" disabled>
                                 승인 완료
+                            </Button>
+                            <Button type="primary" onClick={() => showCancelModal('approved')}>
+                                지원 취소
                             </Button>
                         </div>
                     )}
@@ -157,6 +212,7 @@ function DetailProjectPage() {
             </Row>
         );
     };
+
 
     return (
         <div style={{ marginLeft: '10%', marginRight: '10%' }}>
@@ -238,6 +294,16 @@ function DetailProjectPage() {
                 {modalAction === 'apply' && (
                     <p>게시물에 지원하시겠습니까?</p>
                 )}
+            </Modal>
+            <Modal
+                title="Confirm Action"
+                open={isCancelModalVisible}
+                onOk={handleCancelModalCancel}
+                onCancel={handleCancelModalConfirm}
+                okText="아니오"
+                cancelText="예"
+                >
+                <p>지원을 취소하시겠습니까?</p>
             </Modal>
         </div>
     )

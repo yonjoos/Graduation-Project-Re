@@ -71,4 +71,20 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
         this.fileUrl = fileUrl;
         this.endDate = endDate;
     }
+
+    public String apply() {
+        if (this.getCounts() == this.getRecruitmentCount()) {
+            return "fail";
+        }
+        else {
+            this.setCounts(this.getCounts() + 1);
+            return "ok";
+        }
+    }
+
+    public void cancel() {
+        if (this.getCounts() > 0) {
+            this.setCounts(this.getCounts() - 1);
+        }
+    }
 }

@@ -13,9 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -390,6 +390,46 @@ public class PostsController {
         String userEmail = principal.getName();
 
         PostsDto postsDto = postsService.applyProject(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+
+    // 지원 승인
+    @PutMapping("/posts/approve")
+    private ResponseEntity<Page<GroupPostsListDto>> approveUserWithProject(
+            @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
+            @RequestParam Long projectId,   // 프론트엔드에서 넘어온 프로젝트 ID
+            @RequestParam(defaultValue = "latestPosts") String sortOption, // 프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
+            @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
+            @RequestParam(name = "size", defaultValue = "3") int size, // 프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
+            Principal principal) {      // 본인이 쓴 글인지, 남이 쓴 글인지 구분하기 위해 현재 유저의 정보 가져오기
+
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        Page<GroupPostsListDto> groupPosts = postsService.approveUser(userEmail, nickName, projectId, sortOption, PageRequest.of(page, size));
+
+        return ResponseEntity.ok(groupPosts);
+    }
+
+
+    // 지원 취소
+    @PostMapping("/project/cancelApply/{projectId}")
+    public ResponseEntity<PostsDto> cancelApply(
+            @PathVariable Long projectId,
+            Principal principal,
+            @RequestBody Map<String, String> requestBody     // Map으로 json 형식인 {"action":"approved"}을 스트링으로 파싱
+    ) {
+
+        // "action" 필드의 값을 추출. action 변수에는 "approved" 또는 "applying"이 들어있게 됨.
+        String action = requestBody.get("action");
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.cancelApply(userEmail, projectId, action);
 
         return ResponseEntity.ok(postsDto);
     }

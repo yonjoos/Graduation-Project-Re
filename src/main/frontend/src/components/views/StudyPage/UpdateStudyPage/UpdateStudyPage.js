@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Row, Col, Input, Button, Checkbox, message, DatePicker, InputNumber } from 'antd';
+import { Row, Col, Input, Button, Checkbox, DatePicker, message, InputNumber } from 'antd';
 import { request } from '../../../../hoc/request';
 import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
@@ -12,9 +12,9 @@ function UpdateStudyPage() {
 
     const [data, setData] = useState({
         title: '',
-        postType: [],
+        postType: [], // Boolean 타입의 배열
         recruitmentCount: 0,
-        endDate: null, // Change to null
+        endDate: '',
         content: '',
         promoteImageUrl: '',
         fileUrl: '',
@@ -28,20 +28,21 @@ function UpdateStudyPage() {
         try {
             const response = await request('GET', `/getStudyForm/${studyId}`);
             const existingData = response.data;
-
+    
             // Boolean 배열을 Checkbox.Group 값에 대한 문자열 배열로 변환
             const postTypeStrings = options.filter((_, index) => existingData.postType[index]);
-
+            
             setData({
                 ...existingData,
                 postType: postTypeStrings,
-                endDate: dayjs(existingData.endDate) // Initialize with dayjs object
+                endDate: dayjs(existingData.endDate) // Make sure endDate is a valid dayjs object
             });
         } catch (error) {
             console.error('Error fetching existing study data:', error);
             navigate(`/study/detail/${studyId}`);
         }
     };
+    
 
     const options = ['Web', 'App', 'Game', 'AI'];
     const MAX_SELECTED_CHECKBOXES = 2;
@@ -81,7 +82,7 @@ function UpdateStudyPage() {
         e.preventDefault();
 
         if (!data.title) {
-            message.warning('프로젝트 이름을 작성해주세요.');
+            message.warning('스터디 이름을 작성해주세요.');
             return;
         }
         if (data.postType.length === 0) {
@@ -97,7 +98,7 @@ function UpdateStudyPage() {
             return;
         }
         if (!data.content) {
-            message.warning('프로젝트 내용을 적어주세요.');
+            message.warning('스터디 내용을 적어주세요.');
             return;
         }
 
@@ -132,17 +133,19 @@ function UpdateStudyPage() {
                 promoteImageUrl: promoteImageUrl,
                 fileUrl: fileUrl
             });
-            alert('프로젝트 게시물이 성공적으로 업데이트 되었습니다.');
+            alert('스터디 게시물이 성공적으로 업데이트 되었습니다.');
+            // navigate(`/study/detail/${studyId}`)
         } catch (error) {
-            alert('프로젝트 게시물 업데이트에 실패하였습니다.');
+            alert('스터디 게시물 업데이트에 실패하였습니다.');
         }
     };
+    
 
     return (
         <Row justify="center">
             <Col span={12}>
                 <form onSubmit={onSubmitStudy}>
-                    <div className="form-outline mb-1">프로젝트 이름</div>
+                    <div className="form-outline mb-1">스터디 이름</div>
                     <div className="form-outline mb-4">
                         <Input
                             type="text"
@@ -155,7 +158,7 @@ function UpdateStudyPage() {
 
                     <div className="form-outline mb-1">모집 분야</div>
                     <div className="form-outline mb-4">
-                        <label>Post Type    </label>
+                        <label>Post Type &nbsp;&nbsp;&nbsp;</label>
                         {renderCheckboxGroup()}
                     </div>
 
@@ -187,11 +190,11 @@ function UpdateStudyPage() {
                         </div>
                     </div>
 
-                    <div className="form-outline mb-1">프로젝트 내용</div>
+                    <div className="form-outline mb-1">스터디 내용</div>
                     <div className="form-outline mb-4">
                         <TextArea
                             name="content"
-                            placeholder="내용 변경"
+                            placeholder="스터디 내용 변경"
                             value={data.content}
                             onChange={onChangeHandler}
                             autoSize={{ minRows: 20 }}

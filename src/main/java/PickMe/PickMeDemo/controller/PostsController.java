@@ -369,6 +369,11 @@ public class PostsController {
 
         Page<GroupPostsListDto> groupPosts;
 
+        System.out.println("===========================================================================");
+        System.out.println("postsOption = " + postsOption);
+        System.out.println("sortOption = " + sortOption);
+        System.out.println("===========================================================================");
+
         if ("writer".equals(postsOption)) {
             groupPosts = postsService.getWriterPosts(userEmail, sortOption, PageRequest.of(page, size));
         }
@@ -384,12 +389,24 @@ public class PostsController {
         return ResponseEntity.ok(groupPosts);
     }
 
+
+
     // 특정 프로젝트 지원
     @PostMapping("/project/apply/{projectId}") // Use path variable to get project ID from URL
     private ResponseEntity<PostsDto> applyProject(@PathVariable Long projectId, Principal principal) {
         String userEmail = principal.getName();
 
-        PostsDto postsDto = postsService.applyProject(userEmail, projectId);
+        PostsDto postsDto = postsService.applyPosts(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+    // 특정 스터디 지원
+    @PostMapping("/study/apply/{studyId}") // Use path variable to get study ID from URL
+    private ResponseEntity<PostsDto> applyStudy(@PathVariable Long studyId, Principal principal) {
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.applyPosts(userEmail, studyId);
 
         return ResponseEntity.ok(postsDto);
     }
@@ -397,9 +414,9 @@ public class PostsController {
 
     // 지원 승인
     @PutMapping("/posts/approve")
-    private ResponseEntity<Page<GroupPostsListDto>> approveUserWithProject(
+    private ResponseEntity<Page<GroupPostsListDto>> approveUserWithPosts(
             @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
-            @RequestParam Long projectId,   // 프론트엔드에서 넘어온 프로젝트 ID
+            @RequestParam Long postsId,   // 프론트엔드에서 넘어온 프로젝트 ID
             @RequestParam(defaultValue = "latestPosts") String sortOption, // 프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
             @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
             @RequestParam(name = "size", defaultValue = "3") int size, // 프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
@@ -409,15 +426,15 @@ public class PostsController {
         // Email 찾기
         String userEmail = principal.getName();
 
-        Page<GroupPostsListDto> groupPosts = postsService.approveUser(userEmail, nickName, projectId, sortOption, PageRequest.of(page, size));
+        Page<GroupPostsListDto> groupPosts = postsService.approveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
     }
 
 
-    // 지원 취소
+    // 프로젝트 지원 취소
     @PostMapping("/project/cancelApply/{projectId}")
-    public ResponseEntity<PostsDto> cancelApply(
+    public ResponseEntity<PostsDto> cancelProjectApply(
             @PathVariable Long projectId,
             Principal principal,
             @RequestBody Map<String, String> requestBody     // Map으로 json 형식인 {"action":"approved"}을 스트링으로 파싱
@@ -432,6 +449,43 @@ public class PostsController {
         PostsDto postsDto = postsService.cancelApply(userEmail, projectId, action);
 
         return ResponseEntity.ok(postsDto);
+    }
+
+    // 스터디 지원 취소
+    @PostMapping("/study/cancelApply/{studyId}")
+    public ResponseEntity<PostsDto> cancelStudyApply(
+            @PathVariable Long studyId,
+            Principal principal,
+            @RequestBody Map<String, String> requestBody     // Map으로 json 형식인 {"action":"approved"}을 스트링으로 파싱
+    ) {
+
+        // "action" 필드의 값을 추출. action 변수에는 "approved" 또는 "applying"이 들어있게 됨.
+        String action = requestBody.get("action");
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.cancelApply(userEmail, studyId, action);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+    // 승인 취소
+    @PutMapping("/posts/cancelApprove")
+    private ResponseEntity<Page<GroupPostsListDto>> cancelApproveUserWithPost(
+            @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
+            @RequestParam Long postsId,   // 프론트엔드에서 넘어온 프로젝트 ID
+            @RequestParam(defaultValue = "latestPosts") String sortOption, // 프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
+            @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
+            @RequestParam(name = "size", defaultValue = "3") int size, // 프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
+            Principal principal) {      // 본인이 쓴 글인지, 남이 쓴 글인지 구분하기 위해 현재 유저의 정보 가져오기
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        Page<GroupPostsListDto> groupPosts = postsService.cancelApproveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
+
+        return ResponseEntity.ok(groupPosts);
     }
 }
 

@@ -18,7 +18,6 @@ function UploadStudyPage() {
     const [promoteImageUrl, setPromoteImageUrl] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
 
-    
     const options = ['Web', 'App', 'Game', 'AI'];   // 체크박스에서 선택 가능한 옵션들
     const MAX_SELECTED_CHECKBOXES = 2;  // 선택 가능한 모집 분야 개수 제한
 
@@ -31,6 +30,7 @@ function UploadStudyPage() {
                 <Checkbox
                     key={index}
                     value={option}
+                    // 3개 이상 선택하면, 다른 버튼 못누르게 하기
                     disabled={postType.length === MAX_SELECTED_CHECKBOXES && !postType.includes(option)}
                 >
                     {option}
@@ -40,6 +40,7 @@ function UploadStudyPage() {
     )
 
     const handleCheckboxChange = (checkedValues) => {
+        // 2개 이하인 경우 선택 가능
         if (checkedValues.length <= MAX_SELECTED_CHECKBOXES) {
             setPostType(checkedValues); // setPostType 함수를 호출하여 postType 상태 업데이트
         }

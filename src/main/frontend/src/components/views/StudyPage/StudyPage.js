@@ -12,7 +12,7 @@ function StudyPage() {
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
-    const [searchTerm, setSearchTerm] = useState(""); //프로젝트 페이지 내의 검색어 키워드
+    const [searchTerm, setSearchTerm] = useState(""); //스터디 페이지 내의 검색어 키워드
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
     const navigate = useNavigate();
     const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
@@ -38,7 +38,7 @@ function StudyPage() {
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
                 sortOption: sortOption, // 최신 등록순, 모집일자 마감순
-                searchTerm: searchTerm // 검색어 키워드 문자열 
+                searchTerm: searchTerm // 검색어 키워드 문자열
             });
 
             //현재 사용자가 선택한 페이지와 배너 정보를 queryParams에 넣어서 백엔드에 요청
@@ -56,7 +56,7 @@ function StudyPage() {
         navigate(`/study/detail/${studyId}`);
     }
 
-    // 현재 페이지에서 게시물 업로드를 할 수 있으므로 project upload 버튼을 클릭 시 업로드할 수 있는 페이지로 navigate함
+    // 현재 페이지에서 게시물 업로드를 할 수 있으므로 study upload 버튼을 클릭 시 업로드할 수 있는 페이지로 navigate함
     const onClickHandler = () => {
         navigate('/study/upload');
     }
@@ -71,7 +71,7 @@ function StudyPage() {
     };
 
 
-    // 배너를 선택할 떄마다 selectedBanners가 추가되거나 변경됨
+    // 배너를 선택할 때마다 selectedBanners가 추가되거나 변경됨
     // 처음엔 all(모든 게시물 상태)
     // all이 아닌 다른 게시물을 선택하는 순간 all은 selectedBanners에서 지워지고, 선택된 배너가 selectedBanners에 추가됨
     // 선택된 배너를 다시 클릭하면 해당 배너를 selectedBanners에서 제외
@@ -108,12 +108,12 @@ function StudyPage() {
         navigate('/recommendation'); // Navigate to RecommendationPage
     };
 
-    // 스터디 페이지를 누르면 스터디 페이지로 이동
+    // 스터디 버튼을 누르면 스터디 페이지로 이동
     const handleStudyPage = () => {
         navigate('/study'); // Navigate to StudyPage
     };
 
-    // 프로젝트 페이지를 누르면 프로젝트 페이지로 이동
+    // 프로젝트 버튼을 누르면 프로젝트 페이지로 이동
     const handleProjectPage = () => {
         navigate('/project'); // Navigate to StudyPage
     };
@@ -143,17 +143,17 @@ function StudyPage() {
                                 </Col>
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                                 <Col span={12} className="vertical-line">
-                                    <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
+                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         <strong style={{ fontSize: '18px' }}>{item.title}</strong>
                                     </div>
+                                    {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
                                     <div style={{ marginLeft: '3px' }}>
-                                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
                                         분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
                                     </div>
                                 </Col>
                                 <Col span={6} className="vertical-line">
-                                    <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        모집 인원: {item.recruitmentCount}
+                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                        인원: {item.counts} / {item.recruitmentCount}
                                     </div>
                                     <div style={{ marginLeft: '3px' }}>
                                         모집 마감일: {formatDate(item.endDate)}
@@ -171,8 +171,8 @@ function StudyPage() {
 
     return (
         <div>
-            <SearchInStudyPage setSearchTerm={handleSearch} />
-            {/* 스터디 페이지에서 전용으로 사용할 하위 컴포넌트인 SearchInProjectPage에서 검색어 입력받고
+            <SearchInStudyPage setSearchTerm={handleSearch} /> 
+            {/* 스터디 페이지에서 전용으로 사용할 하위 컴포넌트인 SearchInStudyPage에서 검색어 입력받고
                 검색 완료 후 돋보기 클릭이나 엔터하는 기능을 위임.
                 만약 엔터나 돋보기 버튼 클릭하면 하위 컴포넌트의 handleSearch 동작 후에 
                 다시 상위 컴포넌트인 StudyPage의 handleSearch도 동작하면서 백엔드에 보낼 searchTerm을 세팅하고, 
@@ -242,14 +242,14 @@ function StudyPage() {
             </div>
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
             <div style={{ textAlign: 'left', margin: "0 0" }}>
-                {/** 현재 경로가 localhost:3000/study이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                     Project
                 </Button>
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                     Study
                 </Button>
-                <Button type={location.pathname === '/recommendation' ? 'primary' : 'default'} onClick={handleRecommendationPage} style={{ marginRight: '10px' }}>
+                <Button type={location.pathname === '/recommendation' ? 'primary' : 'default'} onClick={handleRecommendationPage}>
                     Recommendation
                 </Button>
 

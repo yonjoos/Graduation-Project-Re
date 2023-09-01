@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router"; // Import useParams
 import { request } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal } from 'antd';
+import { Divider, Row, Col, Button, Modal, message } from 'antd';
 import '../ProjectPage.css';
 
 function DetailProjectPage() {
@@ -89,7 +89,7 @@ function DetailProjectPage() {
                 setData(response.data); // Update the project state
             })
             .catch((error) => {
-                console.error("Error fetching project data:", error);
+                message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
             });
             navigate('/project');
         }

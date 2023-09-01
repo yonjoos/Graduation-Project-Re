@@ -82,9 +82,14 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
         }
     }
 
-    public void cancel() {
-        if (this.getCounts() > 0) {
+    public String cancel() {
+        // 누군가가 지원 취소하더라도, 본인은 이미 지원되어있으므로, counts는 최소 1명이다. 따라서 2명 이상일 때 1을 뺀다.
+        if (this.getCounts() > 1) {
             this.setCounts(this.getCounts() - 1);
+            return "ok";
+        }
+        else {
+            return "fail";
         }
     }
 }

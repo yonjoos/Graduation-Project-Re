@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router"; // Import useParams
 import { request } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal } from 'antd';
+import { Divider, Row, Col, Button, Modal, message } from 'antd';
 import '../StudyPage.css';
 
 function DetailStudyPage() {
     const navigate = useNavigate();
-    const { studyId } = useParams(); // Get the Study ID from the URL
+    const { studyId } = useParams(); // Get the study ID from the URL
 
     const [data, setData] = useState({}); // State to hold study details
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);    // 지원 취소 관련 모달
     const [modalAction, setModalAction] = useState('');
+    const [cancelAction, setCancelAction] = useState('');   // 승인 허가된 사람과, 승인 허가되지 않은 사람의 지원 취소 request 매커니즘을 다르게 하기 위해 세팅.
 
     useEffect(() => {
         // Make a request to fetch the study details using studyId
@@ -55,7 +57,7 @@ function DetailStudyPage() {
         
         return chunks;
     }
-    
+
 
     // 2023826 -> 2023년 8월 26일 형식으로 변환
     const formatDate = (dateString) => {
@@ -71,43 +73,80 @@ function DetailStudyPage() {
         setIsModalVisible(true);
         setModalAction(action);
     };
+
+    // 지원 취소 모달 띄우기
+    const showCancelModal = (action) => {
+        setIsCancelModalVisible(true);
+        setCancelAction(action);    // 지원 취소 모달 띄울 때, cancelAction이 applying인지 approved인지 세팅함
+    };
     
     const handleModalConfirm = () => {
+        // writer가 게시물 삭제 버튼을 누른 경우
         if (modalAction === 'delete') {
             request('POST', `/study/delete/${studyId}`, {})
             .then((response) => {
-                console.log("Fetched project data:", response.data); // Log the fetched data
-                setData(response.data); // Update the project state
+                console.log("Fetched study data:", response.data); // Log the fetched data
+                setData(response.data); // Update the study state
             })
             .catch((error) => {
-                console.error("Error fetching project data:", error);
+                message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
             });
             navigate('/study');
-        } else if (modalAction === 'apply') {
-            // Add code here to handle applying for the study
-            // You can show a success message and keep the user on the same page
+        }
+        
+        // writer가 아닌 사람이 지원하기 버튼을 누른 경우
+        else if (modalAction === 'apply') {
+            request('POST', `/study/apply/${studyId}`, {})
+            .then((response) => {
+                console.log("Fetched study data:", response.data); // Log the fetched data
+                setData(response.data); // Update the study state
+            })
+            .catch((error) => {
+                console.error("Error fetching study data:", error);
+            });
+            navigate(`/study/detail/${studyId}`);
         }
         setIsModalVisible(false);
+    };
+
+    const handleCancelModalConfirm = async () => {
+        try {
+            const response = await request('POST', `/study/cancelApply/${studyId}`, {
+                // 여기는 requestBody부분. requestParam을 쓰려면 new URLSearchParams을 써야 한다!
+                action: cancelAction
+            });
+
+            setData(response.data);
+            setIsCancelModalVisible(false);
+        } catch (error) {
+            console.error("Error approving user:", error);
+        }
     };
     
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
 
+    const handleCancelModalCancel = () => {
+        setIsCancelModalVisible(false);
+    };      
+
     // 글 작성자인지, 아닌지에 따라 다르게 보이도록 설정
     const renderButtons = () => {
         const isWriter = data.writer;
-
+        const isApplying = data.applying;
+        const isApplied = data.applied;
+    
         return (
             <Row>
                 <Col span={12}>
                     <Button onClick={() => navigate('/study')}>
-                        프로젝트 목록
+                        스터디 목록
                     </Button>
                 </Col>
                 <Col span={12} style={{ textAlign: 'right' }}>
-                    {/** 삼항 연산자를 통해, isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
-                    {isWriter ? (
+                    {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
+                    {isWriter && (
                         <div>
                             <Button type="primary" onClick={() => navigate(`/study/update/${studyId}`)}>
                                 게시물 수정
@@ -116,21 +155,72 @@ function DetailStudyPage() {
                                 게시물 삭제
                             </Button>
                         </div>
-                    ) : (
-                        <Button type="primary" onClick={() => showModal('apply')}>
-                            지원하기
-                        </Button>
+                    )}
+                    {/** 게시물에 지원 안한 사람 */}
+                    {!isWriter && !isApplying && !isApplied && (
+                        data.counts === data.recruitmentCount ? (
+                            // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
+                            <div>
+                                <Button type="text" disabled>
+                                    모집 마감
+                                </Button>
+                            </div>
+                        ) : (
+                            <div>
+                                <Button type="primary" onClick={() => showModal('apply')}>
+                                    지원하기
+                                </Button>
+                            </div>
+                        )
+                    )}
+                    {/** 지원은 했으나, 승인 대기 중인 사람 */}
+                    {!isWriter && isApplying && (
+                        data.counts === data.recruitmentCount ? (
+                            // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
+                            <div>
+                                <Button type="text" disabled>
+                                    모집 마감
+                                </Button>
+                                <Button type="primary" onClick={() => showCancelModal('applying')}>
+                                    지원 취소
+                                </Button>
+                            </div>
+                        ) : (
+                            // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
+                            <div>
+                                <Button type="text" disabled>
+                                    승인 대기 중..
+                                </Button>
+                                <Button type="primary" onClick={() => showCancelModal('applying')}>
+                                    지원 취소
+                                </Button>
+                            </div>
+                        )
+                    )}
+                    {/** 승인 허가된 사람 */}
+                    {!isWriter && isApplied && (
+                        <div>
+                            <Button type="text" disabled>
+                                승인 완료
+                            </Button>
+                            <Button type="primary" onClick={() => showCancelModal('approved')}>
+                                지원 취소
+                            </Button>
+                        </div>
                     )}
                 </Col>
             </Row>
         );
     };
 
+
     return (
         <div style={{ marginLeft: '10%', marginRight: '10%' }}>
             {/** 게시물 작성자에게만 보이는 화면. 우측 상단데 게시물 수정, 삭제 버튼이 보임. */}
             {data.writer && renderButtons()}
-            {!data.writer && renderButtons()}
+            {!data.writer && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 */}
+            {!data.writer && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 */}
+            {!data.writer && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 */}
             
             {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
             <Divider className="bold-divider" />
@@ -161,7 +251,7 @@ function DetailStudyPage() {
                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                 <Col span={8} className="vertical-line">
                     <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                        모집 인원: {data.recruitmentCount}
+                        인원: {data.counts} / {data.recruitmentCount}
                     </div>
                     <div  style={{ marginLeft: '3px' }}>
                         모집 마감일: {formatDate(data.endDate)}
@@ -204,6 +294,16 @@ function DetailStudyPage() {
                 {modalAction === 'apply' && (
                     <p>게시물에 지원하시겠습니까?</p>
                 )}
+            </Modal>
+            <Modal
+                title="Confirm Action"
+                open={isCancelModalVisible}
+                onOk={handleCancelModalCancel}
+                onCancel={handleCancelModalConfirm}
+                okText="아니오"
+                cancelText="예"
+                >
+                <p>지원을 취소하시겠습니까?</p>
             </Modal>
         </div>
     )

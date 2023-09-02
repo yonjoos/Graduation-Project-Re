@@ -960,88 +960,159 @@ public class PostsService {
      * total을 Distinct로 제한해버리면, 뒤의 내용이 짤리고,
      * total을 동일하게 맞추면, 지원자의 수 한 개 한 개를 모두 세어서, Group페이지가 이상해짐.
      */
-    @Transactional(readOnly = true) //읽기 전용
-    // PageRequest.of(page, size)을 인자로 받을 때, 파라미터의 이름은 pageable로 바꾸어 설정
-    public Page<GroupPostsListDto> getWriterPosts(String userEmail, String sortOption, Pageable pageable) {
+//    @Transactional(readOnly = true) //읽기 전용
+//    // PageRequest.of(page, size)을 인자로 받을 때, 파라미터의 이름은 pageable로 바꾸어 설정
+//    public Page<GroupPostsListDto> getWriterPosts(String userEmail, String sortOption, Pageable pageable) {
+//
+//        QPosts posts = QPosts.posts;
+//        QCategory category = QCategory.category;
+//        QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
+//
+//        // '데이터'를 가져오는 쿼리
+//        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
+//                .join(posts.category, category) // 게시물을 카테고리와 조인한 형태 +
+//                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인한 형태로 가져올 것임. (누가 지원했는지 알기 위함) userApplyPosts가 비어있을 경우, join의 결과가 null이므로, leftJoin으로 묶어준다!!
+//                .where(posts.user.email.eq(userEmail))     // 단, 현재 로그인한 유저가 올린 글이어야 함
+//                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()); //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
+//
+//        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
+//        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
+//                .join(posts.category, category) // 게시물과 카테고리를 조인
+//                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인
+//                .where(posts.user.email.eq(userEmail));
+//
+//        long total = countQuery.fetchCount(); // Count 쿼리에 의해 전체 데이터 개수 알아냄
+//
+//
+//        // 승인대기, 승인완료된 숫자를 카운트 (게시물 지원 시 + 1, 지원 취소 시 - 1)
+//        // posts 3개씩 돌려서 total count만큼 limit으로 설정
+//        // 프론트도 얘에 맞춰야 할 듯
+//
+//        // Posts 테이블의 ID를 기준으로 userApplyPosts의 개수를 가져오는 서브쿼리 (3개씩 돌린건 아닌 듯)
+////        JPQLQuery<Long> subquery = JPAExpressions.select(userApplyPosts.id.count())
+////                .from(userApplyPosts)
+////                .where(userApplyPosts.posts.id.eq(posts.id));
+////
+////        // Posts 테이블의 ID를 기준으로 userApplyPosts의 개수를 계산하여 limit 설정
+////        query.limit(subquery.fetch().stream().mapToLong(Long::intValue).sum());
+//
+//
+//        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
+//        List<Posts> filteredPosts = query
+//                .offset(pageable.getOffset())       // Controller에서 인자로 넘겨준 page
+//                .limit(pageable.getPageSize())      // Controller에서 인자로 넘겨준 size
+//                .fetch();
+//
+//        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+//
+//        // 동적 쿼리의 결과를 순회하며 dto로 변환
+//        for (Posts post : filteredPosts) {
+//            Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
+//            User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
+//            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();  // 지원 목록을 List의 형태로 가져온 것을 userApplyPost로 명명
+//
+//            // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.
+//            List<String> applyNickNames = userApplyPost.stream()
+//                    .map(userApply -> userApply.getUser().getNickName())  // 지원한 각각의 유저의 닉네임을 찾는다.
+//                    .collect(Collectors.toList());
+//
+//            List<Boolean> approvedList = userApplyPost.stream()
+//                    .map(userApply -> userApply.getConfirm()) // 지원한 각각의 유저의 승인 허가 여부를 찾는다.
+//                    .collect(Collectors.toList());
+//
+//            GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
+//                    .id(post.getId())
+//                    .writerNickName(user.getNickName())   // user = posts.getUser()
+//                    .applyNickNames(applyNickNames)         // applyNickNames : 지원한 사람들을 모은 리스트
+//                    .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
+//                    .title(post.getTitle())
+//                    .web(postCategory.getWeb())     // category = posts.getCategory()
+//                    .app(postCategory.getApp())
+//                    .game(postCategory.getGame())
+//                    .ai(postCategory.getAi())
+//                    .counts(post.getCounts())       // 현재까지 승인된 인원
+//                    .recruitmentCount(post.getRecruitmentCount())   // 모아야할 총 모집 인원
+//                    .endDate(post.getEndDate())
+//                    .approved(approvedList)         // approvedList : 사람들의 승인 여부를 담은 리스트
+//                    .isApproved(null)               // writer 본인은 승인 허가 여부와 상관 없으므로, null로 세팅
+//                    .isFull(null)      // 프론트 측에 DTO를 반환했을 때, 정원이 다 찼는지의 여부는 어차피 사용하지 않으므로, null로 세팅
+//                    .build();
+//
+//            groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
+//        }
+//
+//        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
+//    }
 
+    @Transactional(readOnly = true)
+    public Page<GroupPostsListDto> getWriterPosts(String userEmail, String sortOption, Pageable pageable) {
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
         QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
 
-        // '데이터'를 가져오는 쿼리
-        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
-                .join(posts.category, category) // 게시물을 카테고리와 조인한 형태 +
-                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인한 형태로 가져올 것임. (누가 지원했는지 알기 위함) userApplyPosts가 비어있을 경우, join의 결과가 null이므로, leftJoin으로 묶어준다!!
-                .where(posts.user.email.eq(userEmail))     // 단, 현재 로그인한 유저가 올린 글이어야 함
-                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()); //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
-
-        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
-        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
-                .join(posts.category, category) // 게시물과 카테고리를 조인
-                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인
-                .where(posts.user.email.eq(userEmail));
-
-        long total = countQuery.fetchCount(); // Count 쿼리에 의해 전체 데이터 개수 알아냄
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts)
+                .join(posts.category, category)
+                .leftJoin(posts.userApplyPosts, userApplyPosts)
+                .where(posts.user.email.eq(userEmail))
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
 
 
-        // 승인대기, 승인완료된 숫자를 카운트 (게시물 지원 시 + 1, 지원 취소 시 - 1)
-        // posts 3개씩 돌려서 total count만큼 limit으로 설정
-        // 프론트도 얘에 맞춰야 할 듯
-        
-        // Posts 테이블의 ID를 기준으로 userApplyPosts의 개수를 가져오는 서브쿼리 (3개씩 돌린건 아닌 듯)
-//        JPQLQuery<Long> subquery = JPAExpressions.select(userApplyPosts.id.count())
-//                .from(userApplyPosts)
-//                .where(userApplyPosts.posts.id.eq(posts.id));
-//
-//        // Posts 테이블의 ID를 기준으로 userApplyPosts의 개수를 계산하여 limit 설정
-//        query.limit(subquery.fetch().stream().mapToLong(Long::intValue).sum());
+        long total=0;
 
-
-        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
         List<Posts> filteredPosts = query
-                .offset(pageable.getOffset())       // Controller에서 인자로 넘겨준 page
-                .limit(pageable.getPageSize())      // Controller에서 인자로 넘겨준 size
                 .fetch();
 
-        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>();
 
-        // 동적 쿼리의 결과를 순회하며 dto로 변환
         for (Posts post : filteredPosts) {
-            Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
-            User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
-            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();  // 지원 목록을 List의 형태로 가져온 것을 userApplyPost로 명명
+            Category postCategory = post.getCategory();
+            User user = post.getUser();
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();
 
-            // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.
             List<String> applyNickNames = userApplyPost.stream()
-                    .map(userApply -> userApply.getUser().getNickName())  // 지원한 각각의 유저의 닉네임을 찾는다.
+                    .map(userApply -> userApply.getUser().getNickName())
                     .collect(Collectors.toList());
 
             List<Boolean> approvedList = userApplyPost.stream()
-                    .map(userApply -> userApply.getConfirm()) // 지원한 각각의 유저의 승인 허가 여부를 찾는다.
+                    .map(userApply -> userApply.getConfirm())
                     .collect(Collectors.toList());
 
             GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
                     .id(post.getId())
-                    .writerNickName(user.getNickName())   // user = posts.getUser()
-                    .applyNickNames(applyNickNames)         // applyNickNames : 지원한 사람들을 모은 리스트
-                    .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
+                    .writerNickName(user.getNickName())
+                    .applyNickNames(applyNickNames)
+                    .postType(post.getPostType().toString())
                     .title(post.getTitle())
-                    .web(postCategory.getWeb())     // category = posts.getCategory()
+                    .web(postCategory.getWeb())
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
-                    .counts(post.getCounts())       // 현재까지 승인된 인원
-                    .recruitmentCount(post.getRecruitmentCount())   // 모아야할 총 모집 인원
+                    .counts(post.getCounts())
+                    .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
-                    .approved(approvedList)         // approvedList : 사람들의 승인 여부를 담은 리스트
-                    .isApproved(null)               // writer 본인은 승인 허가 여부와 상관 없으므로, null로 세팅
-                    .isFull(null)      // 프론트 측에 DTO를 반환했을 때, 정원이 다 찼는지의 여부는 어차피 사용하지 않으므로, null로 세팅
+                    .approved(approvedList)
+                    .isApproved(null)
+                    .isFull(null)
                     .build();
 
-            groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
+            groupPostsListDtosList.add(groupPostsListDto);
         }
 
-        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
+        // Calculate the total based on the size of groupPostsListDtosList
+        total = groupPostsListDtosList.size();
+
+        // Adjust pageable if offset or pageSize exceed the actual size
+        int offset = (int) pageable.getOffset();
+        int pageSize = pageable.getPageSize();
+        if (offset >= total) {
+            offset = 0;
+            pageSize = 0; // No need to fetch if offset exceeds total
+        } else if (offset + pageSize > total) {
+            pageSize = (int) (total - offset);
+        }
+
+        // Return a new PageImpl with the correct total and modified pageable
+        return new PageImpl<>(groupPostsListDtosList.subList(offset, offset + pageSize), pageable, total);
     }
 
 

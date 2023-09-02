@@ -10,6 +10,7 @@ const { TextArea } = Input;
 function UploadStudyPage() {
     const navigate = useNavigate();
 
+    // 백엔드에 넘겨줄 폼 입력에 사용될 애들
     const [title, setTitle] = useState('');
     const [postType, setPostType] = useState([]);
     const [recruitmentCount, setRecruitmentCount] = useState(0);
@@ -18,7 +19,6 @@ function UploadStudyPage() {
     const [promoteImageUrl, setPromoteImageUrl] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
 
-    
     const options = ['Web', 'App', 'Game', 'AI'];   // 체크박스에서 선택 가능한 옵션들
     const MAX_SELECTED_CHECKBOXES = 2;  // 선택 가능한 모집 분야 개수 제한
 
@@ -31,6 +31,7 @@ function UploadStudyPage() {
                 <Checkbox
                     key={index}
                     value={option}
+                    // 3개 이상 선택하면, 다른 버튼 못누르게 하기
                     disabled={postType.length === MAX_SELECTED_CHECKBOXES && !postType.includes(option)}
                 >
                     {option}
@@ -40,6 +41,7 @@ function UploadStudyPage() {
     )
 
     const handleCheckboxChange = (checkedValues) => {
+        // 2개 이하인 경우 선택 가능
         if (checkedValues.length <= MAX_SELECTED_CHECKBOXES) {
             setPostType(checkedValues); // setPostType 함수를 호출하여 postType 상태 업데이트
         }
@@ -78,6 +80,7 @@ function UploadStudyPage() {
             return;
         }
 
+        // 백엔드와 싱크를 맞추기 위해, 날짜 형식 변환
         const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD');
         submitStudy(title, postType, recruitmentCount, formattedEndDate, content, promoteImageUrl, fileUrl);
         navigate('/study');
@@ -94,7 +97,7 @@ function UploadStudyPage() {
             fileUrl: fileUrl
         })
             .then((response) => {
-                console.log('Post uploaded successfully:', response.data);
+                //console.log('Post uploaded successfully:', response.data);
                 alert('게시물이 성공적으로 업로드되었습니다.');
             })
             .catch((error) => {

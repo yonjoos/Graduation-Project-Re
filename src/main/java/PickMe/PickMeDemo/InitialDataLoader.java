@@ -310,8 +310,8 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(4)
         User user4 = User.builder()
-                .userName("BlackConsumer")
-                .nickName("악성유저")
+                .userName("Black Consumer")
+                .nickName("악 성 유 저")
                 .email("4")
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
@@ -577,10 +577,122 @@ public class InitialDataLoader implements CommandLineRunner {
         category12.validateFieldCount();
         categoryRepository.save(category12);
 
-        // 초기 데이터 생성 및 저장(6)
-        // 초기 데이터 생성 및 저장(7)
 
-        // 초기 데이터 생성 및 저장(8)
+        // 초기 데이터 생성 및 저장(6)
+        User user6 = User.builder()
+                .userName("프로젝트")
+                .nickName("onlyProject")
+                .email("6")
+                .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user6);
+
+        Portfolio user6Portfolio = Portfolio.builder()
+                .user(user6)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("웹 장인")
+                .introduce("- 스타트업 인턴 \n- 개인 토이 프로젝트 \n- 기타 등등")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user6Portfolio);
+
+        String initialEndDate13 = "2023-09-19";
+        DateTimeFormatter dateFormatter13 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate13 = LocalDate.parse(initialEndDate13, dateFormatter13);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts13 = Posts.builder()
+                .user(user6)
+                .postType(PostType.PROJECT)
+                .title("프로젝트만 만들음.")
+                .recruitmentCount(4)
+                .counts(1)
+                .content("프로젝트만 모집할거임.\n스터디 모집 안함.\n내 맘임.")
+                .promoteImageUrl(null)
+                .fileUrl(null)
+                .endDate(endDate13)
+                .build();
+
+        postsRepository.save(posts13);
+
+        Category category13 = Category.builder()
+                .posts(posts13)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category13.validateFieldCount();
+        categoryRepository.save(category13);
+
+        String initialEndDate14 = "2023-10-30";
+        DateTimeFormatter dateFormatter14 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate14 = LocalDate.parse(initialEndDate14, dateFormatter14);
+
+        Posts posts14 = Posts.builder()
+                .user(user6)
+                .postType(PostType.PROJECT)
+                .title("인공지능 활용한 웹 개발")
+                .recruitmentCount(3)
+                .counts(1)
+                .content("자바 스프링 잘 쓰시는 분 구해요.\n인공지능 잘 활용하시는 분과 함께 프로젝트 하고 싶어요.\n저와 함께 웹 및 인공지능 마스터가 되어보아요!")
+                .promoteImageUrl(null)
+                .fileUrl(null)
+                .endDate(endDate14)
+                .build();
+
+        postsRepository.save(posts14);
+
+        Category category14 = Category.builder()
+                .posts(posts14)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category14.validateFieldCount();
+        categoryRepository.save(category14);
+
+
+        String initialEndDate15 = "2023-10-07";
+        DateTimeFormatter dateFormatter15 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate15 = LocalDate.parse(initialEndDate15, dateFormatter15);
+
+        Posts posts15 = Posts.builder()
+                .user(user6)
+                .postType(PostType.PROJECT)
+                .title("제목 뭐로 하지..")
+                .recruitmentCount(5)
+                .counts(1)
+                .content("그냥 웹 플젝 할거야..\n포트폴리오 채워보자..")
+                .promoteImageUrl("사진")
+                .fileUrl("파일")
+                .endDate(endDate15)
+                .build();
+
+        postsRepository.save(posts15);
+
+        Category category15 = Category.builder()
+                .posts(posts15)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category15.validateFieldCount();
+        categoryRepository.save(category15);
+
+
+        // 초기 데이터 생성 및 저장(7)
         User user7 = User.builder()
                 .userName("정연주")
                 .nickName("yonjoos")
@@ -692,5 +804,296 @@ public class InitialDataLoader implements CommandLineRunner {
 
         category21.validateFieldCount();
         categoryRepository.save(category21);
+
+        String initialEndDate22 = "2023-09-20";
+        DateTimeFormatter dateFormatter22 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate22 = LocalDate.parse(initialEndDate21, dateFormatter22);
+
+        Posts posts22 = Posts.builder()
+                .user(user7)
+                .postType(PostType.PROJECT)
+                .title("웹 사이트 제작")
+                .recruitmentCount(3)
+                .counts(1)
+                .content("홍대 주변 맛집 사이트.\n미식에 관심있는 분 좋아요.\n코딩 잘하시는 분 좋아요.")
+                .promoteImageUrl("")
+                .fileUrl("")
+                .endDate(endDate22)
+                .build();
+
+        postsRepository.save(posts22);
+
+        Category category22 = Category.builder()
+                .posts(posts22)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category22.validateFieldCount();
+        categoryRepository.save(category22);
+
+
+        // 초기 데이터 생성 및 저장(8)
+        User user8 = User.builder()
+                .userName("스터디")
+                .nickName("onlyStudy")
+                .email("8")
+                .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user8);
+
+        Portfolio user8Portfolio = Portfolio.builder()
+                .user(user8)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("앱 전문가")
+                .introduce("- 스타트업 인턴 \n- 학점 4.5 \n- 기타 등등")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user8Portfolio);
+
+        String initialEndDate16 = "2023-11-11";
+        DateTimeFormatter dateFormatter16 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate16 = LocalDate.parse(initialEndDate16, dateFormatter16);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts16 = Posts.builder()
+                .user(user8)
+                .postType(PostType.STUDY)
+                .title("스터디만 만들음.")
+                .recruitmentCount(4)
+                .counts(1)
+                .content("스터디만 모집할거임.\n프로젝트 모집 안함.\n내 맘임.")
+                .promoteImageUrl(null)
+                .fileUrl(null)
+                .endDate(endDate16)
+                .build();
+
+        postsRepository.save(posts16);
+
+        Category category16 = Category.builder()
+                .posts(posts16)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category16.validateFieldCount();
+        categoryRepository.save(category16);
+
+        String initialEndDate17 = "2023-11-03";
+        DateTimeFormatter dateFormatter17 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate17 = LocalDate.parse(initialEndDate17, dateFormatter17);
+
+        Posts posts17 = Posts.builder()
+                .user(user8)
+                .postType(PostType.STUDY)
+                .title("코틀린 공부")
+                .recruitmentCount(3)
+                .counts(1)
+                .content("Kotlin 같이 공부해요.\n앱 처음 하시는 분들 저와 함께해요.\n열심히 해서 플젝도 같이 만들어봐요.")
+                .promoteImageUrl(null)
+                .fileUrl(null)
+                .endDate(endDate17)
+                .build();
+
+        postsRepository.save(posts17);
+
+        Category category17 = Category.builder()
+                .posts(posts17)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category17.validateFieldCount();
+        categoryRepository.save(category17);
+
+
+        String initialEndDate18 = "2023-10-02";
+        DateTimeFormatter dateFormatter18 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate18 = LocalDate.parse(initialEndDate18, dateFormatter18);
+
+        Posts posts18 = Posts.builder()
+                .user(user8)
+                .postType(PostType.STUDY)
+                .title("안드로이드? IOS?")
+                .recruitmentCount(4)
+                .counts(1)
+                .content("안드로이드에 관심있는 사람?\nIOS에 관심있는 사람?\n기초부터 차근차근 같이 공부해보자.\n자세한건 옵챗으로 얘기해요")
+                .promoteImageUrl("사진")
+                .fileUrl("파일")
+                .endDate(endDate18)
+                .build();
+
+        postsRepository.save(posts18);
+
+        Category category18 = Category.builder()
+                .posts(posts18)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category18.validateFieldCount();
+        categoryRepository.save(category18);
+
+
+        // 초기 데이터 생성 및 저장(9)
+        User user9 = User.builder()
+                .userName("게임")
+                .nickName("게임 장인")
+                .email("9")
+                .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user9);
+
+        Portfolio user9Portfolio = Portfolio.builder()
+                .user(user9)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("게임 개발 장인")
+                .introduce("- 대기업 개발자 \n- 학점 4.5 \n- 홍대 폰노이만 \n- 홍대 앨런 튜링")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user9Portfolio);
+
+        String initialEndDate23 = "2023-11-12";
+        DateTimeFormatter dateFormatter23 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate23 = LocalDate.parse(initialEndDate23, dateFormatter23);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts23 = Posts.builder()
+                .user(user9)
+                .postType(PostType.STUDY)
+                .title("유니티 스터디 만들었어요.")
+                .recruitmentCount(3)
+                .counts(1)
+                .content("유니티 스터디.\nbox collider 2D를 아세요?\n모른다면 같이 스터디 ㄱㄱ.")
+                .promoteImageUrl(null)
+                .fileUrl(null)
+                .endDate(endDate23)
+                .build();
+
+        postsRepository.save(posts23);
+
+        Category category23 = Category.builder()
+                .posts(posts23)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category23.validateFieldCount();
+        categoryRepository.save(category23);
+
+        String initialEndDate24 = "2023-11-10";
+        DateTimeFormatter dateFormatter24 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate24 = LocalDate.parse(initialEndDate24, dateFormatter24);
+
+        Posts posts24 = Posts.builder()
+                .user(user9)
+                .postType(PostType.STUDY)
+                .title("언리얼 공부")
+                .recruitmentCount(3)
+                .counts(1)
+                .content("언리얼 기초부터 같이 공부하실분 구해요.\n저도 언리얼은 아무것도 몰라요.")
+                .promoteImageUrl(null)
+                .fileUrl(null)
+                .endDate(endDate24)
+                .build();
+
+        postsRepository.save(posts24);
+
+        Category category24 = Category.builder()
+                .posts(posts24)
+                .web(true)
+                .app(false)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category24.validateFieldCount();
+        categoryRepository.save(category24);
+
+
+        String initialEndDate25 = "2023-10-16";
+        DateTimeFormatter dateFormatter25 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate25 = LocalDate.parse(initialEndDate25, dateFormatter25);
+
+        Posts posts25 = Posts.builder()
+                .user(user9)
+                .postType(PostType.PROJECT)
+                .title("유니티로 앱 게임 만들기.")
+                .recruitmentCount(2)
+                .counts(1)
+                .content("유니티로 프로젝트 같이할 사람?\n기획, 사운드, 디자인까지 모두 모였음.\n잘하는 분만 모심.\n포트폴리오 볼거임\n너만 오면 바로 시작.")
+                .promoteImageUrl("사진")
+                .fileUrl("파일")
+                .endDate(endDate25)
+                .build();
+
+        postsRepository.save(posts25);
+
+        Category category25 = Category.builder()
+                .posts(posts25)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category25.validateFieldCount();
+        categoryRepository.save(category25);
+
+
+        String initialEndDate26 = "2023-10-26";
+        DateTimeFormatter dateFormatter26 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate26 = LocalDate.parse(initialEndDate26, dateFormatter26);
+
+        Posts posts26 = Posts.builder()
+                .user(user9)
+                .postType(PostType.PROJECT)
+                .title("언리얼로 웹 게임 만들기.")
+                .recruitmentCount(4)
+                .counts(1)
+                .content("언리얼로 프로젝트 같이할 사람?\n기획, 사운드, 디자인까지 모두 모였음.\n잘하는 분만 모심.\n포트폴리오 볼거임\n너만 오면 바로 시작 예정.")
+                .promoteImageUrl("사진")
+                .fileUrl("파일")
+                .endDate(endDate26)
+                .build();
+
+        postsRepository.save(posts26);
+
+        Category category26 = Category.builder()
+                .posts(posts26)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category26.validateFieldCount();
+        categoryRepository.save(category26);
+
+        // 초기 데이터 생성 및 저장(10)
+        // ai 전문가 생성 예정
+        // 게시물은 27부터 (유저 7, 9가 게시물이 4개임. 나머지는 3개.)
     }
 }

@@ -10,6 +10,7 @@ const { TextArea } = Input;
 function UploadStudyPage() {
     const navigate = useNavigate();
 
+    // 백엔드에 넘겨줄 폼 입력에 사용될 애들
     const [title, setTitle] = useState('');
     const [postType, setPostType] = useState([]);
     const [recruitmentCount, setRecruitmentCount] = useState(0);
@@ -79,6 +80,7 @@ function UploadStudyPage() {
             return;
         }
 
+        // 백엔드와 싱크를 맞추기 위해, 날짜 형식 변환
         const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD');
         submitStudy(title, postType, recruitmentCount, formattedEndDate, content, promoteImageUrl, fileUrl);
         navigate('/study');
@@ -95,7 +97,7 @@ function UploadStudyPage() {
             fileUrl: fileUrl
         })
             .then((response) => {
-                console.log('Post uploaded successfully:', response.data);
+                //console.log('Post uploaded successfully:', response.data);
                 alert('게시물이 성공적으로 업로드되었습니다.');
             })
             .catch((error) => {

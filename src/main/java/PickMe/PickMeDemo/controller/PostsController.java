@@ -369,22 +369,14 @@ public class PostsController {
 
         Page<GroupPostsListDto> groupPosts;
 
-        System.out.println("===========================================================================");
-        System.out.println("postsOption = " + postsOption);
-        System.out.println("sortOption = " + sortOption);
-        System.out.println("===========================================================================");
-
+        // 게시물 작성자인 경우, 다음의 코드를 실행
         if ("writer".equals(postsOption)) {
             groupPosts = postsService.getWriterPosts(userEmail, sortOption, PageRequest.of(page, size));
         }
+        // 게시물 지원자인 경우, 다음의 코드를 실행
         else {
             groupPosts = postsService.getApplicantPosts(userEmail, sortOption, PageRequest.of(page, size));
         }
-
-        // 페이지 넘버, 페이지 사이즈를 통해 PageRequest,
-        // 두 개의 정렬 옵션 (글쓴이인가? 최신의 글인가?)
-        // 을 parameter로 넣어서 서비스 계층 수행
-        // Page<GroupPostsListDto> groupPosts = postsService.getGroupPosts(userEmail, postsOption, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
     }

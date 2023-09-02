@@ -23,7 +23,6 @@ function GroupPage() {
     // 내가 보고있는 게시물이 내가 쓴 글인지(postsOption === writer) 또는 내가 지원한 글인지(postsOption === applicant)
     // 현재 사용자가 하이라이트한 페이지 번호 상태, 
     // 최신일순/마감일순에 대한 정렬 옵션,
-    // 검색어 키워드 문자열
     // 를 기반으로 백엔드에 동적쿼리 보냄
     useEffect(() => {
         fetchFilteredPosts();
@@ -34,7 +33,7 @@ function GroupPage() {
 
         try {
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
-                postsOption: postsOption,
+                postsOption: postsOption,   // 내가 쓴 글인가? 내가 지원한 글인가?
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
                 sortOption: sortOption, // 최신 등록순, 모집일자 마감순
@@ -51,7 +50,6 @@ function GroupPage() {
     };
 
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
-    // 스터디 네비게이트할 때에는 다르게 설정!
     const handleRowClick = (postsId, postType) => {
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);
@@ -82,7 +80,7 @@ function GroupPage() {
         setCurrentPage(0);
     };
 
-    
+    // 지원자 또는 글쓴이 닉네임 클릭 핸들러
     const handleNickNameClick = (nickName) => {
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
@@ -92,17 +90,18 @@ function GroupPage() {
     const handleApproveUser = async (nickName, postsId) => {
         try {
             const queryParams = new URLSearchParams({
-                nickName: nickName,
-                postsId: postsId,
+                nickName: nickName, // 닉네임
+                postsId: postsId,   // 게시물 ID
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
                 sortOption: sortOption, // 최신 등록순, 모집일자 마감순
-              });
+            });
 
+            // 승인 상태를 '수정'하는 것이므로, put request 
             const response = await request('PUT', `/posts/approve?${queryParams}`);
 
-            setData(response.data.content);
-            setIsModalVisible(false);
+            setData(response.data.content);    // 변경된 데이터를 갖고 새롭게 data를 세팅함
+            setIsModalVisible(false);       // 모달은 안보이게 설정
             setCancelModalVisible(false);
         } catch (error) {
             console.error("Error approving user:", error);
@@ -113,17 +112,18 @@ function GroupPage() {
     const handleCancelApproval = async (nickName, postsId) => {
         try {
             const queryParams = new URLSearchParams({
-                nickName: nickName,
-                postsId: postsId,
+                nickName: nickName, // 닉네임
+                postsId: postsId,   // 게시물 ID
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
                 sortOption: sortOption, // 최신 등록순, 모집일자 마감순
-                });
+            });
 
+            // 승인 상태를 '수정'하는 것이므로, put request 
             const response = await request('PUT', `/posts/cancelApprove?${queryParams}`);
 
-            setData(response.data.content);
-            setIsModalVisible(false);
+            setData(response.data.content);     // 변경된 데이터를 갖고 새롭게 data를 세팅함
+            setIsModalVisible(false);       // 모달은 안보이게 설정
             setCancelModalVisible(false);
         } catch (error) {
             console.error("Error approving user:", error);
@@ -156,6 +156,7 @@ function GroupPage() {
                             <Col span={6}>
                                 <div style={{ borderRight: '1px' }}>
                                     {postsOption === 'writer' ? (
+                                        // 내가 쓴 게시물을 눌렀을 때 보이는 화면
                                         <div>
                                             <div>
                                                 지원자
@@ -206,11 +207,12 @@ function GroupPage() {
                                                     </div>
                                             ) : (
                                                 <div>
-                                                    {/** item.applyNickNames가 null인 경우 처리*/}
+                                                    {/** item.applyNickNames가 null인 경우 처리. 이 부분 처리 안하면 에러 발생함!! */}
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
+                                        // 내가 지원한 게시물을 클릭했을 때 보이는 화면
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <div>
                                                 <div>
@@ -224,11 +226,15 @@ function GroupPage() {
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                                 <div>
                                                     {item.isApproved ? (
+                                                        // 승인 완료시 보여줄 내용
                                                         "승인 완료"
                                                     ) : (
+                                                        // 승인이 완료되지 않았고
                                                         item.counts === item.recruitmentCount ? (
+                                                            // 정원이 다 찼다면, 모집 마감을 보여줌
                                                             "모집 마감"
                                                         ) : (
+                                                            // 정원이 다 안찼다면, 승인 대기 중을 보여줌
                                                             "승인 대기 중"
                                                         )
                                                     )}
@@ -298,8 +304,8 @@ function GroupPage() {
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Pagination
                     current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
-                    total={totalPages * pageSize}
-                    pageSize={pageSize}
+                    total={totalPages * pageSize}   // 내용물의 총 개수 = 페이지 수 * 페이지 당 몇 개씩
+                    pageSize={pageSize}             // 한 페이지에 몇 개씩 보여줄 것인가?
                     onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
                 />
             </div>

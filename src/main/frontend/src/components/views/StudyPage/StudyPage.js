@@ -7,15 +7,17 @@ import './StudyPage.css';
 
 
 function StudyPage() {
+    const navigate = useNavigate();
+    const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
+
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const [searchTerm, setSearchTerm] = useState(""); //스터디 페이지 내의 검색어 키워드
+    
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
-    const navigate = useNavigate();
-    const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
     // 페이지가 새로 마운트 될 때마다 실행됨. 
     // 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 

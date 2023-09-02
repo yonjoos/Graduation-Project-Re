@@ -1,6 +1,7 @@
 package PickMe.PickMeDemo.service;
 
-import PickMe.PickMeDemo.dto.AuthEmailCodeDto;
+import PickMe.PickMeDemo.config.RedisUtil;
+import PickMe.PickMeDemo.dto.AuthEmailRequestDto;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -20,23 +21,14 @@ import java.util.Random;
 @Transactional
 public class MailService {
 
-    @Autowired
-    JavaMailSender emailSender; // Bean 등록해둔 MailConfig 를 emailSender 라는 이름으로 autowired
+    @Autowired JavaMailSender emailSender; // Bean 등록해둔 MailConfig 를 emailSender 라는 이름으로 autowired
+
+    @Autowired RedisUtil redisUtil;
 
     @Value("${mail.username}")
     private String configEmail;
 
-    private String ePw; // 인증번호
 
-    // 생성자를 통해 ePw 초기화
-    public MailService() {
-        this.ePw = createKey();
-    }
-
-    // Method to get the generated authentication code
-    public String getAuthenticationCode() {
-        return ePw;
-    }
 
     // 메일 내용 작성
 
@@ -44,16 +36,17 @@ public class MailService {
         MimeMessage message = emailSender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, to);// 보내는 대상
-        message.setSubject("P!ck Me 회원가입 이메일 인증");// 제목
+        message.setSubject("<P!ck Me> 회원가입 - 인증번호");// 제목
 
-        String msgg = "";
-        msgg += "<div style='margin:100px;'>";
-        msgg += "<h1> 안녕하세요</h1>";
-        msgg += "<h1> P!ck Me 운영진 입니다</h1>";
-        msgg += "CODE : <strong>";
-        msgg += ePw + "</strong><div><br/> ";
-        msgg += "</div>";
-        message.setText(msgg, "utf-8", "html");// 내용, charset 타입, subtype
+        // Use HTML and inline CSS for formatting
+        String msgg = "<html><body style='font-family: Arial, sans-serif; margin: 0; padding: 20px; text-align: center;'>";
+        msgg += "<h1 style='color: #007BFF;'>안녕하세요,</h1>";
+        msgg += "<p style='font-size: 18px;'>P!ck Me에 오신 걸 환영합니다! 회원 가입을 위해 다음 인증 코드를 10분 내에 입력해주세요:</p>";
+        msgg += "<p style='font-size: 24px; font-weight: bold; color: #007BFF;'>" + ePw + "</p>";
+        msgg += "<p style='font-size: 18px;'>P!ck Me에 방문해주셔서 감사합니다. 운영진 드림</p>";
+        msgg += "</body></html>";
+
+        message.setContent(msgg, "text/html; charset=utf-8");
         // 보내는 사람의 이메일 주소, 보내는 사람 이름
         message.setFrom(new InternetAddress(configEmail, "P!ck Me"));// 보내는 사람
 
@@ -91,19 +84,57 @@ public class MailService {
     // sendSimpleMessage 의 매개변수로 들어온 to 는 곧 이메일 주소가 되고,
     // MimeMessage 객체 안에 내가 전송할 메일의 내용을 담는다.
     // 그리고 bean 으로 등록해둔 javaMail 객체를 사용해서 이메일 send!!
+    public AuthEmailRequestDto sendSimpleMessage(String to) throws Exception {
 
-    public AuthEmailCodeDto sendSimpleMessage(String to) throws Exception {
-        // 랜덤 인증번호 생성
-        // Generate random authentication number
-        String generatedEpw = createKey(); // Generate a new authentication code for each email
-        MimeMessage message = createMessage(to, generatedEpw); // Send mail with the new authentication code
-        try {// 예외처리
-            emailSender.send(message);
+        // 만약 redis에 해당 email에 대한 정보가 있다면, 데이터 파기 -> why? 이메일 인증메일 버튼을 두번 이상 누를수도 있기 떄문
+        // 그 경우, redis에 저장되어있는 key-value를 명시적으로 삭제해줘야함
+        if (redisUtil.existData(to)) {
+            redisUtil.deleteData(to);
+        }
+
+        String generatedEpw = createKey(); // 인증코드 생성
+
+        MimeMessage message = createMessage(to, generatedEpw); // 메일 본문 작성
+
+        redisUtil.setDataExpire(to,generatedEpw,60*2L); // 10분이 지나면 인증코드 파기
+
+        try {
+            emailSender.send(message); // 메일 발송하기
         } catch (MailException es) {
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
 
-        return new AuthEmailCodeDto(generatedEpw); // 메일로 보냈던 인증 코드를 서버로 반환
+        return new AuthEmailRequestDto(true); // 프론트에 메일 발송 완료되었다고 알림
+    }
+
+    // 인증 번호 검증
+    public Integer verifyEmailCode(String email, String code) {
+
+        String codeFoundByEmail = redisUtil.getData(email); // redis에 해당 email-인증번호가 인증시간 내에 있는지 확인
+        System.out.println("codeFoundByEmail = " + codeFoundByEmail);
+
+
+        if (codeFoundByEmail == null) {  //만약 redis에 없다면 -> 인증 시간 초과된 것
+            return 0;
+        }
+
+        // redis에 있고, 입력받은 code와 실제 인증번호가 같은지 비교
+        // 일치하는 경우
+        if(codeFoundByEmail.equals(code))
+        {
+            return 1;
+        }
+
+        // 일치하지 않는 경우
+        else {
+            return 2;
+        }
+
+    }
+
+    // redis에서 해당 email-인증코드 값 지우기
+    public void delete(String key) {
+        redisUtil.deleteData(key);
     }
 }

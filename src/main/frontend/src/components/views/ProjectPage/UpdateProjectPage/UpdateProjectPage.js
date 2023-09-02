@@ -8,7 +8,7 @@ const { TextArea } = Input;
 
 function UpdateProjectPage() {
     const navigate = useNavigate();
-    const { projectId } = useParams();
+    const { projectId } = useParams();    // URL에 있는 parameter 추출
 
     const [data, setData] = useState({
         title: '',
@@ -33,13 +33,13 @@ function UpdateProjectPage() {
             const postTypeStrings = options.filter((_, index) => existingData.postType[index]);
             
             setData({
-                ...existingData,
-                postType: postTypeStrings,
-                endDate: dayjs(existingData.endDate) // Make sure endDate is a valid dayjs object
+                ...existingData,    // 기존 데이터 가져오기
+                postType: postTypeStrings,      // 문자열 배열로 변환된 애들로 다시 postType 세팅
+                endDate: dayjs(existingData.endDate) // dayjs를 통해 endDate를 포매팅한 후 다시 세팅
             });
         } catch (error) {
             console.error('Error fetching existing project data:', error);
-            navigate(`/project/detail/${projectId}`);
+            navigate(`/project/detail/${projectId}`);   // 수정할 데이터 폼을 가져오는 것이므로, navigate를 try catch문 아래에 적어주면 안된다.
         }
     };
     
@@ -49,14 +49,15 @@ function UpdateProjectPage() {
 
     const renderCheckboxGroup = () => (
         <Checkbox.Group
-            value={data.postType}
-            onChange={(checkedValues) => handleCheckboxChange(checkedValues)}
+            value={data.postType}   // data.postType 배열에 포함된 모집 분야가 선택되어 체크박스에 표시됨
+            onChange={(checkedValues) => handleCheckboxChange(checkedValues)}   // 사용자가 체크박스를 선택하거나 해제할 때 handleCheckboxChange 호출
         >
+            {/** options 배열은 다양한 모집 분야(예: Web, App, Game, AI)를 나타내는 문자열을 포함 */}
             {options.map((option, index) => (
                 <Checkbox
                     key={index}
-                    value={option}
-                    disabled={data.postType.length === MAX_SELECTED_CHECKBOXES && !data.postType.includes(option)}
+                    value={option}  // option 값은 web, app, game, ai 중 하나
+                    disabled={data.postType.length === MAX_SELECTED_CHECKBOXES && !data.postType.includes(option)}  // 이미 MAX_SELECTED_CHECKBOXES (2)개의 체크박스가 선택되었고, 사용자가 추가로 체크박스를 선택하려고 할 때, 선택이 비활성화되도록 함
                 >
                     {option}
                 </Checkbox>
@@ -65,7 +66,9 @@ function UpdateProjectPage() {
     );
 
     const handleCheckboxChange = (checkedValues) => {
+        // 체크박스에서 선택된 개수가 2개 이하라면
         if (checkedValues.length <= MAX_SELECTED_CHECKBOXES) {
+            // 이전 데이터를 그대로 가져오되, postType에 선택된 값만 바꾸어서 저장
             setData(prevData => ({
                 ...prevData,
                 postType: checkedValues
@@ -73,6 +76,7 @@ function UpdateProjectPage() {
         }
     };
     
+    // data의 형식에 맞게 변환하여 값을 저장
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
         setData(prevData => ({ ...prevData, [name]: value }));
@@ -102,6 +106,7 @@ function UpdateProjectPage() {
             return;
         }
 
+        // 백엔드와 싱크를 맞추기 위해, 백엔드에서 요구하는 형식으로 날짜 변환
         const formattedEndDate = dayjs(data.endDate).format('YYYY-MM-DD');
 
         try {
@@ -114,7 +119,7 @@ function UpdateProjectPage() {
                 data.promoteImageUrl,
                 data.fileUrl
             );
-            navigate('/project');
+            navigate(`/project/detail/${projectId}`);
         } catch (error) {
             console.error('Error submitting project:', error);
         }
@@ -171,7 +176,8 @@ function UpdateProjectPage() {
                                     name="recruitmentCount"
                                     placeholder="모집 인원 변경"
                                     value={data.recruitmentCount}
-                                    onChange={onChangeHandler}
+                                    // InputNumber 컴포넌트에서는 onChange 이벤트가 일반적인 event 객체를 전달하지 않고 숫자 값만 전달하므로, name을 직접 만들어 준다.
+                                    onChange={(value) => onChangeHandler({ target: { name: 'recruitmentCount', value } })}
                                 />
                             </div>
                         </div>

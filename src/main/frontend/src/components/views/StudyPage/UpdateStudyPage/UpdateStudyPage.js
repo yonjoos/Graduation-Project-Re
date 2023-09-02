@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Row, Col, Input, Button, Checkbox, message, DatePicker, InputNumber } from 'antd';
+import { Row, Col, Input, Button, Checkbox, DatePicker, message, InputNumber } from 'antd';
 import { request } from '../../../../hoc/request';
 import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
@@ -8,13 +8,13 @@ const { TextArea } = Input;
 
 function UpdateStudyPage() {
     const navigate = useNavigate();
-    const { studyId } = useParams();
+    const { studyId } = useParams();    // URL에 있는 parameter 추출
 
     const [data, setData] = useState({
         title: '',
-        postType: [],
+        postType: [], // Boolean 타입의 배열
         recruitmentCount: 0,
-        endDate: null, // Change to null
+        endDate: '',
         content: '',
         promoteImageUrl: '',
         fileUrl: '',
@@ -28,34 +28,36 @@ function UpdateStudyPage() {
         try {
             const response = await request('GET', `/getStudyForm/${studyId}`);
             const existingData = response.data;
-
+    
             // Boolean 배열을 Checkbox.Group 값에 대한 문자열 배열로 변환
             const postTypeStrings = options.filter((_, index) => existingData.postType[index]);
-
+            
             setData({
-                ...existingData,
-                postType: postTypeStrings,
-                endDate: dayjs(existingData.endDate) // Initialize with dayjs object
+                ...existingData,    // 기존 데이터 가져오기
+                postType: postTypeStrings,      // 문자열 배열로 변환된 애들로 다시 postType 세팅
+                endDate: dayjs(existingData.endDate) // dayjs를 통해 endDate를 포매팅한 후 다시 세팅
             });
         } catch (error) {
             console.error('Error fetching existing study data:', error);
-            navigate(`/study/detail/${studyId}`);
+            navigate(`/study/detail/${studyId}`);   // 수정할 데이터 폼을 가져오는 것이므로, navigate를 try catch문 아래에 적어주면 안된다.
         }
     };
+    
 
     const options = ['Web', 'App', 'Game', 'AI'];
     const MAX_SELECTED_CHECKBOXES = 2;
 
     const renderCheckboxGroup = () => (
         <Checkbox.Group
-            value={data.postType}
-            onChange={(checkedValues) => handleCheckboxChange(checkedValues)}
+            value={data.postType}   // data.postType 배열에 포함된 모집 분야가 선택되어 체크박스에 표시됨
+            onChange={(checkedValues) => handleCheckboxChange(checkedValues)}   // 사용자가 체크박스를 선택하거나 해제할 때 handleCheckboxChange 호출
         >
+            {/** options 배열은 다양한 모집 분야(예: Web, App, Game, AI)를 나타내는 문자열을 포함 */}
             {options.map((option, index) => (
                 <Checkbox
                     key={index}
-                    value={option}
-                    disabled={data.postType.length === MAX_SELECTED_CHECKBOXES && !data.postType.includes(option)}
+                    value={option}  // option 값은 web, app, game, ai 중 하나
+                    disabled={data.postType.length === MAX_SELECTED_CHECKBOXES && !data.postType.includes(option)}  // 이미 MAX_SELECTED_CHECKBOXES (2)개의 체크박스가 선택되었고, 사용자가 추가로 체크박스를 선택하려고 할 때, 선택이 비활성화되도록 함
                 >
                     {option}
                 </Checkbox>
@@ -64,7 +66,9 @@ function UpdateStudyPage() {
     );
 
     const handleCheckboxChange = (checkedValues) => {
+        // 체크박스에서 선택된 개수가 2개 이하라면
         if (checkedValues.length <= MAX_SELECTED_CHECKBOXES) {
+            // 이전 데이터를 그대로 가져오되, postType에 선택된 값만 바꾸어서 저장
             setData(prevData => ({
                 ...prevData,
                 postType: checkedValues
@@ -72,6 +76,7 @@ function UpdateStudyPage() {
         }
     };
     
+    // data의 형식에 맞게 변환하여 값을 저장
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
         setData(prevData => ({ ...prevData, [name]: value }));
@@ -81,7 +86,7 @@ function UpdateStudyPage() {
         e.preventDefault();
 
         if (!data.title) {
-            message.warning('프로젝트 이름을 작성해주세요.');
+            message.warning('스터디 이름을 작성해주세요.');
             return;
         }
         if (data.postType.length === 0) {
@@ -97,10 +102,11 @@ function UpdateStudyPage() {
             return;
         }
         if (!data.content) {
-            message.warning('프로젝트 내용을 적어주세요.');
+            message.warning('스터디 내용을 적어주세요.');
             return;
         }
 
+        // 백엔드와 싱크를 맞추기 위해, 백엔드에서 요구하는 형식으로 날짜 변환
         const formattedEndDate = dayjs(data.endDate).format('YYYY-MM-DD');
 
         try {
@@ -113,7 +119,7 @@ function UpdateStudyPage() {
                 data.promoteImageUrl,
                 data.fileUrl
             );
-            navigate('/study');
+            navigate(`/study/detail/${studyId}`);
         } catch (error) {
             console.error('Error submitting study:', error);
         }
@@ -132,17 +138,19 @@ function UpdateStudyPage() {
                 promoteImageUrl: promoteImageUrl,
                 fileUrl: fileUrl
             });
-            alert('프로젝트 게시물이 성공적으로 업데이트 되었습니다.');
+            alert('스터디 게시물이 성공적으로 업데이트 되었습니다.');
+            // navigate(`/study/detail/${studyId}`)
         } catch (error) {
-            alert('프로젝트 게시물 업데이트에 실패하였습니다.');
+            alert('스터디 게시물 업데이트에 실패하였습니다.');
         }
     };
+    
 
     return (
         <Row justify="center">
             <Col span={12}>
                 <form onSubmit={onSubmitStudy}>
-                    <div className="form-outline mb-1">프로젝트 이름</div>
+                    <div className="form-outline mb-1">스터디 이름</div>
                     <div className="form-outline mb-4">
                         <Input
                             type="text"
@@ -155,7 +163,7 @@ function UpdateStudyPage() {
 
                     <div className="form-outline mb-1">모집 분야</div>
                     <div className="form-outline mb-4">
-                        <label>Post Type    </label>
+                        <label>Post Type &nbsp;&nbsp;&nbsp;</label>
                         {renderCheckboxGroup()}
                     </div>
 
@@ -168,7 +176,8 @@ function UpdateStudyPage() {
                                     name="recruitmentCount"
                                     placeholder="모집 인원 변경"
                                     value={data.recruitmentCount}
-                                    onChange={onChangeHandler}
+                                    // InputNumber 컴포넌트에서는 onChange 이벤트가 일반적인 event 객체를 전달하지 않고 숫자 값만 전달하므로, name을 직접 만들어 준다.
+                                    onChange={(value) => onChangeHandler({ target: { name: 'recruitmentCount', value } })}
                                 />
                             </div>
                         </div>
@@ -187,11 +196,11 @@ function UpdateStudyPage() {
                         </div>
                     </div>
 
-                    <div className="form-outline mb-1">프로젝트 내용</div>
+                    <div className="form-outline mb-1">스터디 내용</div>
                     <div className="form-outline mb-4">
                         <TextArea
                             name="content"
-                            placeholder="내용 변경"
+                            placeholder="스터디 내용 변경"
                             value={data.content}
                             onChange={onChangeHandler}
                             autoSize={{ minRows: 20 }}

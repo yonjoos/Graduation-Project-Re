@@ -326,7 +326,7 @@ function GroupPage() {
                 onCancel={() => handleCancelApproval(nickName, postsId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
                 okText="아니오"
                 cancelText="예"
-                >
+            >
                 <p>{nickName} 님을 승인 취소하시겠습니까?</p>
             </Modal>
         </div>

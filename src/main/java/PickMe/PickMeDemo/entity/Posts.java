@@ -73,7 +73,7 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     }
 
     public String apply() {
-        if (this.getCounts() == this.getRecruitmentCount()) {
+        if (this.getCounts().equals(this.getRecruitmentCount())) {
             return "fail";
         }
         else {

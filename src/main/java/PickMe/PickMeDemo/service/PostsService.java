@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -954,166 +955,85 @@ public class PostsService {
 
 
     // GroupPage에 내가 작성한 게시물 데이터를 가져오는 메서드
-    /**
-     * 버그
-     * 페이지네이션 버그, (지원자가 3명 이상일 때 발생, 단, 1페이지의 맨 밑 게시물에는 여러 명이 와도 그냥 가져오지만 2페이지가 생김)
-     * total을 Distinct로 제한해버리면, 뒤의 내용이 짤리고,
-     * total을 동일하게 맞추면, 지원자의 수 한 개 한 개를 모두 세어서, Group페이지가 이상해짐.
-     */
-//    @Transactional(readOnly = true) //읽기 전용
-//    // PageRequest.of(page, size)을 인자로 받을 때, 파라미터의 이름은 pageable로 바꾸어 설정
-//    public Page<GroupPostsListDto> getWriterPosts(String userEmail, String sortOption, Pageable pageable) {
-//
-//        QPosts posts = QPosts.posts;
-//        QCategory category = QCategory.category;
-//        QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
-//
-//        // '데이터'를 가져오는 쿼리
-//        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
-//                .join(posts.category, category) // 게시물을 카테고리와 조인한 형태 +
-//                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인한 형태로 가져올 것임. (누가 지원했는지 알기 위함) userApplyPosts가 비어있을 경우, join의 결과가 null이므로, leftJoin으로 묶어준다!!
-//                .where(posts.user.email.eq(userEmail))     // 단, 현재 로그인한 유저가 올린 글이어야 함
-//                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()); //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
-//
-//        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
-//        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
-//                .join(posts.category, category) // 게시물과 카테고리를 조인
-//                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인
-//                .where(posts.user.email.eq(userEmail));
-//
-//        long total = countQuery.fetchCount(); // Count 쿼리에 의해 전체 데이터 개수 알아냄
-//
-//
-//        // 승인대기, 승인완료된 숫자를 카운트 (게시물 지원 시 + 1, 지원 취소 시 - 1)
-//        // posts 3개씩 돌려서 total count만큼 limit으로 설정
-//        // 프론트도 얘에 맞춰야 할 듯
-//
-//        // Posts 테이블의 ID를 기준으로 userApplyPosts의 개수를 가져오는 서브쿼리 (3개씩 돌린건 아닌 듯)
-////        JPQLQuery<Long> subquery = JPAExpressions.select(userApplyPosts.id.count())
-////                .from(userApplyPosts)
-////                .where(userApplyPosts.posts.id.eq(posts.id));
-////
-////        // Posts 테이블의 ID를 기준으로 userApplyPosts의 개수를 계산하여 limit 설정
-////        query.limit(subquery.fetch().stream().mapToLong(Long::intValue).sum());
-//
-//
-//        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
-//        List<Posts> filteredPosts = query
-//                .offset(pageable.getOffset())       // Controller에서 인자로 넘겨준 page
-//                .limit(pageable.getPageSize())      // Controller에서 인자로 넘겨준 size
-//                .fetch();
-//
-//        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
-//
-//        // 동적 쿼리의 결과를 순회하며 dto로 변환
-//        for (Posts post : filteredPosts) {
-//            Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
-//            User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
-//            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();  // 지원 목록을 List의 형태로 가져온 것을 userApplyPost로 명명
-//
-//            // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.
-//            List<String> applyNickNames = userApplyPost.stream()
-//                    .map(userApply -> userApply.getUser().getNickName())  // 지원한 각각의 유저의 닉네임을 찾는다.
-//                    .collect(Collectors.toList());
-//
-//            List<Boolean> approvedList = userApplyPost.stream()
-//                    .map(userApply -> userApply.getConfirm()) // 지원한 각각의 유저의 승인 허가 여부를 찾는다.
-//                    .collect(Collectors.toList());
-//
-//            GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
-//                    .id(post.getId())
-//                    .writerNickName(user.getNickName())   // user = posts.getUser()
-//                    .applyNickNames(applyNickNames)         // applyNickNames : 지원한 사람들을 모은 리스트
-//                    .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
-//                    .title(post.getTitle())
-//                    .web(postCategory.getWeb())     // category = posts.getCategory()
-//                    .app(postCategory.getApp())
-//                    .game(postCategory.getGame())
-//                    .ai(postCategory.getAi())
-//                    .counts(post.getCounts())       // 현재까지 승인된 인원
-//                    .recruitmentCount(post.getRecruitmentCount())   // 모아야할 총 모집 인원
-//                    .endDate(post.getEndDate())
-//                    .approved(approvedList)         // approvedList : 사람들의 승인 여부를 담은 리스트
-//                    .isApproved(null)               // writer 본인은 승인 허가 여부와 상관 없으므로, null로 세팅
-//                    .isFull(null)      // 프론트 측에 DTO를 반환했을 때, 정원이 다 찼는지의 여부는 어차피 사용하지 않으므로, null로 세팅
-//                    .build();
-//
-//            groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
-//        }
-//
-//        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
-//    }
-
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) // 읽기 전용 트랜잭션으로 설정
     public Page<GroupPostsListDto> getWriterPosts(String userEmail, String sortOption, Pageable pageable) {
-        QPosts posts = QPosts.posts;
-        QCategory category = QCategory.category;
-        QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
+        QPosts posts = QPosts.posts; // 게시물 엔티티에 대한 QueryDSL Q타입 객체 생성
+        QCategory category = QCategory.category; // 카테고리 엔티티에 대한 QueryDSL Q타입 객체 생성
+        QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts; // 사용자 지원 게시물 엔티티에 대한 QueryDSL Q타입 객체 생성
 
-        JPAQuery<Posts> query = queryFactory.selectFrom(posts)
-                .join(posts.category, category)
-                .leftJoin(posts.userApplyPosts, userApplyPosts)
-                .where(posts.user.email.eq(userEmail))
-                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
-
-
-        long total=0;
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물 조회 쿼리 생성
+                .join(posts.category, category) // 게시물과 카테고리를 조인
+                .leftJoin(posts.userApplyPosts, userApplyPosts) // 게시물과 사용자 지원 게시물을 왼쪽 조인
+                .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
+                .orderBy(userApplyPosts.createdDate.asc())      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()); // 정렬 옵션에 따라 정렬 방식 지정
 
         List<Posts> filteredPosts = query
-                .fetch();
+                .fetch(); // 게시물 데이터를 가져옴
 
-        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>();
+        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // GroupPostsListDto 객체를 저장할 리스트 생성
 
-        for (Posts post : filteredPosts) {
-            Category postCategory = post.getCategory();
-            User user = post.getUser();
-            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();
+        for (Posts post : filteredPosts) { // 가져온 게시물을 순회
+            Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
+            User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, createdDate를 기준으로 정렬해서 가져옴
+                    .stream()
+                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))
+                    .collect(Collectors.toList());
 
             List<String> applyNickNames = userApplyPost.stream()
-                    .map(userApply -> userApply.getUser().getNickName())
+                    .map(userApply -> userApply.getUser().getNickName()) // 각 사용자의 닉네임을 가져와 리스트로 저장
                     .collect(Collectors.toList());
 
             List<Boolean> approvedList = userApplyPost.stream()
-                    .map(userApply -> userApply.getConfirm())
+                    .map(userApply -> userApply.getConfirm()) // 각 사용자의 승인 허가 여부를 가져와 리스트로 저장
                     .collect(Collectors.toList());
 
-            GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder()
+            GroupPostsListDto groupPostsListDto = GroupPostsListDto.builder() // GroupPostsListDto 객체 생성
                     .id(post.getId())
-                    .writerNickName(user.getNickName())
-                    .applyNickNames(applyNickNames)
-                    .postType(post.getPostType().toString())
-                    .title(post.getTitle())
-                    .web(postCategory.getWeb())
-                    .app(postCategory.getApp())
-                    .game(postCategory.getGame())
-                    .ai(postCategory.getAi())
-                    .counts(post.getCounts())
-                    .recruitmentCount(post.getRecruitmentCount())
-                    .endDate(post.getEndDate())
-                    .approved(approvedList)
-                    .isApproved(null)
-                    .isFull(null)
-                    .build();
+                    .writerNickName(user.getNickName()) // 게시물 작성자의 닉네임 설정
+                    .applyNickNames(applyNickNames) // 이 게시물에 지원한 사용자의 닉네임 리스트 설정
+                    .postType(post.getPostType().toString()) // 게시물 타입 설정. Enum이므로, toString()해주기.
+                    .title(post.getTitle()) // 게시물 제목 설정
+                    .web(postCategory.getWeb()) // 카테고리의 웹 정보 설정
+                    .app(postCategory.getApp()) // 카테고리의 앱 정보 설정
+                    .game(postCategory.getGame()) // 카테고리의 게임 정보 설정
+                    .ai(postCategory.getAi()) // 카테고리의 AI 정보 설정
+                    .counts(post.getCounts()) // 현재까지 승인된 인원 수 설정
+                    .recruitmentCount(post.getRecruitmentCount()) // 총 모집 인원 설정
+                    .endDate(post.getEndDate()) // 게시물의 마감일 설정
+                    .approved(approvedList) // userApplyPost에서 각 게시물에 대해 지원한 유저들의 승인 허가 여부 리스트 설정
+                    .isApproved(null) // 작성자 승인 여부 설정 (null로 초기화)
+                    .isFull(null) // 정원이 다 찼는지 여부 설정 (null로 초기화)
+                    .build(); // GroupPostsListDto 객체 생성 및 초기화
 
-            groupPostsListDtosList.add(groupPostsListDto);
+            groupPostsListDtosList.add(groupPostsListDto); // 생성한 GroupPostsListDto를 리스트에 추가
         }
 
-        // Calculate the total based on the size of groupPostsListDtosList
-        total = groupPostsListDtosList.size();
+        // 변환한 데이터의 총 개수 계산
+        long total = groupPostsListDtosList.size();
 
-        // Adjust pageable if offset or pageSize exceed the actual size
-        int offset = (int) pageable.getOffset();
-        int pageSize = pageable.getPageSize();
+        // 페이지네이션을 위한 offset과 pageSize 계산, 예외 상황 처리
+        int offset = (int) pageable.getOffset();    // 현재 페이지 정보 가져오기
+        int pageSize = pageable.getPageSize();      // 현재 페이지에 몇 개를 띄울건지 size 정보 가져오기
+
+        // offset이 데이터의 총 개수를 초과하면 더 이상 데이터를 가져올 필요 없음
         if (offset >= total) {
             offset = 0;
-            pageSize = 0; // No need to fetch if offset exceeds total
-        } else if (offset + pageSize > total) {
+            pageSize = 0;
+        }
+        // 현재 페이지 + 현재 페이지에서 보고있는 게시물의 개수 > 총 게시물의 개수라면, 페이지 사이즈 재조정
+        else if (offset + pageSize > total) {
             pageSize = (int) (total - offset);
         }
 
-        // Return a new PageImpl with the correct total and modified pageable
+        // 페이지 객체 생성하여 반환
+        // subList : 시작 위치부터 시작 위치 + 페이지 크기 범위의 데이터만 추출
+        // Pageable : 현재 페이지 번호, 페이지 크기 등이 포함되어 있어, 이를 기반으로 데이터를 추출하고 페이지 정보를 생성
+        // total : 전체 데이터의 개수를 나타
         return new PageImpl<>(groupPostsListDtosList.subList(offset, offset + pageSize), pageable, total);
     }
+
 
 
     // GroupPage에 내가 지원한 게시물 데이터를 가져오는 메서드
@@ -1247,41 +1167,31 @@ public class PostsService {
 
         userApplyPostsRepository.save(findUserApplyPosts);
 
-
-
         // 지원자가 '승인' 버튼을 눌렀을 때, 디테일 페이지에서 '승인 완료'버튼이 바로 보이고, 현재 인원 + 1이 되도록 하기 위해 동적 쿼리 생성
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
         QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
 
-        // '데이터'를 가져오는 쿼리
-        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
-                .join(posts.category, category) // 게시물을 카테고리와 조인한 형태 +
-                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인한 형태로 가져올 것임. userApplyPosts가 비어있을 경우, join의 결과가 null이므로, leftJoin으로 묶어준다!!
-                .where(posts.user.email.eq(userEmail))     // 단, 현재 로그인한 유저가 올린 글이어야 함
-                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()); //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
-
-        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
-        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물 조회 쿼리 생성
                 .join(posts.category, category) // 게시물과 카테고리를 조인
-                .join(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인
-                .where(posts.user.email.eq(userEmail));
+                .leftJoin(posts.userApplyPosts, userApplyPosts) // 게시물과 사용자 지원 게시물을 왼쪽 조인
+                .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
+                .orderBy(userApplyPosts.createdDate.asc())      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()); // 정렬 옵션에 따라 정렬 방식 지정
 
-        long total = countQuery.fetchCount(); // Count쿼리에 의해 전체 데이터 개수 알아냄
-
-        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
         List<Posts> filteredPosts = query
-                .offset(pageable.getOffset())       // Controller에서 인자로 넘겨준 page
-                .limit(pageable.getPageSize())      // Controller에서 인자로 넘겨준 size
-                .fetch();
+                .fetch(); // 게시물 데이터를 가져옴
 
-        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // GroupPostsListDto 객체를 저장할 리스트 생성
 
         // 동적 쿼리의 결과를 순회하며 dto로 변환
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
-            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();  // 지원 목록을 List의 형태로 가져온 것을 userApplyPost로 명명
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, createdDate를 기준으로 정렬해서 가져옴
+                    .stream()
+                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))
+                    .collect(Collectors.toList());
 
             // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.
             List<String> applyNickNames = userApplyPost.stream()
@@ -1334,11 +1244,31 @@ public class PostsService {
                         .build();
             }
 
-
             groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
         }
 
-        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
+        // 변환한 데이터의 총 개수 계산
+        long total = groupPostsListDtosList.size();
+
+        // 페이지네이션을 위한 offset과 pageSize 계산, 예외 상황 처리
+        int offset = (int) pageable.getOffset();    // 현재 페이지 정보 가져오기
+        int pageSize = pageable.getPageSize();      // 현재 페이지에 몇 개를 띄울건지 size 정보 가져오기
+
+        // offset이 데이터의 총 개수를 초과하면 더 이상 데이터를 가져올 필요 없음
+        if (offset >= total) {
+            offset = 0;
+            pageSize = 0;
+        }
+        // 현재 페이지 + 현재 페이지에서 보고있는 게시물의 개수 > 총 게시물의 개수라면, 페이지 사이즈 재조정
+        else if (offset + pageSize > total) {
+            pageSize = (int) (total - offset);
+        }
+
+        // 페이지 객체 생성하여 반환
+        // subList : 시작 위치부터 시작 위치 + 페이지 크기 범위의 데이터만 추출
+        // Pageable : 현재 페이지 번호, 페이지 크기 등이 포함되어 있어, 이를 기반으로 데이터를 추출하고 페이지 정보를 생성
+        // total : 전체 데이터의 개수를 나타
+        return new PageImpl<>(groupPostsListDtosList.subList(offset, offset + pageSize), pageable, total);
     }
 
 
@@ -1418,42 +1348,31 @@ public class PostsService {
 
         userApplyPostsRepository.save(findUserApplyPosts);
 
-
-
         // '승인' 버튼을 눌렀을 때, '승인 완료'버튼이 바로 보이고, 현재 인원 + 1이 되도록 하기 위해 동적 쿼리 생성
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
         QUserApplyPosts userApplyPosts = QUserApplyPosts.userApplyPosts;
 
-        // '데이터'를 가져오는 쿼리
-        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
-                .join(posts.category, category) // 게시물을 카테고리와 조인한 형태 +
-                .leftJoin(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인한 형태로 가져올 것임. userApplyPosts가 비어있을 경우, join의 결과가 null이므로, leftJoin으로 묶어준다!!
-                .where(posts.user.email.eq(userEmail))     // 단, 현재 로그인한 유저가 올린 글이어야 함
-                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
-        //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
-
-        // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
-        JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물 조회 쿼리 생성
                 .join(posts.category, category) // 게시물과 카테고리를 조인
-                .join(posts.userApplyPosts, userApplyPosts) // 현재 게시물과 지원 게시물을 조인
-                .where(posts.user.email.eq(userEmail));
+                .leftJoin(posts.userApplyPosts, userApplyPosts) // 게시물과 사용자 지원 게시물을 왼쪽 조인
+                .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
+                .orderBy(userApplyPosts.createdDate.asc())      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()); // 정렬 옵션에 따라 정렬 방식 지정
 
-        long total = countQuery.fetchCount(); // Count쿼리에 의해 전체 데이터 개수 알아냄
-
-        // 데이터를 가져오는 쿼리를 실제로 offset, limit까지 설정해서 쿼리 날림
         List<Posts> filteredPosts = query
-                .offset(pageable.getOffset())       // Controller에서 인자로 넘겨준 page
-                .limit(pageable.getPageSize())      // Controller에서 인자로 넘겨준 size
-                .fetch();
+                .fetch(); // 게시물 데이터를 가져옴
 
-        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+        List<GroupPostsListDto> groupPostsListDtosList = new ArrayList<>(); // GroupPostsListDto 객체를 저장할 리스트 생성
 
         // 동적 쿼리의 결과를 순회하며 dto로 변환
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
-            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts();  // 지원 목록을 List의 형태로 가져온 것을 userApplyPost로 명명
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, createdDate를 기준으로 정렬해서 가져옴
+                    .stream()
+                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))
+                    .collect(Collectors.toList());
 
             // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.
             List<String> applyNickNames = userApplyPost.stream()
@@ -1485,7 +1404,28 @@ public class PostsService {
             groupPostsListDtosList.add(groupPostsListDto);     // 컬렉션에 추가
         }
 
-        return new PageImpl<>(groupPostsListDtosList, pageable, total); // 동적쿼리의 결과를 반환
+        // 변환한 데이터의 총 개수 계산
+        long total = groupPostsListDtosList.size();
+
+        // 페이지네이션을 위한 offset과 pageSize 계산, 예외 상황 처리
+        int offset = (int) pageable.getOffset();    // 현재 페이지 정보 가져오기
+        int pageSize = pageable.getPageSize();      // 현재 페이지에 몇 개를 띄울건지 size 정보 가져오기
+
+        // offset이 데이터의 총 개수를 초과하면 더 이상 데이터를 가져올 필요 없음
+        if (offset >= total) {
+            offset = 0;
+            pageSize = 0;
+        }
+        // 현재 페이지 + 현재 페이지에서 보고있는 게시물의 개수 > 총 게시물의 개수라면, 페이지 사이즈 재조정
+        else if (offset + pageSize > total) {
+            pageSize = (int) (total - offset);
+        }
+
+        // 페이지 객체 생성하여 반환
+        // subList : 시작 위치부터 시작 위치 + 페이지 크기 범위의 데이터만 추출
+        // Pageable : 현재 페이지 번호, 페이지 크기 등이 포함되어 있어, 이를 기반으로 데이터를 추출하고 페이지 정보를 생성
+        // total : 전체 데이터의 개수를 나타
+        return new PageImpl<>(groupPostsListDtosList.subList(offset, offset + pageSize), pageable, total);
     }
 }
 

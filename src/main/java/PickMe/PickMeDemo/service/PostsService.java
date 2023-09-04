@@ -779,6 +779,7 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
+                    .counts(post.getCounts())
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .build();

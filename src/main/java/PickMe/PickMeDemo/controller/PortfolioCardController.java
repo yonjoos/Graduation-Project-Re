@@ -5,6 +5,7 @@ import PickMe.PickMeDemo.dto.PortfolioCardDto;
 import PickMe.PickMeDemo.service.PortfolioService;
 import PickMe.PickMeDemo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,9 +18,9 @@ public class PortfolioCardController {
     private final UserService userService;
     private final PortfolioService portfolioService;
     @GetMapping("/getPortfolioCards")
-    public List<PortfolioCardDto> getPortfolioCards(){
+    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
 
-        return portfolioService.getPortfolioCard();
+        return ResponseEntity.ok(portfolioService.getPortfolioCard());
 
     }
 

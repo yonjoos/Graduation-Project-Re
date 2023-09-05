@@ -129,19 +129,36 @@ public class PortfolioService {
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         // User를 통해 User가 갖고 있는 포트폴리오 찾기
-        Portfolio portfolio = portfolioRepository.findByUser(user)
-                .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+        Optional<Portfolio> portfolio = portfolioRepository.findByUser(user);
 
+        PortfolioFormDto portfolioFormDto;
+
+        if (portfolio.isPresent()) {
+            portfolioFormDto = PortfolioFormDto.builder()
+                    .hasPortfolio(true)
+                    .web(user.getPortfolio().getWeb())
+                    .app(user.getPortfolio().getApp())
+                    .game(user.getPortfolio().getGame())
+                    .ai(user.getPortfolio().getAi())
+                    .shortIntroduce(user.getPortfolio().getShortIntroduce())
+                    .introduce(user.getPortfolio().getIntroduce())
+                    .fileUrl(user.getPortfolio().getFileUrl())
+                    .build();
+        }
+        else {
+            portfolioFormDto = PortfolioFormDto.builder()
+                    .hasPortfolio(false)
+                    .web(user.getPortfolio().getWeb())
+                    .app(user.getPortfolio().getApp())
+                    .game(user.getPortfolio().getGame())
+                    .ai(user.getPortfolio().getAi())
+                    .shortIntroduce(user.getPortfolio().getShortIntroduce())
+                    .introduce(user.getPortfolio().getIntroduce())
+                    .fileUrl(user.getPortfolio().getFileUrl())
+                    .build();
+        }
         // PortfolioDto를 빌더를 통해 생성
-        PortfolioFormDto portfolioFormDto = PortfolioFormDto.builder()
-                .web(portfolio.getWeb())
-                .app(portfolio.getApp())
-                .game(portfolio.getGame())
-                .ai(portfolio.getAi())
-                .shortIntroduce(portfolio.getShortIntroduce())
-                .introduce(portfolio.getIntroduce())
-                .fileUrl(portfolio.getFileUrl())
-                .build();
+
 
         return portfolioFormDto;
     }
@@ -201,43 +218,58 @@ public class PortfolioService {
     @Transactional(readOnly = true)
     public PortfolioDto getUserPortfolio(String nickName) {
 
-        User user = userRepository.findByNickName(nickName)
-                .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-
-        // User를 통해 User가 갖고 있는 포트폴리오 찾기
-        Optional<Portfolio> findUserPortfolio = portfolioRepository.findByUser(user);
+        Optional<User> findUser = userRepository.findByNickName(nickName);
 
         // PortfolioDto를 빌더를 통해 생성
-        PortfolioDto portfolioDto;
+        PortfolioDto portfolioDto = PortfolioDto.builder()
+                .isCreated(null)
+                .nickName(null)
+                .email(null)
+                .web(null)
+                .app(null)
+                .game(null)
+                .ai(null)
+                .shortIntroduce(null)
+                .introduce(null)
+                .fileUrl(null)
+                .build();
 
-        if (findUserPortfolio.isPresent()) {
-            // PortfolioDto를 빌더를 통해 생성
-            portfolioDto = PortfolioDto.builder()
-                    .isCreated(true)
-                    .nickName(user.getNickName())
-                    .email(user.getEmail())
-                    .web(findUserPortfolio.get().getWeb())
-                    .app(findUserPortfolio.get().getApp())
-                    .game(findUserPortfolio.get().getGame())
-                    .ai(findUserPortfolio.get().getAi())
-                    .shortIntroduce(findUserPortfolio.get().getShortIntroduce())
-                    .introduce(findUserPortfolio.get().getIntroduce())
-                    .fileUrl(findUserPortfolio.get().getFileUrl())
-                    .build();
-        }
-        else {
-            portfolioDto = PortfolioDto.builder()
-                    .isCreated(false)
-                    .nickName(user.getNickName())
-                    .email(user.getEmail())
-                    .web(null)
-                    .app(null)
-                    .game(null)
-                    .ai(null)
-                    .shortIntroduce(null)
-                    .introduce(null)
-                    .fileUrl(null)
-                    .build();
+        // 유저가 있는 경우 정상적인 DTO 생성
+        if (findUser.isPresent()) {
+            // User를 통해 User가 갖고 있는 포트폴리오 찾기
+            Optional<Portfolio> findUserPortfolio = portfolioRepository.findByUser(findUser.get());
+
+            // 유저와 포트폴리오가 모두 있는 경우
+            if (findUserPortfolio.isPresent()) {
+                // PortfolioDto를 빌더를 통해 생성
+                portfolioDto = PortfolioDto.builder()
+                        .isCreated(true)
+                        .nickName(findUser.get().getNickName())
+                        .email(findUser.get().getEmail())
+                        .web(findUserPortfolio.get().getWeb())
+                        .app(findUserPortfolio.get().getApp())
+                        .game(findUserPortfolio.get().getGame())
+                        .ai(findUserPortfolio.get().getAi())
+                        .shortIntroduce(findUserPortfolio.get().getShortIntroduce())
+                        .introduce(findUserPortfolio.get().getIntroduce())
+                        .fileUrl(findUserPortfolio.get().getFileUrl())
+                        .build();
+            }
+            // 유저는 있는데 포트폴리오가 없는 경우
+            else {
+                portfolioDto = PortfolioDto.builder()
+                        .isCreated(false)
+                        .nickName(findUser.get().getNickName())
+                        .email(findUser.get().getEmail())
+                        .web(null)
+                        .app(null)
+                        .game(null)
+                        .ai(null)
+                        .shortIntroduce(null)
+                        .introduce(null)
+                        .fileUrl(null)
+                        .build();
+            }
         }
 
         return portfolioDto;

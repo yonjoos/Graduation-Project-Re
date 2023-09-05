@@ -9,7 +9,6 @@ import { request, setHasPortfolio } from '../../../../hoc/request';
 function MyPortfolioPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const userPortfolio = useSelector(state => state.userPortfolio);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);    // 모달이 보이는지 안보이는지 설정하기 위한 애
 
     const [data, setData] = useState(null);

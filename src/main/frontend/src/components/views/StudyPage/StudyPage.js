@@ -112,8 +112,8 @@ function StudyPage() {
     };
 
     // 추천버튼을 누르면 추천 페이지로 이동
-    const handleRecommendationPage = () => {
-        navigate('/recommendation'); // Navigate to RecommendationPage
+    const handlePortfolioCardPage = () => {
+        navigate('/portfoliocard'); // Navigate to RecommendationPage
     };
 
     // 스터디 버튼을 누르면 스터디 페이지로 이동
@@ -257,7 +257,7 @@ function StudyPage() {
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                     Study
                 </Button>
-                <Button type={location.pathname === '/recommendation' ? 'primary' : 'default'} onClick={handleRecommendationPage}>
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
                     Recommendation
                 </Button>
 

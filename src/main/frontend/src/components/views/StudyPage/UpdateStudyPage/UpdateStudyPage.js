@@ -79,6 +79,19 @@ function UpdateStudyPage() {
     // data의 형식에 맞게 변환하여 값을 저장
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
+
+        // 모집 인원을 백엔드에서 가져온 데이터인 data.counts보다 작게 설정하지 못하도록 확인
+        if (name === 'recruitmentCount' && value < data.counts) {
+            message.warning('모집 인원은 현재 모집된 인원보다 작게 설정할 수 없습니다.');
+            return;
+        }
+
+        // 모집 인원을 백엔드에서 가져온 데이터인 data.counts보다 작게 설정하지 못하도록 확인
+        if (name === 'recruitmentCount' && value < 2) {
+            message.warning('모집 인원은 자신을 포함한, 최소 2명부터 모집 가능합니다.');
+            return;
+        }
+        
         setData(prevData => ({ ...prevData, [name]: value }));
     };
 

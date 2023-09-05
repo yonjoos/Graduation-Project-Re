@@ -19,6 +19,7 @@ public class PostsUpdateFormDto {
     // Boolean은 response.data.postType에서 삼항 연산자를 써야하는 것 때문인 것 같음
     private String title;
     private List<Boolean> postType;
+    private Integer counts;     // 현재 인원보다 적게 모집할 수 없도록 하기 위한 변수
     private Integer recruitmentCount;
     private LocalDate endDate;
     private String content;

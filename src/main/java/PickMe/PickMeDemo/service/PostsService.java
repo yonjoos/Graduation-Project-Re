@@ -368,6 +368,7 @@ public class PostsService {
         PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
                 .title(findProject.getTitle())
                 .postType(postTypeList)     // 리스트로 변환된 postType을 반환
+                .counts(findProject.getCounts())
                 .recruitmentCount(findProject.getRecruitmentCount())
                 .endDate(findProject.getEndDate())
                 .content(findProject.getContent())
@@ -400,6 +401,7 @@ public class PostsService {
         PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
                 .title(findStudy.getTitle())
                 .postType(postTypeList)     // 리스트로 변환된 postType을 반환
+                .counts(findStudy.getCounts())
                 .recruitmentCount(findStudy.getRecruitmentCount())
                 .endDate(findStudy.getEndDate())
                 .content(findStudy.getContent())
@@ -574,7 +576,7 @@ public class PostsService {
         }
 
         // 정렬 옵션에 따른 조건 추가
-        query=query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
+        query=query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.lastModifiedDate.desc());
                 //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
 
 
@@ -583,7 +585,7 @@ public class PostsService {
                 .join(posts.category, category) // Join with category
                 .where(bannerConditions,posts.postType.eq(PostType.valueOf("PROJECT")));
 
-//              .orderBy(posts.createdDate.desc()); 카운트 쿼리에선 정렬 필요없음
+//              .orderBy(posts.lastModifiedDate.desc()); 카운트 쿼리에선 정렬 필요없음
 
         // 근데 검색어 관련 조건이 null이 아니라면, 검색어 관련 조건이 해당 쿼리문에 where절로 한번 더 엮임
         if (titleOrContentConditions != null) {
@@ -740,7 +742,7 @@ public class PostsService {
         }
 
         // 정렬 옵션에 따른 조건 추가
-        query = query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc());
+        query = query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.lastModifiedDate.desc());
                 //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
 
         // 카운트 쿼리 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
@@ -748,7 +750,7 @@ public class PostsService {
                 .join(posts.category, category) // Join with category
                 .where(bannerConditions,posts.postType.eq(PostType.valueOf("STUDY")));
 
-        // .orderBy(posts.createdDate.desc()); 카운트 쿼리에선 정렬 필요없음
+        // .orderBy(posts.lastModifiedDate.desc()); 카운트 쿼리에선 정렬 필요없음
 
         // 근데 검색어 관련 조건이 null이 아니라면, 검색어 관련 조건이 해당 쿼리문에 where절로 한 번 더 엮임
         if (titleOrContentConditions != null) {
@@ -967,7 +969,7 @@ public class PostsService {
                 .leftJoin(posts.userApplyPosts, userApplyPosts) // 게시물과 사용자 지원 게시물을 왼쪽 조인
                 .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
                 .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 정렬 옵션에 따라 정렬 방식 지정
-                .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(userApplyPosts.lastModifiedDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴
@@ -977,9 +979,9 @@ public class PostsService {
         for (Posts post : filteredPosts) { // 가져온 게시물을 순회
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
-            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, createdDate를 기준으로 정렬해서 가져옴
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, lastModifiedDate를 기준으로 정렬해서 가져옴
                     .stream()
-                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))
+                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))   // // 승인을 하는 순간, 데이터가 변경되므로, 승인버튼에서 유저의 위치가 뒤죽박죽 된다. 따라서 getLastModifiedDate가 아닌 getCreatedDate를 사용한다.
                     .collect(Collectors.toList());
 
             List<String> applyNickNames = userApplyPost.stream()
@@ -1177,8 +1179,8 @@ public class PostsService {
                 .join(posts.category, category) // 게시물과 카테고리를 조인
                 .leftJoin(posts.userApplyPosts, userApplyPosts) // 게시물과 사용자 지원 게시물을 왼쪽 조인
                 .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
-                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 정렬 옵션에 따라 정렬 방식 지정
-                .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 유저 승인 시, 게시물 위치가 바뀌면 안됨. 따라서 createdDate기준으로 정렬
+                .orderBy(userApplyPosts.lastModifiedDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴
@@ -1189,9 +1191,9 @@ public class PostsService {
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
-            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, createdDate를 기준으로 정렬해서 가져옴
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, lastModifiedDate를 기준으로 정렬해서 가져옴
                     .stream()
-                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))
+                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))  // 승인을 하는 순간, 데이터가 변경되므로, 승인버튼에서 유저의 위치가 뒤죽박죽 된다. 따라서 getLastModifiedDate가 아닌 getCreatedDate를 사용한다.
                     .collect(Collectors.toList());
 
             // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.
@@ -1358,8 +1360,8 @@ public class PostsService {
                 .join(posts.category, category) // 게시물과 카테고리를 조인
                 .leftJoin(posts.userApplyPosts, userApplyPosts) // 게시물과 사용자 지원 게시물을 왼쪽 조인
                 .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
-                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 정렬 옵션에 따라 정렬 방식 지정
-                .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 유저 승인 취소 시, 게시물 위치가 바뀌면 안됨. 따라서 createdDate기준으로 정렬
+                .orderBy(userApplyPosts.lastModifiedDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴
@@ -1370,9 +1372,9 @@ public class PostsService {
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
-            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, createdDate를 기준으로 정렬해서 가져옴
+            List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, lastModifiedDate를 기준으로 정렬해서 가져옴
                     .stream()
-                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))
+                    .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))   // 승인을 취소하는 순간, 데이터가 변경되므로, 승인버튼에서 유저의 위치가 뒤죽박죽 된다. 따라서 getLastModifiedDate가 아닌 getCreatedDate를 사용한다.
                     .collect(Collectors.toList());
 
             // applyNickNames라는 List 컬렉션에 게시물에 지원한 닉네임을 모두 담아 리턴한다.

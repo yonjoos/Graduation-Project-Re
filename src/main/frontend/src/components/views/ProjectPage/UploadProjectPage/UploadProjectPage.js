@@ -48,7 +48,9 @@ function UploadProjectPage() {
     };
 
     const handleRecruitsChange = (value) => {
-        if (!isNaN(value)) {
+        // !isNaN은 주어진 값이 숫자인지 아닌지를 확인하고, 숫자일 경우에만 특정 작업을 수행하려는 경우에 사용
+        // 본인 제외, 최소 2명 이상 모집 가능
+        if (!isNaN(value) && value >= 2) {
             setRecruitmentCount(value);
         } else {
             message.warning('Please enter a valid number for recruits.');

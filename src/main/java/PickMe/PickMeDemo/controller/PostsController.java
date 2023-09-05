@@ -357,7 +357,7 @@ public class PostsController {
 
     // Group 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
     @GetMapping("/getGroupPosts")
-    public ResponseEntity<Page<GroupPostsListDto>> getGroupPosts(
+    public ResponseEntity<Page<GroupPostsDto>> getGroupPosts(
             @RequestParam(defaultValue = "writer") String postsOption, //프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 글쓴이
             @RequestParam(defaultValue = "latestPosts") String sortOption, //프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
             @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
@@ -367,18 +367,18 @@ public class PostsController {
         // Email 찾기
         String userEmail = principal.getName();
 
-        Page<GroupPostsListDto> groupPosts;
+        Page<GroupPostsDto> groupPostsDtos;
 
         // 게시물 작성자인 경우, 다음의 코드를 실행
         if ("writer".equals(postsOption)) {
-            groupPosts = postsService.getWriterPosts(userEmail, sortOption, PageRequest.of(page, size));
+            groupPostsDtos = postsService.getWriterPosts(userEmail, sortOption, PageRequest.of(page, size));
         }
         // 게시물 지원자인 경우, 다음의 코드를 실행
         else {
-            groupPosts = postsService.getApplicantPosts(userEmail, sortOption, PageRequest.of(page, size));
+            groupPostsDtos = postsService.getApplicantPosts(userEmail, sortOption, PageRequest.of(page, size));
         }
 
-        return ResponseEntity.ok(groupPosts);
+        return ResponseEntity.ok(groupPostsDtos);
     }
 
 
@@ -404,9 +404,10 @@ public class PostsController {
     }
 
 
+
     // 지원 승인
     @PutMapping("/posts/approve")
-    private ResponseEntity<Page<GroupPostsListDto>> approveUserWithPosts(
+    private ResponseEntity<Page<GroupPostsDto>> approveUserWithPosts(
             @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
             @RequestParam Long postsId,   // 프론트엔드에서 넘어온 프로젝트 ID
             @RequestParam(defaultValue = "latestPosts") String sortOption, // 프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
@@ -418,10 +419,11 @@ public class PostsController {
         // Email 찾기
         String userEmail = principal.getName();
 
-        Page<GroupPostsListDto> groupPosts = postsService.approveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
+        Page<GroupPostsDto> groupPosts = postsService.approveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
     }
+
 
 
     // 프로젝트 지원 취소
@@ -462,9 +464,11 @@ public class PostsController {
         return ResponseEntity.ok(postsDto);
     }
 
+
+
     // 승인 취소
     @PutMapping("/posts/cancelApprove")
-    private ResponseEntity<Page<GroupPostsListDto>> cancelApproveUserWithPost(
+    private ResponseEntity<Page<GroupPostsDto>> cancelApproveUserWithPost(
             @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
             @RequestParam Long postsId,   // 프론트엔드에서 넘어온 프로젝트 ID
             @RequestParam(defaultValue = "latestPosts") String sortOption, // 프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
@@ -475,9 +479,85 @@ public class PostsController {
         // Email 찾기
         String userEmail = principal.getName();
 
-        Page<GroupPostsListDto> groupPosts = postsService.cancelApproveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
+        Page<GroupPostsDto> groupPosts = postsService.cancelApproveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
+    }
+
+
+
+    // 프로젝트 스크랩
+    @PostMapping("/project/scrap/{projectId}") // Use path variable to get project ID from URL
+    private ResponseEntity<PostsDto> projectScrap(@PathVariable Long projectId, Principal principal) {
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.postsScrap(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+    // 스터디 스크랩
+    @PostMapping("/study/scrap/{studyId}") // Use path variable to get project ID from URL
+    private ResponseEntity<PostsDto> studyScrap(@PathVariable Long studyId, Principal principal) {
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.postsScrap(userEmail, studyId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+
+
+    // 프로젝트 스크랩 취소
+    @PostMapping("/project/cancelScrap/{projectId}")
+    public ResponseEntity<PostsDto> cancelProjectScrap(@PathVariable Long projectId, Principal principal) {
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.cancelPostsScrap(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+    // 스터디 스크랩 취소
+    @PostMapping("/study/cancelScrap/{studyId}")
+    public ResponseEntity<PostsDto> cancelStudyScrap(@PathVariable Long studyId, Principal principal) {
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.cancelPostsScrap(userEmail, studyId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+
+
+    // Scrap 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
+    @GetMapping("/getScrapPosts")
+    public ResponseEntity<Page<ScrapPostsDto>> getScrapPosts(
+            @RequestParam(defaultValue = "project") String postsOption, //프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 글쓴이
+            @RequestParam(defaultValue = "latestPosts") String sortOption, //프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
+            @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
+            @RequestParam(name = "size", defaultValue = "3") int size, //프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
+            Principal principal) {      // 본인이 쓴 글인지, 남이 쓴 글인지 구분하기 위해 현재 유저의 정보 가져오기
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        Page<ScrapPostsDto> scrapPostsDtos;
+
+        // 프로젝트 버튼을 클릭한 경우, 다음의 코드를 실행
+        if ("project".equals(postsOption)) {
+            scrapPostsDtos = postsService.getProjectScrapPosts(userEmail, sortOption, PageRequest.of(page, size));
+        }
+        // 스터디 버튼을 클릭한 경우, 다음의 코드를 실행
+        else {
+            scrapPostsDtos = postsService.getStudyScrapPosts(userEmail, sortOption, PageRequest.of(page, size));
+        }
+
+        return ResponseEntity.ok(scrapPostsDtos);
     }
 }
 

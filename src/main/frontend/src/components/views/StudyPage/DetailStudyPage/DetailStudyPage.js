@@ -11,8 +11,10 @@ function DetailStudyPage() {
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isModalVisible, setIsModalVisible] = useState(false);    // 모달이 보이는지 여부 설정
     const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);    // 지원 취소 관련 모달
+    const [isScrapModalVisible, setIsScrapModalVisible] = useState(false);      // 스크랩 모달이 보이는지 여부 설정
     const [modalAction, setModalAction] = useState('');     // modalAction은 'delete'와 'apply' 둘 중 하나로 세팅.
     const [cancelAction, setCancelAction] = useState('');   // 승인 허가된 사람과, 승인 허가되지 않은 사람의 지원 취소 request 매커니즘을 다르게 하기 위해 세팅.
+    const [scrapAction, setScrapAction] = useState('');     // 스크랩한 사람과, 스크랩하지 않은 사람의 request 매커니즘을 다르게 하기 위해 세팅
 
     useEffect(() => {
         // StudyId를 PathVariable로 보내기
@@ -80,6 +82,12 @@ function DetailStudyPage() {
         setIsCancelModalVisible(true);
         setCancelAction(action);    // 지원 취소 모달 띄울 때, cancelAction이 applying인지 approved인지 세팅함
     };
+
+    // 스크랩 모달 띄우기
+    const showScrapModal = (action) => {
+        setIsScrapModalVisible(true);
+        setScrapAction(action);
+    }
     
     const handleModalConfirm = () => {
         // writer가 게시물 삭제 버튼을 누른 경우
@@ -129,25 +137,65 @@ function DetailStudyPage() {
         }
     };
     
+    const handleScrapModalConfirm = async () => {
+        // 스크랩 버튼을 누른 경우
+        if (scrapAction === 'scrap') {
+            request('POST', `/study/scrap/${studyId}`, {})
+            .then((response) => {
+                //console.log("Fetched study data:", response.data); // Log the fetched data
+                setData(response.data); // 백엔드에서 받아온 데이터 세팅
+            })
+            .catch((error) => {
+                // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
+                // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
+                message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
+            });
+
+            navigate(`/study/detail/${studyId}`);
+        }
+        
+        // 스크랩 취소 버튼을 누른 경우
+        else if (scrapAction === 'cancelScrap') {
+            request('POST', `/study/cancelScrap/${studyId}`, {})
+            .then((response) => {
+                //console.log("Fetched study data:", response.data); // Log the fetched data
+                setData(response.data); // 백엔드에서 받아온 데이터 세팅
+            })
+            .catch((error) => {
+                console.error("Error fetching study data:", error);
+            });
+
+            navigate(`/study/detail/${studyId}`);
+        }
+
+        setIsScrapModalVisible(false);   // 모달 안보이게 숨김
+    };
+
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
 
     const handleCancelModalCancel = () => {
         setIsCancelModalVisible(false);
-    };      
+    };
+
+    const handleScrapModalCancel = () => {
+        setIsScrapModalVisible(false);
+    };
 
     // 글 작성자인지, 아닌지에 따라 다르게 보이도록 설정
     const renderButtons = () => {
         const isWriter = data.writer;       // 게시물 작성자인가?
+        const isScrapped = data.scrap;      // 게시물이 스크랩되었나?
         const isApplying = data.applying;   // 승인 대기 중인가?
         const isApplied = data.applied;     // 승인 완료되었나?
     
         return (
             <Row>
                 <Col span={12}>
-                    <Button onClick={() => navigate('/study')}>
-                        스터디 목록
+                    {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
+                    <Button onClick={() => navigate(-1)}>
+                        목록으로 돌아가기
                     </Button>
                 </Col>
                 <Col span={12} style={{ textAlign: 'right' }}>
@@ -162,11 +210,14 @@ function DetailStudyPage() {
                             </Button>
                         </div>
                     )}
-                    {/** 게시물에 지원 안한 사람 */}
-                    {!isWriter && !isApplying && !isApplied && (
+                    {/** 게시물에 지원 안한 사람 + 스크랩 안한 사람 */}
+                    {!isWriter && !isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
                             <div>
+                                <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
+                                    게시물 스크랩
+                                </Button>
                                 <Button type="text" disabled>
                                     모집 마감
                                 </Button>
@@ -174,17 +225,47 @@ function DetailStudyPage() {
                         ) : (
                             // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
                             <div>
+                                <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
+                                    게시물 스크랩
+                                </Button>
                                 <Button type="primary" onClick={() => showModal('apply')}>
                                     지원하기
                                 </Button>
                             </div>
                         )
                     )}
-                    {/** 지원은 했으나, 승인 대기 중인 사람 */}
-                    {!isWriter && isApplying && (
+                    {/** 게시물에 지원 안한 사람 + 스크랩 한 사람 */}
+                    {!isWriter && isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
                             <div>
+                                <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
+                                    스크랩 취소
+                                </Button>
+                                <Button type="text" disabled>
+                                    모집 마감
+                                </Button>
+                            </div>
+                        ) : (
+                            // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
+                            <div>
+                                <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
+                                    스크랩 취소
+                                </Button>
+                                <Button type="primary" onClick={() => showModal('apply')}>
+                                    지원하기
+                                </Button>
+                            </div>
+                        )
+                    )}
+                    {/** 지원은 했으나, 승인 대기 중인 사람 + 스크랩 안한 사람 */}
+                    {!isWriter && !isScrapped && isApplying && (
+                        data.counts === data.recruitmentCount ? (
+                            // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
+                            <div>
+                                <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
+                                    게시물 스크랩
+                                </Button>
                                 <Button type="text" disabled>
                                     모집 마감
                                 </Button>
@@ -195,6 +276,9 @@ function DetailStudyPage() {
                         ) : (
                             // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
                             <div>
+                                <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
+                                    게시물 스크랩
+                                </Button>
                                 <Button type="text" disabled>
                                     승인 대기 중..
                                 </Button>
@@ -204,9 +288,56 @@ function DetailStudyPage() {
                             </div>
                         )
                     )}
-                    {/** 승인 허가된 사람 */}
-                    {!isWriter && isApplied && (
+                    {/** 지원은 했으나, 승인 대기 중인 사람 + 스크랩 한 사람 */}
+                    {!isWriter && isScrapped && isApplying && (
+                        data.counts === data.recruitmentCount ? (
+                            // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
+                            <div>
+                                <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
+                                    스크랩 취소
+                                </Button>
+                                <Button type="text" disabled>
+                                    모집 마감
+                                </Button>
+                                <Button type="primary" onClick={() => showCancelModal('applying')}>
+                                    지원 취소
+                                </Button>
+                            </div>
+                        ) : (
+                            // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
+                            <div>
+                                <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
+                                    스크랩 취소
+                                </Button>
+                                <Button type="text" disabled>
+                                    승인 대기 중..
+                                </Button>
+                                <Button type="primary" onClick={() => showCancelModal('applying')}>
+                                    지원 취소
+                                </Button>
+                            </div>
+                        )
+                    )}
+                    {/** 승인 허가된 사람 + 스크랩 안한 사람 */}
+                    {!isWriter && !isScrapped && isApplied && (
                         <div>
+                            <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
+                                게시물 스크랩
+                            </Button>
+                            <Button type="text" disabled>
+                                승인 완료
+                            </Button>
+                            <Button type="primary" onClick={() => showCancelModal('approved')}>
+                                지원 취소
+                            </Button>
+                        </div>
+                    )}
+                    {/** 승인 허가된 사람 + 스크랩 한 사람 */}
+                    {!isWriter && isScrapped && isApplied && (
+                        <div>
+                            <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
+                                스크랩 취소
+                            </Button>
                             <Button type="text" disabled>
                                 승인 완료
                             </Button>
@@ -223,11 +354,15 @@ function DetailStudyPage() {
 
     return (
         <div style={{ marginLeft: '10%', marginRight: '10%' }}>
-            {/** 게시물 작성자에게만 보이는 화면. 우측 상단데 게시물 수정, 삭제 버튼이 보임. */}
+            {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
             {data.writer && renderButtons()}
-            {!data.writer && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 */}
-            {!data.writer && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) */}
-            {!data.writer && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) */}
+            {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
+            {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
+            {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
+            {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
+            {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
+            {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
+            {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
             
             {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
             <Divider className="bold-divider" />
@@ -311,6 +446,21 @@ function DetailStudyPage() {
                 cancelText="예"
                 >
                 <p>지원을 취소하시겠습니까?</p>
+            </Modal>
+            <Modal
+                title="Confirm Action"
+                open={isScrapModalVisible}
+                onOk={handleScrapModalCancel}
+                onCancel={handleScrapModalConfirm}
+                okText="아니오"
+                cancelText="예"
+            >
+                {scrapAction === 'scrap' && (
+                    <p>게시물을 스크랩하시겠습니까?</p>
+                )}
+                {scrapAction === 'cancelScrap' && (
+                    <p>스크랩을 취소하시겠습니까?</p>
+                )}
             </Modal>
         </div>
     )

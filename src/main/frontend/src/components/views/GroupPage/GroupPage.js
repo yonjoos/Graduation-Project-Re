@@ -286,7 +286,7 @@ function GroupPage() {
                             내가 작성한 게시물
                         </Button>
                         <Button
-                            type={postsOption === 'applicant' ? 'primary' : 'default'}
+                            type={postsOption === "applicant" ? 'primary' : 'default'}
                             onClick={() => handlePostsOptionChange("applicant")}
                         >
                             내가 지원한 게시물

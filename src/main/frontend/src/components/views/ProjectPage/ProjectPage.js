@@ -58,6 +58,8 @@ function ProjectPage() {
 
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
     const handleRowClick = (projectId) => {
+        // /project/detail/${projectId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
+        // 가장 마지막에 저장한 엔드포인트인 /project로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project로 설정
         dispatch(setLastVisitedEndpoint('/project'));
         navigate(`/project/detail/${projectId}`);
     }

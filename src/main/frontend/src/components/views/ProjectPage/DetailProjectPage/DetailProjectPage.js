@@ -193,8 +193,9 @@ function DetailProjectPage() {
         return (
             <Row>
                 <Col span={12}>
-                    <Button onClick={() => navigate('/project')}>
-                        프로젝트 목록
+                    {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
+                    <Button onClick={() => navigate(-1)}>
+                        목록으로 돌아가기
                     </Button>
                 </Col>
                 <Col span={12} style={{ textAlign: 'right' }}>

@@ -109,7 +109,8 @@ function PortfolioPage() {
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
         <div>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
-                <Button type="primary" onClick={() => navigate('/group')}>
+                {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
+                <Button type="primary" onClick={() => navigate(-1)}>
                     목록으로 돌아가기
                 </Button>
 

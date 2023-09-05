@@ -11,7 +11,7 @@ function GroupPage() {
     const [postsOption, setPostsOption] = useState("writer"); // 내가 쓴 글이면 postsOption === writer / 내가 지원한 글이면 postsOption === applicant
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
-    const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
+    const [sortOption, setSortOption] = useState('latestPosts'); //등록순: latestPosts / 모집마감순: nearDeadline
     const [isModalVisible, setIsModalVisible] = useState(false);    // 유저 승인 모달이 보이는지 여부 설정
     const [cancelModalVisible, setCancelModalVisible] = useState(false);    // 유저 승인 취소 모달이 보이는지 여부 설정
     const [nickName, setNickName] = useState(null);       // 승인할 때 필요한 유저 nickName을 저장
@@ -22,7 +22,7 @@ function GroupPage() {
     // 페이지가 새로 마운트 될 때마다 실행됨. 
     // 내가 보고있는 게시물이 내가 쓴 글인지(postsOption === writer) 또는 내가 지원한 글인지(postsOption === applicant)
     // 현재 사용자가 하이라이트한 페이지 번호 상태, 
-    // 최신일순/마감일순에 대한 정렬 옵션,
+    // 등록순/마감일순에 대한 정렬 옵션,
     // 를 기반으로 백엔드에 동적쿼리 보냄
     useEffect(() => {
         fetchFilteredPosts();
@@ -36,7 +36,7 @@ function GroupPage() {
                 postsOption: postsOption,   // 내가 쓴 글인가? 내가 지원한 글인가?
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-                sortOption: sortOption, // 최신 등록순, 모집일자 마감순
+                sortOption: sortOption, // 등록순, 모집일자 마감순
             });
 
             //현재 사용자가 선택한 페이지와 배너 정보를 queryParams에 넣어서 백엔드에 요청
@@ -68,7 +68,7 @@ function GroupPage() {
         return `${year}년 ${month}월 ${day}일`;
     };
 
-    // 최신등록순, 마감일 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
+    // 등록순, 마감일 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
     const handleSortOptionChange = (option) => {
         setSortOption(option);
         setCurrentPage(0);
@@ -94,7 +94,7 @@ function GroupPage() {
                 postsId: postsId,   // 게시물 ID
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-                sortOption: sortOption, // 최신 등록순, 모집일자 마감순
+                sortOption: sortOption, // 등록순, 모집일자 마감순
             });
 
             // 승인 상태를 '수정'하는 것이므로, put request 
@@ -116,7 +116,7 @@ function GroupPage() {
                 postsId: postsId,   // 게시물 ID
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-                sortOption: sortOption, // 최신 등록순, 모집일자 마감순
+                sortOption: sortOption, // 등록순, 모집일자 마감순
             });
 
             // 승인 상태를 '수정'하는 것이므로, put request 
@@ -259,13 +259,13 @@ function GroupPage() {
                     {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}
                     <Col span={12} style={{ textAlign: 'left' }}>
 
-                        {/* Sort buttons - 최신등록순, 마감일자 순 버튼*/}
+                        {/* Sort buttons - 등록순, 마감일자 순 버튼*/}
                         <Button
                             type={sortOption === 'latestPosts' ? 'primary' : 'default'}
                             onClick={() => handleSortOptionChange('latestPosts')}
                             style={{ marginRight: '10px' }}
                         >
-                            최신 등록순
+                            등록순
                         </Button>
                         <Button
                             type={sortOption === 'nearDeadline' ? 'primary' : 'default'}
@@ -277,7 +277,7 @@ function GroupPage() {
                     </Col>
                     <Col span={12} style={{ textAlign: 'right' }}>
 
-                        {/** Sort buttons - 최신등록순, 마감일자 순 버튼 */}
+                        {/** Sort buttons - 등록순, 마감일자 순 버튼 */}
                         <Button
                             type={postsOption === "writer" ? 'primary' : 'default'}
                             onClick={() => handlePostsOptionChange("writer")}

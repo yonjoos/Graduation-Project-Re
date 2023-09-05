@@ -11,7 +11,7 @@ function GroupPage() {
     const [postsOption, setPostsOption] = useState("writer"); // 내가 쓴 글이면 postsOption === writer / 내가 지원한 글이면 postsOption === applicant
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
-    const [sortOption, setSortOption] = useState('latestPosts'); //등록순: latestPosts / 모집마감순: nearDeadline
+    const [sortOption, setSortOption] = useState('latestPosts'); //등록순(내가 작성한 게시물): latestPosts 최신 등록순(내가 지원한 게시물)/ 모집마감순: nearDeadline
     const [isModalVisible, setIsModalVisible] = useState(false);    // 유저 승인 모달이 보이는지 여부 설정
     const [cancelModalVisible, setCancelModalVisible] = useState(false);    // 유저 승인 취소 모달이 보이는지 여부 설정
     const [nickName, setNickName] = useState(null);       // 승인할 때 필요한 유저 nickName을 저장
@@ -79,7 +79,7 @@ function GroupPage() {
         setPostsOption(option);
         setCurrentPage(0);
 
-        setSortOption('latestPosts');
+        setSortOption('latestPosts'); // 기본 설정은 최신등록순/등록순으로 고정
     };
 
     // 지원자 또는 글쓴이 닉네임 클릭 핸들러

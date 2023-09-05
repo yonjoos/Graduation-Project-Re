@@ -13,6 +13,7 @@ function UpdatePortfolioPage() {
     //const dispatch = useDispatch();
 
     // 기존의 포트폴리오 데이터를 가져오고, 새로운 데이터를 입력할 수 있도록 하기 위한 useState
+    const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingShortIntroduce, setExistingShortIntroduce] = useState('');
     const [existingIntroduce, setExistingIntroduce] = useState('');
     const [existingFileUrl, setExistingFileUrl] = useState('');
@@ -31,11 +32,18 @@ function UpdatePortfolioPage() {
         fetchExistingPortfolioData();
     }, []);
 
+    useEffect(() => {
+        if (!hasPortfolio) {
+            navigate('/portfolio');
+        }
+    }, [hasPortfolio]);
+
     // Function to fetch existing portfolio data - db에서 기존의 포트폴리오를 가져오기
     const fetchExistingPortfolioData = async () => {
         try {
             const response = await request('GET', '/getPortfolioForm');
             const existingData = response.data;
+            setHasPortfolio(existingData.hasPortfolio);
             setExistingShortIntroduce(existingData.shortIntroduce);
             setExistingIntroduce(existingData.introduce);
             setExistingFileUrl(existingData.fileUrl);
@@ -130,68 +138,76 @@ function UpdatePortfolioPage() {
     };
 
     return (
-        <Row justify="center">
-            <Col span={12}>
-            {/* Existing input fields */}
-                <div className="form-outline mb-4">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Web</td>
-                                <td>{renderRadioGroup('web')}</td>
-                            </tr>
-                            <tr>
-                                <td>App</td>
-                                <td>{renderRadioGroup('app')}</td>
-                            </tr>
-                            <tr>
-                                <td>Game</td>
-                                <td>{renderRadioGroup('game')}</td>
-                            </tr>
-                            <tr>
-                                <td>AI</td>
-                                <td>{renderRadioGroup('ai')}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <form onSubmit={onSubmitPortfolio}>
-                    {/* Short Introduce */}
+        <div>
+        {hasPortfolio ? (
+            <Row justify="center">
+                <Col span={12}>
+                {/* Existing input fields */}
                     <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            name="shortIntroduce"
-                            placeholder="Edit Short Introduce"
-                            value={existingShortIntroduce}
-                            onChange={onChangeHandler}
-                        />
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Web</td>
+                                    <td>{renderRadioGroup('web')}</td>
+                                </tr>
+                                <tr>
+                                    <td>App</td>
+                                    <td>{renderRadioGroup('app')}</td>
+                                </tr>
+                                <tr>
+                                    <td>Game</td>
+                                    <td>{renderRadioGroup('game')}</td>
+                                </tr>
+                                <tr>
+                                    <td>AI</td>
+                                    <td>{renderRadioGroup('ai')}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    {/* Introduce */}
-                    <div className="form-outline mb-4">
-                        <TextArea
-                            type="text"
-                            name="introduce"
-                            placeholder="Edit Introduce"
-                            value={existingIntroduce}
-                            onChange={onChangeHandler}
-                            autoSize={{ minRows: 20 }}
-                        />
-                    </div>
-                    {/* File URL */}
-                    <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            name="fileUrl"
-                            placeholder="Edit File URL"
-                            value={existingFileUrl}
-                            onChange={onChangeHandler}
-                        />
-                    </div>
-                    {/* Submit button */}
-                    <Button type="primary" block htmlType="submit">Update Portfolio</Button>
-                </form>
-            </Col>
-        </Row>
+                    <form onSubmit={onSubmitPortfolio}>
+                        {/* Short Introduce */}
+                        <div className="form-outline mb-4">
+                            <Input
+                                type="text"
+                                name="shortIntroduce"
+                                placeholder="Edit Short Introduce"
+                                value={existingShortIntroduce}
+                                onChange={onChangeHandler}
+                            />
+                        </div>
+                        {/* Introduce */}
+                        <div className="form-outline mb-4">
+                            <TextArea
+                                type="text"
+                                name="introduce"
+                                placeholder="Edit Introduce"
+                                value={existingIntroduce}
+                                onChange={onChangeHandler}
+                                autoSize={{ minRows: 20 }}
+                            />
+                        </div>
+                        {/* File URL */}
+                        <div className="form-outline mb-4">
+                            <Input
+                                type="text"
+                                name="fileUrl"
+                                placeholder="Edit File URL"
+                                value={existingFileUrl}
+                                onChange={onChangeHandler}
+                            />
+                        </div>
+                        {/* Submit button */}
+                        <Button type="primary" block htmlType="submit">Update Portfolio</Button>
+                    </form>
+                </Col>
+            </Row>
+        ) : (
+            <div>
+
+            </div>
+        )}
+        </div>
     );
 }
 

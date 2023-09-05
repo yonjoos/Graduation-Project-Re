@@ -102,4 +102,14 @@ export const deletePortfolioSuccess = () => {
 }
 
 
+
+// 가장 최근에 방문한 유효한 엔드포인터를 기억하기 위한 액션 생성
+export const setLastVisitedEndpoint = (endpoint) => {
+    return {
+        type: 'SET_LAST_VISITED_ENDPOINT',
+        payload: { endpoint }
+    };
+};
+
+
 //이렇게 정의된 액션 생성자 함수들은 리덕스 액션 객체를 반환하며, 이들 액션은 리듀서 함수를 통해 상태의 변화를 관리합니다. 이를 통해 로그인 상태와 로그아웃 상태를 효과적으로 관리할 수 있습니다.

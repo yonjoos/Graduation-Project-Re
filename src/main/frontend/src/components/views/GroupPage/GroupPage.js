@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, Modal, message } from 'antd';
 import { request } from '../../../hoc/request';
+import { setLastVisitedEndpoint } from '../../../_actions/actions'
 import './GroupPage.css';
 
 function GroupPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
     const [postsOption, setPostsOption] = useState("writer"); // 내가 쓴 글이면 postsOption === writer / 내가 지원한 글이면 postsOption === applicant
@@ -51,6 +54,7 @@ function GroupPage() {
 
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
     const handleRowClick = (postsId, postType) => {
+        dispatch(setLastVisitedEndpoint('/group'));
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);
         }
@@ -84,6 +88,7 @@ function GroupPage() {
 
     // 지원자 또는 글쓴이 닉네임 클릭 핸들러
     const handleNickNameClick = (nickName) => {
+        dispatch(setLastVisitedEndpoint('/group'));
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
     }

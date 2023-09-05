@@ -14,8 +14,8 @@ function LandingPage() {
     //(시홍 뇌피셜: index.js에서 프론트엔드 전역적으로 관리하는 provider태그 안에 store을 넣어줬고,
     //store.js에서 인증과 토큰에 대한 상태 관리를 맡고 있는데,
     //useSelector을 redux로부터 import한 후 갖고 오고 싶은 state를 갖고 올 수 있는듯 하다)
-    const isAuthenticated = useSelector(state => state.isAuthenticated);
-    const userRole = useSelector(state => state.userRole);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const userRole = useSelector(state => state.auth.userRole);
 
     return (
         <div>

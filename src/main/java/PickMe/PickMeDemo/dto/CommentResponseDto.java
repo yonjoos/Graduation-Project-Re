@@ -22,9 +22,5 @@ public class CommentResponseDto {
         this.nickName = nickName;
     }
 
-    public static CommentResponseDTO convertCommentToDto(Comment comment) {
-        return comment.getIsDeleted() ?
-                new CommentResponseDTO(comment.getId(), "삭제된 댓글입니다.", null) :
-                new CommentResponseDTO(comment.getId(), comment.getContent(), new MemberDTO(comment.getWriter()));
-    }
+
 }

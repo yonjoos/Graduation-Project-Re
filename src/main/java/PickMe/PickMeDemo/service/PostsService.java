@@ -1134,7 +1134,7 @@ public class PostsService {
                 .leftJoin(posts.userApplyPosts, userApplyPosts).fetchJoin() // 게시물과 사용자 지원 게시물을 왼쪽 조인
                 .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
                 .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 정렬 옵션에 따라 정렬 방식 지정
-                .orderBy(userApplyPosts.lastModifiedDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴
@@ -1375,7 +1375,7 @@ public class PostsService {
                 .leftJoin(posts.userApplyPosts, userApplyPosts).fetchJoin() // 게시물과 사용자 지원 게시물을 왼쪽 조인
                 .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
                 .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 유저 승인 시, 게시물 위치가 바뀌면 안됨. 따라서 createdDate기준으로 정렬
-                .orderBy(userApplyPosts.lastModifiedDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴
@@ -1587,7 +1587,7 @@ public class PostsService {
                 .leftJoin(posts.userApplyPosts, userApplyPosts).fetchJoin() // 게시물과 사용자 지원 게시물을 왼쪽 조인
                 .where(posts.user.email.eq(userEmail)) // 현재 로그인한 사용자의 이메일과 일치하는 게시물만 선택
                 .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 유저 승인 취소 시, 게시물 위치가 바뀌면 안됨. 따라서 createdDate기준으로 정렬
-                .orderBy(userApplyPosts.lastModifiedDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
+                .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴

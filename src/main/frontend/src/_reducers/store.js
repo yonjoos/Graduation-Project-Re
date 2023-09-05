@@ -52,7 +52,7 @@
 
 */
 
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
 // initialState: 앱의 초기 상태를 정의하는 객체임. 여기서는 isAuthenticated와 authToken을 초기화 수행
@@ -113,12 +113,36 @@ const authReducer = (state = initialState, action) => {
     
 
 
+
+
+const initialEndpointState = {
+    lastVisitedEndpoint: null
+};
+
+const endpointReducer = (state = initialEndpointState, action) => {
+    switch (action.type) {
+        case 'SET_LAST_VISITED_ENDPOINT':
+            return {
+                lastVisitedEndpoint: action.payload.endpoint
+            };
+        default:
+            return state;
+    }
+};
+
 // 3. 스토어 (store):
 
     // createStore 함수를 사용하여 Redux 스토어를 생성합니다.
     // authReducer를 리듀서로 사용하고, applyMiddleware 함수를 사용하여 미들웨어 thunk를 적용합니다.
     // 스토어 객체는 상태를 저장하고 액션에 따라 상태를 업데이트합니다.
     // 이렇게 정의된 스토어는 '앱 전체'에서 상태 관리를 담당하며, 리덕스 액션 및 리듀서를 사용하여 상태의 변화를 예측 가능한 방식으로 처리합니다.
-const store = createStore(authReducer, applyMiddleware(thunk));
+
+// Combine both reducers into a single rootReducer
+const rootReducer = combineReducers({
+    auth: authReducer, // authReducer manages authentication-related state
+    endpoint: endpointReducer // endpointReducer manages endpoint-related state
+});
+
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 export default store;

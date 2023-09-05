@@ -34,9 +34,9 @@ import { useNavigate } from 'react-router-dom';
 function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null) {
 
     function AuthenticationCheck(props) {
-        const isAuthenticated = useSelector(state => state.isAuthenticated);
-        const userRole = useSelector(state => state.userRole);
-        const userPortfolio = useSelector(state => state.userPortfolio);
+        const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+        const userRole = useSelector(state => state.auth.userRole);
+        const userPortfolio = useSelector(state => state.auth.userPortfolio);
 
         const navigate = useNavigate();
 
@@ -65,8 +65,7 @@ function Auth(SpecificComponent, option, adminRoute = null, hasPortfolio = null)
                     }
 
                     //user인데, 로그인이 되어있고, 포폴이 없는데, 포폴이 있어야만 접근 가능한 루트이고, 그 컴포넌트가 update또는 delete페이지이면 /portfolio로 이동(시홍)
-                    else if ((!userPortfolio && hasPortfolio && SpecificComponent.name==="UpdatePortfolioPage")
-                                || (!userPortfolio && hasPortfolio && SpecificComponent.name==="DeletePortfolioPage")) {
+                    else if ((!userPortfolio && hasPortfolio && SpecificComponent.name==="UpdatePortfolioPage")) {
                         navigate('/portfolio')
                     }
 

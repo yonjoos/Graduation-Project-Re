@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInStudyPage from './SearchInStudyPage';
+import { setLastVisitedEndpoint } from '../../../_actions/actions'
 import './StudyPage.css';
 
 
 function StudyPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
@@ -55,6 +58,7 @@ function StudyPage() {
 
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
     const handleRowClick = (studyId) => {
+        dispatch(setLastVisitedEndpoint('/study'));
         navigate(`/study/detail/${studyId}`);
     }
 

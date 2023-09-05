@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PortfolioFormDto {
 
+    private Boolean hasPortfolio;
     private Integer web;
     private Integer app;
     private Integer game;

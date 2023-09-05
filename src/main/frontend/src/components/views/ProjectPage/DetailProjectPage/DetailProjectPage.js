@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { useSelector } from "react-redux";
 import { request } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message } from 'antd';
 import '../ProjectPage.css';
@@ -7,6 +8,7 @@ import '../ProjectPage.css';
 function DetailProjectPage() {
     const navigate = useNavigate();
     const { projectId } = useParams(); // URL로부터 projectId 가져오기
+    const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
 
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isModalVisible, setIsModalVisible] = useState(false);    // 모달이 보이는지 여부 설정
@@ -22,6 +24,7 @@ function DetailProjectPage() {
             .then((response) => {
                 //console.log("Fetched project data:", response.data); // Log the fetched data
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                console.log("lastVisitedEndpoint : ", lastVisitedEndpoint);
             })
             .catch((error) => {
                 console.error("Error fetching project data:", error);
@@ -71,6 +74,16 @@ function DetailProjectPage() {
         return `${year}년 ${month}월 ${day}일`;
     };
     
+
+    // 목록으로 돌아가기 버튼 클릭
+    const handleGoBackClick = () => {
+        if (lastVisitedEndpoint) {
+            navigate(lastVisitedEndpoint);
+        }
+        else {
+            navigate('/');
+        }
+    };
 
     const showModal = (action) => {
         setIsModalVisible(true);
@@ -194,7 +207,7 @@ function DetailProjectPage() {
             <Row>
                 <Col span={12}>
                     {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
-                    <Button onClick={() => navigate(-1)}>
+                    <Button onClick={handleGoBackClick}>
                         목록으로 돌아가기
                     </Button>
                 </Col>

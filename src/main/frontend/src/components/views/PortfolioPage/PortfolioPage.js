@@ -1,13 +1,16 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
 import { request } from '../../../hoc/request';
 
 function PortfolioPage() {
     const navigate = useNavigate();
     const { nickName } = useParams();
+    const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
 
     const [data, setData] = useState(null);
+    const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
         app: 0,
@@ -21,6 +24,7 @@ function PortfolioPage() {
         request('GET', `/getUserPortfolio?nickName=${nickName}`, {})
             .then((response) => {
                 setData(response.data);
+                setHasPortfolio(response.data.isCreated);
                 setExistingPreferences({
                     web: response.data.web,
                     app: response.data.app,
@@ -32,6 +36,13 @@ function PortfolioPage() {
                 console.error("Error fetching data:", error);
             });
     }, [nickName]);
+
+
+    useEffect(() => {
+        if (hasPortfolio === null) {
+            navigate('/portfolio');
+        }
+    }, [hasPortfolio]);
 
 
     const renderRadioGroup = (field) => (
@@ -105,12 +116,23 @@ function PortfolioPage() {
         return chunks;
     }
 
+    // 목록으로 돌아가기 버튼 클릭
+    const handleGoBackClick = () => {
+        if (lastVisitedEndpoint) {
+            navigate(lastVisitedEndpoint);
+        }
+        else {
+            navigate('/');
+        }
+    };
+
+
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
         <div>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                 {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
-                <Button type="primary" onClick={() => navigate(-1)}>
+                <Button type="primary" onClick={handleGoBackClick}>
                     목록으로 돌아가기
                 </Button>
 

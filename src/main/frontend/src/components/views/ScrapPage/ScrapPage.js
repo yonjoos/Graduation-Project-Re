@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, message } from 'antd';
 import { request } from '../../../hoc/request';
+import { setLastVisitedEndpoint } from '../../../_actions/actions';
 import './ScrapPage.css';
 
 function ScrapPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
     const [postsOption, setPostsOption] = useState("project"); // 프로젝트 게시물이면 postsOption === project / 스터디 게시물이면 postsOption === study
@@ -47,6 +50,7 @@ function ScrapPage() {
 
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
     const handleRowClick = (postsId, postType) => {
+        dispatch(setLastVisitedEndpoint('/scrap'));
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);
         }
@@ -78,6 +82,7 @@ function ScrapPage() {
 
     // 지원자 또는 글쓴이 닉네임 클릭 핸들러
     const handleNickNameClick = (nickName) => {
+        dispatch(setLastVisitedEndpoint('/scrap'));
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
     }

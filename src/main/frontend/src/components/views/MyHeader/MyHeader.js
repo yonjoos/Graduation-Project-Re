@@ -11,8 +11,8 @@ const { Header } = Layout;
 
 function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 가져오기 위함
     const navigate = useNavigate();
-    const isAuthenticated = useSelector(state => state.isAuthenticated);
-    const userRole = useSelector(state => state.userRole);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const userRole = useSelector(state => state.auth.userRole);
     const dispatch = useDispatch();
 
 

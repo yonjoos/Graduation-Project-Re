@@ -404,6 +404,7 @@ public class PostsController {
     }
 
 
+
     // 지원 승인
     @PutMapping("/posts/approve")
     private ResponseEntity<Page<GroupPostsListDto>> approveUserWithPosts(
@@ -422,6 +423,7 @@ public class PostsController {
 
         return ResponseEntity.ok(groupPosts);
     }
+
 
 
     // 프로젝트 지원 취소
@@ -462,6 +464,8 @@ public class PostsController {
         return ResponseEntity.ok(postsDto);
     }
 
+
+
     // 승인 취소
     @PutMapping("/posts/cancelApprove")
     private ResponseEntity<Page<GroupPostsListDto>> cancelApproveUserWithPost(
@@ -478,6 +482,30 @@ public class PostsController {
         Page<GroupPostsListDto> groupPosts = postsService.cancelApproveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
+    }
+
+
+
+    // 게시물 스크랩
+    @PostMapping("/project/scrap/{projectId}") // Use path variable to get project ID from URL
+    private ResponseEntity<PostsDto> projectScrap(@PathVariable Long projectId, Principal principal) {
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.postsScrap(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+    // 게시물 스크랩 취소
+    @PostMapping("/project/cancelScrap/{projectId}")
+    public ResponseEntity<PostsDto> cancelProjectScrap(@PathVariable Long projectId, Principal principal) {
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.cancelPostsScrap(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
     }
 }
 

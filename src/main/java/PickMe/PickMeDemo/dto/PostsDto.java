@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class PostsDto {
 
     private Boolean writer;     // 게시물의 작성자인가?
+    private Boolean scrap;      // 유저가 스크랩 했나?
     private Boolean applying;      // 게시물에 지원은 했으나, 승인은 안됨
     private Boolean applied;        // 게시물에 지원했고, 승인도 됨
     private String nickName;

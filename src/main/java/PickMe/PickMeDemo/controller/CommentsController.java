@@ -22,12 +22,10 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class CommentsController {
 
-    private final UserService userService;
-    private final PostsService postsService;
     private final CommentsService commentsService;
 
     @PostMapping("/registerComments")
-    public ResponseEntity<String> registerComments(@PathVariable Long postId, @RequestBody @Valid CommentRequestDto commentRequestDto, Principal principal) {
+    public ResponseEntity<String> registerComments(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto, Principal principal) {
 
         String userEmail = principal.getName(); // 해당 유저 찾기
 

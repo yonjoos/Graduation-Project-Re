@@ -1,5 +1,6 @@
 package PickMe.PickMeDemo.dto;
 
+import PickMe.PickMeDemo.entity.Comments;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -20,6 +21,13 @@ public class CommentResponseDto {
         this.id = id;
         this.content = content;
         this.nickName = nickName;
+    }
+
+
+    public static CommentResponseDto convertCommentToDto(Comments comment) {
+        return comment.getIsDeleted() ?
+                new CommentResponseDto(comment.getId(), "삭제된 댓글입니다.", null) :
+                new CommentResponseDto(comment.getId(), comment.getContent(), comment.getUser().getNickName());
     }
 
 

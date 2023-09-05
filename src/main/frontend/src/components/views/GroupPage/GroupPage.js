@@ -78,6 +78,8 @@ function GroupPage() {
     const handlePostsOptionChange = (option) => {
         setPostsOption(option);
         setCurrentPage(0);
+
+        setSortOption('latestPosts');
     };
 
     // 지원자 또는 글쓴이 닉네임 클릭 핸들러
@@ -265,8 +267,9 @@ function GroupPage() {
                             onClick={() => handleSortOptionChange('latestPosts')}
                             style={{ marginRight: '10px' }}
                         >
-                            등록순
+                             {postsOption === 'writer' ? '등록순' : '최신 등록순'}
                         </Button>
+                        
                         <Button
                             type={sortOption === 'nearDeadline' ? 'primary' : 'default'}
                             onClick={() => handleSortOptionChange('nearDeadline')}

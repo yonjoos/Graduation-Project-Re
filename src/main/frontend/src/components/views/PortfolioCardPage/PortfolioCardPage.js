@@ -60,8 +60,8 @@ function PortfolioCardPage() {
     // HANDLER FUNCTIONS ###############################################
 
     // function name : onClickHandler
-    const onClickHandler = () => {
-        navigate('/portfolio');
+    const onClickHandler = (nickName) => {
+        navigate(`/portfolio/${nickName}`);
     }
 
 
@@ -112,7 +112,7 @@ function PortfolioCardPage() {
                     {cards.map((item,index) => (
 
                         <Col xs={24} sm={8} key={index}>
-                            <Card onClick={onClickHandler} title={item.nickName} style={{height:'270px', marginTop: '20px' }}>
+                            <Card onClick={()=> onClickHandler(item.nickName)} title={item.nickName} style={{height:'270px', marginTop: '20px' }}>
                                 <b>Field Of Interests</b>
                                 <br></br>
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}

@@ -8,7 +8,7 @@ function PortfolioCard(props) {
   const onClickHandler = () => {
     navigate('/portfoliocard')
   }
-
+  
   return (
     
     <Card onClick={onClickHandler} style={{ width: '100%', height: '300px', textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>

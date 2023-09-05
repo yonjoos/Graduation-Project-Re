@@ -138,7 +138,6 @@ function PortfolioPage() {
                     목록으로 돌아가기
                 </Button>
 
-                <Divider className="bold-divider" />
             </div>
 
             {/** 아직 포트폴리오를 만들지 않았다면? */}
@@ -152,50 +151,55 @@ function PortfolioPage() {
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', marginLeft: '20%', marginBottom: '20px' }}>
                         <div>
-                            <div style={{ fontSize: '30px' }}><strong>Email:</strong> {data && data.email}</div>
-                            <div style={{ fontSize: '30px' }}><strong>Nick Name:</strong> {data && data.nickName}</div>
+                            <div style={{ fontSize: '35px' }}>
+                                <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
+                                {/* 
+                                        == 변경사항 ==
+                                        상단 <Divider> 제거, 선이 너무 많음
+                                        하단 <hr> 제거, 같은 이유
+                                    
+                                */}
+                            </div>
+                            <div style={{ fontSize: '12px' }}><strong>CONTACT :</strong> {data && data.email}</div>
                         </div>
                     </div>
 
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
-                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '2px solid black' }} />
+                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '0.1px solid black' }} />
 
-                    <div style={{ marginLeft: '20%', fontSize: '15px' }}><strong>첨부 파일:</strong> {data && data.fileUrl}</div>
-
-                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '2px solid black' }} />
+                    <div style={{ marginLeft: '20%', fontSize: '12px' }}><strong>첨부 파일:</strong> {data && data.fileUrl}</div>
 
                     <Row justify="center" style={{ marginTop: '20px' }}>
                         <Col span={16}>
                             <Row>
-                                <Col span={12}>
-                                    <Card title="관심 분야" style={{ height: '100%' }}>
-                                        <table>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Web</td>
-                                                    <td>{renderRadioGroup('web')}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>App</td>
-                                                    <td>{renderRadioGroup('app')}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Game</td>
-                                                    <td>{renderRadioGroup('game')}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>AI</td>
-                                                    <td>{renderRadioGroup('ai')}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                <Col span={14}>
+                                    <Card title="ABOUT" style={{ height: '100%' }}>
+                                        {/* 
+                                            == 변경사항 ==
+                                            1) 라디오 카드, 한 줄 소개 카드 없애고
+                                            2) 그 두 개를 하나의 카드 안에 넣음
+                                        */}
 
-                                    </Card>
+                                        <h6>Nick Name</h6>
+                                        {nickName}
+                                        <br></br>
+                                        <br></br>
+                                        <h6>Brief Introduction</h6>
+                                        {data && data.shortIntroduce ? (
+                                            data.shortIntroduce
+                                        ) : (
+                                            <p>No introduction available</p>
+                                        )}
+                                        </Card>
 
 
                                 </Col>
-                                <Col span={12}>
-                                    <Card title="관심 분야 선호도 그래프" style={{ height: '100%' }}>
+                                <Col span={10}>
+                                    <Card title="관심 분야 선호도" style={{ height: '100%' }}> 
+                                    {/* 
+                                        == 변경사항 ==
+                                        관심 분야 선호도 "그래프" -> 관심분야 선호도 그래프 
+                                    */}
                                         {renderPreferenceBar('web')}
                                         {renderPreferenceBar('app')}
                                         {renderPreferenceBar('game')}
@@ -207,14 +211,7 @@ function PortfolioPage() {
                         </Col>
                     </Row>
 
-                    <Row justify="center">
-                        <Col span={16}>
-                            <Card title="한 줄 소개">
-                                {/** 받아온 데이터에 공백이 없으면, 51번째 글자 이후에 공백을 넣어주는 함수 */}
-                                <p>{data && insertLineBreaks(data.shortIntroduce, 45)}</p>
-                            </Card>
-                        </Col>
-                    </Row>
+                    
 
                 {/**멀티라인 콘텐츠를 데이터베이스에 저장된 대로 프론트엔드에서 줄바꿈(새 줄 문자)을 포함하여 표시하려면
                  *  <pre> HTML 태그나 CSS 스타일을 사용하여 공백 및 줄바꿈 형식을 보존할 수 있다.

@@ -77,9 +77,11 @@ function DetailProjectPage() {
 
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
+        // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
         if (lastVisitedEndpoint) {
             navigate(lastVisitedEndpoint);
         }
+        // 저장된 엔드포인트가 없다면, 랜딩페이지로 이동
         else {
             navigate('/');
         }

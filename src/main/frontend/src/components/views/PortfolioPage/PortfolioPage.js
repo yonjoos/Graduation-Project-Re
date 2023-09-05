@@ -37,7 +37,7 @@ function PortfolioPage() {
             });
     }, [nickName]);
 
-
+    // 아무런 정보도 없는 유저의 포트폴리오에 접근 시 (존재하지 않는 유저의 포트폴리오에 접근 시) /portfolio로 강제로 이동
     useEffect(() => {
         if (hasPortfolio === null) {
             navigate('/portfolio');
@@ -118,9 +118,11 @@ function PortfolioPage() {
 
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
+        // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
         if (lastVisitedEndpoint) {
             navigate(lastVisitedEndpoint);
         }
+        // 저장된 엔드포인트가 없다면, 랜딩페이지로 이동
         else {
             navigate('/');
         }

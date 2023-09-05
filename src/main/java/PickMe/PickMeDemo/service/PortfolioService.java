@@ -221,6 +221,7 @@ public class PortfolioService {
         Optional<User> findUser = userRepository.findByNickName(nickName);
 
         // PortfolioDto를 빌더를 통해 생성
+        // 유저가 없는 경우, 모든 값이 null로 세팅된 아래의 DTO를 프론트에 넘길 것임.
         PortfolioDto portfolioDto = PortfolioDto.builder()
                 .isCreated(null)
                 .nickName(null)

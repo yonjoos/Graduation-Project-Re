@@ -1694,7 +1694,7 @@ public class PostsService {
         if (!hasApplied) {
             postsDto = PostsDto.builder()
                     .writer(false)      // writer에 false를 리턴
-                    .scrap(true)        // 스크랩 한 유저
+                    .scrap(true)        // 방금 게시물을 스크랩 했으므로, 이제 이 유저는 스크랩 한 유저
                     .applying(false)    // 지원 중이지도 않고
                     .applied(false)     // 지원 승인되지도 않았음
                     .nickName(savedScrapPosts.getPosts().getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
@@ -1717,7 +1717,7 @@ public class PostsService {
             if (!isConfirmed) {
                 postsDto = PostsDto.builder()
                         .writer(false)      // writer에 false를 리턴
-                        .scrap(true)        // 스크랩 한 유저
+                        .scrap(true)        // 방금 게시물을 스크랩 했으므로, 이제 이 유저는 스크랩 한 유저
                         .applying(true)     // 지원은 했으나 (지원 중이지만),
                         .applied(false)     // 지원이 승인된 것은 아님.
                         .nickName(savedScrapPosts.getPosts().getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
@@ -1738,7 +1738,7 @@ public class PostsService {
             else {
                 postsDto = PostsDto.builder()
                         .writer(false)      // writer에 false를 리턴
-                        .scrap(true)        // 스크랩 한 유저
+                        .scrap(true)        // 방금 게시물을 스크랩 했으므로, 이제 이 유저는 스크랩 한 유저
                         .applying(false)    // 지원 중은 아니고,
                         .applied(true)     // 지원이 승인되었음.
                         .nickName(savedScrapPosts.getPosts().getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
@@ -1796,7 +1796,7 @@ public class PostsService {
         if (!hasApplied) {
             postsDto = PostsDto.builder()
                     .writer(false)      // writer에 false를 리턴
-                    .scrap(false)       // 스크랩 안한 유저
+                    .scrap(false)       // 방금 게시물을 스크랩 취소했으므로, 이제 이 유저는 스크랩 안한 유저
                     .applying(false)    // 지원 중이지도 않고
                     .applied(false)     // 지원 승인되지도 않았음
                     .nickName(findPosts.getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
@@ -1819,7 +1819,7 @@ public class PostsService {
             if (!isConfirmed) {
                 postsDto = PostsDto.builder()
                         .writer(false)      // writer에 false를 리턴
-                        .scrap(false)       // 스크랩 안한 유저
+                        .scrap(false)       // 방금 게시물을 스크랩 취소했으므로, 이제 이 유저는 스크랩 안한 유저
                         .applying(true)     // 지원은 했으나 (지원 중이지만),
                         .applied(false)     // 지원이 승인된 것은 아님.
                         .nickName(findPosts.getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
@@ -1840,7 +1840,7 @@ public class PostsService {
             else {
                 postsDto = PostsDto.builder()
                         .writer(false)      // writer에 false를 리턴
-                        .scrap(false)       // 스크랩 안한 유저
+                        .scrap(false)       // 방금 게시물을 스크랩 취소했으므로, 이제 이 유저는 스크랩 안한 유저
                         .applying(false)    // 지원 중은 아니고,
                         .applied(true)     // 지원이 승인되었음.
                         .nickName(findPosts.getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!

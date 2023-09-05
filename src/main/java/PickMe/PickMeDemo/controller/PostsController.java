@@ -486,7 +486,7 @@ public class PostsController {
 
 
 
-    // 게시물 스크랩
+    // 프로젝트 스크랩
     @PostMapping("/project/scrap/{projectId}") // Use path variable to get project ID from URL
     private ResponseEntity<PostsDto> projectScrap(@PathVariable Long projectId, Principal principal) {
         String userEmail = principal.getName();
@@ -496,7 +496,19 @@ public class PostsController {
         return ResponseEntity.ok(postsDto);
     }
 
-    // 게시물 스크랩 취소
+    // 스터디 스크랩
+    @PostMapping("/study/scrap/{studyId}") // Use path variable to get project ID from URL
+    private ResponseEntity<PostsDto> studyScrap(@PathVariable Long studyId, Principal principal) {
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.postsScrap(userEmail, studyId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+
+
+    // 프로젝트 스크랩 취소
     @PostMapping("/project/cancelScrap/{projectId}")
     public ResponseEntity<PostsDto> cancelProjectScrap(@PathVariable Long projectId, Principal principal) {
 
@@ -504,6 +516,18 @@ public class PostsController {
         String userEmail = principal.getName();
 
         PostsDto postsDto = postsService.cancelPostsScrap(userEmail, projectId);
+
+        return ResponseEntity.ok(postsDto);
+    }
+
+    // 스터디 스크랩 취소
+    @PostMapping("/study/cancelScrap/{studyId}")
+    public ResponseEntity<PostsDto> cancelStudyScrap(@PathVariable Long studyId, Principal principal) {
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        PostsDto postsDto = postsService.cancelPostsScrap(userEmail, studyId);
 
         return ResponseEntity.ok(postsDto);
     }

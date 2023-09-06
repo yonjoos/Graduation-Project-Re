@@ -1,5 +1,6 @@
 package PickMe.PickMeDemo.service;
 
+import PickMe.PickMeDemo.dto.PortfolioCardDto;
 import PickMe.PickMeDemo.dto.PortfolioDto;
 import PickMe.PickMeDemo.dto.PortfolioFormDto;
 import PickMe.PickMeDemo.entity.Portfolio;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -275,4 +278,53 @@ public class PortfolioService {
 
         return portfolioDto;
     }
+
+     /*
+    ############################## LOGIC FOR PORFOLIOCARD ###########################################
+     */
+
+
+    public boolean ToBoolean(Integer interest){
+        if(interest > 0) return true;
+        else if(interest == null) return false; //필요한가?
+        else return false;
+    }
+    @EntityGraph(attributePaths = "user")
+    @Transactional(readOnly = true)
+    public List<PortfolioCardDto> getPortfolioCard(){
+
+        List<Portfolio> portfolios = portfolioRepository.findAll();
+
+        List<PortfolioCardDto> portfolioCardDtos = new ArrayList<>();
+
+
+        for(Portfolio portfolio : portfolios){
+
+            User user = userRepository.findById(portfolio.getUser().getId()).get();
+
+            PortfolioCardDto portfolioDto = PortfolioCardDto.builder()
+                    .nickName(user.getNickName())
+                    .email(user.getEmail())// user = posts.getUser()
+                    .shortIntroduce(portfolio.getShortIntroduce())
+                    .web(portfolio.getWeb())
+                    .app(portfolio.getApp())
+                    .ai(portfolio.getAi())
+                    .game(portfolio.getGame())
+                    .build();
+
+            portfolioCardDtos.add(portfolioDto);
+
+
+            /*
+            private String nickName;
+            private String email;
+            private String shortIntroduce;
+             */
+
+        }
+
+        return portfolioCardDtos;
+
+    }
+
 }

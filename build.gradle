@@ -51,6 +51,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+
+	// modelMapper (DTO 변환)
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
+
 }
 
 tasks.named('test') {

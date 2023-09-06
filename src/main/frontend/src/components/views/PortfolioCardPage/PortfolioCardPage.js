@@ -14,16 +14,18 @@ function PortfolioCardPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const location = useLocation
     const navigate = useNavigate();
+    const page = 0;
+    const size = 3;
 
     // USE EFFECT ###############################################
 
     useEffect(() => {
         fetchCards();
-    }, [data]); 
+    }, []); 
 
     useEffect(() => {
         console.log('현재 검색된 키워드: ', searchTerm);
-        fetchFilteredPosts();
+        fetchUsers();
     }, [searchTerm]);
 
 
@@ -42,11 +44,14 @@ function PortfolioCardPage() {
     }
 
 
-    const fetchFilteredPosts = async () => {
+    const fetchUsers = async () => {
 
         try {
             const queryParams = new URLSearchParams({ 
-                searchTerm: searchTerm 
+                searchTerm: searchTerm ,
+                size : size ,
+                page : page
+
             });
 
             const response = await request('GET', `/getCards?${queryParams}`);
@@ -75,44 +80,16 @@ function PortfolioCardPage() {
 
     // COMPONENTS ###############################################
 
-    // testfunction
+    // renderCards
     const renderCards = (cards) => {
         
         return (
-            /*
-            <div>
-                {cards.map((item,index) => (
-
-                    <Col gutter={[16, 16]}>
-                        <Row xs={24} sm={8}>
-                            <Card onClick={onClickHandler} title = "hi">
-                                <h2>{item.nickName}</h2>
-                                <p>
-                                    as this is a test comp,
-                                    won't consider actual texts.
-                                    <br></br>
-                                    <br></br>
-
-                                    I apologize for any inconvenience.
-                                    sincerely, yonjoo.
-                                </p>
-                            </Card>
-                        </Row>
-                    </Col>
-                    
-                ))}
-                
-
-            </div>
-            */
-
-
             <div>
                 <Row gutter={16}>
                     {cards.map((item,index) => (
 
                         <Col xs={24} sm={8} key={index}>
-                            <Card onClick={()=> onClickHandler(item.nickName)} title={item.nickName} style={{ height:'270px', marginTop: '20px', cursor: 'pointer' }}>
+                            <Card onClick={()=> onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height:'270px', marginTop: '20px', cursor: 'pointer' }}>
                                 {/* style = {{cursor: 'pointer'}} */ }
                                 <b>Field Of Interests</b>
                                 <br></br>
@@ -137,7 +114,6 @@ function PortfolioCardPage() {
         <div>
             <div>
                 <SearchInPortfolioCardPage setSearchTerm={handleSearch} /> 
-                
             </div>
             <div style={{ textAlign: 'left', margin: "0 0", marginTop:'15px'}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
@@ -151,17 +127,14 @@ function PortfolioCardPage() {
                     Decided
                 </Button>
                 <Divider></Divider>
-
             </div>
             <div>
             {renderCards(data)}
             </div>
-            
         </div>
-    
-        
     );
 }
+
 
 export default PortfolioCardPage;
 

@@ -17,7 +17,7 @@ import PortfolioPage from './views/PortfolioPage/PortfolioPage';
 import GroupPage from './views/GroupPage/GroupPage';
 import LandingPage from './views/LandingPage/LandingPage';
 import LoginPage from './views/LoginPage/LoginPage';
-import RecommendationPage from './views/RecommendationPage/RecommendationPage';
+import PortfolioCardPage from './views/PortfolioCardPage/PortfolioCardPage';
 import ProjectPage from './views/ProjectPage/ProjectPage';
 import DetailProjectPage from './views/ProjectPage/DetailProjectPage/DetailProjectPage';
 import UploadProjectPage from './views/ProjectPage/UploadProjectPage/UploadProjectPage';
@@ -142,8 +142,8 @@ function App() {
                             element={Auth(LoginPage, false)}
                         />
                         <Route
-                            path="/recommendation"
-                            element={Auth(RecommendationPage, true)}
+                            path="/portfoliocard"
+                            element={Auth(PortfolioCardPage, true)}
                         />
                         <Route
                             path="/project"

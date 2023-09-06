@@ -112,7 +112,8 @@ function PortfolioCardPage() {
                     {cards.map((item,index) => (
 
                         <Col xs={24} sm={8} key={index}>
-                            <Card onClick={()=> onClickHandler(item.nickName)} title={item.nickName} style={{height:'270px', marginTop: '20px' }}>
+                            <Card onClick={()=> onClickHandler(item.nickName)} title={item.nickName} style={{ height:'270px', marginTop: '20px', cursor: 'pointer' }}>
+                                {/* style = {{cursor: 'pointer'}} */ }
                                 <b>Field Of Interests</b>
                                 <br></br>
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}

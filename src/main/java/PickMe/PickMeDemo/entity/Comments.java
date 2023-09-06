@@ -51,7 +51,7 @@ public class Comments extends BaseTimeEntity { //생성일, 수정일 다루는 
         this.user = user;
     }
 
-    public void updateBoard(Posts posts) {
+    public void updatePosts(Posts posts) {
         this.posts = posts;
     }
 

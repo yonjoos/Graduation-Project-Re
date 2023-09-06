@@ -151,7 +151,10 @@ function PortfolioPage() {
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', marginLeft: '20%', marginBottom: '20px' }}>
                         <div>
+                        
                             <div style={{ fontSize: '35px' }}>
+                                
+                                
                                 <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
                                 {/* 
                                         == 변경사항 ==

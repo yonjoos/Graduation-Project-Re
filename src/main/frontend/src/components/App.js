@@ -31,6 +31,8 @@ import './App.css';
 /*import logo from '../logo.svg';
 import logo1 from '../pickme.PNG';*/
 import logo2 from '../pickme2.PNG'
+import logo3 from '../pickme3.PNG'
+
 
 
 const { Content } = Layout;
@@ -48,7 +50,7 @@ function App() {
         <Router>
             <Layout>
                 {/** 로고 모양을 인자로 넘김 */}
-                <MyHeader logoSrc={logo2} />
+                <MyHeader logoSrc={logo3} />
                 <Content style={{ padding: '20px' }}>
                     <div style={{ paddingLeft : '15%', paddingRight : '15%' }}>
                     <Routes>
@@ -180,7 +182,7 @@ function App() {
                     </Routes>
                     </div>
                 </Content>
-                <Footer style={{ paddingLeft : '15%', paddingRight : '15%' }} logoSrc={logo2}/>
+                <Footer style={{ paddingLeft : '15%', paddingRight : '15%' }} logoSrc={logo3}/>
             </Layout>
         </Router>
     );

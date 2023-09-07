@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import WelcomeContent from './Sections/WelcomeContent';
 import Auth from '../Auth/Auth';
-import RecommendationCard from './Sections/RecommendationCard';
+import PortfolioCard from './Sections/PortfolioCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
 import Search from '../../utils/Search';
@@ -36,7 +36,7 @@ function LandingPage() {
                         <WelcomeContent />
                     </Col>
                     <Col span={8}>
-                        <RecommendationCard />
+                        <PortfolioCard />
                     </Col>
                     <Col span={8}>
                         <ProjectCard />
@@ -55,7 +55,7 @@ function LandingPage() {
                     </Col>
                     <Search/>
                     <Col xs={24} sm={8}>
-                        <RecommendationCard />
+                        <PortfolioCard />
                     </Col>
                     <Col xs={24} sm={8}>
                         <ProjectCard />
@@ -74,7 +74,7 @@ function LandingPage() {
                     </Col>
                     <Search/>
                     <Col span={8}>
-                        <RecommendationCard />
+                        <PortfolioCard />
                     </Col>
                     <Col span={8}>
                         <ProjectCard />

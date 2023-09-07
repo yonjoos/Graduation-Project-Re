@@ -51,4 +51,11 @@ public class CommentsController {
         commentsService.deleteComment(commentId, userEmail);
         return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
+
+    @PutMapping("/updateComments/{commentId}")
+    public ResponseEntity<String> updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto commentRequestDto, Principal principal) {
+        String userEmail = principal.getName(); // 현재 사용자 이메일 가져오기
+        commentsService.updateComment(commentId, commentRequestDto, userEmail);
+        return ResponseEntity.ok("댓글이 수정되었습니다.");
+    }
 }

@@ -25,7 +25,10 @@ function DetailProjectPage() {
     const [replyText, setReplyText] = useState('');     // 부모 있는 '답글' 에 담길 답글 내용
     const [replyToCommentId, setReplyToCommentId] = useState(null); // 해당 답글의 부모 댓글 id값
     const [commentData, setCommentData] = useState([]); // 백엔드에서 가져온 해당 게시물의 전체 댓글,답글 내용들
-    const [selectedCommentId, setSelectedCommentId] = useState(null); // 댓글 삭제 시 설정되는 댓글 id
+    const [replyVisibility, setReplyVisibility] = useState({}); // 답글 보기 여부
+    const [editingCommentId, setEditingCommentId] = useState(null); // 댓글 수정에 해당하는 댓글 id
+    const [editedCommentText, setEditedCommentText] = useState(''); // 백엔드에 보낼 댓글 수정 내용
+    const [areCommentsVisible, setAreCommentsVisible] = useState(false); // 댓글 컴포넌트 숨기기 여부
 
 
     useEffect(() => {
@@ -100,6 +103,23 @@ function DetailProjectPage() {
         const month = date.getMonth() + 1; // Month is zero-based
         const day = date.getDate();
         return `${year}년 ${month}월 ${day}일`;
+    };
+
+    // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
+    const formatDateTime = (dateTimeArray) => {
+        const [year, month, day, hours, minutes] = dateTimeArray;
+        const date = new Date(year, month - 1, day, hours, minutes);
+
+        // 년, 월, 일, 시간, 분 형식으로 포맷팅
+        const formattedYear = date.getFullYear();
+        const formattedMonth = (date.getMonth() + 1).toString().padStart(2, '0'); // 월을 2자리로 표현
+        const formattedDay = date.getDate().toString().padStart(2, '0'); // 일을 2자리로 표현
+        const formattedHours = date.getHours().toString().padStart(2, '0'); // 시를 2자리로 표현
+        const formattedMinutes = date.getMinutes().toString().padStart(2, '0'); // 분을 2자리로 표현
+
+        const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
+
+        return formattedDateTime;
     };
 
 
@@ -228,6 +248,12 @@ function DetailProjectPage() {
 
     // 어떤 부모에도 속하지 않는 level의 댓글 작성 후 업로드
     const handleCommentSubmit = async () => {
+
+        if (commentText.trim() === '') {
+            message.warning("댓글 내용을 입력하세요.");
+            return;
+        }
+
         try {
             const response = await request('POST', `/registerComments/${projectId}`, {
                 content: commentText, // 댓글 내용
@@ -248,6 +274,11 @@ function DetailProjectPage() {
 
     // 부모가 있는 답글 작성 후 업로드
     const handleReplySubmit = async () => {
+        if (replyText.trim() === '') {
+            message.warning("답글 내용을 입력하세요.");
+            return;
+        }
+
         try {
             const response = await request('POST', `/registerComments/${projectId}`, {
                 content: replyText, // 답글 내용
@@ -282,6 +313,13 @@ function DetailProjectPage() {
     // reply버튼 누르면, replyToCommentId를 해당 댓글(부모) id로 세팅
     const showReplyInput = (commentId) => {
         setReplyToCommentId(commentId);
+        setReplyText('');
+    };
+
+    // 답글 달기 취소
+    const cancelReply = () => {
+        setReplyToCommentId(null);
+        setReplyText(''); // 답글 작성 취소 시 텍스트 초기화
     };
 
 
@@ -299,7 +337,62 @@ function DetailProjectPage() {
         }
     };
 
+    // 답글 숨기기, 답글 보기 관련
+    const toggleReplyVisibility = (commentId) => {
+        setReplyVisibility((prevState) => ({
+            ...prevState,
+            [commentId]: !prevState[commentId],
+        }));
+    };
 
+    // 댓글 수정 버튼을 눌렀을 때
+    const handleEditComment = (commentId, commentText) => {
+
+        setEditingCommentId(commentId); // 댓글 수정할 댓글 id를 세팅
+        setEditedCommentText(commentText); // 해당 댓글의 내용을 editedCommentText에 설정
+    };
+
+    // 수정 완료 버튼을 눌렀을 때
+    const handleEditCommentSubmit = async (commentId) => {
+
+        // 수정된 댓글 내용을 백엔드로 전송하는 로직을 추가
+        if (editedCommentText.trim() === '') {
+            message.warning("댓글 내용을 입력하세요.");
+            return;
+        }
+
+        try {
+            await request('PUT', `/updateComments/${commentId}`, {
+                content: editedCommentText, // 답글 내용
+
+            });
+
+
+            // 수정 상태 초기화
+            setEditingCommentId(null);
+            setEditedCommentText('');
+            message.success("댓글이 성공적으로 수정 되었습니다.");
+
+            fetchCommentData(); // 댓글 수정이 완료되었다면, 최근 수정된 댓글이 반영된 결과를 다시 조회해옴
+
+        } catch (error) {
+            console.error("댓글 수정에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("댓글 수정에 실패했습니다. 잠시 후 다시 시도하세요.");
+        }
+
+
+    };
+
+    // 수정 - 취소 버튼을 눌렀을 때
+    const handleCancelEditComment = () => {
+        setEditingCommentId(null);
+        setEditedCommentText('');
+    };
+
+    // 댓글 컴포넌트 숨기기 관련
+    const toggleCommentsVisibility = () => {
+        setAreCommentsVisible(!areCommentsVisible);
+    };
 
 
 
@@ -311,21 +404,57 @@ function DetailProjectPage() {
             <Card key={comment.id} style={{ marginBottom: '16px' }}>
                 <div className={`comment-container depth-${depth}`}>
                     <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <p style={{ marginRight: '10px' }}>작성자: {comment.nickName}</p>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }} />
+                            <p style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></p>
+                        </div>
+
                         {comment.commentWriter && (
                             <div>
-                                <Button onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
-                                <Button>수정</Button>
-                                <Button onClick={() => handleDeleteComment(comment.id)}>삭제</Button>
+                                <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                                {editingCommentId === comment.id ? (
+                                    // 수정 중일 때, Input으로 표시하고 수정 관련 버튼 표시
+
+
+                                    <Button size="small" onClick={handleCancelEditComment} style={{ marginBottom: '16px' }}>취소</Button>
+
+                                ) : (
+                                    // 수정 중이 아닐 때, "수정" 버튼 표시
+                                    <Button size="small" onClick={() => handleEditComment(comment.id, comment.content)}>수정</Button>
+                                )}
+                                <Button size="small" onClick={() => handleDeleteComment(comment.id)}>삭제</Button>
                             </div>
                         )}
                         {!comment.commentWriter && (
-                            <Button onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                            <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
                         )}
                     </div>
-                    <p style={{ marginTop: '5px' }}>{comment.content}</p>
+
+                    {editingCommentId === comment.id ? (
+                        // 수정 중일 때, Input으로 표시
+                        <>
+                            <Input
+                                type="text"
+                                value={editedCommentText}
+                                onChange={(e) => setEditedCommentText(e.target.value)}
+                                placeholder="Edit your comment"
+                            />
+                            <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
+                                <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button>
+                            </div>
+                        </>
+                    ) : (
+                        // 수정 중이 아닐 때, <p>로 표시
+                        <p style={{ marginTop: '5px' }}>{insertLineBreaks(comment.content, 45)}</p>
+                    )}
+
+                    <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray' }}>
+                        {formatDateTime(comment.finalCommentedTime)}
+                    </div>
                     {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
                         <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
+                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
+                            <p style={{ marginRight: '10px' }}><strong>Me</strong></p>
                             <Input
                                 type="text"
                                 value={replyText}
@@ -333,12 +462,20 @@ function DetailProjectPage() {
                                 placeholder="Write a reply"
                                 style={{ marginBottom: '16px' }}
                             />
-                            <Button onClick={() => handleReplySubmit(comment.id)} style={{ marginBottom: '16px' }} >답글 등록</Button>
+                            <Button size="small" onClick={() => handleReplySubmit(comment.id)} style={{ marginBottom: '16px', marginLeft: '5px' }} >답글 등록</Button>
+                            <Button size="small" onClick={cancelReply} style={{ marginBottom: '16px' }}>취소</Button> {/* 취소 버튼 추가 */}
                         </div>
                     )}
                     {/* 1차 level렌더링 후, 각 1차 level에 children이 있다면 하위 level을 재귀적으로 다시 렌더링함 */}
-                    {comment.children && comment.children.length > 0 && renderComments(comment.children, depth + 1)}
-
+                    {comment.children && comment.children.length > 0 && (
+                        <div>
+                            <Button size="small" onClick={() => toggleReplyVisibility(comment.id)} style={{ marginBottom: '16px' }}>
+                                {replyVisibility[comment.id] ? '답글 숨기기' : '답글 보기'}
+                            </Button>
+                            {/* Step 2: Conditionally render replies */}
+                            {replyVisibility[comment.id] && renderComments(comment.children, depth + 1)}
+                        </div>
+                    )}
                 </div>
             </Card>
         ));
@@ -586,20 +723,40 @@ function DetailProjectPage() {
                 내용: {insertLineBreaks(data.content, 45)}
             </div>
 
-            {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
-            <div>
-                {renderComments(commentData)}
-                <div>
-                    <TextArea // 여기에 작성한 댓글은 어떠한 부모도 없는 댓글임
-                        rows={4}
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        placeholder="Write a comment"
-
-                    />
-                    <Button onClick={handleCommentSubmit}>댓글 등록</Button>
-                </div>
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <Button size="small" onClick={toggleCommentsVisibility}>
+                    {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                </Button>
             </div>
+
+
+
+            {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
+            {areCommentsVisible && (
+                <div>
+                    <Divider className="bold-divider" />
+
+                    <h5>댓글</h5>
+                    {renderComments(commentData)}
+                    <div>
+                        <Card>
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                <UserOutlined style={{ marginRight: '5px' }} />
+                                <p style={{ margin: '0' }}><strong>Me</strong></p>
+                            </div>
+                            <TextArea
+                                rows={4}
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                placeholder="Write a comment"
+                            />
+                            <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+            )}
 
             {/* Modal */}
             <Modal

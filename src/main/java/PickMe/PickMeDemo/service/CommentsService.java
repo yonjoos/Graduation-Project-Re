@@ -95,6 +95,7 @@ public class CommentsService {
                         .nickName(null)
                         .userId(null)
                         .commentWriter(false)
+                        .finalCommentedTime(c.getLastModifiedDate())
                         .build();
             } else { // 해당 댓글의 isDeleted가 false라면
 
@@ -106,6 +107,7 @@ public class CommentsService {
                         .nickName(c.getUser().getNickName())
                         .userId(c.getUser().getId())
                         .commentWriter(isCommentWriter)
+                        .finalCommentedTime(c.getLastModifiedDate())
                         .build();
             }
 
@@ -160,5 +162,35 @@ public class CommentsService {
             // 부모가 있고, 부모의 자식이 1개(지금 삭제하는 댓글)이고, 부모의 삭제 상태가 TRUE인 댓글이라면 재귀
             return getDeletableAncestorComment(parent);
         return comment; // 삭제해야하는 댓글 반환
+    }
+
+
+    // 특정 댓글 또는 답글 업데이트 in 프로젝트 게시물
+    public void updateComment(Long commentId, CommentRequestDto commentRequestDTO, String userEmail) {
+
+        QComments comments = QComments.comments;
+
+        Comments selectedComment = queryFactory.select(comments) // 댓글을 대상으로 할 건데
+                .from(comments)
+                .where(comments.id.eq(commentId)) // parameter로 받은 댓글 id가 같은 것만 가져올 것
+                .fetchOne();
+
+        Optional<Comments> optionalSelectedComment = Optional.ofNullable(selectedComment);
+
+        Comments comment = optionalSelectedComment.orElseThrow(
+                () -> new AppException("Could not find comment id: " + commentId, HttpStatus.BAD_REQUEST));
+
+
+        User currentUser = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+
+
+        if (currentUser.getId().equals(comment.getUser().getId())) {
+            comment.updateContent(commentRequestDTO.getContent()); // 댓글 내용 업데이트
+            commentsRepository.save(comment); // 댓글 저장
+        } else {
+            throw new AppException("댓글 작성자만 업데이트할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+
     }
 }

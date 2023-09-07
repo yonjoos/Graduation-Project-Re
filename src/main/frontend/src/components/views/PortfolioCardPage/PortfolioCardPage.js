@@ -23,7 +23,7 @@ function PortfolioCardPage() {
     
 
     useEffect(() => {
-        
+
         if(isClicked == "clicked"){
             console.log('현재 검색된 키워드: ', searchTerm);
             fetchUsers();

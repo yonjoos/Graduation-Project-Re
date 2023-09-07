@@ -43,6 +43,8 @@ public class Comments extends BaseTimeEntity { //생성일, 수정일 다루는 
     @JoinColumn(name = "posts_id")
     private Posts posts; //댓글의 대상이 되는 게시물 - 연관관계의 주인, 게시물 table과 엮임(게시물의 외래키를 가지고 있음)
 
+    // 댓글 내용만 생성자로 미리 세팅
+    // 부모 자식 관계는 그 후에 세팅
     public Comments(String content) {
         this.content = content;
     }

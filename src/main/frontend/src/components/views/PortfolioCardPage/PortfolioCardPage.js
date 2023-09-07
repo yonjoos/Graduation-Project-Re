@@ -12,6 +12,7 @@ import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
 function PortfolioCardPage() {
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [isClicked, setIsClicked] = useState("unclicked");
     const location = useLocation
     const navigate = useNavigate();
     const page = 0;
@@ -19,14 +20,19 @@ function PortfolioCardPage() {
 
     // USE EFFECT ###############################################
 
+    
+
+    useEffect(() => {
+
+        if(isClicked == "clicked"){
+            console.log('현재 검색된 키워드: ', searchTerm);
+            fetchUsers();
+        }
+    }, [searchTerm]);
+
     useEffect(() => {
         fetchCards();
     }, []); 
-
-    useEffect(() => {
-        console.log('현재 검색된 키워드: ', searchTerm);
-        fetchUsers();
-    }, [searchTerm]);
 
 
     // REQUEST ###############################################
@@ -73,7 +79,10 @@ function PortfolioCardPage() {
     // function name : handleSearch
     // for Searching component
     const handleSearch = (value) => {
+
+        setIsClicked("clicked");
         setSearchTerm(value); // 검색어를 세팅
+        
     };
     
 

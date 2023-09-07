@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import { request } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message } from 'antd';
+import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import '../ProjectPage.css';
+import './DetailProjectPage.css';
+
+const { TextArea } = Input;
 
 function DetailProjectPage() {
     const navigate = useNavigate();
@@ -17,6 +21,12 @@ function DetailProjectPage() {
     const [modalAction, setModalAction] = useState('');     // modalAction은 'delete'와 'apply' 둘 중 하나로 세팅.
     const [cancelAction, setCancelAction] = useState('');   // 승인 허가된 사람과, 승인 허가되지 않은 사람의 지원 취소 request 매커니즘을 다르게 하기 위해 세팅.
     const [scrapAction, setScrapAction] = useState('');     // 스크랩한 사람과, 스크랩하지 않은 사람의 request 매커니즘을 다르게 하기 위해 세팅
+    const [commentText, setCommentText] = useState(''); // 부모 없는 '댓글' 에 담길 댓글 내용
+    const [replyText, setReplyText] = useState('');     // 부모 있는 '답글' 에 담길 답글 내용
+    const [replyToCommentId, setReplyToCommentId] = useState(null); // 해당 답글의 부모 댓글 id값
+    const [commentData, setCommentData] = useState([]); // 백엔드에서 가져온 해당 게시물의 전체 댓글,답글 내용들
+    const [selectedCommentId, setSelectedCommentId] = useState(null); // 댓글 삭제 시 설정되는 댓글 id
+
 
     useEffect(() => {
         // ProjectId를 PathVariable로 보내기
@@ -31,6 +41,24 @@ function DetailProjectPage() {
             });
     }, [projectId]);
 
+    // 해당 페이지에 처음 접근했을 때, 모든 댓글과 답글을 조회해서 세팅
+    useEffect(() => {
+        request('GET', `/getCommentData/${projectId}`, {})
+            .then((response) => {
+                setCommentData(response.data);
+                console.log('댓글', response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching comment data:", error);
+            });
+    }, [projectId]);
+
+    // 댓글 또는 답글 업로드 시, 명시적으로 fetchCommentData() 를 호출하여 다시 최신 댓글정보를 백엔드에서 가져옴 
+    useEffect(() => {
+        // Initial data fetch
+        fetchCommentData();
+    }, [projectId]);
+
 
     // 백엔드에서 받아온 데이터에 공백이 없으면, maxCharacters번째 글자 이후에 공백을 넣어주는 함수
     // text: 덩어리로 나누어 줄 바꿈을 삽입하려는 입력 텍스트.
@@ -38,7 +66,7 @@ function DetailProjectPage() {
     function insertLineBreaks(text, maxCharacters) {
         // 함수는 먼저 text 매개변수가 거짓인지(비어 있거나 정의되지 않음) 확인. text가 비어 있거나 정의되지 않은 경우 함수는 동일한 입력 텍스트를 반환함.
         if (!text) return text;
-    
+
         // text가 비어 있지 않으면 함수는 chunks라는 빈 배열을 초기화함. 이 배열은 줄 바꿈을 사용하여 텍스트 덩어리를 저장하는 역할을 함.
         const chunks = [];
         // 띄어쓰기가 없는 한 개의 문자열의 인덱스
@@ -60,7 +88,7 @@ function DetailProjectPage() {
                 j = 0;
             }
         }
-        
+
         return chunks;
     }
 
@@ -73,7 +101,7 @@ function DetailProjectPage() {
         const day = date.getDate();
         return `${year}년 ${month}월 ${day}일`;
     };
-    
+
 
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
@@ -103,34 +131,34 @@ function DetailProjectPage() {
         setIsScrapModalVisible(true);
         setScrapAction(action);
     }
-    
+
     const handleModalConfirm = () => {
         // writer가 게시물 삭제 버튼을 누른 경우
         if (modalAction === 'delete') {
             request('POST', `/project/delete/${projectId}`, {})
-            .then((response) => {
-                //console.log("Fetched project data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
-                // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
-                message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
-            });
+                .then((response) => {
+                    //console.log("Fetched project data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
+                    // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
+                    message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
+                });
 
             navigate('/project');
         }
-        
+
         // writer가 아닌 사람이 지원하기 버튼을 누른 경우
         else if (modalAction === 'apply') {
             request('POST', `/project/apply/${projectId}`, {})
-            .then((response) => {
-                //console.log("Fetched project data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                console.error("Error fetching project data:", error);
-            });
+                .then((response) => {
+                    //console.log("Fetched project data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    console.error("Error fetching project data:", error);
+                });
 
             navigate(`/project/detail/${projectId}`);
         }
@@ -151,41 +179,41 @@ function DetailProjectPage() {
             console.error("Error approving user:", error);
         }
     };
-    
+
     const handleScrapModalConfirm = async () => {
         // 스크랩 버튼을 누른 경우
         if (scrapAction === 'scrap') {
             request('POST', `/project/scrap/${projectId}`, {})
-            .then((response) => {
-                //console.log("Fetched project data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
-                // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
-                message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
-            });
+                .then((response) => {
+                    //console.log("Fetched project data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
+                    // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
+                    message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
+                });
 
             navigate(`/project/detail/${projectId}`);
         }
-        
+
         // 스크랩 취소 버튼을 누른 경우
         else if (scrapAction === 'cancelScrap') {
             request('POST', `/project/cancelScrap/${projectId}`, {})
-            .then((response) => {
-                //console.log("Fetched project data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                console.error("Error fetching project data:", error);
-            });
+                .then((response) => {
+                    //console.log("Fetched project data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    console.error("Error fetching project data:", error);
+                });
 
             navigate(`/project/detail/${projectId}`);
         }
 
         setIsScrapModalVisible(false);   // 모달 안보이게 숨김
     };
-    
+
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
@@ -198,13 +226,136 @@ function DetailProjectPage() {
         setIsScrapModalVisible(false);
     };
 
+    // 어떤 부모에도 속하지 않는 level의 댓글 작성 후 업로드
+    const handleCommentSubmit = async () => {
+        try {
+            const response = await request('POST', `/registerComments/${projectId}`, {
+                content: commentText, // 댓글 내용
+                parentId: null, // 부모가 없으므로 parentId는 null
+            });
+
+
+            setCommentText('');
+            message.success("댓글이 성공적으로 업로드 되었습니다.");
+
+            fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
+
+        } catch (error) {
+            console.error("댓글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("댓글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.");
+        }
+    };
+
+    // 부모가 있는 답글 작성 후 업로드
+    const handleReplySubmit = async () => {
+        try {
+            const response = await request('POST', `/registerComments/${projectId}`, {
+                content: replyText, // 답글 내용
+                parentId: replyToCommentId, // 부모 댓글 id
+            });
+
+
+            setReplyText('');
+            setReplyToCommentId(null); // 현재 지시 중인 답글의 parentid를 null로 세팅
+            message.success("답글이 성공적으로 업로드 되었습니다.");
+
+            fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
+        } catch (error) {
+            console.error("답글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("답글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.");
+        }
+    };
+
+    // 댓글 또는 답글 업로드 후 가장 최신의 댓글 정보를 백엔드에서 다시 가져오기
+    const fetchCommentData = () => {
+        request('GET', `/getCommentData/${projectId}`, {})
+            .then((response) => {
+                setCommentData(response.data);
+                console.log('댓글', response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching comment data:", error);
+            });
+    };
+
+
+    // reply버튼 누르면, replyToCommentId를 해당 댓글(부모) id로 세팅
+    const showReplyInput = (commentId) => {
+        setReplyToCommentId(commentId);
+    };
+
+
+    // 댓글의 삭제 버튼 누르면, 백엔드에 삭제 요청 보냄
+    const handleDeleteComment = async (commentId) => {
+        try {
+            const response = await request('POST', `/deleteComments/${commentId}`);
+            if (response.status === 200) {
+                message.success("댓글이 삭제되었습니다.");
+                fetchCommentData(); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
+            }
+        } catch (error) {
+            console.error("댓글 삭제에 실패했습니다.", error);
+            message.error("댓글 삭제에 실패했습니다.");
+        }
+    };
+
+
+
+
+
+    // 댓글의 렌더링 관련
+    // 부모면 상위 level에 세팅,
+    // 자식이면 계속 하위 level을 타고 들어가 세팅
+    const renderComments = (comments, depth = 0) => {
+        return comments.map((comment) => (
+            <Card key={comment.id} style={{ marginBottom: '16px' }}>
+                <div className={`comment-container depth-${depth}`}>
+                    <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <p style={{ marginRight: '10px' }}>작성자: {comment.nickName}</p>
+                        {comment.commentWriter && (
+                            <div>
+                                <Button onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                                <Button>수정</Button>
+                                <Button onClick={() => handleDeleteComment(comment.id)}>삭제</Button>
+                            </div>
+                        )}
+                        {!comment.commentWriter && (
+                            <Button onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                        )}
+                    </div>
+                    <p style={{ marginTop: '5px' }}>{comment.content}</p>
+                    {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
+                        <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
+                            <Input
+                                type="text"
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="Write a reply"
+                                style={{ marginBottom: '16px' }}
+                            />
+                            <Button onClick={() => handleReplySubmit(comment.id)} style={{ marginBottom: '16px' }} >답글 등록</Button>
+                        </div>
+                    )}
+                    {/* 1차 level렌더링 후, 각 1차 level에 children이 있다면 하위 level을 재귀적으로 다시 렌더링함 */}
+                    {comment.children && comment.children.length > 0 && renderComments(comment.children, depth + 1)}
+
+                </div>
+            </Card>
+        ));
+    };
+
+
+
+
+
+
     // 글 작성자인지, 아닌지에 따라 다르게 보이도록 설정
     const renderButtons = () => {
         const isWriter = data.writer;       // 게시물 작성자인가?
         const isScrapped = data.scrap;      // 게시물이 스크랩되었나?
         const isApplying = data.applying;   // 승인 대기 중인가?
         const isApplied = data.applied;     // 승인 완료되었나?
-    
+
         return (
             <Row>
                 <Col span={12}>
@@ -371,14 +522,14 @@ function DetailProjectPage() {
         <div style={{ marginLeft: '10%', marginRight: '10%' }}>
             {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
             {data.writer && renderButtons()}
-                        {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
+            {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
             {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
             {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
             {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
             {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
             {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
             {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
-            
+
             {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
             <Divider className="bold-divider" />
 
@@ -390,9 +541,9 @@ function DetailProjectPage() {
                 </Col>
                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                 <Col span={8} className="vertical-line">
-                    <div  style={{ marginLeft: '3px' }}>
+                    <div style={{ marginLeft: '3px' }}>
                         {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                        분류: &nbsp; {data.web?" Web ":""}{data.app?" App ":""}{data.game?" Game ":""}{data.ai?" AI ":""}
+                        분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
                     </div>
                 </Col>
             </Row>
@@ -410,7 +561,7 @@ function DetailProjectPage() {
                     <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
                         인원: {data.counts} / {data.recruitmentCount}
                     </div>
-                    <div  style={{ marginLeft: '3px' }}>
+                    <div style={{ marginLeft: '3px' }}>
                         모집 마감일: {formatDate(data.endDate)}
                     </div>
                 </Col>
@@ -433,6 +584,21 @@ function DetailProjectPage() {
             {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
             <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
                 내용: {insertLineBreaks(data.content, 45)}
+            </div>
+
+            {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
+            <div>
+                {renderComments(commentData)}
+                <div>
+                    <TextArea // 여기에 작성한 댓글은 어떠한 부모도 없는 댓글임
+                        rows={4}
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        placeholder="Write a comment"
+
+                    />
+                    <Button onClick={handleCommentSubmit}>댓글 등록</Button>
+                </div>
             </div>
 
             {/* Modal */}
@@ -459,7 +625,7 @@ function DetailProjectPage() {
                 onCancel={handleCancelModalConfirm}
                 okText="아니오"
                 cancelText="예"
-                >
+            >
                 <p>지원을 취소하시겠습니까?</p>
             </Modal>
             <Modal

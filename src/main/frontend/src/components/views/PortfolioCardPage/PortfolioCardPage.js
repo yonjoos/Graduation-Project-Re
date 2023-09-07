@@ -1,8 +1,10 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Card, Row, Col, Divider, Button } from 'antd';
 import { request } from '../../../hoc/request';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { setLastVisitedEndpoint } from '../../../_actions/actions';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
 
 
@@ -10,11 +12,15 @@ import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
 
 
 function PortfolioCardPage() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isClicked, setIsClicked] = useState("unclicked");
-    const location = useLocation
-    const navigate = useNavigate();
+
     const page = 0;
     const size = 3;
 
@@ -72,6 +78,9 @@ function PortfolioCardPage() {
 
     // function name : onClickHandler
     const onClickHandler = (nickName) => {
+        // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
+        // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
+        dispatch(setLastVisitedEndpoint('/portfoliocard'));
         navigate(`/portfolio/${nickName}`);
     }
 

@@ -260,7 +260,8 @@ function StudyPage() {
                 <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
                     Recommendation
                 </Button>
-
+                <hr></hr>
+                
             </div>
 
             {renderPosts(data)}

@@ -24,16 +24,29 @@ public class PostsController {
     private final UserService userService;
     private final PostsService postsService;
 
+
+    /*
+    ######################### UPLOAD 함수 ###########################################################
+    ######################### UPLOAD 함수 ###########################################################
+    ------ @ PostMapping
+    */
+
+    // uploadProjectPost
     @PostMapping("/uploadProjectPost")
     public ResponseEntity<String> uploadProjectPost(@RequestBody @Valid PostsFormDto postsFormDto, Principal principal) {
         return uploadPost(postsFormDto, principal, PostType.PROJECT);
     }
 
+
+    // uploadStudyPost
     @PostMapping("/uploadStudyPost")
     public ResponseEntity<String> uploadStudyPost(@RequestBody @Valid PostsFormDto postsFormDto, Principal principal) {
         return uploadPost(postsFormDto, principal, PostType.STUDY);
     }
 
+
+
+    // uploadPost
     // Project와 Study의 새로운 게시물을 업로드하는 코드는 매우 유사하다.
     // 따라서 공통된 부분을 묶어주고, 둘을 구분할 수 있도록 PostType을 넣어준다.
     private ResponseEntity<String> uploadPost(@Valid PostsFormDto postsFormDto, Principal principal, PostType postType) {
@@ -55,6 +68,11 @@ public class PostsController {
 
 
 
+    /*
+    ######################### 조회 함수 ###########################################################
+    ######################### 조회 함수 ###########################################################
+    ------ @ GetMapping
+    */
 
     // 프로젝트 리스트 조회
     @GetMapping("/getProjectList")
@@ -67,6 +85,8 @@ public class PostsController {
     public ResponseEntity<List<PostsListDto>> getStudyList(Principal principal) {
         return getPostsList(PostType.STUDY);
     }
+
+
 
     // Project와 Study의 게시물 리스트를 조회하는 코드는 매우 유사하다.
     // 따라서 공통된 부분을 묶어주고, 둘을 구분할 수 있도록 PostType을 넣어준다.
@@ -113,6 +133,13 @@ public class PostsController {
     }
 
 
+
+    /*
+    ######################### GET FORM 함수 ###########################################################
+    ######################### GET FORM 함수 ###########################################################
+    ------ @ GetMapping
+    */
+
     // 프로젝트 수정 시 사용할 프로젝트 폼 정보만 가져오기
     // 여기서 본인이 아닌 사람은 이 페이지로 접근 불가능
     @GetMapping("/getProjectForm/{projectId}")
@@ -143,6 +170,13 @@ public class PostsController {
     }
 
 
+
+    /*
+    ###################### UPDATE 함수 ###############################################################
+    ###################### UPDATE 함수 ###############################################################
+
+    ------ @ PutMapping
+     */
 
     // 프로젝트 수정.
     // 어차피 프로젝트 수정 페이지는 바로 위의 메서드에서 /getProjectForm/{projectId}를 거치면서, 본인만 수정할 수 있는 페이지에 들어가므로 해당 유저가 누구인지 알 필요가 없음.
@@ -178,6 +212,12 @@ public class PostsController {
 
 
 
+    /*
+    ###################### DELETE 함수 ###############################################################
+    ###################### DELETE 함수 ###############################################################
+    ------ @ PostMapping
+     */
+
     // 프로젝트 삭제
     // 삭제는 디테일페이지에서 진행되므로, 본인만 삭제할 수 있다. 따라서 Principal이 필요 없음
     @PostMapping("/project/delete/{projectId}")
@@ -205,6 +245,12 @@ public class PostsController {
         }
     }
 
+
+    /*
+    ############################# SORTING / FILTER 관련 함수 #############################################
+    ############################# SORTING / FILTER 관련 함수 #############################################
+    ------ @ PutMapping
+     */
 
     // 프로젝트 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
     @GetMapping("/getFilteredProjects")

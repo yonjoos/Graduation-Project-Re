@@ -33,7 +33,7 @@ function UpdatePortfolioPage() {
     }, []);
 
     useEffect(() => {
-        if (!hasPortfolio) {
+        if (hasPortfolio === null) {
             navigate('/portfolio');
         }
     }, [hasPortfolio]);

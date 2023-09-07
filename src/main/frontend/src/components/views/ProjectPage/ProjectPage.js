@@ -20,7 +20,8 @@ function ProjectPage() {
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const [searchTerm, setSearchTerm] = useState(""); //프로젝트 페이지 내의 검색어 키워드
     
-    const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
+    const pageSize = 8; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
+
 
     // 페이지가 새로 마운트 될 때마다 실행됨.
     // 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 
@@ -33,6 +34,10 @@ function ProjectPage() {
         console.log('현재 검색된 키워드: ', searchTerm);
         fetchFilteredPosts();
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
+
+
+    
+
 
     // 실제 백엔드에 동적 쿼리 보내는 곳
     const fetchFilteredPosts = async () => {
@@ -112,8 +117,8 @@ function ProjectPage() {
     };
 
     // 추천버튼을 누르면 추천 페이지로 이동
-    const handleRecommendationPage = () => {
-        navigate('/recommendation'); // Navigate to RecommendationPage
+    const handlePortfolioCardPage = () => {
+        navigate('/portfoliocard'); // Navigate to RecommendationPage
     };
 
     // 스터디 버튼을 누르면 스터디 페이지로 이동
@@ -137,22 +142,21 @@ function ProjectPage() {
         return (
             <div>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 10px 0' }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
+                    <Card key={index} style={{ margin: '0 0 5px 0', }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
 
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <Divider className="bold-divider" />
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                            <Row gutter={[16, 16]} style={{ }} justify="center" align="top">
                                 <Col span={6}>
-                                    <div style={{ borderRight: '1px' }}>
-                                        <strong style={{ fontSize: '18px' }}> {item.nickName} </strong>
+                                    <div style={{ borderRight: '0.5px' }}>
+                                        <strong style={{ fontSize: '14px'}}> {`👩🏻‍💻 ${item.nickName}`} </strong>
                                     </div>
                                 </Col>
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                                 <Col span={12} className="vertical-line">
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        <strong style={{ fontSize: '18px' }}>{item.title}</strong>
+                                        <strong style={{ fontSize: '14px' }}>{item.title}</strong>
                                     </div>
                                     {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
                                     <div style={{ marginLeft: '3px' }}>
@@ -169,7 +173,6 @@ function ProjectPage() {
                                 </Col>
                             </Row>
                         </div>
-                        <Divider className="bold-divider" />
                     </Card>
 
                 ))}
@@ -249,7 +252,7 @@ function ProjectPage() {
                 </Row>
             </div>
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
-            <div style={{ textAlign: 'left', margin: "0 0" }}>
+            <div style={{ textAlign: 'left', margin: "0 0" , marginBottom:'4px'}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                     Project
@@ -257,9 +260,10 @@ function ProjectPage() {
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                     Study
                 </Button>
-                <Button type={location.pathname === '/recommendation' ? 'primary' : 'default'} onClick={handleRecommendationPage}>
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
                     Recommendation
                 </Button>
+                <hr></hr>
 
             </div>
 

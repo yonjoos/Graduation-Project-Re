@@ -137,16 +137,16 @@ function ProjectPage() {
         return (
             <div>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 10px 0' }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
+                    <Card key={index} style={{ margin: '0 0 10px 0', }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
 
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <Divider className="bold-divider" />
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                            <Row gutter={[16, 16]} style={{marginTop: '20px' }} justify="center" align="middle">
                                 <Col span={6}>
                                     <div style={{ borderRight: '1px' }}>
-                                        <strong style={{ fontSize: '18px' }}> {item.nickName} </strong>
+                                        <strong style={{ fontSize: '18px'}}> {item.nickName} </strong>
                                     </div>
                                 </Col>
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
@@ -249,7 +249,7 @@ function ProjectPage() {
                 </Row>
             </div>
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
-            <div style={{ textAlign: 'left', margin: "0 0" }}>
+            <div style={{ textAlign: 'left', margin: "0 0"}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                     Project
@@ -260,6 +260,7 @@ function ProjectPage() {
                 <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
                     Recommendation
                 </Button>
+                <hr></hr>
 
             </div>
 

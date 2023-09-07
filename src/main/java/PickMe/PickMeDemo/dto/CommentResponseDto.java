@@ -12,23 +12,14 @@ import java.util.List;
 @Builder
 public class CommentResponseDto {
 
-    private Long id;
-    private String content;
-    private String nickName;
-    private List<CommentResponseDto> children = new ArrayList<>();
+    private Long id; // 댓글 또는 답글 id
+    private String content; // 댓글 또는 답글 내용
+    private String nickName; // 댓글 또는 답글 작성자 닉네임
+    private Long userId; // 댓글 또는 답글 작성자 pk
+    private boolean commentWriter; // 해당 댓글 또는 답글의 작성자 여부
 
-    public CommentResponseDto(Long id, String content, String nickName) {
-        this.id = id;
-        this.content = content;
-        this.nickName = nickName;
-    }
-
-
-    public static CommentResponseDto convertCommentToDto(Comments comment) {
-        return comment.getIsDeleted() ?
-                new CommentResponseDto(comment.getId(), "삭제된 댓글입니다.", null) :
-                new CommentResponseDto(comment.getId(), comment.getContent(), comment.getUser().getNickName());
-    }
+    @Builder.Default
+    private List<CommentResponseDto> children = new ArrayList<>(); // 롬복 도구 활용해서 childen배열을 초기화 보장
 
 
 }

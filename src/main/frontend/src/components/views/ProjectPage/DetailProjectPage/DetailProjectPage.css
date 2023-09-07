@@ -1,0 +1,17 @@
+.comment-container {
+    padding-left: 10px; /* 부모 댓글에 왼쪽 패딩 추가 */
+}
+
+.reply-container {
+    margin-left: 30px; /* 자식 댓글에 오른쪽 마진 추가 */
+}
+
+
+ 
+  
+  
+  
+  
+  
+  
+  

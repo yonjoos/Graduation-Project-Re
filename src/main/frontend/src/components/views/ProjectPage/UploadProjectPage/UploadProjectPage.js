@@ -13,7 +13,7 @@ function UploadProjectPage() {
     // 백엔드에 넘겨줄 폼 입력에 사용될 애들
     const [title, setTitle] = useState('');
     const [postType, setPostType] = useState([]);
-    const [recruitmentCount, setRecruitmentCount] = useState(0);
+    const [recruitmentCount, setRecruitmentCount] = useState(2);
     const [endDate, setEndDate] = useState(null);
     const [content, setContent] = useState('');
     const [promoteImageUrl, setPromoteImageUrl] = useState(null);
@@ -53,7 +53,7 @@ function UploadProjectPage() {
         if (!isNaN(value) && value >= 2) {
             setRecruitmentCount(value);
         } else {
-            message.warning('Please enter a valid number for recruits.');
+            message.warning('본인을 포함해서 최소 두 명부터 모집 가능합니다.');
         }
     };
 

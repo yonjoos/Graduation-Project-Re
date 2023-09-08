@@ -434,7 +434,7 @@ function DetailProjectPage() {
                         // 수정 중일 때, Input으로 표시
                         <>
                             <TextArea
-                                rows = {3}
+                                autoSize={{minRows:3}}
                                 type="text"
                                 value={editedCommentText}
                                 onChange={(e) => setEditedCommentText(e.target.value)}
@@ -458,7 +458,7 @@ function DetailProjectPage() {
                             <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
                             <p style={{ marginRight: '10px' }}><strong>Me</strong></p>
                             <TextArea
-                                rows={3}
+                                autoSize={{minRows:3}}
                                 type="text"
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
@@ -748,7 +748,7 @@ function DetailProjectPage() {
                                 <p style={{ margin: '0' }}><strong>Me</strong></p>
                             </div>
                             <TextArea
-                                rows={4}
+                                autoSize={{minRows:4}}
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
                                 placeholder="Write a comment"

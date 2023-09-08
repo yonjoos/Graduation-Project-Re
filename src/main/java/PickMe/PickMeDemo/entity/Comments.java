@@ -64,4 +64,6 @@ public class Comments extends BaseTimeEntity { //생성일, 수정일 다루는 
     public void changeIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+    public void updateContent(String content) { this.content=content;}
 }

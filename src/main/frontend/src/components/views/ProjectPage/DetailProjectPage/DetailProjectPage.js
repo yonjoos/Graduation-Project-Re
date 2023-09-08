@@ -433,11 +433,13 @@ function DetailProjectPage() {
                     {editingCommentId === comment.id ? (
                         // 수정 중일 때, Input으로 표시
                         <>
-                            <Input
+                            <TextArea
+                                rows = {3}
                                 type="text"
                                 value={editedCommentText}
                                 onChange={(e) => setEditedCommentText(e.target.value)}
                                 placeholder="Edit your comment"
+                               
                             />
                             <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
                                 <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button>
@@ -445,7 +447,7 @@ function DetailProjectPage() {
                         </>
                     ) : (
                         // 수정 중이 아닐 때, <p>로 표시
-                        <p style={{ marginTop: '5px' }}>{insertLineBreaks(comment.content, 45)}</p>
+                        <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>{insertLineBreaks(comment.content, 45)}</p>
                     )}
 
                     <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray' }}>
@@ -455,7 +457,8 @@ function DetailProjectPage() {
                         <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
                             <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
                             <p style={{ marginRight: '10px' }}><strong>Me</strong></p>
-                            <Input
+                            <TextArea
+                                rows={3}
                                 type="text"
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}

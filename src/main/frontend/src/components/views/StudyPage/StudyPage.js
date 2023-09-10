@@ -4,7 +4,8 @@ import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInStudyPage from './SearchInStudyPage';
-import { setLastVisitedEndpoint } from '../../../_actions/actions'
+import { lastVisitedEndpoint } from '../../../_actions/actions'
+import { setLastVisitedEndpoint } from '../../../hoc/request';
 import './StudyPage.css';
 
 
@@ -60,7 +61,8 @@ function StudyPage() {
     const handleRowClick = (studyId) => {
         // /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /study로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study로 설정
-        dispatch(setLastVisitedEndpoint('/study'));
+        dispatch(lastVisitedEndpoint('/study'));    // 전역에 상태 저장을 위한 애.
+        setLastVisitedEndpoint('/study');   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
         navigate(`/study/detail/${studyId}`);
     }
 

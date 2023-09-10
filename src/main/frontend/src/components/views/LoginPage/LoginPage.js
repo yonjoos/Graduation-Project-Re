@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Row, Col, Tabs, Input, Button, message } from 'antd';
-import { request, setAuthHeader, setHasPortfolio, setUserRole } from '../../../hoc/request';
+import { request, setAuthHeader, setHasPortfolio, setUserRole, setUserNickName } from '../../../hoc/request';
 import { loginSuccess } from '../../../_actions/actions'
 
 function LoginPage() {
@@ -157,11 +157,12 @@ function LoginPage() {
             password: password
         })
             .then((response) => {
-                const { token, role, isCreated } = response.data;
-                dispatch(loginSuccess(token, role, isCreated)); // Dispatch login success action with role
+                const { token, role, isCreated, nickName } = response.data;
+                dispatch(loginSuccess(token, role, isCreated, nickName)); // Dispatch login success action with role
                 setAuthHeader(token); // Set token in local storage
                 setUserRole(role);
                 setHasPortfolio(isCreated);
+                setUserNickName(nickName);
                 localStorage.setItem('localStorageCleared', 'true'); //로컬 스토리지가 비워졌다고 명시. F5문제를 위해 설정한 임시 방편
                 alert("로그인에 성공하였습니다.");
             })

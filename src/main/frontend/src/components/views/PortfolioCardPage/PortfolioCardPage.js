@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Card, Row, Col, Divider, Button } from 'antd';
 import { request } from '../../../hoc/request';
-import { setLastVisitedEndpoint } from '../../../_actions/actions';
+import { lastVisitedEndpoint } from '../../../_actions/actions';
+import { setLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
 
 
@@ -80,7 +81,8 @@ function PortfolioCardPage() {
     const onClickHandler = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
-        dispatch(setLastVisitedEndpoint('/portfoliocard'));
+        dispatch(lastVisitedEndpoint('/portfoliocard'));
+        setLastVisitedEndpoint('/portfoliocard');
         navigate(`/portfolio/${nickName}`);
     }
 

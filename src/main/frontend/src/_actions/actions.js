@@ -64,10 +64,10 @@ React : UI 생성, Component State 관리
 
 
 
-export const loginSuccess = (token, role, isCreated) => {
+export const loginSuccess = (token, role, isCreated, nickName) => {
     return {
         type: 'LOGIN_SUCCESS',
-        payload: { token, role, isCreated }
+        payload: { token, role, isCreated, nickName }
     };
 };
 
@@ -104,7 +104,7 @@ export const deletePortfolioSuccess = () => {
 
 
 // 가장 최근에 방문한 유효한 엔드포인터를 기억하기 위한 액션 생성
-export const setLastVisitedEndpoint = (endpoint) => {
+export const lastVisitedEndpoint = (endpoint) => {
     return {
         type: 'SET_LAST_VISITED_ENDPOINT',
         payload: { endpoint }

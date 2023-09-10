@@ -4,8 +4,8 @@ import { useSelector } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input, Card, Pagination } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import '../ProjectPage.css';
-import './DetailProjectPage.css';
+import '../ProjectPage.css'; 
+import './DetailProjectPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
 const { TextArea } = Input;
 
@@ -251,7 +251,7 @@ function DetailProjectPage() {
         }
 
         try {
-            const response = await request('POST', `/registerComments/${projectId}`, {
+            const response = await request('POST', `/registerCommentsInProject/${projectId}`, {
                 content: commentText, // 댓글 내용
                 parentId: null, // 부모가 없으므로 parentId는 null
             });
@@ -276,7 +276,7 @@ function DetailProjectPage() {
         }
 
         try {
-            const response = await request('POST', `/registerComments/${projectId}`, {
+            const response = await request('POST', `/registerCommentsInProject/${projectId}`, {
                 content: replyText, // 답글 내용
                 parentId: replyToCommentId, // 부모 댓글 id
             });
@@ -297,9 +297,6 @@ function DetailProjectPage() {
     // 댓글 또는 답글 업로드 후 가장 최신의 댓글 정보를 백엔드에서 다시 가져오기
     const fetchCommentData = async () => {
 
-
-
-
         try {
             const queryParams = new URLSearchParams({
                 projectId: projectId,
@@ -307,7 +304,7 @@ function DetailProjectPage() {
                 size: pageSize // 몇번째 댓글까지 가져올건지 설정
             });
 
-            const response = await request('GET', `/getCommentData?${queryParams}`);
+            const response = await request('GET', `/getCommentDataInProject?${queryParams}`);
 
 
             setCommentData(response.data); // 댓글 가져와서 저장
@@ -497,7 +494,7 @@ function DetailProjectPage() {
                     {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
                         <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
                             <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
-                            <p style={{ marginRight: '10px' }}><strong>Me</strong></p>
+                            <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
                             <TextArea
                                 autoSize={{ minRows: 3 }}
                                 type="text"

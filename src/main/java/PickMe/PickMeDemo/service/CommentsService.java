@@ -17,13 +17,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static PickMe.PickMeDemo.entity.QComments.comments;
+
 
 @Service
 @Transactional
@@ -36,8 +35,8 @@ public class CommentsService {
     private final JPAQueryFactory queryFactory;
 
 
-    // 댓글, 답글 등록 관련 in project 게시물
-    public void registerComment(Long projectId, CommentRequestDto commentRequestDTO, String userEmail) {
+    // 댓글, 답글 등록 관련 in project / study 게시물
+    public void registerComment(Long postId, CommentRequestDto commentRequestDTO, String userEmail) {
 
 
         // 요청을 보낸 회원을 식별
@@ -45,7 +44,7 @@ public class CommentsService {
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
         // 요청된 게시물을 식별
-        Posts findPosts = postsRepository.findById(projectId)
+        Posts findPosts = postsRepository.findById(postId)
                 .orElseThrow(() -> new AppException("해당하는 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
 
@@ -67,9 +66,9 @@ public class CommentsService {
 
     }
 
-    // 댓글, 답글 조회 in 프로젝트 게시물
+    // 댓글, 답글 조회 in 프로젝트 / 스터디 게시물
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> getCommentsForProject(Long projectId, String userEmail, Pageable pageable) {
+    public Page<CommentResponseDto> getCommentsForPost(Long postId, String userEmail, Pageable pageable) {
 
         QComments comments = QComments.comments;
 
@@ -78,7 +77,7 @@ public class CommentsService {
 
         JPAQuery<Comments> query = queryFactory.selectFrom(comments) // 댓글을 조회할건데,
                 .leftJoin(comments.parent).fetchJoin()  // 부모 댓글도 같이 조회할거야
-                .where(comments.posts.id.eq(projectId)) // 근데 그 댓글은 이 프로젝트 게시물에 해당하는거고
+                .where(comments.posts.id.eq(postId)) // 근데 그 댓글은 이 프로젝트 게시물에 해당하는거고
                 .orderBy(comments.parent.id.asc().nullsFirst(), // 부모가 없는 애들이 정렬의 우선순위가 높아
                         comments.createdDate.asc()); // 그리고, 시간이 빠른순으로 정렬
 
@@ -147,7 +146,7 @@ public class CommentsService {
         return page;
     }
 
-    // 특정 댓글 또는 답글 삭제 in 프로젝트 게시물
+    // 특정 댓글 또는 답글 삭제
     public void deleteComment(Long commentId, String userEmail) {
 
         QComments comments = QComments.comments;
@@ -188,7 +187,7 @@ public class CommentsService {
     }
 
 
-    // 특정 댓글 또는 답글 업데이트 in 프로젝트 게시물
+    // 특정 댓글 또는 답글 업데이트
     public void updateComment(Long commentId, CommentRequestDto commentRequestDTO, String userEmail) {
 
         QComments comments = QComments.comments;

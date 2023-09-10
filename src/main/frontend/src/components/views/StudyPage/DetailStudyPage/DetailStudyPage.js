@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
-import { request } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message } from 'antd';
+import { request, getUserNickName } from '../../../../hoc/request';
+import { Divider, Row, Col, Button, Modal, message, Input, Card, Pagination } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import '../StudyPage.css';
+import './DetailStudyPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
+
+const { TextArea } = Input;
 
 function DetailStudyPage() {
     const navigate = useNavigate();
@@ -17,6 +21,20 @@ function DetailStudyPage() {
     const [modalAction, setModalAction] = useState('');     // modalAction은 'delete'와 'apply' 둘 중 하나로 세팅.
     const [cancelAction, setCancelAction] = useState('');   // 승인 허가된 사람과, 승인 허가되지 않은 사람의 지원 취소 request 매커니즘을 다르게 하기 위해 세팅.
     const [scrapAction, setScrapAction] = useState('');     // 스크랩한 사람과, 스크랩하지 않은 사람의 request 매커니즘을 다르게 하기 위해 세팅
+    const [commentText, setCommentText] = useState(''); // 부모 없는 '댓글' 에 담길 댓글 내용
+    const [replyText, setReplyText] = useState('');     // 부모 있는 '답글' 에 담길 답글 내용
+    const [replyToCommentId, setReplyToCommentId] = useState(null); // 해당 답글의 부모 댓글 id값
+    const [commentData, setCommentData] = useState([]); // 백엔드에서 가져온 해당 게시물의 전체 댓글,답글 내용들
+    const [replyVisibility, setReplyVisibility] = useState({}); // 답글 보기 여부
+    const [editingCommentId, setEditingCommentId] = useState(null); // 댓글 수정에 해당하는 댓글 id
+    const [editedCommentText, setEditedCommentText] = useState(''); // 백엔드에 보낼 댓글 수정 내용
+    const [areCommentsVisible, setAreCommentsVisible] = useState(false); // 댓글 컴포넌트 숨기기 여부
+    const [currentPage, setCurrentPage] = useState(0); // 부모 댓글 기준 어떤 부모부터 가져올건지(사실상 offset)
+    const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 부모 댓글의 총 개수
+    const [pageSize, setPageSize] = useState(3); // offset부터 어디까지 가져올건지(사실상 limit) -> 초기에 3개로 설정
+    const [moreCommentsAvailable, setMoreCommentsAvailable] = useState(true); // 더보기 버튼 활성화 여부
+
+    const currentUserNickName = getUserNickName();
 
     useEffect(() => {
         // StudyId를 PathVariable로 보내기
@@ -30,6 +48,15 @@ function DetailStudyPage() {
                 console.error("Error fetching study data:", error);
             });
     }, [studyId]);
+
+
+
+    // 해당 페이지에 처음 접근했을 때, 또는 댓글 또는 답글 업로드 시, 명시적으로 fetchCommentData() 를 호출하여 다시 최신 댓글정보를 백엔드에서 가져옴
+    // pageSize(limit)가 변할때마다 다시 렌더링
+    useEffect(() => {
+        // Initial data fetch
+        fetchCommentData();
+    }, [pageSize]);   
 
 
     // 백엔드에서 받아온 데이터에 공백이 없으면, maxCharacters번째 글자 이후에 공백을 넣어주는 함수
@@ -74,6 +101,23 @@ function DetailStudyPage() {
         return `${year}년 ${month}월 ${day}일`;
     };
     
+    // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
+    const formatDateTime = (dateTimeArray) => {
+        const [year, month, day, hours, minutes] = dateTimeArray;
+        const date = new Date(year, month - 1, day, hours, minutes);
+
+        // 년, 월, 일, 시간, 분 형식으로 포맷팅
+        const formattedYear = date.getFullYear();
+        const formattedMonth = (date.getMonth() + 1).toString().padStart(2, '0'); // 월을 2자리로 표현
+        const formattedDay = date.getDate().toString().padStart(2, '0'); // 일을 2자리로 표현
+        const formattedHours = date.getHours().toString().padStart(2, '0'); // 시를 2자리로 표현
+        const formattedMinutes = date.getMinutes().toString().padStart(2, '0'); // 분을 2자리로 표현
+
+        const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
+
+        return formattedDateTime;
+    };
+
 
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
@@ -207,6 +251,291 @@ function DetailStudyPage() {
     const handleScrapModalCancel = () => {
         setIsScrapModalVisible(false);
     };
+
+    // 어떤 부모에도 속하지 않는 level의 댓글 작성 후 업로드
+    const handleCommentSubmit = async () => {
+
+        if (commentText.trim() === '') {
+            message.warning("댓글 내용을 입력하세요.");
+            return;
+        }
+
+        try {
+            const response = await request('POST', `/registerCommentsInStudy/${studyId}`, {
+                content: commentText, // 댓글 내용
+                parentId: null, // 부모가 없으므로 parentId는 null
+            });
+
+
+            setCommentText('');
+            message.success("댓글이 성공적으로 업로드 되었습니다.");
+            setCurrentPage(0); // 댓글 업로드 후, 다시 댓글 렌더링은 0번째부터 가져오게 하기 위함
+            fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
+
+        } catch (error) {
+            console.error("댓글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("댓글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.");
+        }
+    };
+
+    // 부모가 있는 답글 작성 후 업로드
+    const handleReplySubmit = async () => {
+        if (replyText.trim() === '') {
+            message.warning("답글 내용을 입력하세요.");
+            return;
+        }
+
+        try {
+            const response = await request('POST', `/registerCommentsInStudy/${studyId}`, {
+                content: replyText, // 답글 내용
+                parentId: replyToCommentId, // 부모 댓글 id
+            });
+
+
+            setReplyText('');
+            setReplyToCommentId(null); // 현재 지시 중인 답글의 parentid를 null로 세팅
+            setCurrentPage(0); // 답글 업로드 후, 다시 댓글 렌더링은 0번째부터 가져오게 하기 위함
+            message.success("답글이 성공적으로 업로드 되었습니다.");
+
+            fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
+        } catch (error) {
+            console.error("답글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("답글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.");
+        }
+    };
+    
+        // 댓글 또는 답글 업로드 후 가장 최신의 댓글 정보를 백엔드에서 다시 가져오기
+        const fetchCommentData = async () => {
+
+            try {
+                const queryParams = new URLSearchParams({
+                    studyId: studyId,
+                    page: currentPage, // 몇번째 댓글부터
+                    size: pageSize // 몇번째 댓글까지 가져올건지 설정
+                });
+    
+                const response = await request('GET', `/getCommentDataInStudy?${queryParams}`);
+    
+    
+                setCommentData(response.data); // 댓글 가져와서 저장
+                setTotalPages(response.data.totalElements) // 현재 백엔드에서 관리되고 있는 부모 댓글들이 몇개인지 확인
+    
+                if (pageSize < response.data.totalElements) { // 만약 현재 limit값이 전체 부모 댓글 수보다 적다면
+                    setMoreCommentsAvailable(true); // 더보기 버튼 활성화
+                } else {
+                    setMoreCommentsAvailable(false);
+                }
+    
+            }
+    
+            catch (error) {
+                console.error('Error fetching comments:', error);
+            }
+        };
+
+
+    // reply버튼 누르면, replyToCommentId를 해당 댓글(부모) id로 세팅
+    const showReplyInput = (commentId) => {
+        setReplyToCommentId(commentId);
+        setReplyText('');
+    };
+
+    // 답글 달기 취소
+    const cancelReply = () => {
+        setReplyToCommentId(null);
+        setReplyText(''); // 답글 작성 취소 시 텍스트 초기화
+    };
+    
+    
+    // 댓글의 삭제 버튼 누르면, 백엔드에 삭제 요청 보냄
+    const handleDeleteComment = async (commentId) => {
+        try {
+            const response = await request('POST', `/deleteComments/${commentId}`);
+            if (response.status === 200) {
+                message.success("댓글이 삭제되었습니다.");
+                fetchCommentData(0); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
+            }
+        } catch (error) {
+            console.error("댓글 삭제에 실패했습니다.", error);
+            message.error("댓글 삭제에 실패했습니다.");
+        }
+    };
+
+    // 답글 숨기기, 답글 보기 관련
+    const toggleReplyVisibility = (commentId) => {
+        setReplyVisibility((prevState) => ({
+            ...prevState,
+            [commentId]: !prevState[commentId],
+        }));
+    };
+
+    // 댓글 수정 버튼을 눌렀을 때
+    const handleEditComment = (commentId, commentText) => {
+
+        setEditingCommentId(commentId); // 댓글 수정할 댓글 id를 세팅
+        setEditedCommentText(commentText); // 해당 댓글의 내용을 editedCommentText에 설정
+    };
+    
+    // 수정 완료 버튼을 눌렀을 때
+    const handleEditCommentSubmit = async (commentId) => {
+
+        // 수정된 댓글 내용을 백엔드로 전송하는 로직을 추가
+        if (editedCommentText.trim() === '') {
+            message.warning("댓글 내용을 입력하세요.");
+            return;
+        }
+
+        try {
+            await request('PUT', `/updateComments/${commentId}`, {
+                content: editedCommentText, // 답글 내용
+
+            });
+
+
+            // 수정 상태 초기화
+            setEditingCommentId(null);
+            setEditedCommentText('');
+            message.success("댓글이 성공적으로 수정 되었습니다.");
+
+            fetchCommentData(); // 댓글 수정이 완료되었다면, 최근 수정된 댓글이 반영된 결과를 다시 조회해옴
+
+        } catch (error) {
+            console.error("댓글 수정에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("댓글 수정에 실패했습니다. 잠시 후 다시 시도하세요.");
+        }
+
+
+    };
+
+    // 수정 - 취소 버튼을 눌렀을 때
+    const handleCancelEditComment = () => {
+        setEditingCommentId(null);
+        setEditedCommentText('');
+    };
+
+    // 댓글 컴포넌트 숨기기 관련
+    const toggleCommentsVisibility = () => {
+        setAreCommentsVisible(!areCommentsVisible);
+    };
+
+    // 더보기 버튼 관련
+    const loadMoreComments = () => {
+
+        // 0번째 댓글부터 가져오기 위함
+        setCurrentPage(0);
+
+        const newPageSize = pageSize + 3; // limit값을 3 증가시켜보기
+        if (newPageSize >= totalPages) { // 만약 limit+3값이 전체 댓글보다 크거나 같다면 더보기 버튼 더 가져올 수 없고, 마지막 댓글로 limit값 설정
+
+            setPageSize(totalPages);
+            setMoreCommentsAvailable(false);
+        } else {
+
+            setPageSize(newPageSize); // 만약 limit+3값이 전체 댓글보다 작다면, limit+3값으로 limit를 설정하기
+            fetchCommentData(); // 그 후 다시 렌더링
+        }
+
+    } 
+    
+    
+
+
+
+    // 댓글의 렌더링 관련
+    // 부모면 상위 level에 세팅,
+    // 자식이면 계속 하위 level을 타고 들어가 세팅
+    const renderComments = (comments, depth = 0) => {
+
+        console.log('com', comments);
+
+        return comments.map((comment) => (
+            <Card key={comment.id} style={{ marginBottom: '16px' }}>
+                <div className={`comment-container depth-${depth}`}>
+                    <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }} />
+                            <p style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></p>
+                        </div>
+
+                        {comment.commentWriter && (
+                            <div>
+                                <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                                {editingCommentId === comment.id ? (
+                                    // 수정 중일 때, Input으로 표시하고 수정 관련 버튼 표시
+
+
+                                    <Button size="small" onClick={handleCancelEditComment} style={{ marginBottom: '16px' }}>취소</Button>
+
+                                ) : (
+                                    // 수정 중이 아닐 때, "수정" 버튼 표시
+                                    <Button size="small" onClick={() => handleEditComment(comment.id, comment.content)}>수정</Button>
+                                )}
+                                <Button size="small" onClick={() => handleDeleteComment(comment.id)}>삭제</Button>
+                            </div>
+                        )}
+                        {!comment.commentWriter && (
+                            <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                        )}
+                    </div>
+
+                    {editingCommentId === comment.id ? (
+                        // 수정 중일 때, Input으로 표시
+                        <>
+                            <TextArea
+                                autoSize={{ minRows: 3 }}
+                                type="text"
+                                value={editedCommentText}
+                                onChange={(e) => setEditedCommentText(e.target.value)}
+                                placeholder="Edit your comment"
+
+                            />
+                            <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
+                                <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button>
+                            </div>
+                        </>
+                    ) : (
+                        // 수정 중이 아닐 때, <p>로 표시
+                        <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>{insertLineBreaks(comment.content, 45)}</p>
+                    )}
+
+                    <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray' }}>
+                        {formatDateTime(comment.finalCommentedTime)}
+                    </div>
+                    {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
+                        <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
+                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
+                            <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
+                            <TextArea
+                                autoSize={{ minRows: 3 }}
+                                type="text"
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="Write a reply"
+                                style={{ marginBottom: '16px' }}
+                            />
+                            <Button size="small" onClick={() => handleReplySubmit(comment.id)} style={{ marginBottom: '16px', marginLeft: '5px' }} >답글 등록</Button>
+                            <Button size="small" onClick={cancelReply} style={{ marginBottom: '16px' }}>취소</Button> {/* 취소 버튼 추가 */}
+                        </div>
+                    )}
+                    {/* 1차 level렌더링 후, 각 1차 level에 children이 있다면 하위 level을 재귀적으로 다시 렌더링함 */}
+                    {comment.children && comment.children.length > 0 && (
+                        <div>
+                            <Button size="small" onClick={() => toggleReplyVisibility(comment.id)} style={{ marginBottom: '16px' }}>
+                                {replyVisibility[comment.id] ? '답글 숨기기' : '답글 보기'}
+                            </Button>
+                            {/* Step 2: Conditionally render replies */}
+                            {replyVisibility[comment.id] && renderComments(comment.children, depth + 1)}
+                        </div>
+                    )}
+                </div>
+            </Card>
+        ));
+    };
+    
+    
+
+
+
 
     // 글 작성자인지, 아닌지에 따라 다르게 보이도록 설정
     const renderButtons = () => {
@@ -444,6 +773,59 @@ function DetailStudyPage() {
             <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
                 내용: {insertLineBreaks(data.content, 45)}
             </div>
+
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <Button size="small" onClick={toggleCommentsVisibility}>
+                    {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                </Button>
+            </div> 
+
+
+
+            {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
+            {areCommentsVisible && (
+                <div>
+                    <Divider className="bold-divider" />
+
+                    <h5>댓글</h5>
+                    {renderComments(commentData.content)}
+                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                        {moreCommentsAvailable && (
+                            <Button size="small" onClick={loadMoreComments}>
+                                댓글 더보기
+                            </Button>
+                        )}
+                    </div>
+
+                    <div>
+                        <Card>
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                <UserOutlined style={{ marginRight: '5px' }} />
+                                <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
+                            </div>
+                            <TextArea
+                                autoSize={{ minRows: 4 }}
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                placeholder="Write a comment"
+                            />
+                            <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
+                            </div>
+                        </Card>
+                    </div>
+                    {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                        <Pagination
+                            current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                            total={totalPages * pageSize}
+                            pageSize={pageSize}
+                            onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                        />
+
+                    </div> */}
+                </div>
+
+            )}                       
 
             {/* Modal */}
             <Modal

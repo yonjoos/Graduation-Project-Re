@@ -60,7 +60,8 @@ const initialState = {
     isAuthenticated: false,
     authToken: null,
     userRole: null,
-    userPortfolio: null
+    userPortfolio: null,
+    userNickName: null
 };
 
 /**
@@ -82,7 +83,8 @@ const authReducer = (state = initialState, action) => {
                 isAuthenticated: true, //로그인 상태로 가는 경우, 인증된 상태임
                 authToken: action.payload.token, //로그인 상태로 가는 경우, 토큰이 있는 상태임
                 userRole: action.payload.role, //로그인 상태로 가는 경우,  role도 저장된 상태임
-                userPortfolio: action.payload.isCreated // 포트폴리오 유무 여부
+                userPortfolio: action.payload.isCreated, // 포트폴리오 유무 여부
+                userNickName: action.payload.nickName       // 유저 닉네임
             };
         case 'LOGOUT':
             return {
@@ -90,7 +92,8 @@ const authReducer = (state = initialState, action) => {
                 isAuthenticated: false, //로그아웃 상태로 가는 경우, 인증허가가 끝난 상태임
                 authToken: null, //로그아웃 상태로 가는 경우,토큰 반환
                 userRole: null, //로그아웃 상태로 가는경우, role도 없음
-                userPortfolio: null //로그아웃 상태로 가는경우, portfolio도 없음
+                userPortfolio: null, //로그아웃 상태로 가는경우, portfolio도 없음
+                userNickName: null
             };
         // 포트폴리오 생성 케이스 만들기.
         // 포트폴리오 생성되면 userPortfolio: true로 바꾸기

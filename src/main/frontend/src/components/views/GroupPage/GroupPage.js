@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, Modal, message } from 'antd';
 import { request } from '../../../hoc/request';
-import { setLastVisitedEndpoint } from '../../../_actions/actions'
+import { lastVisitedEndpoint } from '../../../_actions/actions'
+import { setLastVisitedEndpoint } from '../../../hoc/request';
 import './GroupPage.css';
 
 function GroupPage() {
@@ -56,7 +57,8 @@ function GroupPage() {
     const handleRowClick = (postsId, postType) => {
         // /project/detail/${postsId} 또는 /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
-        dispatch(setLastVisitedEndpoint('/group'));
+        dispatch(lastVisitedEndpoint('/group'));
+        setLastVisitedEndpoint('/group');
 
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);
@@ -93,7 +95,8 @@ function GroupPage() {
     const handleNickNameClick = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
-        dispatch(setLastVisitedEndpoint('/group'));
+        dispatch(lastVisitedEndpoint('/group'));
+        setLastVisitedEndpoint('/group');
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
     }

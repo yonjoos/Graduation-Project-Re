@@ -124,13 +124,23 @@ function DetailStudyPage() {
         // writer가 아닌 사람이 지원하기 버튼을 누른 경우
         else if (modalAction === 'apply') {
             request('POST', `/study/apply/${studyId}`, {})
-            .then((response) => {
-                //console.log("Fetched study data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                console.error("Error fetching study data:", error);
-            });
+                .then((response) => {
+                    //console.log("Fetched study data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    console.error("Error fetching study data:", error);
+                });
+
+            // request('POST', `/sse/send-data/${data.nickName}`, {
+            //     message: `${data.nickName}님이 스터디에 지원하였습니다.`,
+            // })
+            //     .then((response) => {
+            //         console.log('알림이 상대방에게 전송되었습니다 : ', response.data);
+            //     })
+            //     .catch((error) => {
+            //         console.error('Error:', error.response.data);
+            //     });
 
             navigate(`/study/detail/${studyId}`);
         }

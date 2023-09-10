@@ -87,7 +87,8 @@ function ScrapPage() {
 
     // 지원자 또는 글쓴이 닉네임 클릭 핸들러
     const handleNickNameClick = (nickName) => {
-        dispatch(setLastVisitedEndpoint('/scrap'));
+        dispatch(lastVisitedEndpoint('/scrap'));
+        setLastVisitedEndpoint('/scrap');
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
     }

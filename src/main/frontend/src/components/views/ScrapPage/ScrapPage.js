@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, message } from 'antd';
 import { request } from '../../../hoc/request';
-import { setLastVisitedEndpoint } from '../../../_actions/actions';
+import { lastVisitedEndpoint } from '../../../_actions/actions';
+import { setLastVisitedEndpoint } from '../../../hoc/request';
 import './ScrapPage.css';
 
 function ScrapPage() {
@@ -52,7 +53,8 @@ function ScrapPage() {
     const handleRowClick = (postsId, postType) => {
         // /project/detail/${postsId} 또는 /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /scrap으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /scrap으로 설정
-        dispatch(setLastVisitedEndpoint('/scrap'));
+        dispatch(lastVisitedEndpoint('/scrap'));
+        setLastVisitedEndpoint('/scrap');
 
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);

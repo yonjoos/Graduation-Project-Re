@@ -20,6 +20,16 @@ export const getHasPortfolio = () => {
     return window.localStorage.getItem('user_portfolio');
 }
 
+//로컬 스토리지에서 'user_nickname'이라는 키로 저장된 사용자 역할을 가져오는 함수
+export const getUserNickName = () => {
+    return window.localStorage.getItem('user_nickname');
+}
+
+//로컬 스토리지에서 'last_visited_endpoint'이라는 키로 저장된 사용자 역할을 가져오는 함수
+export const getLastVisitedEndpoint = () => {
+    return window.localStorage.getItem('last_visited_endpoint');
+}
+
 //로컬 스토리지에 JWT 토큰을 'auth_token' 키로 저장하는 함수
 export const setAuthHeader = (token) => {
     window.localStorage.setItem('auth_token', token);
@@ -33,6 +43,16 @@ export const setUserRole = (role) => {
 //로컬 스토리지에 포트폴리오 생성여부를 'user_portfolio' 키로 저장하는 함수
 export const setHasPortfolio = (isCreated) => {
     window.localStorage.setItem('user_portfolio', isCreated);
+};
+
+//로컬 스토리지에 닉네임을 'user_nickname' 키로 저장하는 함수
+export const setUserNickName = (nickName) => {
+    window.localStorage.setItem('user_nickname', nickName);
+};
+
+//로컬스토리지에서 마지막으로 방문한 유효한 엔드포인트를 저장하는 함수
+export const setLastVisitedEndpoint = (nickName) => {
+    window.localStorage.setItem('last_visited_endpoint', nickName);
 };
 
 //axios의 기본 설정을 지정. 

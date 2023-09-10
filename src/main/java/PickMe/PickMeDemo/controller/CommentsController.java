@@ -4,6 +4,9 @@ import PickMe.PickMeDemo.dto.CommentRequestDto;
 import PickMe.PickMeDemo.dto.CommentResponseDto;
 import PickMe.PickMeDemo.service.CommentsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +34,18 @@ public class CommentsController {
     }
 
     // 특정 프로젝트 게시물의 댓글 답글 조회
-    @GetMapping("/getCommentData/{projectId}")
-    public ResponseEntity<List<CommentResponseDto>> getCommentsForProject(@PathVariable Long projectId, Principal principal) {
+    @GetMapping("/getCommentData")
+    public ResponseEntity<Page<CommentResponseDto>> getCommentsForProject(
+            @RequestParam(name = "projectId") Long projectId,
+            @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
+            @RequestParam(name = "size", defaultValue = "3") int size, //프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
+            Principal principal) {
 
         String userEmail = principal.getName();
+        Pageable pageable = PageRequest.of(page, size);
 
         // 부모, 자식까지 한번에 조회
-        List<CommentResponseDto> comments = commentsService.getCommentsForProject(projectId,userEmail);
+        Page<CommentResponseDto> comments = commentsService.getCommentsForProject(projectId,userEmail, pageable);
 
         return ResponseEntity.ok(comments);
     }

@@ -13,6 +13,9 @@ import PickMe.PickMeDemo.repository.UserRepository;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,7 +69,7 @@ public class CommentsService {
 
     // 댓글, 답글 조회 in 프로젝트 게시물
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> getCommentsForProject(Long projectId, String userEmail) {
+    public Page<CommentResponseDto> getCommentsForProject(Long projectId, String userEmail, Pageable pageable) {
 
         QComments comments = QComments.comments;
 
@@ -78,6 +81,7 @@ public class CommentsService {
                 .where(comments.posts.id.eq(projectId)) // 근데 그 댓글은 이 프로젝트 게시물에 해당하는거고
                 .orderBy(comments.parent.id.asc().nullsFirst(), // 부모가 없는 애들이 정렬의 우선순위가 높아
                         comments.createdDate.asc()); // 그리고, 시간이 빠른순으로 정렬
+
 
         List<Comments> findComments = query.fetch();
 
@@ -121,7 +125,26 @@ public class CommentsService {
                 commentResponseDtoList.add(commentResponseDto);
             }
         });
-        return commentResponseDtoList;
+
+        // 변환한 데이터의 총 개수 계산
+        long total = commentResponseDtoList.size();
+
+        // 페이지네이션을 위한 offset과 pageSize 계산, 예외 상황 처리
+        int offset = (int) pageable.getOffset();    // 현재 페이지 정보 가져오기
+        int pageSize = pageable.getPageSize();      // 현재 페이지에 몇 개를 띄울건지 size 정보 가져오기
+
+        // offset이 데이터의 총 개수를 초과하면 더 이상 데이터를 가져올 필요 없음
+        if (offset >= total) {
+            offset = 0;
+            pageSize = 0;
+        }
+        // 현재 페이지 + 현재 페이지에서 보고있는 게시물의 개수 > 총 게시물의 개수라면, 페이지 사이즈 재조정
+        else if (offset + pageSize > total) {
+            pageSize = (int) (total - offset);
+        }
+        //return commentResponseDtoList;
+        Page<CommentResponseDto> page = new PageImpl<>(commentResponseDtoList.subList(offset, offset + pageSize), pageable, total);
+        return page;
     }
 
     // 특정 댓글 또는 답글 삭제 in 프로젝트 게시물

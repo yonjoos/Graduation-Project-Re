@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
-import { request } from '../../../../hoc/request';
+import { request, getUserNickName } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input, Card, Pagination } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import '../ProjectPage.css';
@@ -33,6 +33,8 @@ function DetailProjectPage() {
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 부모 댓글의 총 개수
     const [pageSize, setPageSize] = useState(3); // offset부터 어디까지 가져올건지(사실상 limit) -> 초기에 3개로 설정
     const [moreCommentsAvailable, setMoreCommentsAvailable] = useState(true); // 더보기 버튼 활성화 여부
+
+    const currentUserNickName = getUserNickName();
 
     useEffect(() => {
         // ProjectId를 PathVariable로 보내기
@@ -792,7 +794,7 @@ function DetailProjectPage() {
                         <Card>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                                 <UserOutlined style={{ marginRight: '5px' }} />
-                                <p style={{ margin: '0' }}><strong>Me</strong></p>
+                                <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
                             </div>
                             <TextArea
                                 autoSize={{ minRows: 4 }}

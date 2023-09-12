@@ -21,25 +21,28 @@ function PortfolioCardPage() {
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isClicked, setIsClicked] = useState("unclicked");
+    const [recommend, setRecommend] = useState("");
 
     const page = 0;
     const size = 3;
 
     // USE EFFECT ###############################################
 
-    
-
-    useEffect(() => {
-
-        if(isClicked == "clicked"){
-            console.log('현재 검색된 키워드: ', searchTerm);
-            fetchUsers();
-        }
-    }, [searchTerm]);
-
     useEffect(() => {
         fetchCards();
     }, []); 
+
+    useEffect(() => {
+
+        if(searchTerm == ''){
+            fetchCards();
+        }
+        
+        console.log('현재 검색된 키워드: ', searchTerm);
+        fetchUsers();
+    
+    }, [searchTerm]);
+
 
 
     // REQUEST ###############################################
@@ -75,14 +78,14 @@ function PortfolioCardPage() {
         }
     };
 
+
     // HANDLER FUNCTIONS ###############################################
 
     // function name : onClickHandler
     const onClickHandler = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
-        dispatch(lastVisitedEndpoint('/portfoliocard'));
-        setLastVisitedEndpoint('/portfoliocard');
+        dispatch(setLastVisitedEndpoint('/portfoliocard'));
         navigate(`/portfolio/${nickName}`);
     }
 
@@ -90,10 +93,27 @@ function PortfolioCardPage() {
     // function name : handleSearch
     // for Searching component
     const handleSearch = (value) => {
-
-        setIsClicked("clicked");
         setSearchTerm(value); // 검색어를 세팅
+    };
+
+    const onGetRecommend = async() => {
         
+        setRecommend("please");
+
+    };
+
+
+    // function name ; handleProjectPage
+    // <Button> Project의 핸들러, ProjectPage로 이동
+    const handleProjectPage = () => {
+        navigate('/project'); 
+    };
+
+
+    // function name ; handleStudyPage
+    // <Button> Study의 핸들러, StudyPage로 이동
+    const handleStudyPage = () => {
+        navigate('/study'); 
     };
     
 
@@ -102,6 +122,9 @@ function PortfolioCardPage() {
 
     // renderCards
     const renderCards = (cards) => {
+        if (!cards || cards.length === 0) {
+            return <div>No data available</div>; // or any other appropriate message
+        }
         
         return (
             <div>
@@ -137,14 +160,17 @@ function PortfolioCardPage() {
             </div>
             <div style={{ textAlign: 'left', margin: "0 0", marginTop:'15px'}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname === '/project' ? 'primary' : 'default'} >
-                    TBD 
+                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage} >
+                    Project
                 </Button>
-                <Button type={location.pathname === '/study' ? 'primary' : 'default'} >
-                    To be
+                <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
+                    Study
                 </Button>
-                <Button type={location.pathname === '/portfolioCard' ? 'primary' : 'default'} >
-                    Decided
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'}  >
+                    Protfolio Card
+                </Button>
+                <Button onClick={onGetRecommend} >
+                    RECOMMEND
                 </Button>
                 <Divider></Divider>
             </div>
@@ -157,4 +183,5 @@ function PortfolioCardPage() {
 
 
 export default PortfolioCardPage;
+
 

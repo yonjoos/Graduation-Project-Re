@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
-import { request } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
+import { request, getUserNickName } from '../../../../hoc/request';
+import { Divider, Row, Col, Button, Modal, message, Input, Card, Pagination } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import '../ProjectPage.css';
-import './DetailProjectPage.css';
+import '../ProjectPage.css'; 
+import './DetailProjectPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
 const { TextArea } = Input;
 
@@ -29,7 +29,12 @@ function DetailProjectPage() {
     const [editingCommentId, setEditingCommentId] = useState(null); // 댓글 수정에 해당하는 댓글 id
     const [editedCommentText, setEditedCommentText] = useState(''); // 백엔드에 보낼 댓글 수정 내용
     const [areCommentsVisible, setAreCommentsVisible] = useState(false); // 댓글 컴포넌트 숨기기 여부
+    const [currentPage, setCurrentPage] = useState(0); // 부모 댓글 기준 어떤 부모부터 가져올건지(사실상 offset)
+    const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 부모 댓글의 총 개수
+    const [pageSize, setPageSize] = useState(3); // offset부터 어디까지 가져올건지(사실상 limit) -> 초기에 3개로 설정
+    const [moreCommentsAvailable, setMoreCommentsAvailable] = useState(true); // 더보기 버튼 활성화 여부
 
+    const currentUserNickName = getUserNickName();
 
     useEffect(() => {
         // ProjectId를 PathVariable로 보내기
@@ -44,23 +49,14 @@ function DetailProjectPage() {
             });
     }, [projectId]);
 
-    // 해당 페이지에 처음 접근했을 때, 모든 댓글과 답글을 조회해서 세팅
-    useEffect(() => {
-        request('GET', `/getCommentData/${projectId}`, {})
-            .then((response) => {
-                setCommentData(response.data);
-                console.log('댓글', response.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching comment data:", error);
-            });
-    }, [projectId]);
 
-    // 댓글 또는 답글 업로드 시, 명시적으로 fetchCommentData() 를 호출하여 다시 최신 댓글정보를 백엔드에서 가져옴 
+
+    // 해당 페이지에 처음 접근했을 때, 또는 댓글 또는 답글 업로드 시, 명시적으로 fetchCommentData() 를 호출하여 다시 최신 댓글정보를 백엔드에서 가져옴
+    // pageSize(limit)가 변할때마다 다시 렌더링
     useEffect(() => {
         // Initial data fetch
         fetchCommentData();
-    }, [projectId]);
+    }, [pageSize]);
 
 
     // 백엔드에서 받아온 데이터에 공백이 없으면, maxCharacters번째 글자 이후에 공백을 넣어주는 함수
@@ -255,7 +251,7 @@ function DetailProjectPage() {
         }
 
         try {
-            const response = await request('POST', `/registerComments/${projectId}`, {
+            const response = await request('POST', `/registerCommentsInProject/${projectId}`, {
                 content: commentText, // 댓글 내용
                 parentId: null, // 부모가 없으므로 parentId는 null
             });
@@ -263,7 +259,7 @@ function DetailProjectPage() {
 
             setCommentText('');
             message.success("댓글이 성공적으로 업로드 되었습니다.");
-
+            setCurrentPage(0); // 댓글 업로드 후, 다시 댓글 렌더링은 0번째부터 가져오게 하기 위함
             fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
 
         } catch (error) {
@@ -280,7 +276,7 @@ function DetailProjectPage() {
         }
 
         try {
-            const response = await request('POST', `/registerComments/${projectId}`, {
+            const response = await request('POST', `/registerCommentsInProject/${projectId}`, {
                 content: replyText, // 답글 내용
                 parentId: replyToCommentId, // 부모 댓글 id
             });
@@ -288,6 +284,7 @@ function DetailProjectPage() {
 
             setReplyText('');
             setReplyToCommentId(null); // 현재 지시 중인 답글의 parentid를 null로 세팅
+            setCurrentPage(0); // 답글 업로드 후, 다시 댓글 렌더링은 0번째부터 가져오게 하기 위함
             message.success("답글이 성공적으로 업로드 되었습니다.");
 
             fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
@@ -298,15 +295,32 @@ function DetailProjectPage() {
     };
 
     // 댓글 또는 답글 업로드 후 가장 최신의 댓글 정보를 백엔드에서 다시 가져오기
-    const fetchCommentData = () => {
-        request('GET', `/getCommentData/${projectId}`, {})
-            .then((response) => {
-                setCommentData(response.data);
-                console.log('댓글', response.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching comment data:", error);
+    const fetchCommentData = async () => {
+
+        try {
+            const queryParams = new URLSearchParams({
+                projectId: projectId,
+                page: currentPage, // 몇번째 댓글부터
+                size: pageSize // 몇번째 댓글까지 가져올건지 설정
             });
+
+            const response = await request('GET', `/getCommentDataInProject?${queryParams}`);
+
+
+            setCommentData(response.data); // 댓글 가져와서 저장
+            setTotalPages(response.data.totalElements) // 현재 백엔드에서 관리되고 있는 부모 댓글들이 몇개인지 확인
+
+            if (pageSize < response.data.totalElements) { // 만약 현재 limit값이 전체 부모 댓글 수보다 적다면
+                setMoreCommentsAvailable(true); // 더보기 버튼 활성화
+            } else {
+                setMoreCommentsAvailable(false);
+            }
+
+        }
+
+        catch (error) {
+            console.error('Error fetching comments:', error);
+        }
     };
 
 
@@ -329,7 +343,7 @@ function DetailProjectPage() {
             const response = await request('POST', `/deleteComments/${commentId}`);
             if (response.status === 200) {
                 message.success("댓글이 삭제되었습니다.");
-                fetchCommentData(); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
+                fetchCommentData(0); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
             }
         } catch (error) {
             console.error("댓글 삭제에 실패했습니다.", error);
@@ -394,12 +408,36 @@ function DetailProjectPage() {
         setAreCommentsVisible(!areCommentsVisible);
     };
 
+    // 더보기 버튼 관련
+    const loadMoreComments = () => {
+
+        // 0번째 댓글부터 가져오기 위함
+        setCurrentPage(0);
+
+        const newPageSize = pageSize + 3; // limit값을 3 증가시켜보기
+        if (newPageSize >= totalPages) { // 만약 limit+3값이 전체 댓글보다 크거나 같다면 더보기 버튼 더 가져올 수 없고, 마지막 댓글로 limit값 설정
+
+            setPageSize(totalPages);
+            setMoreCommentsAvailable(false);
+        } else {
+
+            setPageSize(newPageSize); // 만약 limit+3값이 전체 댓글보다 작다면, limit+3값으로 limit를 설정하기
+            fetchCommentData(); // 그 후 다시 렌더링
+        }
+
+    }
+
+
+
 
 
     // 댓글의 렌더링 관련
     // 부모면 상위 level에 세팅,
     // 자식이면 계속 하위 level을 타고 들어가 세팅
     const renderComments = (comments, depth = 0) => {
+
+        console.log('com', comments);
+
         return comments.map((comment) => (
             <Card key={comment.id} style={{ marginBottom: '16px' }}>
                 <div className={`comment-container depth-${depth}`}>
@@ -434,12 +472,12 @@ function DetailProjectPage() {
                         // 수정 중일 때, Input으로 표시
                         <>
                             <TextArea
-                                rows = {3}
+                                autoSize={{ minRows: 3 }}
                                 type="text"
                                 value={editedCommentText}
                                 onChange={(e) => setEditedCommentText(e.target.value)}
                                 placeholder="Edit your comment"
-                               
+
                             />
                             <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
                                 <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button>
@@ -456,9 +494,9 @@ function DetailProjectPage() {
                     {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
                         <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
                             <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
-                            <p style={{ marginRight: '10px' }}><strong>Me</strong></p>
+                            <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
                             <TextArea
-                                rows={3}
+                                autoSize={{ minRows: 3 }}
                                 type="text"
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
@@ -740,15 +778,23 @@ function DetailProjectPage() {
                     <Divider className="bold-divider" />
 
                     <h5>댓글</h5>
-                    {renderComments(commentData)}
+                    {renderComments(commentData.content)}
+                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                        {moreCommentsAvailable && (
+                            <Button size="small" onClick={loadMoreComments}>
+                                댓글 더보기
+                            </Button>
+                        )}
+                    </div>
+
                     <div>
                         <Card>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                                 <UserOutlined style={{ marginRight: '5px' }} />
-                                <p style={{ margin: '0' }}><strong>Me</strong></p>
+                                <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
                             </div>
                             <TextArea
-                                rows={4}
+                                autoSize={{ minRows: 4 }}
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
                                 placeholder="Write a comment"
@@ -758,7 +804,17 @@ function DetailProjectPage() {
                             </div>
                         </Card>
                     </div>
+                    {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                        <Pagination
+                            current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                            total={totalPages * pageSize}
+                            pageSize={pageSize}
+                            onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                        />
+
+                    </div> */}
                 </div>
+
             )}
 
             {/* Modal */}

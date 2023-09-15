@@ -12,7 +12,7 @@ function BottomFooter(props) {
         <div style={{ width: "100%" }}>
             <Footer style={{ backgroundColor: "white", textAlign: "center", marginTop: "200px"}}>
                 <Row type="flex" justify="center">
-                    <Col xs={8} style={{ paddingLeft : '20%' }}>
+                    <Col xs={12} style={{ paddingLeft : '20%', paddingTop: '5px' }}>
                         {/* * Use the navigate function to navigate
                         <div
                             onClick={() => navigate("/")} // Navigate to the root route
@@ -28,11 +28,11 @@ function BottomFooter(props) {
                             className="App-logo"
                             alt="logo"
                            
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', maxWidth: '200px', maxHeight: '40px' }}
                         />
                         </div>
                     </Col>
-                    <Col xs={16} style={{ paddingRight : '20%', paddingTop : '25px' }}>
+                    <Col xs={12} style={{ paddingRight : '20%', paddingTop: '5px' }}>
                         <Text style={{ fontWeight: "bold" }}>Team Name: 서울고양이</Text>
                         <br />
                         <Text type="secondary">Production team members: 이윤식, 박시홍, 정연주</Text>

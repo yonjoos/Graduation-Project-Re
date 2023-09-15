@@ -28,11 +28,9 @@ import UploadStudyPage from './views/StudyPage/UploadStudyPage/UploadStudyPage';
 import UpdateStudyPage from './views/StudyPage/UpdateStudyPage/UpdateStudyPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
-/*import logo from '../logo.svg';
-import logo1 from '../pickme.PNG';*/
-import logo2 from '../pickme2.PNG'
-import logo3 from '../pickme3.PNG'
-
+//import logo2 from '../logo2.png'
+//import logo3 from '../logo3.png'
+import logo4 from '../logo4.png'
 
 
 const { Content } = Layout;
@@ -50,7 +48,7 @@ function App() {
         <Router>
             <Layout>
                 {/** 로고 모양을 인자로 넘김 */}
-                <MyHeader logoSrc={logo3} />
+                <MyHeader logoSrc={logo4} />
                 <Content style={{ padding: '20px' }}>
                     <div style={{ paddingLeft : '15%', paddingRight : '15%' }}>
                     <Routes>
@@ -182,7 +180,7 @@ function App() {
                     </Routes>
                     </div>
                 </Content>
-                <Footer style={{ paddingLeft : '15%', paddingRight : '15%' }} logoSrc={logo3}/>
+                <Footer style={{ paddingLeft : '15%', paddingRight : '15%' }} logoSrc={logo4}/>
             </Layout>
         </Router>
     );

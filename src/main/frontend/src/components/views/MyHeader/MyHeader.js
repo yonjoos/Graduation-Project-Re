@@ -1,10 +1,11 @@
-import React from 'react';
-import { Layout, /*Typography, */Button } from 'antd';
+import { React, useState } from 'react';
+import { Layout, /*Typography, */Button, Drawer } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { setAuthHeader, setUserRole } from '../../../hoc/request';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
 import CustomDropdown from './Sections/CustomDropdown';
+import Notifications from '../../utils/Notifications';
 
 const { Header } = Layout;
 //const { Title } = Typography;
@@ -15,6 +16,29 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     const userRole = useSelector(state => state.auth.userRole);
     const dispatch = useDispatch();
 
+    const [open, setOpen] = useState(false);
+    const [childrenDrawer1, setChildrenDrawer1] = useState(false);
+    const [childrenDrawer2, setChildrenDrawer2] = useState(false);
+
+    const showDrawer = () => {
+        setOpen(true);
+    };
+    const onClose = () => {
+        setOpen(false);
+    };
+    const showChildrenDrawer1 = () => {
+        setChildrenDrawer1(true);
+    };
+    const onChildrenDrawer1Close = () => {
+        setChildrenDrawer1(false);
+    };
+    const showChildrenDrawer2 = () => {
+        setChildrenDrawer2(true);
+    };
+    const onChildrenDrawer2Close = () => {
+        setChildrenDrawer2(false);
+    };
+  
 
     const handleScrap = () => {
         navigate('/scrap');
@@ -65,7 +89,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                             className="App-logo"
                             alt="logo"
                             onClick={handleLogoClick}
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', maxWidth: '200px', maxHeight: '40px' }}
                         />
                         {/* <Title level={2} className="App-title" style={{color : 'whitesmoke'}} onClick={handleSiteNameClick}>
                             <div style={{ display: "inline-block", fontSize: "30px", textDecoration: "none", cursor: 'pointer' }}>
@@ -79,6 +103,40 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                         {/** 토글 형식, background: 'transparent' : 버튼 배경을 투명하게, padding: '20px 40px' : 각각 Top, Bottom 패딩 설정 */}
                         {isAuthenticated ? (
                             <div>
+                                <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={showDrawer}>
+                                    Notification
+                                </Button>
+                                <Drawer title="Multi-level drawer" width={520} closable={false} onClose={onClose} open={open}>
+                                    <div>
+                                        <Button type="primary" onClick={showChildrenDrawer1}>
+                                            내가 작성한 게시물
+                                        </Button>
+                                        <Drawer
+                                            title="Two-level Drawer"
+                                            width={320}
+                                            closable={false}
+                                            onClose={onChildrenDrawer1Close}
+                                            open={childrenDrawer1}
+                                        >
+                                            <Notifications/>
+                                        </Drawer>
+                                    </div>
+                                    <br/>
+                                    <div>
+                                        <Button type="primary" onClick={showChildrenDrawer2}>
+                                            내가 지원한 게시물
+                                        </Button>
+                                        <Drawer
+                                            title="Two-level Drawer"
+                                            width={320}
+                                            closable={false}
+                                            onClose={onChildrenDrawer2Close}
+                                            open={childrenDrawer2}
+                                        >
+                                            내가 지원한 게시물 글 목록
+                                        </Drawer>
+                                    </div>
+                                </Drawer>
                                 <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={handleScrap}>
                                     Scrap
                                 </Button>

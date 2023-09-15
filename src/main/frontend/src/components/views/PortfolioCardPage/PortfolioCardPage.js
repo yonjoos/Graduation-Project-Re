@@ -20,11 +20,11 @@ function PortfolioCardPage() {
     
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [isClicked, setIsClicked] = useState("unclicked");
     const [recommend, setRecommend] = useState("");
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
+    const [reload, setReload] = useState(0);
 
 
     const page = 0;
@@ -51,6 +51,17 @@ function PortfolioCardPage() {
     }, []); 
 
     */
+
+    useEffect(() => {
+        setCurrentPage(0);
+        setTotalPages(0);
+        setSearchTerm("");
+        setSelectedBanners(['all']);
+        
+        fetchUsers();
+        setReload(0);
+    }, [reload]);
+
 
     useEffect(() => {
         console.log('현재 선택된 배너 정보', selectedBanners);
@@ -125,6 +136,10 @@ function PortfolioCardPage() {
     // <Button> Project의 핸들러, ProjectPage로 이동
     const handleProjectPage = () => {
         navigate('/project'); 
+    };
+
+    const handleReload = () => {
+        setReload(1);
     };
 
 
@@ -227,7 +242,7 @@ function PortfolioCardPage() {
             </div>
             <div style={{ textAlign: 'left', margin: "0 0", marginTop:'15px'}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'}  >
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload} >
                     Protfolio Card
                 </Button>
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage} >

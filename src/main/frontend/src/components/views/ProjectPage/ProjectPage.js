@@ -253,14 +253,14 @@ function ProjectPage() {
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
             <div style={{ textAlign: 'left', margin: "0 0"}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
+                    Protfolio Card
+                </Button>
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                     Project
                 </Button>
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                     Study
-                </Button>
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
-                    Recommendation
                 </Button>
                 <hr></hr>
 

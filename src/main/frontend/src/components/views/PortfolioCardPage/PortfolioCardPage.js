@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Card, Row, Col, Divider, Button } from 'antd';
+import { Card, Row, Col, Divider, Button, Pagination } from 'antd';
 import { request } from '../../../hoc/request';
 import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { setLastVisitedEndpoint } from '../../../hoc/request';
@@ -224,14 +224,14 @@ function PortfolioCardPage() {
             </div>
             <div style={{ textAlign: 'left', margin: "0 0", marginTop:'15px'}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'}  >
+                    Protfolio Card
+                </Button>
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage} >
                     Project
                 </Button>
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                     Study
-                </Button>
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'}  >
-                    Protfolio Card
                 </Button>
                 <Button onClick={onGetRecommend} >
                     RECOMMEND
@@ -240,6 +240,14 @@ function PortfolioCardPage() {
             </div>
             <div>
             {renderCards(data)}
+            </div>
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                <Pagination
+                    current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                    total={totalPages * pageSize}
+                    pageSize={pageSize}
+                    onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                />
             </div>
         </div>
     );

@@ -27,7 +27,8 @@ public class NotificationService {
     public SseEmitter subscribe(Long userId) {
         System.out.println("============start subscribe=========");
         SseEmitter emitter = createEmitter(userId);
-        System.out.println("emitter12 = " + emitter.toString());
+        // toString()쓰면, 상대방의 SSE가 안켜졌을 때 NullPointerException 발생함!
+        System.out.println("emitter = " + emitter);
         System.out.println("========end subscribe==========");
 
         sendToClient(userId, "EventStream Created. [userId=" + userId + "]");
@@ -55,7 +56,8 @@ public class NotificationService {
         System.out.println("==========start send To Client============");
         System.out.println("=======start emitterRepository.get(id)============");
         SseEmitter emitter = emitterRepository.get(id);
-        System.out.println("emitter = " + emitter.toString());
+        // toString()쓰면, 상대방의 SSE가 안켜졌을 때 NullPointerException 발생함!
+        System.out.println("emitter = " + emitter);
         if (emitter != null) {
             try {
                 System.out.println("==========================send emitter=================================");

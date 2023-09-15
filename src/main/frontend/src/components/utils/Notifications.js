@@ -1,82 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
-// import { EventSourcePolyfill } from "event-source-polyfill";
-// import { getAuthToken } from "../../hoc/request";
-
-// function Notifications() {
-//     const nickName = useSelector(state => state.auth.userNickName);
-//     //const [message, setMessage] = useState("");
-//     const [messages, setMessages] = useState([]);
-
-//     useEffect(() => {
-//         console.log("Attempting to connect to SSE...");
-//         console.log("nickName : ", nickName);
-//         const authToken = getAuthToken(); // Retrieve JWT token
-//         const eventSource = new EventSourcePolyfill(`/sse/subscribe/${nickName}`, {
-//             headers: {
-//                 Authorization: `Bearer ${authToken}`, // Include JWT token in headers
-//             },
-//             // 5분에 한 번씩 갱신
-//             heartbeatTimeout: 150000,
-//         });
-
-//         // 백엔드의 sendToClient함수의 send의 인자인 .name("sse")와 연관됨.
-//         eventSource.addEventListener("sse", (event) => {
-//             console.log("eventSource : ", eventSource);
-//             console.log("event", event);
-//             // 서버에서 온 알림을 표시합니다.
-//             const newMessage = event.data;
-//             console.log('newMessage : ', event.data);
-//             setMessages(prevMessages => [...prevMessages, newMessage]);
-//         });
-
-//         eventSource.onopen = () => {
-//             console.log("SSE connection opened.");
-//             console.log("eventSource : ", eventSource);
-//         };
-
-//         eventSource.onmessage = (event) => {
-//             console.log("SSE message received:", event);
-//             // 서버에서 온 메시지를 표시합니다.
-//             // const arrivedMessages = await event.data;
-//             // const newMessage = JSON.parse(arrivedMessages);
-//             const newMessage = JSON.parse(event.data);
-//             //setMessage(newMessage);
-//             setMessages(prevMessages => [...prevMessages, newMessage]);
-//         };
-
-//         eventSource.onerror = (error) => {
-//             console.error("SSE error:", error);
-//         };
-
-//         return () => {
-//             eventSource.close();
-//             console.log("SSE connection closed.");
-//         };
-//     }, [nickName]);
-
-//     return (
-//         <div>
-//             {/** message && <p>{message}</p> */}
-//             {messages && messages.length > 0 ? (
-//                 messages.map((message, index) => (
-//                     <p key={index}>{message}</p>
-//                 ))
-//             ) : (
-//                 <p>
-//                     messages are empty!
-//                 </p>
-//             )}
-//         </div>
-//     );
-
-// }
-
-// export default Notifications;
-
-
-
-
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { EventSourcePolyfill } from "event-source-polyfill";
@@ -97,7 +18,7 @@ function Notifications() {
                 Authorization: `Bearer ${authToken}`, // Include JWT token in headers
             },
             withCredentials: true,
-            heartbeatTimeout: 150000,
+            heartbeatTimeout: 3000,
         });
 
         // 백엔드의 sendToClient함수의 send의 인자인 .name("sse")와 연관됨.

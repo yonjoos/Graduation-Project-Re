@@ -12,7 +12,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
@@ -32,6 +31,7 @@ public class PostsService {
     private final CategoryRepository categoryRepository;
     private final UserApplyPostsRepository userApplyPostsRepository;
     private final ScrapPostsRepository scrapPostsRepository;
+    private final NotificationService notificationService;
     private final JPAQueryFactory queryFactory;
 
     public void uploadProjectPost(PostsFormDto postsFormDto, String userEmail) {
@@ -1271,6 +1271,8 @@ public class PostsService {
 
     // 프로젝트에 지원하는 것과 관련된 메서드
     // 어차피 프로젝트와 스터디는 모두 Posts라는 한 개의 테이블 안에 있기 때문에, applyProject와 applyStudy를 나눌 필요가 없음.
+    // 프로젝트에 지원하는 것과 관련된 메서드
+    // 어차피 프로젝트와 스터디는 모두 Posts라는 한 개의 테이블 안에 있기 때문에, applyProject와 applyStudy를 나눌 필요가 없음.
     public PostsDto applyPosts(String userEmail, Long postsId) {
 
         // email로 현재 유저 찾기
@@ -1292,6 +1294,11 @@ public class PostsService {
                 .build();
 
         UserApplyPosts savedUserApplyPosts = userApplyPostsRepository.save(userApplyPosts);
+
+        System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 새로운 지원자가 있습니다.\"); ======");
+        System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
+        notificationService.notify(findPosts.getUser().getId(), "new applicant in your post.");
+        System.out.println("==========================================================");
 
         PostsDto postsDto;
 

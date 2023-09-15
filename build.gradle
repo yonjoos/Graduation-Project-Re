@@ -51,6 +51,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	//jackson JSON	(중요한 기능은 (1) "Java Object" =Serialize=> "JSON", (2) "JSON" =Deserialize=> "Java Object")
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	//implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }

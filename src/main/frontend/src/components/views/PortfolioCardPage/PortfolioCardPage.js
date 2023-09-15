@@ -100,7 +100,10 @@ function PortfolioCardPage() {
     const onClickHandler = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
-        dispatch(setLastVisitedEndpoint('/portfoliocard'));
+
+        setLastVisitedEndpoint('/portfoliocard');
+        // Error name : Actions must be plain objects. Instead, the actual type was: 'undefined'.
+        // Solution : SetLastVisitedEndpoint is not a typical Redux action creator, cannot be stated in dispatch().
         navigate(`/portfolio/${nickName}`);
     }
 

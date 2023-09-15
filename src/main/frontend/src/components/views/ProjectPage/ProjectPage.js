@@ -163,7 +163,7 @@ function ProjectPage() {
                                         </div>
                                         <hr></hr>
                                         <div>
-                                            {item.shortContent}
+                                            {item.briefContent}
                                         </div>
                                         </Col>
                                     </Row>

@@ -785,6 +785,7 @@ public class PostsService {
                     .counts(post.getCounts())
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
+                    .briefContent(post.getContent())
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가

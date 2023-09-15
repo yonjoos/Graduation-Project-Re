@@ -222,25 +222,25 @@ function ProjectPage() {
                             onClick={() => toggleBanner('all')}
                             style={{ marginRight: '10px' }}
                         >
-                            전체
+                            All
                         </Button>
                         <Button
                             type={selectedBanners.includes('web') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('web')}
                         >
-                            웹
+                            Web
                         </Button>
                         <Button
                             type={selectedBanners.includes('app') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('app')}
                         >
-                            앱
+                            App
                         </Button>
                         <Button
                             type={selectedBanners.includes('game') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('game')}
                         >
-                            게임
+                            Game
                         </Button>
                         <Button
                             type={selectedBanners.includes('ai') ? 'primary' : 'default'}

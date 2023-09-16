@@ -28,13 +28,23 @@ public class PortfolioCardController {
 
     }
 
+    /*
+    const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+                selectedBanners: selectedBanners.join(','), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
+                page: currentPage, //현재 페이지 정보
+                size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+                searchTerm: searchTerm // 검색어 키워드 문자열
+            });
+     */
+
     @GetMapping("/getCards")
     public ResponseEntity<Page<PortfolioCardDto>> getCards(
-            @RequestParam(name = "searchTerm", required = false) String searchTerm,
+            @RequestParam(name = "selectedBanners") List<String> selectedBanners, //프론트엔드에서 넘어온 선택된 배너정보
             @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
-            @RequestParam(name = "size", defaultValue = "3") int size
-    ){
-        Page<PortfolioCardDto> result = portfolioService.getCards(searchTerm, PageRequest.of(page, size));
+            @RequestParam(name = "size", defaultValue = "3") int size, //프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
+            @RequestParam(name = "searchTerm", required = false) String searchTerm){
+
+        Page<PortfolioCardDto> result = portfolioService.getCards(selectedBanners, searchTerm, PageRequest.of(page, size));
         return ResponseEntity.ok(result);
     }
 

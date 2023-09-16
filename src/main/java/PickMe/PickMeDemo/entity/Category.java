@@ -48,4 +48,6 @@ public class Category extends BaseTimeEntity{ //생성일, 수정일 다루는 �
             throw new IllegalArgumentException("Maximum of 2 true values are allowed among web, app, game, and ai fields.");
         }
     }
+
+
 }

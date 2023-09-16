@@ -216,25 +216,25 @@ function StudyPage() {
                             onClick={() => toggleBanner('all')}
                             style={{ marginRight: '10px' }}
                         >
-                            전체
+                            All
                         </Button>
                         <Button
                             type={selectedBanners.includes('web') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('web')}
                         >
-                            웹
+                            Web
                         </Button>
                         <Button
                             type={selectedBanners.includes('app') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('app')}
                         >
-                            앱
+                            App
                         </Button>
                         <Button
                             type={selectedBanners.includes('game') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('game')}
                         >
-                            게임
+                            Game
                         </Button>
                         <Button
                             type={selectedBanners.includes('ai') ? 'primary' : 'default'}
@@ -253,14 +253,14 @@ function StudyPage() {
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
             <div style={{ textAlign: 'left', margin: "0 0" }}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
+                    Portfolio Card
+                </Button>
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                     Project
                 </Button>
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                     Study
-                </Button>
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
-                    Recommendation
                 </Button>
                 <hr></hr>
                 

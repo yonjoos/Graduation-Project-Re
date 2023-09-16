@@ -365,7 +365,7 @@ public class PortfolioService {
     ################################################################################
      */
     @Transactional(readOnly = true) //읽기 전용
-    public Page<PortfolioCardDto> getCards(String searchTerm, Pageable pageable) {
+    public Page<PortfolioCardDto> getCards(List<String> selectedBanners, String searchTerm, Pageable pageable) {
 
         QPortfolio portfolios = QPortfolio.portfolio;
         QUser users = QUser.user;
@@ -375,6 +375,7 @@ public class PortfolioService {
         //System.out.println("searchTerm = " + searchTerm);
         //System.out.println("searchTerm = " + searchTerm.getClass());
 
+        BooleanExpression bannerConditions = buildBannerConditions(portfolios, selectedBanners);
         // 검색어 기반으로 필터링할 때 쓰는 BooleanExpression 조건
         BooleanExpression titleOrContentConditions = null;
 
@@ -412,7 +413,7 @@ public class PortfolioService {
         // '데이터'를 가져오는 쿼리
         JPAQuery<Portfolio> query = queryFactory.selectFrom(portfolios) // 게시물을 추출할 건데,
                 .join(portfolios.user, users).fetchJoin() // 게시물을 카테고리와 조인한 형태로 가져올거임
-                .where(portfolios.user.nickName.eq(users.nickName));
+                .where(bannerConditions, portfolios.user.nickName.eq(users.nickName));
         // (where로 조건 추가 1.) 근데 조건은 이러하고 (밑에 있음)
         // (where로 조건 추가 2.) 게시물의 TYPE이 프로젝트인 것만 가져옴
 
@@ -465,6 +466,51 @@ public class PortfolioService {
         return new PageImpl<>(portfolioCardDtos, pageable, total); // 동적쿼리의 결과를 반환
 
     }
+
+
+
+    private BooleanExpression buildBannerConditions(QPortfolio portfolio, List<String> selectedBanners) {
+        BooleanExpression bannerConditions = null;
+
+        List<BooleanExpression> selectedConditions = new ArrayList<>();
+
+        for (String selectedBanner : selectedBanners) {
+            BooleanExpression bannerCondition = null;
+
+            switch (selectedBanner) {
+                case "web":
+                    bannerCondition = portfolio.web.gt(0);
+                    break;
+                case "app":
+                    bannerCondition = portfolio.app.gt(0);
+                    break;
+                case "game":
+                    bannerCondition = portfolio.game.gt(0);
+                    break;
+                case "ai":
+                    bannerCondition = portfolio.ai.gt(0);
+                    break;
+                default:
+                    bannerCondition = null;
+                    break;
+            }
+
+            if (bannerCondition != null) {
+                selectedConditions.add(bannerCondition);
+            }
+        }
+
+        if (!selectedConditions.isEmpty()) {
+            bannerConditions = selectedConditions.get(0);
+            for (int i = 1; i < selectedConditions.size(); i++) {
+                bannerConditions = bannerConditions.and(selectedConditions.get(i));
+            }
+        }
+
+        return bannerConditions;
+    }
+
+
 
 
 }

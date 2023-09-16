@@ -20,7 +20,7 @@ function ProjectPage() {
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const [searchTerm, setSearchTerm] = useState(""); //프로젝트 페이지 내의 검색어 키워드
-    
+
     const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
     // 페이지가 새로 마운트 될 때마다 실행됨.
@@ -144,27 +144,27 @@ function ProjectPage() {
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{marginTop: '10px' }} justify="center" align="middle">
+                            <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="center" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                                 <Col span={20}>
                                     <Row>
-                                        <Col style={{marginRight:'20px'}}>
-                                        <div >
-                                            <strong style={{ fontSize: '14px'}}> {item.nickName} </strong>
-                                        </div>
+                                        <Col style={{ marginRight: '20px' }}>
+                                            <div >
+                                                <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
+                                            </div>
                                         </Col>
                                         <Col>
-                                        <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                            <strong style={{ fontSize: '15px' }}>{item.title}</strong>
-                                        </div>
-                                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                        <div style={{ marginLeft: '3px' }}>
-                                            분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                        </div>
-                                        <hr></hr>
-                                        <div>
-                                            {item.briefContent}
-                                        </div>
+                                            <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                                <strong style={{ fontSize: '15px' }}>{item.title}</strong>
+                                            </div>
+                                            {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                                            <div style={{ marginLeft: '3px' }}>
+                                                분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                            </div>
+                                            <hr></hr>
+                                            <div>
+                                                {item.briefContent}
+                                            </div>
                                         </Col>
                                     </Row>
                                 </Col>
@@ -172,7 +172,7 @@ function ProjectPage() {
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         인원: {item.counts} / {item.recruitmentCount}
                                     </div>
-                                    <div style={{ marginLeft: '3px', fontSize:'13px'}}>
+                                    <div style={{ marginLeft: '3px', fontSize: '13px' }}>
                                         모집 마감일: {formatDate(item.endDate)}
                                     </div>
                                 </Col>
@@ -187,7 +187,7 @@ function ProjectPage() {
 
     return (
         <div>
-            <SearchInProjectPage setSearchTerm={handleSearch} /> 
+            <SearchInProjectPage setSearchTerm={handleSearch} />
             {/* 프로젝트 페이지에서 전용으로 사용할 하위 컴포넌트인 SearchInProjectPage에서 검색어 입력받고
                 검색 완료 후 돋보기 클릭이나 엔터하는 기능을 위임.
                 만약 엔터나 돋보기 버튼 클릭하면 하위 컴포넌트의 handleSearch 동작 후에 
@@ -257,7 +257,7 @@ function ProjectPage() {
                 </Row>
             </div>
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
-            <div style={{ textAlign: 'left', margin: "0 0"}}>
+            <div style={{ textAlign: 'left', margin: "0 0" }}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                 <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
                     Portfolio Card

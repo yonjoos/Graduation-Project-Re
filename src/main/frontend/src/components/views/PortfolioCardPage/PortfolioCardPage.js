@@ -9,7 +9,7 @@ import { setLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
 
 
-{/* postController - getFilteredPosts 쿼리 참고하기 */}
+{/* postController - getFilteredPosts 쿼리 참고하기 */ }
 
 
 function PortfolioCardPage() {
@@ -17,7 +17,7 @@ function PortfolioCardPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    
+
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [recommend, setRecommend] = useState("");
@@ -27,7 +27,7 @@ function PortfolioCardPage() {
     const [reload, setReload] = useState(0);
 
 
-    const page = 0;
+    // const page = 0;
     const pageSize = 9;
 
     // USE EFFECT ###############################################
@@ -57,7 +57,7 @@ function PortfolioCardPage() {
         setTotalPages(0);
         setSearchTerm("");
         setSelectedBanners(['all']);
-        
+
         fetchUsers();
         setReload(0);
     }, [reload]);
@@ -73,14 +73,14 @@ function PortfolioCardPage() {
 
     // REQUEST ###############################################
 
-    const fetchCards = async() => {
+    const fetchCards = async () => {
 
-        try{
+        try {
 
-            const response = await request('GET', `/getPortfolioCards` );
+            const response = await request('GET', `/getPortfolioCards`);
             setData(response.data);
 
-        }catch(error){
+        } catch (error) {
 
         }
     }
@@ -92,12 +92,12 @@ function PortfolioCardPage() {
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
                 selectedBanners: selectedBanners.join(','), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
                 page: currentPage, //현재 페이지 정보
-                size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+                size: pageSize, //페이징을 할 크기(현재는 한페이지에 9개씩만 나오도록 구성했음)
                 searchTerm: searchTerm // 검색어 키워드 문자열
             });
 
             const response = await request('GET', `/getCards?${queryParams}`);
-            setData(response.data.content); 
+            setData(response.data.content);
             setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -111,7 +111,7 @@ function PortfolioCardPage() {
     const onClickHandler = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
-        dispatch(lastVisitedEndpoint('/portfoliocard'));  
+        dispatch(lastVisitedEndpoint('/portfoliocard'));
         setLastVisitedEndpoint('/portfoliocard');
         // Error name : Actions must be plain objects. Instead, the actual type was: 'undefined'.
         // Solution : SetLastVisitedEndpoint is not a typical Redux action creator, cannot be stated in dispatch().
@@ -123,10 +123,11 @@ function PortfolioCardPage() {
     // for Searching component
     const handleSearch = (value) => {
         setSearchTerm(value); // 검색어를 세팅
+        setCurrentPage(0); // 검색어가 바뀌면, 강제로 1페이지로 이동시킴
     };
 
-    const onGetRecommend = async() => {
-        
+    const onGetRecommend = async () => {
+
         setRecommend("please");
 
     };
@@ -135,7 +136,7 @@ function PortfolioCardPage() {
     // function name ; handleProjectPage
     // <Button> Project의 핸들러, ProjectPage로 이동
     const handleProjectPage = () => {
-        navigate('/project'); 
+        navigate('/project');
     };
 
     const handleReload = () => {
@@ -146,7 +147,7 @@ function PortfolioCardPage() {
     // function name ; handleStudyPage
     // <Button> Study의 핸들러, StudyPage로 이동
     const handleStudyPage = () => {
-        navigate('/study'); 
+        navigate('/study');
     };
 
 
@@ -170,7 +171,7 @@ function PortfolioCardPage() {
 
         setCurrentPage(0); // 만약 배너를 다른 걸 고르면 1페이지로 강제 이동시킴
     }
-    
+
 
 
     // COMPONENTS ###############################################
@@ -180,15 +181,15 @@ function PortfolioCardPage() {
         if (!cards || cards.length === 0) {
             return <div>No data available</div>; // or any other appropriate message
         }
-        
+
         return (
             <div>
                 <Row gutter={16}>
-                    {cards.map((item,index) => (
+                    {cards.map((item, index) => (
 
                         <Col xs={24} sm={8} key={index}>
-                            <Card onClick={()=> onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height:'270px', marginTop: '20px', cursor: 'pointer' }}>
-                                {/* style = {{cursor: 'pointer'}} */ }
+                            <Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
+                                {/* style = {{cursor: 'pointer'}} */}
                                 <b>Field Of Interests</b>
                                 <br></br>
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
@@ -210,37 +211,37 @@ function PortfolioCardPage() {
     // RETURN ####################################################################################
     return (
         <div>
-            <div>
-                <SearchInPortfolioCardPage setSearchTerm={handleSearch} /> 
-            </div>
-            <div>
+
+            <SearchInPortfolioCardPage setSearchTerm={handleSearch} />
+
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Button type={selectedBanners.includes('all') ? 'primary' : 'default'}
-                        onClick={() => toggleBanner('all')}
-                        style={{ marginRight: '10px' }}>
+                    onClick={() => toggleBanner('all')}
+                    style={{ marginRight: '10px' }}>
                     All
                 </Button>
                 <Button
-                        type={selectedBanners.includes('web') ? 'primary' : 'default'}
-                        onClick={() => toggleBanner('web')}>
+                    type={selectedBanners.includes('web') ? 'primary' : 'default'}
+                    onClick={() => toggleBanner('web')}>
                     Web
                 </Button>
                 <Button
-                        type={selectedBanners.includes('app') ? 'primary' : 'default'}
-                        onClick={() => toggleBanner('app')}>
+                    type={selectedBanners.includes('app') ? 'primary' : 'default'}
+                    onClick={() => toggleBanner('app')}>
                     App
                 </Button>
                 <Button
-                        type={selectedBanners.includes('game') ? 'primary' : 'default'}
-                        onClick={() => toggleBanner('game')}>
+                    type={selectedBanners.includes('game') ? 'primary' : 'default'}
+                    onClick={() => toggleBanner('game')}>
                     Game
                 </Button>
                 <Button
-                        type={selectedBanners.includes('ai') ? 'primary' : 'default'}
-                        onClick={() => toggleBanner('ai')}>
+                    type={selectedBanners.includes('ai') ? 'primary' : 'default'}
+                    onClick={() => toggleBanner('ai')}>
                     AI
                 </Button>
             </div>
-            <div style={{ textAlign: 'left', margin: "0 0", marginTop:'15px'}}>
+            <div style={{ textAlign: 'left', margin: "0 0", marginTop: '15px' }}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                 <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload}>
                     Portfolio Card
@@ -254,10 +255,10 @@ function PortfolioCardPage() {
                 <Button onClick={onGetRecommend} >
                     RECOMMEND
                 </Button>
-                <Divider></Divider>
+                <hr></hr>
             </div>
             <div>
-            {renderCards(data)}
+                {renderCards(data)}
             </div>
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Pagination

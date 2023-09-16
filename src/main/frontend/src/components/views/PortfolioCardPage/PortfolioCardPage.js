@@ -100,7 +100,8 @@ function PortfolioCardPage() {
     const onClickHandler = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
-        dispatch(setLastVisitedEndpoint('/portfoliocard'));
+        dispatch(lastVisitedEndpoint('/portfoliocard'));    // 전역에 상태 저장을 위한 애.
+        setLastVisitedEndpoint('/portfoliocard');   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
         navigate(`/portfolio/${nickName}`);
     }
 
@@ -195,7 +196,7 @@ function PortfolioCardPage() {
             <div>
                 <SearchInPortfolioCardPage setSearchTerm={handleSearch} /> 
             </div>
-            <div>
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Button type={selectedBanners.includes('all') ? 'primary' : 'default'}
                         onClick={() => toggleBanner('all')}
                         style={{ marginRight: '10px' }}>
@@ -225,7 +226,7 @@ function PortfolioCardPage() {
             <div style={{ textAlign: 'left', margin: "0 0", marginTop:'15px'}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                 <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'}  >
-                    Protfolio Card
+                    Portfolio Card
                 </Button>
                 <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage} >
                     Project
@@ -236,7 +237,7 @@ function PortfolioCardPage() {
                 <Button onClick={onGetRecommend} >
                     RECOMMEND
                 </Button>
-                <Divider></Divider>
+                <Divider/>
             </div>
             <div>
             {renderCards(data)}

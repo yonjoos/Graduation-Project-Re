@@ -31,6 +31,7 @@ import './App.css';
 //import logo2 from '../logo2.png'
 //import logo3 from '../logo3.png'
 import logo4 from '../logo4.png'
+import Notifications from './utils/Notifications';
 
 
 const { Content } = Layout;
@@ -178,6 +179,7 @@ function App() {
                             element={Auth(UpdateStudyPage, true)}
                         />
                     </Routes>
+                    <Notifications/>
                     </div>
                 </Content>
                 <Footer style={{ paddingLeft : '15%', paddingRight : '15%' }} logoSrc={logo4}/>

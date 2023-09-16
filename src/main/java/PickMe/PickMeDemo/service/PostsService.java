@@ -1298,7 +1298,11 @@ public class PostsService {
 
         System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 새로운 지원자가 있습니다.\"); ======");
         System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
-        notificationService.notify(findPosts.getUser().getId(), "new applicant in your post.");
+
+        String findUserNickname= findUser.getNickName();
+
+        String notificationMessage = "Applied/posts/" + postsId + ": " + findUserNickname + " applied to your study post. Please check by click!"; // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+        notificationService.notify(findPosts.getUser().getId(), notificationMessage);
         System.out.println("==========================================================");
 
         PostsDto postsDto;

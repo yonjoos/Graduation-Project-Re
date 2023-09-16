@@ -5,7 +5,7 @@ import { setAuthHeader, setUserRole } from '../../../hoc/request';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
 import CustomDropdown from './Sections/CustomDropdown';
-import Notifications from '../../utils/Notifications';
+//import Notifications from '../../utils/Notifications';
 
 const { Header } = Layout;
 //const { Title } = Typography;
@@ -118,7 +118,8 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                                             onClose={onChildrenDrawer1Close}
                                             open={childrenDrawer1}
                                         >
-                                            <Notifications/>
+                                            {/*<Notifications/>*/}
+                                            내가 작성한 게시물 글 목록
                                         </Drawer>
                                     </div>
                                     <br/>

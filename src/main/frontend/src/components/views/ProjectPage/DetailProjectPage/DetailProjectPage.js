@@ -371,7 +371,7 @@ function DetailProjectPage() {
 
         // 수정된 댓글 내용을 백엔드로 전송하는 로직을 추가
         if (editedCommentText.trim() === '') {
-            message.warning("댓글 내용을 입력하세요.");
+            message.warning("내용을 입력하세요.");
             return;
         }
 

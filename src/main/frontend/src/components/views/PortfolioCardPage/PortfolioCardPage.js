@@ -242,10 +242,10 @@ function PortfolioCardPage() {
             </div>
             <div style={{ textAlign: 'left', margin: "0 0", marginTop:'15px'}}>
                 {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload} >
-                    Protfolio Card
+                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload}>
+                    Portfolio Card
                 </Button>
-                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage} >
+                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                     Project
                 </Button>
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>

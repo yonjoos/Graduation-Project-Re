@@ -21,7 +21,7 @@ function ProjectPage() {
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const [searchTerm, setSearchTerm] = useState(""); //프로젝트 페이지 내의 검색어 키워드
     
-    const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
+    const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
     // 페이지가 새로 마운트 될 때마다 실행됨.
     // 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 
@@ -143,35 +143,41 @@ function ProjectPage() {
 
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <Divider className="bold-divider" />
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{marginTop: '20px' }} justify="center" align="middle">
-                                <Col span={6}>
-                                    <div style={{ borderRight: '1px' }}>
-                                        <strong style={{ fontSize: '18px'}}> {item.nickName} </strong>
-                                    </div>
-                                </Col>
+                            <Row gutter={[16, 16]} style={{marginTop: '10px' }} justify="center" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={12} className="vertical-line">
-                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        <strong style={{ fontSize: '18px' }}>{item.title}</strong>
-                                    </div>
-                                    {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                    <div style={{ marginLeft: '3px' }}>
-                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                    </div>
+                                <Col span={20}>
+                                    <Row>
+                                        <Col style={{marginRight:'20px'}}>
+                                        <div >
+                                            <strong style={{ fontSize: '14px'}}> {item.nickName} </strong>
+                                        </div>
+                                        </Col>
+                                        <Col>
+                                        <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                            <strong style={{ fontSize: '15px' }}>{item.title}</strong>
+                                        </div>
+                                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                                        <div style={{ marginLeft: '3px' }}>
+                                            분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                        </div>
+                                        <hr></hr>
+                                        <div>
+                                            {item.briefContent}
+                                        </div>
+                                        </Col>
+                                    </Row>
                                 </Col>
-                                <Col span={6} className="vertical-line">
+                                <Col span={4} >
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         인원: {item.counts} / {item.recruitmentCount}
                                     </div>
-                                    <div style={{ marginLeft: '3px' }}>
+                                    <div style={{ marginLeft: '3px', fontSize:'13px'}}>
                                         모집 마감일: {formatDate(item.endDate)}
                                     </div>
                                 </Col>
                             </Row>
                         </div>
-                        <Divider className="bold-divider" />
                     </Card>
 
                 ))}
@@ -216,25 +222,25 @@ function ProjectPage() {
                             onClick={() => toggleBanner('all')}
                             style={{ marginRight: '10px' }}
                         >
-                            전체
+                            All
                         </Button>
                         <Button
                             type={selectedBanners.includes('web') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('web')}
                         >
-                            웹
+                            Web
                         </Button>
                         <Button
                             type={selectedBanners.includes('app') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('app')}
                         >
-                            앱
+                            App
                         </Button>
                         <Button
                             type={selectedBanners.includes('game') ? 'primary' : 'default'}
                             onClick={() => toggleBanner('game')}
                         >
-                            게임
+                            Game
                         </Button>
                         <Button
                             type={selectedBanners.includes('ai') ? 'primary' : 'default'}

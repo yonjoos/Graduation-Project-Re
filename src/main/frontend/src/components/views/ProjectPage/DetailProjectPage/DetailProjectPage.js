@@ -25,7 +25,7 @@ function DetailProjectPage() {
     const [replyText, setReplyText] = useState('');     // 부모 있는 '답글' 에 담길 답글 내용
     const [replyToCommentId, setReplyToCommentId] = useState(null); // 해당 답글의 부모 댓글 id값
     const [commentData, setCommentData] = useState([]); // 백엔드에서 가져온 해당 게시물의 전체 댓글,답글 내용들
-    const [replyVisibility, setReplyVisibility] = useState({}); // 답글 보기 여부
+    const [replyVisibility, setReplyVisibility] = useState({}); // 답글 보기 여부. useState 훅의 초기화 값으로 빈 객체 {}를 사용하는 것은 일반적인 패턴 중 하나로, 이렇게 하면 상태 변수 replyVisibility는 객체를 가지며, 해당 객체는 답글의 보이기 여부를 관리하는 데 사용함.
     const [editingCommentId, setEditingCommentId] = useState(null); // 댓글 수정에 해당하는 댓글 id
     const [editedCommentText, setEditedCommentText] = useState(''); // 백엔드에 보낼 댓글 수정 내용
     const [areCommentsVisible, setAreCommentsVisible] = useState(false); // 댓글 컴포넌트 숨기기 여부
@@ -343,7 +343,7 @@ function DetailProjectPage() {
             const response = await request('POST', `/deleteComments/${commentId}`);
             if (response.status === 200) {
                 message.success("댓글이 삭제되었습니다.");
-                fetchCommentData(0); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
+                fetchCommentData(); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
             }
         } catch (error) {
             console.error("댓글 삭제에 실패했습니다.", error);
@@ -371,7 +371,7 @@ function DetailProjectPage() {
 
         // 수정된 댓글 내용을 백엔드로 전송하는 로직을 추가
         if (editedCommentText.trim() === '') {
-            message.warning("댓글 내용을 입력하세요.");
+            message.warning("내용을 입력하세요.");
             return;
         }
 

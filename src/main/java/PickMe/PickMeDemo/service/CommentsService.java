@@ -92,26 +92,61 @@ public class CommentsService {
 
             if (c.getIsDeleted()) { // 댓글의 isDeleted가 true라면
 
-                commentResponseDto = CommentResponseDto.builder()
-                        .id(c.getId())
-                        .content("삭제된 댓글입니다.")
-                        .nickName(null)
-                        .userId(null)
-                        .commentWriter(false)
-                        .finalCommentedTime(c.getLastModifiedDate())
-                        .build();
+                if(c.getParent()!=null) // 해당 댓글에 부모가 있다면
+                {
+                    commentResponseDto = CommentResponseDto.builder()
+                            .id(c.getId())
+                            .content("삭제된 댓글입니다.")
+                            .nickName(null)
+                            .userId(null)
+                            .commentWriter(false)
+                            .finalCommentedTime(c.getLastModifiedDate())
+                            .isTopLevel(false)
+                            .build();
+                }
+
+                else { // 해당 댓글에 부모가 없다면
+                    commentResponseDto = CommentResponseDto.builder()
+                            .id(c.getId())
+                            .content("삭제된 댓글입니다.")
+                            .nickName(null)
+                            .userId(null)
+                            .commentWriter(false)
+                            .finalCommentedTime(c.getLastModifiedDate())
+                            .isTopLevel(true)
+                            .build();
+                }
+
+
             } else { // 해당 댓글의 isDeleted가 false라면
 
                 boolean isCommentWriter = currentUser.getId().equals(c.getUser().getId()); // 해당 댓글을 쓴 user의 id를 식별
 
-                commentResponseDto = CommentResponseDto.builder()
-                        .id(c.getId())
-                        .content(c.getContent())
-                        .nickName(c.getUser().getNickName())
-                        .userId(c.getUser().getId())
-                        .commentWriter(isCommentWriter)
-                        .finalCommentedTime(c.getLastModifiedDate())
-                        .build();
+                if(c.getParent() != null) // 해당 댓글의 부모가 있다면
+                {
+                    commentResponseDto = CommentResponseDto.builder()
+                            .id(c.getId())
+                            .content(c.getContent())
+                            .nickName(c.getUser().getNickName())
+                            .userId(c.getUser().getId())
+                            .commentWriter(isCommentWriter)
+                            .finalCommentedTime(c.getLastModifiedDate())
+                            .isTopLevel(false)
+                            .build();
+                }
+
+                else { // 해당 댓글의 부모가 없다면
+                    commentResponseDto = CommentResponseDto.builder()
+                            .id(c.getId())
+                            .content(c.getContent())
+                            .nickName(c.getUser().getNickName())
+                            .userId(c.getUser().getId())
+                            .commentWriter(isCommentWriter)
+                            .finalCommentedTime(c.getLastModifiedDate())
+                            .isTopLevel(true)
+                            .build();
+                }
+
             }
 
             commentDtoHashMap.put(commentResponseDto.getId(), commentResponseDto); // 부모가 없는 애들이 위에 있으므로 얘네들은 바로 hashmap에 넣어주기

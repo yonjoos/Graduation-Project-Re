@@ -21,18 +21,26 @@ function DetailStudyPage() {
     const [modalAction, setModalAction] = useState('');     // modalAction은 'delete'와 'apply' 둘 중 하나로 세팅.
     const [cancelAction, setCancelAction] = useState('');   // 승인 허가된 사람과, 승인 허가되지 않은 사람의 지원 취소 request 매커니즘을 다르게 하기 위해 세팅.
     const [scrapAction, setScrapAction] = useState('');     // 스크랩한 사람과, 스크랩하지 않은 사람의 request 매커니즘을 다르게 하기 위해 세팅
+
+    // 아래는 댓글 기능 관련 상태변수
     const [commentText, setCommentText] = useState(''); // 부모 없는 '댓글' 에 담길 댓글 내용
     const [replyText, setReplyText] = useState('');     // 부모 있는 '답글' 에 담길 답글 내용
     const [replyToCommentId, setReplyToCommentId] = useState(null); // 해당 답글의 부모 댓글 id값
     const [commentData, setCommentData] = useState([]); // 백엔드에서 가져온 해당 게시물의 전체 댓글,답글 내용들
     const [replyVisibility, setReplyVisibility] = useState({}); // 답글 보기 여부. useState 훅의 초기화 값으로 빈 객체 {}를 사용하는 것은 일반적인 패턴 중 하나로, 이렇게 하면 상태 변수 replyVisibility는 객체를 가지며, 해당 객체는 답글의 보이기 여부를 관리하는 데 사용함.
-    const [editingCommentId, setEditingCommentId] = useState(null); // 댓글 수정에 해당하는 댓글 id
-    const [editedCommentText, setEditedCommentText] = useState(''); // 백엔드에 보낼 댓글 수정 내용
+    const [editingCommentId, setEditingCommentId] = useState(null); // 댓글, 답글 수정에 해당하는 댓글, 답글 id
+    const [editedCommentText, setEditedCommentText] = useState(''); // 백엔드에 보낼 댓글, 답글 수정 내용
+    const [deleteCommentId, setDeleteCommentId] = useState(null); // 댓글, 답글 삭제에 해당하는 댓글,답글 id
     const [areCommentsVisible, setAreCommentsVisible] = useState(false); // 댓글 컴포넌트 숨기기 여부
     const [currentPage, setCurrentPage] = useState(0); // 부모 댓글 기준 어떤 부모부터 가져올건지(사실상 offset)
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 부모 댓글의 총 개수
     const [pageSize, setPageSize] = useState(3); // offset부터 어디까지 가져올건지(사실상 limit) -> 초기에 3개로 설정
     const [moreCommentsAvailable, setMoreCommentsAvailable] = useState(true); // 더보기 버튼 활성화 여부
+    const [commentEditConfirmModalVisible, setCommentEditConfirmModalVisible] = useState(false); // 댓글, 답글 수정 관련 모달 활성화 여부
+    const [isTopLevelUsedByEditing, setIsTopLevelUsedByEditing] = useState(null); // 댓글, 답글 수정 시 해당 댓글 또는 답글이 최상위 부모인지 아닌지 판단하는 기준값
+    const [commentDeleteConfirmModalVisible, setCommentDeleteConfirmModalVisible] = useState(false); // 댓글, 답글 삭제 관련 모달 활성화 여부
+    const [isTopLevelUsedByDelete, setIsTopLevelUsedByDelete] = useState(null); // 댓글, 답글 삭제 시 해당 댓글 또는 답글이 최상위 부모인지 아닌지 판단하는 기준값
+
 
     const currentUserNickName = getUserNickName();
 
@@ -56,7 +64,7 @@ function DetailStudyPage() {
     useEffect(() => {
         // Initial data fetch
         fetchCommentData();
-    }, [pageSize]);   
+    }, [pageSize]);
 
 
     // 백엔드에서 받아온 데이터에 공백이 없으면, maxCharacters번째 글자 이후에 공백을 넣어주는 함수
@@ -65,7 +73,7 @@ function DetailStudyPage() {
     function insertLineBreaks(text, maxCharacters) {
         // 함수는 먼저 text 매개변수가 거짓인지(비어 있거나 정의되지 않음) 확인. text가 비어 있거나 정의되지 않은 경우 함수는 동일한 입력 텍스트를 반환함.
         if (!text) return text;
-    
+
         // text가 비어 있지 않으면 함수는 chunks라는 빈 배열을 초기화함. 이 배열은 줄 바꿈을 사용하여 텍스트 덩어리를 저장하는 역할을 함.
         const chunks = [];
         // 띄어쓰기가 없는 한 개의 문자열의 인덱스
@@ -87,7 +95,7 @@ function DetailStudyPage() {
                 j = 0;
             }
         }
-        
+
         return chunks;
     }
 
@@ -100,7 +108,7 @@ function DetailStudyPage() {
         const day = date.getDate();
         return `${year}년 ${month}월 ${day}일`;
     };
-    
+
     // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
     const formatDateTime = (dateTimeArray) => {
         const [year, month, day, hours, minutes] = dateTimeArray;
@@ -147,24 +155,24 @@ function DetailStudyPage() {
         setIsScrapModalVisible(true);
         setScrapAction(action);
     }
-    
+
     const handleModalConfirm = () => {
         // writer가 게시물 삭제 버튼을 누른 경우
         if (modalAction === 'delete') {
             request('POST', `/study/delete/${studyId}`, {})
-            .then((response) => {
-                //console.log("Fetched study data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
-                // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
-                message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
-            });
+                .then((response) => {
+                    //console.log("Fetched study data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
+                    // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
+                    message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
+                });
 
             navigate('/study');
         }
-        
+
         // writer가 아닌 사람이 지원하기 버튼을 누른 경우
         else if (modalAction === 'apply') {
             request('POST', `/study/apply/${studyId}`, {})
@@ -205,34 +213,34 @@ function DetailStudyPage() {
             console.error("Error approving user:", error);
         }
     };
-    
+
     const handleScrapModalConfirm = async () => {
         // 스크랩 버튼을 누른 경우
         if (scrapAction === 'scrap') {
             request('POST', `/study/scrap/${studyId}`, {})
-            .then((response) => {
-                //console.log("Fetched study data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
-                // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
-                message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
-            });
+                .then((response) => {
+                    //console.log("Fetched study data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
+                    // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
+                    message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
+                });
 
             navigate(`/study/detail/${studyId}`);
         }
-        
+
         // 스크랩 취소 버튼을 누른 경우
         else if (scrapAction === 'cancelScrap') {
             request('POST', `/study/cancelScrap/${studyId}`, {})
-            .then((response) => {
-                //console.log("Fetched study data:", response.data); // Log the fetched data
-                setData(response.data); // 백엔드에서 받아온 데이터 세팅
-            })
-            .catch((error) => {
-                console.error("Error fetching study data:", error);
-            });
+                .then((response) => {
+                    //console.log("Fetched study data:", response.data); // Log the fetched data
+                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                })
+                .catch((error) => {
+                    console.error("Error fetching study data:", error);
+                });
 
             navigate(`/study/detail/${studyId}`);
         }
@@ -303,35 +311,35 @@ function DetailStudyPage() {
             message.error("답글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.");
         }
     };
-    
-        // 댓글 또는 답글 업로드 후 가장 최신의 댓글 정보를 백엔드에서 다시 가져오기
-        const fetchCommentData = async () => {
 
-            try {
-                const queryParams = new URLSearchParams({
-                    studyId: studyId,
-                    page: currentPage, // 몇번째 댓글부터
-                    size: pageSize // 몇번째 댓글까지 가져올건지 설정
-                });
-    
-                const response = await request('GET', `/getCommentDataInStudy?${queryParams}`);
-    
-    
-                setCommentData(response.data); // 댓글 가져와서 저장
-                setTotalPages(response.data.totalElements) // 현재 백엔드에서 관리되고 있는 부모 댓글들이 몇개인지 확인
-    
-                if (pageSize < response.data.totalElements) { // 만약 현재 limit값이 전체 부모 댓글 수보다 적다면
-                    setMoreCommentsAvailable(true); // 더보기 버튼 활성화
-                } else {
-                    setMoreCommentsAvailable(false);
-                }
-    
+    // 댓글 또는 답글 업로드 후 가장 최신의 댓글 정보를 백엔드에서 다시 가져오기
+    const fetchCommentData = async () => {
+
+        try {
+            const queryParams = new URLSearchParams({
+                studyId: studyId,
+                page: currentPage, // 몇번째 댓글부터
+                size: pageSize // 몇번째 댓글까지 가져올건지 설정
+            });
+
+            const response = await request('GET', `/getCommentDataInStudy?${queryParams}`);
+
+
+            setCommentData(response.data); // 댓글 가져와서 저장
+            setTotalPages(response.data.totalElements) // 현재 백엔드에서 관리되고 있는 부모 댓글들이 몇개인지 확인
+
+            if (pageSize < response.data.totalElements) { // 만약 현재 limit값이 전체 부모 댓글 수보다 적다면
+                setMoreCommentsAvailable(true); // 더보기 버튼 활성화
+            } else {
+                setMoreCommentsAvailable(false);
             }
-    
-            catch (error) {
-                console.error('Error fetching comments:', error);
-            }
-        };
+
+        }
+
+        catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    };
 
 
     // reply버튼 누르면, replyToCommentId를 해당 댓글(부모) id로 세팅
@@ -345,21 +353,7 @@ function DetailStudyPage() {
         setReplyToCommentId(null);
         setReplyText(''); // 답글 작성 취소 시 텍스트 초기화
     };
-    
-    
-    // 댓글의 삭제 버튼 누르면, 백엔드에 삭제 요청 보냄
-    const handleDeleteComment = async (commentId) => {
-        try {
-            const response = await request('POST', `/deleteComments/${commentId}`);
-            if (response.status === 200) {
-                message.success("댓글이 삭제되었습니다.");
-                fetchCommentData(); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
-            }
-        } catch (error) {
-            console.error("댓글 삭제에 실패했습니다.", error);
-            message.error("댓글 삭제에 실패했습니다.");
-        }
-    };
+
 
     // 답글 숨기기, 답글 보기 관련
     const toggleReplyVisibility = (commentId) => {
@@ -369,49 +363,6 @@ function DetailStudyPage() {
         }));
     };
 
-    // 댓글 수정 버튼을 눌렀을 때
-    const handleEditComment = (commentId, commentText) => {
-
-        setEditingCommentId(commentId); // 댓글 수정할 댓글 id를 세팅
-        setEditedCommentText(commentText); // 해당 댓글의 내용을 editedCommentText에 설정
-    };
-    
-    // 수정 완료 버튼을 눌렀을 때
-    const handleEditCommentSubmit = async (commentId) => {
-
-        // 수정된 댓글 내용을 백엔드로 전송하는 로직을 추가
-        if (editedCommentText.trim() === '') {
-            message.warning("내용을 입력하세요.");
-            return;
-        }
-
-        try {
-            await request('PUT', `/updateComments/${commentId}`, {
-                content: editedCommentText, // 답글 내용
-
-            });
-
-
-            // 수정 상태 초기화
-            setEditingCommentId(null);
-            setEditedCommentText('');
-            message.success("댓글이 성공적으로 수정 되었습니다.");
-
-            fetchCommentData(); // 댓글 수정이 완료되었다면, 최근 수정된 댓글이 반영된 결과를 다시 조회해옴
-
-        } catch (error) {
-            console.error("댓글 수정에 실패했습니다. 잠시 후 다시 시도하세요.", error);
-            message.error("댓글 수정에 실패했습니다. 잠시 후 다시 시도하세요.");
-        }
-
-
-    };
-
-    // 수정 - 취소 버튼을 눌렀을 때
-    const handleCancelEditComment = () => {
-        setEditingCommentId(null);
-        setEditedCommentText('');
-    };
 
     // 댓글 컴포넌트 숨기기 관련
     const toggleCommentsVisibility = () => {
@@ -435,10 +386,146 @@ function DetailStudyPage() {
             fetchCommentData(); // 그 후 다시 렌더링
         }
 
-    } 
-    
-    
+    }
 
+    ////////////////// 댓글 , 답글 수정 관련 ////////////////
+
+    // 댓글 수정 버튼을 눌렀을 때
+    const handleEditComment = (commentId, commentText) => {
+
+        setEditingCommentId(commentId); // 댓글 수정할 댓글 id를 세팅
+        setEditedCommentText(commentText); // 해당 댓글의 내용을 editedCommentText에 설정
+    };
+
+    // 수정 - 취소 버튼을 눌렀을 때
+    const handleCancelEditComment = () => {
+        setEditingCommentId(null);
+        setEditedCommentText('');
+    };
+
+    // 수정 완료 버튼을 누르면, 해당 댓글 또는 답글의 id와 최상위 여부 값을 전달받음
+    const showCommentEditConfirmModal = (commentId, isTopLevel) => {
+
+        setIsTopLevelUsedByEditing(isTopLevel) // 댓글, 답글 수정 기능에서 사용되는 최상위 부모 여부 값을 상태에 저장
+        setEditingCommentId(commentId); // 현재 수정하고자 하는 댓글, 답글의 id값을 상태에 저장
+        setCommentEditConfirmModalVisible(true); // 댓글, 답글 수정 관련 모달을 활성화
+
+    }
+
+    // 수정 완료 모달에서 ok 버튼을 눌렀을 때
+    const handleCommentEditModalOk = () => {
+        setCommentEditConfirmModalVisible(false); // 모달 렌더링을 비활성화
+        handleEditCommentSubmit(editingCommentId, isTopLevelUsedByEditing); // 백엔드에 해당 댓글 또는 답글의 수정 요청을 보냄
+    }
+
+    // 수정 완료 모달에서 cancel 버튼을 눌렀을 때
+    const handleCommentEditModalCancel = () => {
+        setCommentEditConfirmModalVisible(false); // 모달 렌더링을 비활성화
+    }
+
+    // 수정 완료 버튼을 눌렀을 때- 백엔드에 요청 보내기
+    const handleEditCommentSubmit = async (commentId, isTopLevel) => {
+
+        // 수정된 댓글 내용을 백엔드로 전송하는 로직을 추가
+        if (editedCommentText.trim() === '') {
+            if (isTopLevel === true) {
+                message.warning("댓글 내용을 입력하세요.");
+            }
+
+            else {
+                message.warning("답글 내용을 입력하세요.");
+            }
+
+            return;
+        }
+
+        try {
+            await request('PUT', `/updateComments/${commentId}`, {
+                content: editedCommentText, // 답글 내용
+            });
+
+
+            // 수정 상태 초기화
+            setEditingCommentId(null);
+            setEditedCommentText('');
+            setIsTopLevelUsedByEditing(null);
+
+            if (isTopLevel === true) {
+                message.success("댓글이 성공적으로 수정 되었습니다.");
+            }
+            else {
+                message.success("답글이 성공적으로 수정 되었습니다.");
+            }
+
+
+            fetchCommentData(); // 댓글 수정이 완료되었다면, 최근 수정된 댓글이 반영된 결과를 다시 조회해옴
+
+        } catch (error) {
+            console.error("수정에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            if (isTopLevel === true) {
+                message.error("댓글 수정에 실패했습니다. 잠시 후 다시 시도하세요.");
+            }
+            else {
+                message.error("답글 수정에 실패했습니다. 잠시 후 다시 시도하세요.");
+            }
+
+
+        }
+    };
+
+    ////////////////////////////////////////////////////////
+
+    ////////////////// 댓글 , 답글 삭제 관련 ////////////////
+
+    // 댓글의 삭제 버튼 누르면, 삭제 관련 모달을 띄우기
+    const showCommentDeleteConfirmModal = (commentId, isTopLevel) => {
+
+        setIsTopLevelUsedByDelete(isTopLevel); // 댓글, 답글 삭제 기능에서 사용되는 최상위 부모 여부 값을 상태에 저장
+        setDeleteCommentId(commentId); // 현재 삭제하고자 하는 댓글, 답글의 id값을 상태에 저장
+        setCommentDeleteConfirmModalVisible(true); // 댓글, 답글 삭제 관련 모달을 활성화
+
+    };
+
+    // 삭제 모달에서 ok 버튼을 눌렀을 때
+    const handleCommentDeleteModalOk = () => {
+        setCommentDeleteConfirmModalVisible(false); // 모달 렌더링을 비활성화
+        handleDeleteComment(deleteCommentId, isTopLevelUsedByDelete); // 백엔드에 해당 댓글 또는 답글의 삭제 요청을 보냄
+    }
+
+    // 삭제 모달에서 cancel 버튼을 눌렀을 때
+    const handleCommentDeleteModalCancel = () => {
+        setCommentDeleteConfirmModalVisible(false); // 모달 렌더링을 비활성화
+    }
+
+    // 댓글 또는 답글의 삭제 요청을 백엔드에 보내기
+    const handleDeleteComment = async (commentId, isTopLevel) => {
+        try {
+            const response = await request('POST', `/deleteComments/${commentId}`);
+            if (response.status === 200) {
+
+                if (isTopLevel === true) {
+                    message.success("댓글이 삭제되었습니다.");
+                }
+                else {
+                    message.success("답글이 삭제되었습니다.");
+                }
+
+                setIsTopLevelUsedByDelete(null);
+                fetchCommentData(); // 삭제 완료 후 다시 최신 댓글 정보 받아옴
+            }
+        } catch (error) {
+            console.error("삭제에 실패했습니다.", error);
+            if (isTopLevel === true) {
+                message.error("댓글 삭제에 실패했습니다.");
+            }
+            else {
+                message.error("답글 삭제에 실패했습니다.");
+            }
+
+
+        }
+    };
+    ////////////////////////////////////////////////////////
 
 
     // 댓글의 렌더링 관련
@@ -470,7 +557,8 @@ function DetailStudyPage() {
                                     // 수정 중이 아닐 때, "수정" 버튼 표시
                                     <Button size="small" onClick={() => handleEditComment(comment.id, comment.content)}>수정</Button>
                                 )}
-                                <Button size="small" onClick={() => handleDeleteComment(comment.id)}>삭제</Button>
+                                {/* <Button size="small" onClick={() => handleDeleteComment(comment.id)}>삭제</Button> */}
+                                <Button size="small" onClick={() => showCommentDeleteConfirmModal(comment.id, comment.isTopLevel)}>삭제</Button>
                             </div>
                         )}
                         {!comment.commentWriter && (
@@ -490,7 +578,10 @@ function DetailStudyPage() {
 
                             />
                             <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
-                                <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button>
+                                {/* <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button> */}
+                                <Button size="small" onClick={() => showCommentEditConfirmModal(comment.id, comment.isTopLevel)}>
+                                    수정 완료
+                                </Button>
                             </div>
                         </>
                     ) : (
@@ -531,8 +622,8 @@ function DetailStudyPage() {
             </Card>
         ));
     };
-    
-    
+
+
 
 
 
@@ -543,7 +634,7 @@ function DetailStudyPage() {
         const isScrapped = data.scrap;      // 게시물이 스크랩되었나?
         const isApplying = data.applying;   // 승인 대기 중인가?
         const isApplied = data.applied;     // 승인 완료되었나?
-    
+
         return (
             <Row>
                 <Col span={12}>
@@ -717,7 +808,7 @@ function DetailStudyPage() {
             {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
             {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
             {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
-            
+
             {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
             <Divider className="bold-divider" />
 
@@ -729,9 +820,9 @@ function DetailStudyPage() {
                 </Col>
                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                 <Col span={8} className="vertical-line">
-                    <div  style={{ marginLeft: '3px' }}>
+                    <div style={{ marginLeft: '3px' }}>
                         {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                        분류: &nbsp; {data.web?" Web ":""}{data.app?" App ":""}{data.game?" Game ":""}{data.ai?" AI ":""}
+                        분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
                     </div>
                 </Col>
             </Row>
@@ -749,7 +840,7 @@ function DetailStudyPage() {
                     <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
                         인원: {data.counts} / {data.recruitmentCount}
                     </div>
-                    <div  style={{ marginLeft: '3px' }}>
+                    <div style={{ marginLeft: '3px' }}>
                         모집 마감일: {formatDate(data.endDate)}
                     </div>
                 </Col>
@@ -778,7 +869,7 @@ function DetailStudyPage() {
                 <Button size="small" onClick={toggleCommentsVisibility}>
                     {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
                 </Button>
-            </div> 
+            </div>
 
 
 
@@ -825,7 +916,7 @@ function DetailStudyPage() {
                     </div> */}
                 </div>
 
-            )}                       
+            )}
 
             {/* Modal */}
             <Modal
@@ -851,7 +942,7 @@ function DetailStudyPage() {
                 onCancel={handleCancelModalConfirm}
                 okText="아니오"
                 cancelText="예"
-                >
+            >
                 <p>지원을 취소하시겠습니까?</p>
             </Modal>
             <Modal
@@ -868,6 +959,26 @@ function DetailStudyPage() {
                 {scrapAction === 'cancelScrap' && (
                     <p>스크랩을 취소하시겠습니까?</p>
                 )}
+            </Modal>
+            <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
+                title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
+                open={commentEditConfirmModalVisible}
+                onOk={handleCommentEditModalCancel}
+                onCancel={handleCommentEditModalOk}
+                okText="아니오"
+                cancelText="예"
+            >
+                {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
+            </Modal>
+            <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
+                title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
+                open={commentDeleteConfirmModalVisible}
+                onOk={handleCommentDeleteModalCancel}
+                onCancel={handleCommentDeleteModalOk}
+                okText="아니오"
+                cancelText="예"
+            >
+                {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
             </Modal>
         </div>
     )

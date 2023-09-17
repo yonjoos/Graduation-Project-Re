@@ -42,8 +42,9 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @Column(name = "title", nullable = false)
     private String title; //게시물 이름
 
-    @Column(name = "counts", nullable = false)
-    private Integer counts;
+    // 오류 없는 코드를 위하여, counts는 count 쿼리로 대체
+//    @Column(name = "counts", nullable = false)
+//    private Integer counts;
 
     @Column(name = "recruitmentCount", nullable = false)
     private Integer recruitmentCount; // 총 지원자 수
@@ -60,36 +61,36 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @Column(name = "endDate", nullable = false)
     private LocalDate endDate; //모집 마감 기간
 
-    public Posts(User user, PostType postType, String title, Integer recruitmentCount, Integer counts, String content, String promoteImageUrl, String fileUrl, LocalDate endDate) {
-        this.user = user;
-        this.postType = postType;
-        this.title = title;
-        this.recruitmentCount = recruitmentCount;
-        this.counts = counts;
-        this.content = content;
-        this.promoteImageUrl = promoteImageUrl;
-        this.fileUrl = fileUrl;
-        this.endDate = endDate;
-    }
-
-    public String apply() {
-        if (this.getCounts().equals(this.getRecruitmentCount())) {
-            return "fail";
-        }
-        else {
-            this.setCounts(this.getCounts() + 1);
-            return "ok";
-        }
-    }
-
-    public String cancel() {
-        // 누군가가 지원 취소하더라도, 본인은 이미 지원되어있으므로, counts는 최소 1명이다. 따라서 2명 이상일 때 1을 뺀다.
-        if (this.getCounts() > 1) {
-            this.setCounts(this.getCounts() - 1);
-            return "ok";
-        }
-        else {
-            return "fail";
-        }
-    }
+//    public Posts(User user, PostType postType, String title, Integer recruitmentCount, Integer counts, String content, String promoteImageUrl, String fileUrl, LocalDate endDate) {
+//        this.user = user;
+//        this.postType = postType;
+//        this.title = title;
+//        this.recruitmentCount = recruitmentCount;
+//        this.counts = counts;
+//        this.content = content;
+//        this.promoteImageUrl = promoteImageUrl;
+//        this.fileUrl = fileUrl;
+//        this.endDate = endDate;
+//    }
+//
+//    public String apply() {
+//        if (this.getCounts().equals(this.getRecruitmentCount())) {
+//            return "fail";
+//        }
+//        else {
+//            this.setCounts(this.getCounts() + 1);
+//            return "ok";
+//        }
+//    }
+//
+//    public String cancel() {
+//        // 누군가가 지원 취소하더라도, 본인은 이미 지원되어있으므로, counts는 최소 1명이다. 따라서 2명 이상일 때 1을 뺀다.
+//        if (this.getCounts() > 1) {
+//            this.setCounts(this.getCounts() - 1);
+//            return "ok";
+//        }
+//        else {
+//            return "fail";
+//        }
+//    }
 }

@@ -1,5 +1,6 @@
 package PickMe.PickMeDemo.service;
 
+import PickMe.PickMeDemo.dto.NotificationMessageDto;
 import PickMe.PickMeDemo.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,9 @@ public class NotificationService {
         System.out.println("emitter = " + emitter);
         System.out.println("========end subscribe==========");
 
-        sendToClient(userId, "EventStream Created. [userId=" + userId + "]");
+        NotificationMessageDto notificationMessageDto = new NotificationMessageDto("EventStream Created. [userId=" + userId + "]");
+
+        sendToClient(userId, notificationMessageDto);
         return emitter;
     }
 

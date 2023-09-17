@@ -184,16 +184,6 @@ function DetailStudyPage() {
                     console.error("Error fetching study data:", error);
                 });
 
-            // request('POST', `/sse/send-data/${data.nickName}`, {
-            //     message: `${data.nickName}님이 스터디에 지원하였습니다.`,
-            // })
-            //     .then((response) => {
-            //         console.log('알림이 상대방에게 전송되었습니다 : ', response.data);
-            //     })
-            //     .catch((error) => {
-            //         console.error('Error:', error.response.data);
-            //     });
-
             navigate(`/study/detail/${studyId}`);
         }
 

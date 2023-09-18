@@ -1441,30 +1441,32 @@ public class PostsService {
         if (!findPosts.getRecruitmentCount().equals(applicationCount)) {
             // 승인 여부를 true로 변경
             findUserApplyPosts.setConfirm(true);
+
+            // 지원 승인 시, 게시물 지원자에게 알림.
+            System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원이 승인되었습니다.\"); ======");
+            System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
+
+            String findWriterNickname = findPosts.getUser().getNickName();
+            String title = findPosts.getTitle();
+
+            NotificationMessageDto notificationMessage;
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                notificationMessage = new NotificationMessageDto("Applied/posts/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + title + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("Applied/posts/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + title + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            }
+
+            // 지원을 승인하려는 유저에게 notify 발송
+            notificationService.notify(findUser.getId(), notificationMessage);
+            System.out.println("==========================================================");
         }
 
         userApplyPostsRepository.save(findUserApplyPosts);
 
 
-        // 지원 승인 시, 게시물 지원자에게 알림.
-        System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원이 승인되었습니다.\"); ======");
-        System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
 
-        String findWriterNickname = findPosts.getUser().getNickName();
-        String title = findPosts.getTitle();
-
-        NotificationMessageDto notificationMessage;
-
-        if (PostType.PROJECT.equals(findPosts.getPostType())) {
-            notificationMessage = new NotificationMessageDto("Applied/posts/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + title + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-        }
-        else  {
-            notificationMessage = new NotificationMessageDto("Applied/posts/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + title + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-        }
-
-        // 지원을 승인하려는 유저에게 notify 발송
-        notificationService.notify(findUser.getId(), notificationMessage);
-        System.out.println("==========================================================");
 
 
         // 지원자가 '승인' 버튼을 눌렀을 때, 디테일 페이지에서 '승인 완료'버튼이 바로 보이고, 현재 인원 + 1이 되도록 하기 위해 동적 쿼리 생성

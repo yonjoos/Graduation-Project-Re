@@ -74,40 +74,40 @@ public class PostsController {
     ------ @ GetMapping
     */
 
-    // 프로젝트 리스트 조회
-    @GetMapping("/getProjectList")
-    public ResponseEntity<List<PostsListDto>> getProjectList() {
-        return getPostsList(PostType.PROJECT);
-    }
-
-    // 스터디 리스트 조회
-    @GetMapping("/getStudyList")
-    public ResponseEntity<List<PostsListDto>> getStudyList(Principal principal) {
-        return getPostsList(PostType.STUDY);
-    }
-
-
-
-    // Project와 Study의 게시물 리스트를 조회하는 코드는 매우 유사하다.
-    // 따라서 공통된 부분을 묶어주고, 둘을 구분할 수 있도록 PostType을 넣어준다.
-    private ResponseEntity<List<PostsListDto>> getPostsList(PostType postType) {
-
-        List<PostsListDto> postsListDtoList;
-
-        try {
-            if (postType == PostType.PROJECT) {
-                postsListDtoList = postsService.getProjectList();
-            } else if (postType == PostType.STUDY) {
-                postsListDtoList = postsService.getStudyList();
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-
-            return ResponseEntity.ok(postsListDtoList);
-        } catch (AppException ex) {
-            return ResponseEntity.status(ex.getStatus()).body(null);
-        }
-    }
+    // 프로젝트 리스트 조회 -> getFilteredProjects, getFilteredStudies로 대체
+//    @GetMapping("/getProjectList")
+//    public ResponseEntity<List<PostsListDto>> getProjectList() {
+//        return getPostsList(PostType.PROJECT);
+//    }
+//
+//    // 스터디 리스트 조회
+//    @GetMapping("/getStudyList")
+//    public ResponseEntity<List<PostsListDto>> getStudyList(Principal principal) {
+//        return getPostsList(PostType.STUDY);
+//    }
+//
+//
+//
+//    // Project와 Study의 게시물 리스트를 조회하는 코드는 매우 유사하다.
+//    // 따라서 공통된 부분을 묶어주고, 둘을 구분할 수 있도록 PostType을 넣어준다.
+//    private ResponseEntity<List<PostsListDto>> getPostsList(PostType postType) {
+//
+//        List<PostsListDto> postsListDtoList;
+//
+//        try {
+//            if (postType == PostType.PROJECT) {
+//                postsListDtoList = postsService.getProjectList();
+//            } else if (postType == PostType.STUDY) {
+//                postsListDtoList = postsService.getStudyList();
+//            } else {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//            }
+//
+//            return ResponseEntity.ok(postsListDtoList);
+//        } catch (AppException ex) {
+//            return ResponseEntity.status(ex.getStatus()).body(null);
+//        }
+//    }
 
 
 
@@ -290,114 +290,6 @@ public class PostsController {
 
         return ResponseEntity.ok(filteredStudies);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

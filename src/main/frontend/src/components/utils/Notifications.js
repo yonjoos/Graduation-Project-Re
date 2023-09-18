@@ -26,14 +26,15 @@
                     Authorization: `Bearer ${authToken}`, // Include JWT token in headers
                 },
                 withCredentials: true,
-                heartbeatTimeout: 10000,
+                heartbeatTimeout: 600000,    // 600000ms동안 한 번의 SSE가 열려있음. 즉, 600초(10분)간 연결 유지 후 연결 종료 후 새로운 다음 SSE 연결 시도
             });
 
             // 백엔드의 sendToClient함수의 send의 인자인 .name("sse")와 연관됨.
             eventSource.addEventListener('sse', event => {
                 console.log("event", event);
                 // 서버에서 온 알림을 표시합니다.
-                const newMessage = event.data;
+                const eventData = JSON.parse(event.data); // event.data를 JSON 객체로 파싱
+                const newMessage = eventData.message; // "message" 속성의 값 추출
 
                 // "EventStream Created" 메시지 필터링
                 if (newMessage.includes("EventStream Created")) {
@@ -48,6 +49,7 @@
                 notification.info({
                     message: "New Notification",
                     description: newMessage,
+                    duration: 30,   // 알림이 떠있는 시간 30초로 설정
                     style: {
                         backgroundImage: "linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%)",
                         
@@ -71,7 +73,8 @@
             eventSource.onmessage = (event) => {
                 try {
                     console.log("SSE message received:", event.data);
-                    const newMessage = event.data;
+                    const eventData = JSON.parse(event.data); // event.data를 JSON 객체로 파싱
+                    const newMessage = eventData.message; // "message" 속성의 값 추출
                     setMessages(prevMessages => [...prevMessages, newMessage]);
                 } catch (error) {
                     console.error("Error in onmessage:", error);

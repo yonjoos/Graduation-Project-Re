@@ -1424,8 +1424,24 @@ public class PostsService {
 //            findUserApplyPosts.setConfirm(true);
 //        }
 
-        // 승인 여부를 true로 변경
-        findUserApplyPosts.setConfirm(true);
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applicationCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applicationCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applicationCountOptional.isPresent()) {
+            applicationCount = applicationCountOptional.get() + 1;
+        } else {
+            applicationCount = 1;
+        }
+
+        // recruitmentCount(모집인원)과 같지 않아야 승인 가능
+        if (!findPosts.getRecruitmentCount().equals(applicationCount)) {
+            // 승인 여부를 true로 변경
+            findUserApplyPosts.setConfirm(true);
+        }
 
         userApplyPostsRepository.save(findUserApplyPosts);
 

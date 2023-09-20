@@ -142,7 +142,8 @@ function PortfolioPage() {
 
             {/** 아직 포트폴리오를 만들지 않았다면? */}
             {data && !data.isCreated ? (
-                <div>
+                <div style={{ marginLeft: '15%' }}>
+                    <br/>
                     <h2> {data.nickName} 님의 포트폴리오가 아직 작성되지 않았습니다.</h2>
                     <br />
                     <br />

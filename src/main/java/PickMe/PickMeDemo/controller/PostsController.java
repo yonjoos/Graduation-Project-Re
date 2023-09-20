@@ -132,6 +132,15 @@ public class PostsController {
         return ResponseEntity.ok(postsDto);
     }
 
+    // 게시물 작성자라면, 지원자 조회
+    @GetMapping("/getProjectApplicants/{projectId}") // Use path variable to get project ID from URL
+    private ResponseEntity<List<ApplicantDto>> getProjectApplicants(@PathVariable Long projectId, Principal principal) {
+        String userEmail = principal.getName();
+
+        List<ApplicantDto> applicantDto = postsService.getApplicants(userEmail, projectId);
+
+        return ResponseEntity.ok(applicantDto);
+    }
 
 
     /*
@@ -343,7 +352,7 @@ public class PostsController {
 
 
 
-    // 지원 승인
+    // 그룹 페이지에서 지원 승인
     @PutMapping("/posts/approve")
     private ResponseEntity<Page<GroupPostsDto>> approveUserWithPosts(
             @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
@@ -360,6 +369,22 @@ public class PostsController {
         Page<GroupPostsDto> groupPosts = postsService.approveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
+    }
+
+    // 디테일 페이지에서 지원 승인
+    @PutMapping("/posts/detail/approve")
+    private ResponseEntity<List<ApplicantDto>> approveUserWithPostsInDetail(
+            @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
+            @RequestParam Long postsId,   // 프론트엔드에서 넘어온 프로젝트 ID
+            Principal principal) {      // 본인이 쓴 글인지, 남이 쓴 글인지 구분하기 위해 현재 유저의 정보 가져오기
+
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        List<ApplicantDto> applicantDtoList = postsService.approveUserInDetail(userEmail, nickName, postsId);
+
+        return ResponseEntity.ok(applicantDtoList);
     }
 
 
@@ -404,7 +429,7 @@ public class PostsController {
 
 
 
-    // 승인 취소
+    // 그룹 페이지에서 승인 취소
     @PutMapping("/posts/cancelApprove")
     private ResponseEntity<Page<GroupPostsDto>> cancelApproveUserWithPost(
             @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
@@ -420,6 +445,21 @@ public class PostsController {
         Page<GroupPostsDto> groupPosts = postsService.cancelApproveUser(userEmail, nickName, postsId, sortOption, PageRequest.of(page, size));
 
         return ResponseEntity.ok(groupPosts);
+    }
+
+    // 디테일 페이지에서 지원 승인
+    @PutMapping("/posts/detail/cancelApprove")
+    private ResponseEntity<List<ApplicantDto>> cancelApproveUserWithPostInDetail(
+            @RequestParam String nickName,  // 프론트엔드에서 넘어온 지원한 유저의 닉네임
+            @RequestParam Long postsId,   // 프론트엔드에서 넘어온 프로젝트 ID
+            Principal principal) {      // 본인이 쓴 글인지, 남이 쓴 글인지 구분하기 위해 현재 유저의 정보 가져오기
+
+        // Email 찾기
+        String userEmail = principal.getName();
+
+        List<ApplicantDto> applicantDtoList = postsService.cancelApproveUserInDetail(userEmail, nickName, postsId);
+
+        return ResponseEntity.ok(applicantDtoList);
     }
 
 

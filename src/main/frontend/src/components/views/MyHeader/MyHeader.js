@@ -8,6 +8,7 @@ import { logout } from '../../../_actions/actions'
 import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { setLastVisitedEndpoint } from '../../../hoc/request';
 import CustomDropdown from './Sections/CustomDropdown';
+import { CloseOutlined } from '@ant-design/icons';
 //import Notifications from '../../utils/Notifications';
 
 const { Header } = Layout;
@@ -85,8 +86,21 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     // };
 
     // 알림 카드 각각을 클릭했을 때 동작
-    const handleCardClick = (postId, postType) => {
+    const handleCardClick = (postId, postType, notificationId) => {
 
+        // 알림을 읽으면, Notifications table의 checked를 true로 바꾸기 위해 put request 전송
+        request('PUT', `sse/checkNotification/${notificationId}`, {})
+            .then((response) => {
+                console.log("알림을 읽었습니다.");
+            })
+            .catch((error) => {
+                console.log("Error fetching data:", error);
+                message.error('데이터베이스에서 checked를 true로 바꾸는데 실패했습니다.');
+            });
+
+        // Notification Drawer 창 닫기
+        onClose();
+        
         // /project/detail/${projectId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /project로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project로 설정
         dispatch(lastVisitedEndpoint(currentEndpoint));    // 전역에 상태 저장을 위한 
@@ -96,7 +110,6 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         const lowerType = postType.toLowerCase(); // 백엔드에서 받은 postType은 PROJECT , STUDY와 같은 형식이므로 navigate를 위해선 소문자로 바꿔줄 필요가 있음
 
         navigate(`${lowerType}/detail/${postId}`); // 알림에 해당하는 게시물로 navigate 걸어줌
-
     };
 
     // 알림 카드 닫기 버튼 클릭시 호출될 함수
@@ -158,22 +171,42 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                                                     notification.postId === null &&
                                                     notification.notificationMessage === null &&
                                                     notification.postType === null &&
-                                                    notification.notificationId === null
+                                                    notification.notificationId === null &&
+                                                    notification.isRead === null
                                                 ) {
                                                     return null; // postId, notificationMessage, postType, notificationId이 모두 null인 경우 카드를 렌더링하지 않음
                                                 }
+
+                                                // notification.isRead 값에 따라 다른 스타일을 적용
+                                                const cardStyle = {
+                                                    cursor: 'pointer',
+                                                    marginBottom: '10px',
+                                                    backgroundColor: notification.isRead ? 'white' : '#ffffdd', // isRead가 false이면 안읽은 게시물로 배경색을 다르게 설정
+                                                };
+
                                                 return (
                                                     <Card
                                                         key={index}
-                                                        onClick={() => handleCardClick(notification.postId, notification.postType)}
-                                                        style={{ cursor: 'pointer', marginBottom: '10px' }}
+                                                        onClick={() => handleCardClick(notification.postId, notification.postType, notification.notificationId)}
+                                                        style={cardStyle}
                                                     >
-                                                        <span
-                                                            style={{ position: 'absolute', right: '4px', top: '4px', cursor: 'pointer', fontSize: '20px' }}
+                                                        <Button
+                                                            style={{
+                                                                position: 'absolute',
+                                                                right: '4px',
+                                                                top: '4px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '20px',
+                                                                backgroundColor: '#ddddff',
+                                                                border: 'none', // 버튼 스타일링을 위해 추가
+                                                                display: 'flex', // 아이콘과 텍스트를 가운데 정렬하기 위해 추가
+                                                                alignItems: 'center', // 아이콘을 세로 중앙에 정렬하기 위해 추가
+                                                                justifyContent: 'center', // 아이콘을 가로 중앙에 정렬하기 위해 추가
+                                                            }}
+                                                            size="small"
                                                             onClick={handleCardClose(notification.notificationId)}
-                                                        >
-                                                            &times;
-                                                        </span>
+                                                            icon={<CloseOutlined />} // CloseOutlined 아이콘을 사용하여 X 모양 버튼으로 만듦
+                                                        />
                                                         {/* 여기에 알림 내용을 출력 */}
                                                         {notification.notificationMessage}
                                                     </Card>

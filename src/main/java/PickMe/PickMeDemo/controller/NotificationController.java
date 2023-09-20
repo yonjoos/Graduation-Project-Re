@@ -78,4 +78,15 @@ public class NotificationController {
         }
     }
 
+    // 읽은 알림 처리하는 컨트롤러
+    @PutMapping("checkNotification/{notificationId}")
+    public ResponseEntity<String> checkNotification(@PathVariable Long notificationId) {
+        try {
+            notificationService.checkNotification(notificationId);
+            return ResponseEntity.ok("알림을 읽음 처리했습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알림 읽음 처리에 실패했습니다.");
+        }
+    }
 }

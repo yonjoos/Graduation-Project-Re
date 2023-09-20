@@ -52,134 +52,146 @@ function App() {
                 <MyHeader logoSrc={logo4} />
                 <Content style={{ padding: '20px' }}>
                     <div style={{ paddingLeft : '15%', paddingRight : '15%' }}>
-                    <Routes>
-                        {
-                            /**
-                             * 테스트 방법
-                             * 
-                             * Auth(페이지명, null) -> 누구나 들어갈 수 있는 페이지
-                             * => 로그아웃, 로그인, 관리자 모두 들어가지나 확인해본다.
-                             * 
-                             * Auth(페이지명, true) -> 로그인한 유저(ADMIN, USER)만 들어갈 수 있는 페이지
-                             * => 로그아웃 유저는 해당 EndPointer로 접근 불가. 로그인, 관리자는 해당 Endpointer로 접근 가능
-                             * 
-                             * Auth(페이지명, false) -> 로그인한 유저(ADMIN, USER)는 들어갈 수 없는 페이지
-                             * => 로그아웃 유저만 해당 EndPointer로 접근 가능. 로그인, 관리자는 해당 Endpointer로 접근 불가
-                             * 
-                             * Auth(페이지명, null, true) -> 관리자(ADMIN)만 들어갈 수 있는 페이지
-                             * => 로그아웃 유저 및 일반 유저는 해당 EndPointer로 접근 불가. 관리자만 해당 Endpointer로 접근 가능
-                             * 
-                             * Auth(페이지명, true, null, true) -> 유저(USER) 중 포트폴리오가 이미 작성된 사람이어야 들어갈 수 있는 페이지
-                             * => 포트폴리오를 작성하지 않은 사람은 해당 Endpointer로 접근 불가
-                             * 
-                             * Auth(페이지명, true, null, false) -> 유저(USER) 중 포트폴리오가 없는 사람이어야 들어갈 수 있는 페이지
-                             * => 포트폴리오를 작성한 사람은 해당 Endpointer로 접근 불가
-                             * 
-                             * 
-                             * 
-                             * 
-                             * Auth(페이지명, null)인 페이지는 모든 사용자가 접근 가능하다.
-                             * 따라서 isAuthenticated && userRole === 'ADMIN'을 구체적으로 명시해서, 각 사용자(비회원, 회원, 관리자)마다 보이는 화면이 다르도록 구분한다.
-                             * 
-                             * Auth(페이지명, true)인 페이지는 로그인한 유저만 접근 가능하다.
-                             * 따라서 isAuthenticated && userRole === 'ADMIN'을 구체적으로 명시해서, 각 사용자(회원, 관리자)마다 보이는 화면이 다르도록 구분한다.
-                             * 
-                             * Auth(페이지명, false)인 페이지는 로그인한 유저가 접근 불가능하다.
-                             * 따라서 비회원만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
-                             * 
-                             * Auth(페이지명, null, true)인 페이지는 관리자만 접근 가능하다.
-                             * 따라서 경우를 나누지 않고 코딩한다.
-                             * 
-                             * Auth(페이지명, true, null, true)인 페이지는 로그인한 유저 중 포트폴리오가 이미 작성된 사람만 들어갈 수 있다.
-                             * 따라서 오직 포트폴리오를 작성하지 않은 유저는 접근 불가능하므로, 경우를 나누지 않고 코딩한다.
-                             * 
-                             * Auth(페이지명, true, null, false)인 페이지는 로그인한 유저 중 포트폴리오가 없는 사람만 들어갈 수 있다.
-                             * 따라서 오직 포트폴리오를 작성한 유저는 접근 불가능하므로, 경우를 나누지 않고 코딩한다.
-                             * 
-                             */
-                        }
-                        <Route
-                            path="/"
-                            element={Auth(LandingPage, null)}
-                        />
-                        <Route
-                            path="/adminPage"
-                            element={Auth(AdminPage, null, true)}
-                        />
-                        <Route
-                            path="/myPage"
-                            element={Auth(MyPage, true)}
-                        />
-                        <Route
-                            path="/scrap"
-                            element={Auth(ScrapPage, true)}
-                        />
-                        <Route
-                            path="/portfolio"
-                            element={Auth(MyPortfolioPage, true)}
-                        />
-                        <Route
-                            // path 입력 시 / 빼먹는거 주의!! path="portfolio/upload" 아니라 path="/portfolio/upload"임!!
-                            path="/portfolio/upload"
-                            // User 중, Portfolio가 이미 작성되어있는 사람은 접근할 수 없는 페이지 : 윤식 comment
-                            // 이쪽 해석할 때 option: true -> 로그인된 사람만 접근 가능한 페이지인가? adminRoute : true -> 관리자만 접근 가능한가?  hasPortfolio : true -> 포폴 있는 사람만 접근 가능한가? 로 해석 (시홍)
-                            element={Auth(UploadPortfolioPage, true, null, false)} //로그인 되어있고, 역할 상관없이, 포폴 없는 사람만 접근 가능한 페이지
-                        />
-                        <Route
-                            path="/portfolio/update"
-                            // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
-                            element={Auth(UpdatePortfolioPage, true, null, true)} //로그인 되어있고, 역할 상관없이, 포폴 있는 사람만 접근 가능한 페이지(시홍)
-                        />
-                        <Route
-                            path="/portfolio/:nickName"
-                            element={Auth(PortfolioPage, true)}
-                        />
-                        <Route
-                            path="/group"
-                            element={Auth(GroupPage, true)}
-                        />
-                        <Route
-                            path="/login"
-                            element={Auth(LoginPage, false)}
-                        />
-                        <Route
-                            path="/portfoliocard"
-                            element={Auth(PortfolioCardPage, true)}
-                        />
-                        <Route
-                            path="/project"
-                            element={Auth(ProjectPage, true)}
-                        />
-                        <Route
-                            path="/project/detail/:projectId"
-                            element={Auth(DetailProjectPage, true)}
-                        />
-                        <Route
-                            path="/project/upload"
-                            element={Auth(UploadProjectPage, true)}
-                        />
-                        <Route
-                            path="/project/update/:projectId"
-                            element={Auth(UpdateProjectPage, true)}
-                        />
-                        <Route
-                            path="/study"
-                            element={Auth(StudyPage, true)}
-                        />
-                        <Route
-                            path="/study/detail/:studyId"
-                            element={Auth(DetailStudyPage, true)}
-                        />
-                        <Route
-                            path="/study/upload"
-                            element={Auth(UploadStudyPage, true)}
-                        />
-                        <Route
-                            path="/study/update/:studyId"
-                            element={Auth(UpdateStudyPage, true)}
-                        />
-                    </Routes>
-                    <Notifications/>
+                        <Routes>
+                            {
+                                /**
+                                 * 테스트 방법
+                                 * 
+                                 * Auth(페이지명, null) -> 누구나 들어갈 수 있는 페이지
+                                 * => 로그아웃, 로그인, 관리자 모두 들어가지나 확인해본다.
+                                 * 
+                                 * Auth(페이지명, true) -> 로그인한 유저(ADMIN, USER)만 들어갈 수 있는 페이지
+                                 * => 로그아웃 유저는 해당 EndPointer로 접근 불가. 로그인, 관리자는 해당 Endpointer로 접근 가능
+                                 * 
+                                 * Auth(페이지명, false) -> 로그인한 유저(ADMIN, USER)는 들어갈 수 없는 페이지
+                                 * => 로그아웃 유저만 해당 EndPointer로 접근 가능. 로그인, 관리자는 해당 Endpointer로 접근 불가
+                                 * 
+                                 * Auth(페이지명, null, true) -> 관리자(ADMIN)만 들어갈 수 있는 페이지
+                                 * => 로그아웃 유저 및 일반 유저는 해당 EndPointer로 접근 불가. 관리자만 해당 Endpointer로 접근 가능
+                                 * 
+                                 * Auth(페이지명, true, null, true) -> 유저(USER) 중 포트폴리오가 이미 작성된 사람이어야 들어갈 수 있는 페이지
+                                 * => 포트폴리오를 작성하지 않은 사람은 해당 Endpointer로 접근 불가
+                                 * 
+                                 * Auth(페이지명, true, null, false) -> 유저(USER) 중 포트폴리오가 없는 사람이어야 들어갈 수 있는 페이지
+                                 * => 포트폴리오를 작성한 사람은 해당 Endpointer로 접근 불가
+                                 * 
+                                 * 
+                                 * 
+                                 * 
+                                 * Auth(페이지명, null)인 페이지는 모든 사용자가 접근 가능하다.
+                                 * 따라서 isAuthenticated && userRole === 'ADMIN'을 구체적으로 명시해서, 각 사용자(비회원, 회원, 관리자)마다 보이는 화면이 다르도록 구분한다.
+                                 * 
+                                 * Auth(페이지명, true)인 페이지는 로그인한 유저만 접근 가능하다.
+                                 * 따라서 isAuthenticated && userRole === 'ADMIN'을 구체적으로 명시해서, 각 사용자(회원, 관리자)마다 보이는 화면이 다르도록 구분한다.
+                                 * 
+                                 * Auth(페이지명, false)인 페이지는 로그인한 유저가 접근 불가능하다.
+                                 * 따라서 비회원만 접근 가능하므로, 경우를 나누지 않고 코딩한다.
+                                 * 
+                                 * Auth(페이지명, null, true)인 페이지는 관리자만 접근 가능하다.
+                                 * 따라서 경우를 나누지 않고 코딩한다.
+                                 * 
+                                 * Auth(페이지명, true, null, true)인 페이지는 로그인한 유저 중 포트폴리오가 이미 작성된 사람만 들어갈 수 있다.
+                                 * 따라서 오직 포트폴리오를 작성하지 않은 유저는 접근 불가능하므로, 경우를 나누지 않고 코딩한다.
+                                 * 
+                                 * Auth(페이지명, true, null, false)인 페이지는 로그인한 유저 중 포트폴리오가 없는 사람만 들어갈 수 있다.
+                                 * 따라서 오직 포트폴리오를 작성한 유저는 접근 불가능하므로, 경우를 나누지 않고 코딩한다.
+                                 * 
+                                 */
+                            }
+                            <Route
+                                path="/"
+                                element={Auth(LandingPage, null)}
+                            />
+                            <Route
+                                path="/adminPage"
+                                element={Auth(AdminPage, null, true)}
+                            />
+                            <Route
+                                path="/myPage"
+                                element={Auth(MyPage, true)}
+                            />
+                            <Route
+                                path="/scrap"
+                                element={Auth(ScrapPage, true)}
+                            />
+                            <Route
+                                path="/portfolio"
+                                element={Auth(MyPortfolioPage, true)}
+                            />
+                            <Route
+                                // path 입력 시 / 빼먹는거 주의!! path="portfolio/upload" 아니라 path="/portfolio/upload"임!!
+                                path="/portfolio/upload"
+                                // User 중, Portfolio가 이미 작성되어있는 사람은 접근할 수 없는 페이지 : 윤식 comment
+                                // 이쪽 해석할 때 option: true -> 로그인된 사람만 접근 가능한 페이지인가? adminRoute : true -> 관리자만 접근 가능한가?  hasPortfolio : true -> 포폴 있는 사람만 접근 가능한가? 로 해석 (시홍)
+                                element={Auth(UploadPortfolioPage, true, null, false)} //로그인 되어있고, 역할 상관없이, 포폴 없는 사람만 접근 가능한 페이지
+                            />
+                            <Route
+                                path="/portfolio/update"
+                                // User 중, Portfolio가 없는 사람은 접근할 수 없는 페이지
+                                element={Auth(UpdatePortfolioPage, true, null, true)} //로그인 되어있고, 역할 상관없이, 포폴 있는 사람만 접근 가능한 페이지(시홍)
+                            />
+                            <Route
+                                path="/portfolio/:nickName"
+                                element={Auth(PortfolioPage, true)}
+                            />
+                            <Route
+                                path="/group"
+                                element={Auth(GroupPage, true)}
+                            />
+                            <Route
+                                path="/login"
+                                element={Auth(LoginPage, false)}
+                            />
+                            <Route
+                                path="/portfoliocard"
+                                element={Auth(PortfolioCardPage, true)}
+                            />
+                            <Route
+                                path="/project"
+                                element={Auth(ProjectPage, true)}
+                            />
+                            {/* <Route
+                                path="/project/detail/:projectId"
+                                element={Auth(DetailProjectPage, true)}
+                            /> */}
+                            <Route
+                                path="/project/upload"
+                                element={Auth(UploadProjectPage, true)}
+                            />
+                            <Route
+                                path="/project/update/:projectId"
+                                element={Auth(UpdateProjectPage, true)}
+                            />
+                            <Route
+                                path="/study"
+                                element={Auth(StudyPage, true)}
+                            />
+                            {/* <Route
+                                path="/study/detail/:studyId"
+                                element={Auth(DetailStudyPage, true)}
+                            /> */}
+                            <Route
+                                path="/study/upload"
+                                element={Auth(UploadStudyPage, true)}
+                            />
+                            <Route
+                                path="/study/update/:studyId"
+                                element={Auth(UpdateStudyPage, true)}
+                            />
+                        </Routes>
+                        <Notifications/>
+                    </div>
+                    <div>
+                        <Routes>
+                            <Route
+                                path="/project/detail/:projectId"
+                                element={Auth(DetailProjectPage, true)}
+                            />
+                            <Route
+                                path="/study/detail/:studyId"
+                                element={Auth(DetailStudyPage, true)}
+                            />
+                        </Routes>
                     </div>
                 </Content>
                 <Footer style={{ paddingLeft : '15%', paddingRight : '15%' }} logoSrc={logo4}/>

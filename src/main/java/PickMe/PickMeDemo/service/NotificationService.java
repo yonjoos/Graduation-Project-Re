@@ -136,6 +136,7 @@ public class NotificationService {
                     .postId(null)
                     .notificationMessage(null)
                     .postType(null)
+                    .isRead(null)
                     .build();
 
             findNotificationList.add(notificationDto);
@@ -150,6 +151,7 @@ public class NotificationService {
                         .postId(notification.getPostId())
                         .notificationMessage(notification.getNotificationMessage())
                         .postType(notification.getPostType().toString()) // 이 방식으로 enum 타입을 문자열로 바꿀 수 있음
+                        .isRead(notification.getChecked())
                         .build();
 
                 // 생성된 NotificationDto를 리스트에 추가
@@ -171,5 +173,20 @@ public class NotificationService {
 
         // 찾은 알림을 삭제
         notificationsRepository.delete(findNotification);
+    }
+
+
+    // 알림을 읽음 처리하기
+    public void checkNotification(Long notificationId) {
+
+        // 프런트에서 넘어온 알림의 pk값을 기반으로 해당 알림을 찾기
+        Notifications findNotification = notificationsRepository.findById(notificationId)
+                .orElseThrow(() -> new AppException("Notification not found", HttpStatus.NOT_FOUND));
+
+        // 알림을 읽었다고 표시
+        findNotification.setChecked(true);
+
+        // 변경 감지 후 저장
+        notificationsRepository.save(findNotification);
     }
 }

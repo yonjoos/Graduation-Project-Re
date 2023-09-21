@@ -19,6 +19,7 @@ function Notifications() {
     const visitedEndEndPoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
     const [messages, setMessages] = useState([]);
 
+
     useEffect(() => {
 
         if (!isAuthenticated) {
@@ -76,6 +77,8 @@ function Notifications() {
             console.log('newMessage : ', event.data);
             setMessages(prevMessages => [...prevMessages, newMessage]);
 
+            
+
             // antd의 notification을 사용하여 알림을 표시
             notification.info({
                 message: "New Notification",
@@ -99,11 +102,24 @@ function Notifications() {
                             message.error('데이터베이스에서 checked를 true로 바꾸는데 실패했습니다.');
                         });
 
+                    //const currentEndpoint = location.pathname;
+                    console.log('현재 path',currentEndpoint);
+
                     if (newMessage.startsWith("project")) { // 만약 newMessage가 project로 시작하면, project와 연관된 알림임
                         const regex = /project\/detail\/(\d+)/;
                         const match = newMessage.match(regex);
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
+                            
+                            if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
+                            {
+                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                                setLastLastVisitedEndpoint(currentEndpoint);
+                            }
+                            
+                            console.log('last2', currentEndpoint);
+                            console.log('last-last2',currentEndpoint);
                             navigate(`/project/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     } else if (newMessage.startsWith("study")) { // 만약 newMessage가 study로 시작하면, study와 연관된 알림임
@@ -111,6 +127,15 @@ function Notifications() {
                         const match = newMessage.match(regex);
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
+                           
+                            if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
+                            {
+                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                                setLastLastVisitedEndpoint(currentEndpoint);
+                            }
+                            console.log('last2', currentEndpoint);
+                            console.log('last-last2',currentEndpoint);
                             navigate(`/study/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     }
@@ -145,7 +170,7 @@ function Notifications() {
             eventSource.close();
             console.log("SSE connection closed.");
         };
-    }, [isAuthenticated, nickName]);
+    }, [isAuthenticated, nickName, currentEndpoint]); // 여기서 currentEndPoint 변경되는 것 감지
 
 
 }

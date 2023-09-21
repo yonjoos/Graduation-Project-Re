@@ -5,7 +5,7 @@ import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInProjectPage from './SearchInProjectPage';
 import { lastVisitedEndpoint } from '../../../_actions/actions'
-import { setLastVisitedEndpoint } from '../../../hoc/request';
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint } from '../../../hoc/request';
 import './ProjectPage.css';
 
 
@@ -61,8 +61,9 @@ function ProjectPage() {
     const handleRowClick = (projectId) => {
         // /project/detail/${projectId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /project로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project로 설정
-        dispatch(lastVisitedEndpoint('/project'));    // 전역에 상태 저장을 위한 애.
+        dispatch(lastVisitedEndpoint('/project', '/project'));    // 전역에 상태 저장을 위한 애.
         setLastVisitedEndpoint('/project');   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        setLastLastVisitedEndpoint('/project');
         navigate(`/project/detail/${projectId}`);
     }
 

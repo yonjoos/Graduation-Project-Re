@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { request } from '../../../hoc/request';
 import { logout } from '../../../_actions/actions'
 import { lastVisitedEndpoint } from '../../../_actions/actions';
-import { setLastVisitedEndpoint } from '../../../hoc/request';
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint } from '../../../hoc/request';
 import CustomDropdown from './Sections/CustomDropdown';
 import { CloseOutlined } from '@ant-design/icons';
 //import Notifications from '../../utils/Notifications';
@@ -103,8 +103,9 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         
         // 디테일 페이지에서 알림 클릭 시, 목록으로 안돌아가지는 문제 해결을 위한 애.
         if (!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/")) {
-            dispatch(lastVisitedEndpoint(currentEndpoint));    // 전역에 상태 저장을 위한 
+            dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
             setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+            setLastLastVisitedEndpoint(currentEndpoint);
         }
 
         const lowerType = postType.toLowerCase(); // 백엔드에서 받은 postType은 PROJECT , STUDY와 같은 형식이므로 navigate를 위해선 소문자로 바꿔줄 필요가 있음

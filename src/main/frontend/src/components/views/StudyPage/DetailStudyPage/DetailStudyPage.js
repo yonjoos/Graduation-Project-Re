@@ -5,7 +5,7 @@ import { request, getUserNickName } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { lastVisitedEndpoint } from "../../../../_actions/actions";
-import { setLastVisitedEndpoint } from "../../../../hoc/request";
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint } from "../../../../hoc/request";
 import '../StudyPage.css';
 import './DetailStudyPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
@@ -16,6 +16,7 @@ function DetailStudyPage() {
     const dispatch = useDispatch();
     const { studyId } = useParams(); // URL로부터 studyId 가져오기
     const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
 
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isModalVisible, setIsModalVisible] = useState(false);    // 모달이 보이는지 여부 설정
@@ -59,6 +60,7 @@ function DetailStudyPage() {
                 //console.log("Fetched study data:", response.data); // Log the fetched data
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
                 console.log("visitedEndpoint : ", visitedEndpoint);
+                console.log("visitedEndEndpoint : ", visitedEndEndpoint);
 
                 // 게시물의 작성자라면, 지원자를 얻어오는 추가적인 쿼리를 날림
                 if (response.data.writer) {
@@ -148,12 +150,13 @@ function DetailStudyPage() {
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
         // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
-        if (visitedEndpoint) {
+        // 포트폴리오를 누르지 않아, 유효한 전 페이지와 유효한 전 전 페이지가 동일한 상황 -> 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
+        if (visitedEndpoint === visitedEndEndpoint) {
             navigate(visitedEndpoint);
         }
-        // 저장된 엔드포인트가 없다면, 랜딩페이지로 이동
+        // 포트폴리오를 눌러서, 유효한 전 페이지와 유효한 전 전 페이지가 동일하지 않은 상황 -> 전 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
         else {
-            navigate('/');
+            navigate(visitedEndEndpoint);
         }
     };
 
@@ -273,16 +276,20 @@ function DetailStudyPage() {
     const handleNickNameClick = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
-        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`));    // 전역에 상태 저장을 위한 애.
+        // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
+        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint));    // 전역에 상태 저장을 위한 애.
         setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        setLastLastVisitedEndpoint(visitedEndpoint);
         navigate(`/portfolio/${nickName}`);
     };
 
     const handlePortfolioClick = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
-        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`));    // 전역에 상태 저장을 위한 애.
+        // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
+        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint));    // 전역에 상태 저장을 위한 애.
         setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        setLastLastVisitedEndpoint(visitedEndpoint);
         navigate(`/portfolio/${nickName}`);
     };
 

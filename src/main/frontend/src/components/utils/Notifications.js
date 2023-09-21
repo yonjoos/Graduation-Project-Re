@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { getAuthToken } from "../../hoc/request";
 import { notification } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { message } from "antd";
-import { request } from "../../hoc/request";
+import { request, setLastVisitedEndpoint, setLastLastVisitedEndpoint } from "../../hoc/request";
+import { lastVisitedEndpoint } from "../../_actions/actions";
 
 function Notifications() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const currentEndpoint = location.pathname;
     const nickName = useSelector(state => state.auth.userNickName);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const [messages, setMessages] = useState([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -98,6 +102,11 @@ function Notifications() {
                         const match = newMessage.match(regex);
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
+
+                            dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                            setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                            setLastLastVisitedEndpoint(currentEndpoint);
+
                             navigate(`/project/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     } else if (newMessage.startsWith("study")) { // 만약 newMessage가 study로 시작하면, study와 연관된 알림임
@@ -105,6 +114,11 @@ function Notifications() {
                         const match = newMessage.match(regex);
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
+
+                            dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                            setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                            setLastLastVisitedEndpoint(currentEndpoint);
+                            
                             navigate(`/study/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     }

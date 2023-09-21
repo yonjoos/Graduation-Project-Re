@@ -30,6 +30,11 @@ export const getLastVisitedEndpoint = () => {
     return window.localStorage.getItem('last_visited_endpoint');
 }
 
+//로컬 스토리지에서 'last_last_visited_endpoint'이라는 키로 저장된 사용자 역할을 가져오는 함수
+export const getLastLastVisitedEndpoint = () => {
+    return window.localStorage.getItem('last_last_visited_endpoint');
+}
+
 //로컬 스토리지에 JWT 토큰을 'auth_token' 키로 저장하는 함수
 export const setAuthHeader = (token) => {
     window.localStorage.setItem('auth_token', token);
@@ -51,8 +56,13 @@ export const setUserNickName = (nickName) => {
 };
 
 //로컬스토리지에서 마지막으로 방문한 유효한 엔드포인트를 저장하는 함수
-export const setLastVisitedEndpoint = (nickName) => {
-    window.localStorage.setItem('last_visited_endpoint', nickName);
+export const setLastVisitedEndpoint = (endPoint) => {
+    window.localStorage.setItem('last_visited_endpoint', endPoint);
+};
+
+//로컬스토리지에서 마지막 바로 전에 방문한 유효한 엔드포인트를 저장하는 함수
+export const setLastLastVisitedEndpoint = (endPoint) => {
+    window.localStorage.setItem('last_last_visited_endpoint', endPoint);
 };
 
 //axios의 기본 설정을 지정. 

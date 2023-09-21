@@ -104,10 +104,10 @@ export const deletePortfolioSuccess = () => {
 
 
 // 가장 최근에 방문한 유효한 엔드포인터를 기억하기 위한 액션 생성
-export const lastVisitedEndpoint = (endpoint) => {
+export const lastVisitedEndpoint = (endpoint, endEndPoint) => {
     return {
         type: 'SET_LAST_VISITED_ENDPOINT',
-        payload: { endpoint }
+        payload: { endpoint, endEndPoint }
     };
 };
 

@@ -142,6 +142,15 @@ public class PostsController {
         return ResponseEntity.ok(applicantDto);
     }
 
+    // 게시물 작성자라면, 지원자 조회
+    @GetMapping("/getStudyApplicants/{studyId}") // Use path variable to get project ID from URL
+    private ResponseEntity<List<ApplicantDto>> getStudyApplicants(@PathVariable Long studyId, Principal principal) {
+        String userEmail = principal.getName();
+
+        List<ApplicantDto> applicantDto = postsService.getApplicants(userEmail, studyId);
+
+        return ResponseEntity.ok(applicantDto);
+    }
 
     /*
     ######################### GET FORM 함수 ###########################################################

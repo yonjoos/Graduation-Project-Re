@@ -20,11 +20,12 @@ function PortfolioCardPage() {
     
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [recommend, setRecommend] = useState("");
+    const [recommend, setRecommend] = useState(0);
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
     const [reload, setReload] = useState(0);
+
 
 
     const page = 0;
@@ -32,25 +33,6 @@ function PortfolioCardPage() {
 
     // USE EFFECT ###############################################
 
-    /*
-    useEffect(() => {
-
-        if(searchTerm == ''){
-            fetchCards();
-        }
-        
-        console.log('현재 검색된 키워드: ', searchTerm);
-        fetchUsers();
-    
-    }, [searchTerm, currentPage, selectedBanners]);
-
-
-    //BUG : 첫 화면 진입 시, fetchUsers 가 먼저 실행되는 것 방지
-    useEffect(() => {
-        fetchCards();
-    }, []); 
-
-    */
 
     useEffect(() => {
         setCurrentPage(0);
@@ -62,6 +44,9 @@ function PortfolioCardPage() {
         setReload(0);
     }, [reload]);
 
+    useEffect(()=>{
+        Recommend();
+    }, [recommend])
 
     useEffect(() => {
         console.log('현재 선택된 배너 정보', selectedBanners);
@@ -69,23 +54,29 @@ function PortfolioCardPage() {
         fetchUsers();
     }, [selectedBanners, currentPage, searchTerm]);
 
-
+    
 
     // REQUEST ###############################################
 
-    const fetchCards = async() => {
 
-        try{
+    const Recommend = async() =>{
+        try {
+            const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+                selectedBanners: selectedBanners.join(','), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
+                page: currentPage, //현재 페이지 정보
+                size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+                searchTerm: searchTerm // 검색어 키워드 문자열
+            });
 
-            const response = await request('GET', `/getPortfolioCards` );
-            setData(response.data);
-
-        }catch(error){
-
+            const response = await request('GET', `/recommend?${queryParams}`);
+            setData(response.data); 
+            setTotalPages(response.data.totalPages);
+            console.log(data);
+        } catch (error) {
+            console.error("레코멘드 노노", error);
         }
+
     }
-
-
     const fetchUsers = async () => {
 
         try {
@@ -99,10 +90,13 @@ function PortfolioCardPage() {
             const response = await request('GET', `/getCards?${queryParams}`);
             setData(response.data.content); 
             setTotalPages(response.data.totalPages);
+            setRecommend(0);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
+
+    
 
 
     // HANDLER FUNCTIONS ###############################################
@@ -170,7 +164,11 @@ function PortfolioCardPage() {
 
         setCurrentPage(0); // 만약 배너를 다른 걸 고르면 1페이지로 강제 이동시킴
     }
-    
+
+
+    const onRecommend = () =>{
+        setRecommend(1);
+    };
 
 
     // COMPONENTS ###############################################
@@ -251,7 +249,7 @@ function PortfolioCardPage() {
                 <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                     Study
                 </Button>
-                <Button onClick={onGetRecommend} >
+                <Button onClick={onRecommend} >
                     RECOMMEND
                 </Button>
                 <Divider></Divider>

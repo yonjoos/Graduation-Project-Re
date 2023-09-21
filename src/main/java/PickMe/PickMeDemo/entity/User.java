@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import javax.sound.sampled.Port;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,5 +80,17 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
         this.password = password;
         this.role = role;
         this.lastAccessDate = lastAccessDate;
+    }
+
+    /*
+    #################### logics for Recommendation #################################################
+    #################### logics for Recommendation #################################################
+     */
+
+    // convert to vector
+    public int[] getFieldsOfInterests(){
+        Portfolio portfolio = this.getPortfolio();
+        int[] result = {portfolio.getWeb(), portfolio.getApp(), portfolio.getGame(), portfolio.getAi()};
+        return result;
     }
 }

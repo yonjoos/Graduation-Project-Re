@@ -110,16 +110,7 @@ function Notifications() {
                         const match = newMessage.match(regex);
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
-                            
-                            if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
-                            {
-                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
-                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-                                setLastLastVisitedEndpoint(currentEndpoint);
-                            }
-                            
-                            console.log('last2', currentEndpoint);
-                            console.log('last-last2',currentEndpoint);
+                           
                             navigate(`/project/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     } else if (newMessage.startsWith("study")) { // 만약 newMessage가 study로 시작하면, study와 연관된 알림임
@@ -128,14 +119,6 @@ function Notifications() {
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
                            
-                            if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
-                            {
-                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
-                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-                                setLastLastVisitedEndpoint(currentEndpoint);
-                            }
-                            console.log('last2', currentEndpoint);
-                            console.log('last-last2',currentEndpoint);
                             navigate(`/study/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     }
@@ -170,7 +153,7 @@ function Notifications() {
             eventSource.close();
             console.log("SSE connection closed.");
         };
-    }, [isAuthenticated, nickName, currentEndpoint]); // 여기서 currentEndPoint 변경되는 것 감지
+    }, [isAuthenticated, nickName]);
 
 
 }

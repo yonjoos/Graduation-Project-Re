@@ -562,6 +562,46 @@ public class PostsService {
     }
 
 
+    // 게시물에 지원한 사람 모두 조회
+    @Transactional(readOnly = true)
+    @EntityGraph(attributePaths = {"user", "category"})
+    public List<ApplicantDto> getApplicants(String userEmail, Long postId) {
+
+        // postId와 userEmail로 게시물 찾기
+        Posts findPost = postsRepository.findByIdAndUser_Email(postId, userEmail)
+                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴. (그 중 승인 받은 애들의 개수만 가져옴)
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPost);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
+        // List<ApplicantDto> 객체 생성
+        List<ApplicantDto> applicantDtoList = new ArrayList<>();
+
+        // 검색된 모든 지원자 정보를 createdDate를 기준으로 오름차순으로 가져와서 ApplicantDto로 변환하여 리스트에 추가
+        List<UserApplyPosts> userApplyPostsList = userApplyPostsRepository.findByPosts_IdOrderByCreatedDateAsc(findPost.getId());
+
+        for (UserApplyPosts userApplyPosts : userApplyPostsList) {
+            User applicantUser = userApplyPosts.getUser();
+            ApplicantDto applicantDto = ApplicantDto.builder()
+                    .nickName(applicantUser.getNickName()) // 지원자의 닉네임
+                    .confirm(userApplyPosts.getConfirm()) // 승인 여부
+                    .count(applyCount)                      // 현재 지원자 수
+                    .build();
+            applicantDtoList.add(applicantDto);
+        }
+
+        return applicantDtoList;
+    }
+
     // ** 중요 **
     // postType을 Boolean 리스트로 받아오는 PostsUpdateFormDto 사용!
     @Transactional(readOnly = true)
@@ -1342,9 +1382,6 @@ public class PostsService {
             notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
         }
 
-        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 실시간 알림 전송
-        System.out.println("==========================================================");
-
 
         // 지원을 하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
         // 실제 jpa를 통해 notification을 만들어 저장한다.
@@ -1356,7 +1393,13 @@ public class PostsService {
                 .checked(false)
                 .build();
 
-        notificationsRepository.save(applyNotification);
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 실시간 알림 전송
+        System.out.println("==========================================================");
 
 
 
@@ -1423,7 +1466,7 @@ public class PostsService {
     }
 
 
-    // 승인 허가
+    // 그룹 페이지에서 승인 허가
     public Page<GroupPostsDto> approveUser(String userEmail, String nickName, Long postsId, String sortOption, Pageable pageable) {
 
         // 닉네임을 UserApplyPosts 테이블에 함께 두면 쿼리 날리는 것을 한 번 줄일 수 있을텐데..
@@ -1485,11 +1528,6 @@ public class PostsService {
                 notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다.";
             }
 
-            // 지원을 승인하려는 유저에게 notify 발송
-            notificationService.notify(findUser.getId(), notificationMessage);
-            System.out.println("==========================================================");
-
-
             // 지원 승인을 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
             // 실제 jpa를 통해 notification을 만들어 저장한다.
             Notifications applyNotification = Notifications.builder()
@@ -1500,7 +1538,14 @@ public class PostsService {
                     .checked(false)
                     .build();
 
-            notificationsRepository.save(applyNotification);
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            // 지원을 승인하려는 유저에게 notify 발송
+            notificationService.notify(findUser.getId(), notificationMessage);
+            System.out.println("==========================================================");
         }
 
         userApplyPostsRepository.save(findUserApplyPosts);
@@ -1629,6 +1674,113 @@ public class PostsService {
     }
 
 
+    // 디테일 페이지에서 직접 승인 허가
+    public List<ApplicantDto> approveUserInDetail(String userEmail, String nickName, Long postsId) {
+
+        // 지원 승인하려는 유저
+        User findUser = userRepository.findByNickName(nickName)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
+                .orElseThrow(() -> new AppException("해당하는 지원 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        Posts findPosts = postsRepository.findById(postsId)
+                .orElseThrow(() -> new AppException("해당하는 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applicationCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applicationCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applicationCountOptional.isPresent()) {
+            applicationCount = applicationCountOptional.get() + 1;
+        } else {
+            applicationCount = 1;
+        }
+
+        // recruitmentCount(모집인원)과 같지 않아야 승인 가능
+        if (!findPosts.getRecruitmentCount().equals(applicationCount)) {
+            // 승인 여부를 true로 변경
+            findUserApplyPosts.setConfirm(true);
+
+            // 지원 승인 시, 게시물 지원자에게 알림.
+            System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원이 승인되었습니다.\"); ======");
+            System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
+
+            String findWriterNickname = findPosts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = findPosts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다.";
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다.";
+            }
+
+            // 지원 승인을 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+            // 실제 jpa를 통해 notification을 만들어 저장한다.
+            Notifications applyNotification = Notifications.builder()
+                    .user(findUser)
+                    .postId(postsId)
+                    .notificationMessage(notifyMessage)
+                    .postType(findPosts.getPostType())
+                    .checked(false)
+                    .build();
+
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            // 지원을 승인하려는 유저에게 notify 발송
+            notificationService.notify(findUser.getId(), notificationMessage);
+            System.out.println("==========================================================");
+        }
+
+        userApplyPostsRepository.save(findUserApplyPosts);
+
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴. (그 중 승인 받은 애들의 개수만 가져옴)
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
+
+        // List<ApplicantDto> 객체 생성
+        List<ApplicantDto> applicantDtoList = new ArrayList<>();
+
+        // 검색된 모든 지원자 정보를 createdDate를 기준으로 오름차순으로 가져와서 ApplicantDto로 변환하여 리스트에 추가
+        List<UserApplyPosts> userApplyPostsList = userApplyPostsRepository.findByPosts_IdOrderByCreatedDateAsc(postsId);
+
+        for (UserApplyPosts userApplyPosts : userApplyPostsList) {
+            User applicantUser = userApplyPosts.getUser();
+            ApplicantDto applicantDto = ApplicantDto.builder()
+                    .nickName(applicantUser.getNickName()) // 지원자의 닉네임
+                    .confirm(userApplyPosts.getConfirm()) // 승인 여부
+                    .count(applyCount)                      // 현재 지원자 수
+                    .build();
+            applicantDtoList.add(applicantDto);
+        }
+
+        return applicantDtoList;
+    }
+
 
     // 지원 취소
     public PostsDto cancelApply(String userEmail, Long postsId, String action) {
@@ -1685,10 +1837,6 @@ public class PostsService {
             notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
         }
 
-        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
-        System.out.println("==========================================================");
-
-
         // 지원을 취소하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
         // 실제 jpa를 통해 notification을 만들어 저장한다.
         Notifications applyNotification = Notifications.builder()
@@ -1699,7 +1847,14 @@ public class PostsService {
                 .checked(false)
                 .build();
 
-        notificationsRepository.save(applyNotification);
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
+        System.out.println("==========================================================");
+
 
         PostsDto postsDto;
 
@@ -1768,7 +1923,7 @@ public class PostsService {
 
 
 
-    // 승인 허가 취소
+    // 그룹 페이지에서 승인 허가 취소
     public Page<GroupPostsDto> cancelApproveUser(String userEmail, String nickName, Long postsId, String sortOption, Pageable pageable) {
 
         // 닉네임을 UserApplyPosts에 함께 두면 쿼리 날리는 것을 한 번 줄일 수 있을텐데..
@@ -1819,11 +1974,6 @@ public class PostsService {
             notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다.";
         }
 
-        // 지원을 승인하려는 유저에게 notify 발송
-        notificationService.notify(findUser.getId(), notificationMessage);
-        System.out.println("==========================================================");
-
-
         // 승인 허가를 취소하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
         // 실제 jpa를 통해 notification을 만들어 저장한다.
         Notifications applyNotification = Notifications.builder()
@@ -1834,7 +1984,14 @@ public class PostsService {
                 .checked(false)
                 .build();
 
-        notificationsRepository.save(applyNotification);
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        // 지원을 승인하려는 유저에게 notify 발송
+        notificationService.notify(findUser.getId(), notificationMessage);
+        System.out.println("==========================================================");
 
 
         // '승인' 버튼을 눌렀을 때, '승인 완료'버튼이 바로 보이고, 현재 인원 + 1이 되도록 하기 위해 동적 쿼리 생성
@@ -1929,6 +2086,102 @@ public class PostsService {
         // Pageable : 현재 페이지 번호, 페이지 크기 등이 포함되어 있어, 이를 기반으로 데이터를 추출하고 페이지 정보를 생성
         // total : 전체 데이터의 개수를 나타냄
         return new PageImpl<>(groupPostsDtosList.subList(offset, offset + pageSize), pageable, total);
+    }
+
+    // 디테일 페이지에서 직접 승인 허가 취소
+    public List<ApplicantDto> cancelApproveUserInDetail(String userEmail, String nickName, Long postsId) {
+
+        // 닉네임을 UserApplyPosts에 함께 두면 쿼리 날리는 것을 한 번 줄일 수 있을텐데..
+        User findUser = userRepository.findByNickName(nickName)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
+                .orElseThrow(() -> new AppException("해당하는 지원 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        Posts findPosts = postsRepository.findById(postsId)
+                .orElseThrow(() -> new AppException("해당하는 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+
+        // 승인 여부를 false로 변경
+        findUserApplyPosts.setConfirm(false);
+
+        userApplyPostsRepository.save(findUserApplyPosts);
+
+
+        // 지원 승인 허가 취소 시, 게시물 지원자에게 알림.
+        System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원 승인이 취소되었습니다.\"); ======");
+        System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
+
+        String findWriterNickname = findPosts.getUser().getNickName(); // 게시물 작성자 닉네임
+        String findPostTitle = findPosts.getTitle(); // 승인 취소를 할 게시물
+
+        NotificationMessageDto notificationMessage;
+        String notifyMessage;
+
+
+        // notificationMessage : 실시간 알림 카드에 들어갈 내용
+        // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+        if (PostType.PROJECT.equals(findPosts.getPostType())) {
+            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다.";
+        }
+        else  {
+            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다.";
+        }
+
+        // 승인 허가를 취소하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+        // 실제 jpa를 통해 notification을 만들어 저장한다.
+        Notifications applyNotification = Notifications.builder()
+                .user(findUser)
+                .postId(postsId)
+                .notificationMessage(notifyMessage)
+                .postType(findPosts.getPostType())
+                .checked(false)
+                .build();
+
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        // 지원을 승인하려는 유저에게 notify 발송
+        notificationService.notify(findUser.getId(), notificationMessage);
+        System.out.println("==========================================================");
+
+
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴. (그 중 승인 받은 애들의 개수만 가져옴)
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
+
+        // List<ApplicantDto> 객체 생성
+        List<ApplicantDto> applicantDtoList = new ArrayList<>();
+
+        // 검색된 모든 지원자 정보를 createdDate를 기준으로 오름차순으로 가져와서 ApplicantDto로 변환하여 리스트에 추가
+        List<UserApplyPosts> userApplyPostsList = userApplyPostsRepository.findByPosts_IdOrderByCreatedDateAsc(postsId);
+
+        for (UserApplyPosts userApplyPosts : userApplyPostsList) {
+            User applicantUser = userApplyPosts.getUser();
+            ApplicantDto applicantDto = ApplicantDto.builder()
+                    .nickName(applicantUser.getNickName()) // 지원자의 닉네임
+                    .confirm(userApplyPosts.getConfirm()) // 승인 여부
+                    .count(applyCount)                      // 현재 지원자 수
+                    .build();
+            applicantDtoList.add(applicantDto);
+        }
+
+        return applicantDtoList;
     }
 
 

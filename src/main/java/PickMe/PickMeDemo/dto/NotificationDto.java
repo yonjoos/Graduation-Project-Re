@@ -17,5 +17,6 @@ public class NotificationDto {
     private Long postId; // 게시물 id
     private String notificationMessage; // Notification 배너에 들어갈 카드 내용
     private String postType; // 게시물 type -> PROJECT / STUDY
+    private Boolean isRead; // 게시물을 읽었는지 여부 (check)
 
 }

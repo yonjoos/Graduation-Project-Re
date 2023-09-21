@@ -286,16 +286,6 @@ function DetailProjectPage() {
         navigate(`/portfolio/${nickName}`);
     };
 
-    const handleConfirmClick = (confirm) => {
-        // 승인/승인 취소를 클릭했을 때 할 작업을 수행합니다.
-        // confirm 값에 따라 다른 동작을 수행할 수 있습니다.
-        if (confirm) {
-            // 현재 해당 유저는 승인된 상태로, 승인 취소를 클릭했을 때의 동작
-        } else {
-            // 현재 해당 유저는 미승인 상태로, 승인을 클릭했을 때의 동작
-        }
-    };
-
     // 승인하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가
     const handleApproveUser = async (applyUserNickName, projectId) => {
         try {

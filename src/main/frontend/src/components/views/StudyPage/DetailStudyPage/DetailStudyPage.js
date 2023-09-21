@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message, Input, Card, Pagination } from 'antd';
+import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { lastVisitedEndpoint } from "../../../../_actions/actions";
+import { setLastVisitedEndpoint } from "../../../../hoc/request";
 import '../StudyPage.css';
 import './DetailStudyPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
@@ -11,8 +13,9 @@ const { TextArea } = Input;
 
 function DetailStudyPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { studyId } = useParams(); // URL로부터 studyId 가져오기
-    const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
 
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isModalVisible, setIsModalVisible] = useState(false);    // 모달이 보이는지 여부 설정
@@ -21,6 +24,11 @@ function DetailStudyPage() {
     const [modalAction, setModalAction] = useState('');     // modalAction은 'delete'와 'apply' 둘 중 하나로 세팅.
     const [cancelAction, setCancelAction] = useState('');   // 승인 허가된 사람과, 승인 허가되지 않은 사람의 지원 취소 request 매커니즘을 다르게 하기 위해 세팅.
     const [scrapAction, setScrapAction] = useState('');     // 스크랩한 사람과, 스크랩하지 않은 사람의 request 매커니즘을 다르게 하기 위해 세팅
+    const [isApplicantOpen, setIsApplicantOpen] = useState(true);   // 초기 상태를 "지원자 목록 열기"로 설정
+    const [applicantData, setApplicantData] = useState([]);     // 백엔드에서 가져온 지원자 목록 세팅
+    const [approveModalVisible, setApproveModalVisible] = useState(false);    // 유저 승인 모달이 보이는지 여부 설정
+    const [cancelModalVisible, setCancelModalVisible] = useState(false);    // 유저 승인 취소 모달이 보이는지 여부 설정
+    const [applyUserNickName, setApplyUserNickname] = useState('');
 
     // 아래는 댓글 기능 관련 상태변수
     const [commentText, setCommentText] = useState(''); // 부모 없는 '댓글' 에 담길 댓글 내용
@@ -50,14 +58,24 @@ function DetailStudyPage() {
             .then((response) => {
                 //console.log("Fetched study data:", response.data); // Log the fetched data
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-                console.log("lastVisitedEndpoint : ", lastVisitedEndpoint);
+                console.log("visitedEndpoint : ", visitedEndpoint);
+
+                // 게시물의 작성자라면, 지원자를 얻어오는 추가적인 쿼리를 날림
+                if (response.data.writer) {
+                    request('GET', `/getStudyApplicants/${studyId}`, {})
+                        .then((additionalResponse) => {
+                            setApplicantData(additionalResponse.data);
+                            console.log("additionalResponse.data : ", additionalResponse.data);
+                        })
+                        .catch((additionalError) => {
+                            console.error("Error fetching additional data:", additionalError);
+                        });
+                }
             })
             .catch((error) => {
                 console.error("Error fetching study data:", error);
             });
     }, [studyId]);
-
-
 
     // 해당 페이지에 처음 접근했을 때, 또는 댓글 또는 답글 업로드 시, 명시적으로 fetchCommentData() 를 호출하여 다시 최신 댓글정보를 백엔드에서 가져옴
     // pageSize(limit)가 변할때마다 다시 렌더링
@@ -130,8 +148,8 @@ function DetailStudyPage() {
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
         // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
-        if (lastVisitedEndpoint) {
-            navigate(lastVisitedEndpoint);
+        if (visitedEndpoint) {
+            navigate(visitedEndpoint);
         }
         // 저장된 엔드포인트가 없다면, 랜딩페이지로 이동
         else {
@@ -249,6 +267,82 @@ function DetailStudyPage() {
     const handleScrapModalCancel = () => {
         setIsScrapModalVisible(false);
     };
+
+
+
+    const handleNickNameClick = (nickName) => {
+        // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
+        // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
+        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`));    // 전역에 상태 저장을 위한 애.
+        setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        navigate(`/portfolio/${nickName}`);
+    };
+
+    const handlePortfolioClick = (nickName) => {
+        // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
+        // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
+        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`));    // 전역에 상태 저장을 위한 애.
+        setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        navigate(`/portfolio/${nickName}`);
+    };
+
+    // 승인하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가
+    const handleApproveUser = async (applyUserNickName, studyId) => {
+        try {
+            const queryParams = new URLSearchParams({
+                nickName: applyUserNickName, // 닉네임
+                postsId: studyId,   // 게시물 ID
+            });
+
+            // 승인 상태를 '수정'하는 것이므로, put request 
+            const response = await request('PUT', `/posts/detail/approve?${queryParams}`);
+
+            // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
+            const newData = { ...data };
+            
+            // count 값을 response.data[0].count로 업데이트
+            newData.counts = response.data[0].count;
+
+            // 변경된 데이터를 세팅
+            setData(newData);
+
+            setApplicantData(response.data);    // 변경된 데이터를 갖고 새롭게 data를 세팅함
+            setApproveModalVisible(false);       // 모달은 안보이게 설정
+            setCancelModalVisible(false);
+        } catch (error) {
+            console.error("Error approving user:", error);
+        }
+    };
+
+    // 승인 취소하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가 취소
+    const handleCancelApproval = async (applyUserNickName, studyId) => {
+        try {
+            const queryParams = new URLSearchParams({
+                nickName: applyUserNickName, // 닉네임
+                postsId: studyId,   // 게시물 ID
+            });
+
+            // 승인 상태를 '수정'하는 것이므로, put request 
+            const response = await request('PUT', `/posts/detail/cancelApprove?${queryParams}`);
+            
+            // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
+            const newData = { ...data };
+            
+            // count 값을 response.data[0].count로 업데이트
+            newData.counts = response.data[0].count;
+            console.log("response.data[0].count : ", response.data[0].count);
+
+            // 변경된 데이터를 세팅
+            setData(newData);
+
+            setApplicantData(response.data);     // 변경된 데이터를 갖고 새롭게 data를 세팅함
+            setApproveModalVisible(false);       // 모달은 안보이게 설정
+            setCancelModalVisible(false);
+        } catch (error) {
+            console.error("Error approving user:", error);
+        }
+    };
+
 
     // 어떤 부모에도 속하지 않는 level의 댓글 작성 후 업로드
     const handleCommentSubmit = async () => {
@@ -613,10 +707,91 @@ function DetailStudyPage() {
         ));
     };
 
+    // 글 작성자라면, 지원자 목록을 볼 수 있는 토글 버튼 만들기
+    const renderApplicantButton = () => {
+        return (
+            <div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '5%' }}>
+                    <Button onClick={toggleContent}>
+                        {isApplicantOpen ? '지원자 목록 닫기' : '지원자 목록 열기'}
+                    </Button>
+                </div>
+                <div style={{ marginLeft: '15%', marginRight: '5%' }}>
+                    {isApplicantOpen && applicantData.length > 0 && // applicantData가 비어있지 않을 때 렌더링
+                        <div>
+                            {applicantData.map((applicant, index) => (
+                                <div key={index}>
+                                    <Divider />
+                                    <Row>
+                                        <Col span={8} onClick={() => handleNickNameClick(applicant.nickName)} style={{ cursor: 'pointer' }}>
+                                            {applicant.nickName}
+                                        </Col>
+                                        <Col span={8} style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <Button size="small" onClick={() => handlePortfolioClick(applicant.nickName)}>
+                                                포트폴리오
+                                            </Button>
+                                        </Col>
+                                        <Col span={8} style={{ display: 'flex', justifyContent: 'center' }}>
+                                            {applicant.confirm ? (
+                                                <Button
+                                                    size="small"
+                                                    onClick={() => {
+                                                        setApplyUserNickname(applicant.nickName); // 승인 취소 대상 유저의 닉네임 저장
+                                                        setCancelModalVisible(true);
+                                                    }}
+                                                >
+                                                    승인 취소
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    size="small"
+                                                    onClick={() => {
+                                                        setApplyUserNickname(applicant.nickName);
+                                                        setApproveModalVisible(true);
+                                                        if (data.counts === data.recruitmentCount) {
+                                                            message.warning('정원이 모두 찼습니다!');
+                                                        }
+                                                    }}
+                                                >
+                                                    승인
+                                                </Button>
+                                            )}
+                                        </Col>
+                                    </Row>
+                                    <Divider />
+                                </div>
+                            ))}
+                        </div>
+                    }
+                </div>
+                <Modal
+                    title="유저 승인"
+                    open={approveModalVisible}
+                    onOk={() => setApproveModalVisible(false)}
+                    onCancel={() => handleApproveUser(applyUserNickName, studyId)}
+                    okText="아니오"
+                    cancelText="예"
+                >
+                    <p>{applyUserNickName} 님을 승인하시겠습니까?</p>
+                </Modal>
+                <Modal
+                    title="유저 승인 취소"
+                    open={cancelModalVisible} // visible로 모달 열림 여부 설정
+                    onOk={() => setCancelModalVisible(false)} // 취소 버튼을 누르면 모달 닫기
+                    onCancel={() => handleCancelApproval(applyUserNickName, studyId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
+                    okText="아니오"
+                    cancelText="예"
+                >
+                    <p>{applyUserNickName} 님을 승인 취소하시겠습니까?</p>
+                </Modal>
+            </div>
+        )
+    }
 
-
-
-
+    // 지원자 목록 열기 || 지원자 목록 닫기 버튼을 클릭했을 때 텍스트와 내용을 토글
+    const toggleContent = () => {
+        setIsApplicantOpen(!isApplicantOpen);
+    };
 
     // 글 작성자인지, 아닌지에 따라 다르게 보이도록 설정
     const renderButtons = () => {
@@ -788,188 +963,199 @@ function DetailStudyPage() {
 
 
     return (
-        <div style={{ marginLeft: '10%', marginRight: '10%' }}>
-            {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
-            {data.writer && renderButtons()}
-            {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
-            {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
-            {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
-            {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
-            {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
-            {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
-            {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
-
-            {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-            <Divider className="bold-divider" />
-
-            <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                <Col span={16}>
-                    <div style={{ marginLeft: '5%' }}>
-                        제목: {data.title}
-                    </div>
-                </Col>
-                {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                <Col span={8} className="vertical-line">
-                    <div style={{ marginLeft: '3px' }}>
-                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                        분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
-                    </div>
-                </Col>
-            </Row>
-
-            <Divider className="simple-divider" />
-
-            <Row gutter={[16, 16]} justify="center" align="middle">
-                <Col span={16}>
-                    <div style={{ marginLeft: '5%', borderRight: '1px' }}>
-                        닉네임: {data.nickName}
-                    </div>
-                </Col>
-                {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                <Col span={8} className="vertical-line">
-                    <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                        인원: {data.counts} / {data.recruitmentCount}
-                    </div>
-                    <div style={{ marginLeft: '3px' }}>
-                        모집 마감일: {formatDate(data.endDate)}
-                    </div>
-                </Col>
-            </Row>
-
-            <Divider className="bold-divider" />
-
-            <div style={{ marginLeft: '5px' }}>
-                첨부 파일: {data.fileUrl}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
+            <div style={{ flex: 1 }}>
+                {/** 좌측 여백을 위해 만든 더미 div */}
             </div>
+            
+            <div style={{ flex: 2.5 }}>
+                {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
+                {data.writer && renderButtons()}
+                {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
+                {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
+                {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
+                {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
+                {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
+                {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
+                {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
 
-            <Divider className="bold-divider" />
+                {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
+                <Divider className="bold-divider" />
 
-            <div style={{ marginLeft: '5px' }}>
-                홍보 사진: {data.promoteImageUrl}
-            </div>
+                <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                    <Col span={16}>
+                        <div style={{ marginLeft: '5%' }}>
+                            제목: {data.title}
+                        </div>
+                    </Col>
+                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                    <Col span={8} className="vertical-line">
+                        <div style={{ marginLeft: '3px' }}>
+                            {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                            분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
+                        </div>
+                    </Col>
+                </Row>
 
-            <Divider className="bold-divider" />
+                <Divider className="simple-divider" />
 
-            {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
-            <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
-                내용: {insertLineBreaks(data.content, 45)}
-            </div>
+                <Row gutter={[16, 16]} justify="center" align="middle">
+                    <Col span={16}>
+                        <div style={{ marginLeft: '5%', borderRight: '1px' }}>
+                            닉네임: {data.nickName}
+                        </div>
+                    </Col>
+                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                    <Col span={8} className="vertical-line">
+                        <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
+                            인원: {data.counts} / {data.recruitmentCount}
+                        </div>
+                        <div style={{ marginLeft: '3px' }}>
+                            모집 마감일: {formatDate(data.endDate)}
+                        </div>
+                    </Col>
+                </Row>
 
-            <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                <Button size="small" onClick={toggleCommentsVisibility}>
-                    {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
-                </Button>
-            </div>
+                <Divider className="bold-divider" />
 
-
-
-            {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
-            {areCommentsVisible && (
-                <div>
-                    <Divider className="bold-divider" />
-
-                    <h5>댓글</h5>
-                    {renderComments(commentData.content)}
-                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                        {moreCommentsAvailable && (
-                            <Button size="small" onClick={loadMoreComments}>
-                                댓글 더보기
-                            </Button>
-                        )}
-                    </div>
-
-                    <div>
-                        <Card>
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                <UserOutlined style={{ marginRight: '5px' }} />
-                                <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
-                            </div>
-                            <TextArea
-                                autoSize={{ minRows: 4 }}
-                                value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)}
-                                placeholder="Write a comment"
-                            />
-                            <div style={{ textAlign: 'right', marginTop: '16px' }}>
-                                <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
-                            </div>
-                        </Card>
-                    </div>
-                    {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                        <Pagination
-                            current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
-                            total={totalPages * pageSize}
-                            pageSize={pageSize}
-                            onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
-                        />
-
-                    </div> */}
+                <div style={{ marginLeft: '5px' }}>
+                    첨부 파일: {data.fileUrl}
                 </div>
 
-            )}
+                <Divider className="bold-divider" />
 
-            {/* Modal */}
-            <Modal
-                title="Confirm Action"
-                open={isModalVisible}
-                // 모순적이지만, 익숙한 위치에 두기 위해 함수 이름을 Cross해서 사용
-                onOk={handleModalCancel}
-                onCancel={handleModalConfirm}
-                okText="아니오"
-                cancelText="예"
-            >
-                {modalAction === 'delete' && (
-                    <p>게시물을 삭제하시겠습니까?</p>
+                <div style={{ marginLeft: '5px' }}>
+                    홍보 사진: {data.promoteImageUrl}
+                </div>
+
+                <Divider className="bold-divider" />
+
+                {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
+                <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
+                    내용: {insertLineBreaks(data.content, 45)}
+                </div>
+
+                <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                    <Button size="small" onClick={toggleCommentsVisibility}>
+                        {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                    </Button>
+                </div>
+
+
+
+                {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
+                {areCommentsVisible && (
+                    <div>
+                        <Divider className="bold-divider" />
+
+                        <h5>댓글</h5>
+                        {renderComments(commentData.content)}
+                        <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                            {moreCommentsAvailable && (
+                                <Button size="small" onClick={loadMoreComments}>
+                                    댓글 더보기
+                                </Button>
+                            )}
+                        </div>
+
+                        <div>
+                            <Card>
+                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                    <UserOutlined style={{ marginRight: '5px' }} />
+                                    <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
+                                </div>
+                                <TextArea
+                                    autoSize={{ minRows: 4 }}
+                                    value={commentText}
+                                    onChange={(e) => setCommentText(e.target.value)}
+                                    placeholder="Write a comment"
+                                />
+                                <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                    <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
+                                </div>
+                            </Card>
+                        </div>
+                        {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                            <Pagination
+                                current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                                total={totalPages * pageSize}
+                                pageSize={pageSize}
+                                onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                            />
+
+                        </div> */}
+                    </div>
+
                 )}
-                {modalAction === 'apply' && (
-                    <p>게시물에 지원하시겠습니까?</p>
-                )}
-            </Modal>
-            <Modal
-                title="Confirm Action"
-                open={isCancelModalVisible}
-                onOk={handleCancelModalCancel}
-                onCancel={handleCancelModalConfirm}
-                okText="아니오"
-                cancelText="예"
-            >
-                <p>지원을 취소하시겠습니까?</p>
-            </Modal>
-            <Modal
-                title="Confirm Action"
-                open={isScrapModalVisible}
-                onOk={handleScrapModalCancel}
-                onCancel={handleScrapModalConfirm}
-                okText="아니오"
-                cancelText="예"
-            >
-                {scrapAction === 'scrap' && (
-                    <p>게시물을 스크랩하시겠습니까?</p>
-                )}
-                {scrapAction === 'cancelScrap' && (
-                    <p>스크랩을 취소하시겠습니까?</p>
-                )}
-            </Modal>
-            <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
-                title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
-                open={commentEditConfirmModalVisible}
-                onOk={handleCommentEditModalCancel}
-                onCancel={handleCommentEditModalOk}
-                okText="아니오"
-                cancelText="예"
-            >
-                {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
-            </Modal>
-            <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
-                title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
-                open={commentDeleteConfirmModalVisible}
-                onOk={handleCommentDeleteModalCancel}
-                onCancel={handleCommentDeleteModalOk}
-                okText="아니오"
-                cancelText="예"
-            >
-                {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
-            </Modal>
+
+                {/* Modal */}
+                <Modal
+                    title="Confirm Action"
+                    open={isModalVisible}
+                    // 모순적이지만, 익숙한 위치에 두기 위해 함수 이름을 Cross해서 사용
+                    onOk={handleModalCancel}
+                    onCancel={handleModalConfirm}
+                    okText="아니오"
+                    cancelText="예"
+                >
+                    {modalAction === 'delete' && (
+                        <p>게시물을 삭제하시겠습니까?</p>
+                    )}
+                    {modalAction === 'apply' && (
+                        <p>게시물에 지원하시겠습니까?</p>
+                    )}
+                </Modal>
+                <Modal
+                    title="Confirm Action"
+                    open={isCancelModalVisible}
+                    onOk={handleCancelModalCancel}
+                    onCancel={handleCancelModalConfirm}
+                    okText="아니오"
+                    cancelText="예"
+                >
+                    <p>지원을 취소하시겠습니까?</p>
+                </Modal>
+                <Modal
+                    title="Confirm Action"
+                    open={isScrapModalVisible}
+                    onOk={handleScrapModalCancel}
+                    onCancel={handleScrapModalConfirm}
+                    okText="아니오"
+                    cancelText="예"
+                >
+                    {scrapAction === 'scrap' && (
+                        <p>게시물을 스크랩하시겠습니까?</p>
+                    )}
+                    {scrapAction === 'cancelScrap' && (
+                        <p>스크랩을 취소하시겠습니까?</p>
+                    )}
+                </Modal>
+                <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
+                    title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
+                    open={commentEditConfirmModalVisible}
+                    onOk={handleCommentEditModalCancel}
+                    onCancel={handleCommentEditModalOk}
+                    okText="아니오"
+                    cancelText="예"
+                >
+                    {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
+                </Modal>
+                <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
+                    title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
+                    open={commentDeleteConfirmModalVisible}
+                    onOk={handleCommentDeleteModalCancel}
+                    onCancel={handleCommentDeleteModalOk}
+                    okText="아니오"
+                    cancelText="예"
+                >
+                    {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
+                </Modal>
+            </div>
+
+            <div style={{ flex: 1 }}>
+                {data.writer && renderApplicantButton()}
+            </div>
         </div>
     )
 }

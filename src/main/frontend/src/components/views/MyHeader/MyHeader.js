@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Layout, /*Typography, */Button, Drawer, Card, message } from 'antd';
+import { Layout, Button, Drawer, Card, message, Modal } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { setAuthHeader, setUserRole } from '../../../hoc/request';
 import { useSelector, useDispatch } from 'react-redux';
@@ -24,6 +24,8 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
 
     const [open, setOpen] = useState(false);
     const [notificationData, setNotificationData] = useState([]);
+    const [deleteReadModalVisible, setDeleteReadModalVisible] = useState(false);    // 읽은 알림 삭제 관련 모달
+    const [deleteAllModalVisible, setDeleteAllModalVisible] = useState(false);      // 모든 알림 삭제 관련 모달
 
     // Notification 배너가 열리면 해당 회원의 모든 알림을 가져와서 렌더링
     const showDrawer = () => {
@@ -58,6 +60,58 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         navigate('/group');
     }
 
+
+    const showDeleteReadModal = () => {
+        setDeleteReadModalVisible(true);
+    };
+      
+    const hideDeleteReadModal = () => {
+        setDeleteReadModalVisible(false);
+    };
+    
+    // 읽은 알림 삭제
+    const confirmDeleteRead = () => {
+        // 백엔드에 읽은 알림 삭제 요청
+        request('POST', 'sse/deleteNotification/read', {})
+            .then((response) => {
+                message.success('알림이 삭제되었습니다.');
+                // 읽지 않은 알림들만 notificationData로 세팅
+                setNotificationData(response.data);
+            })
+            .catch((error) => {
+                console.log("Error fetching data:", error);
+                message.error('알림 삭제에 실패했습니다.');
+            });
+
+        hideDeleteReadModal();
+    };
+      
+    const showDeleteAllModal = () => {
+        setDeleteAllModalVisible(true);
+    };
+      
+    const hideDeleteAllModal = () => {
+        setDeleteAllModalVisible(false);
+    };
+    
+    // 전체 알림 삭제
+    const confirmDeleteAll = () => {
+        // 백엔드에 전체 알림 삭제 요청
+        request('POST', 'sse/deleteNotification/all', {})
+            .then((response) => {
+                message.success('알림이 삭제되었습니다.');
+                // 전체 알림이 삭제되었으므로, notificationData는 null로 세팅
+                setNotificationData([]);
+            })
+            .catch((error) => {
+                console.log("Error fetching data:", error);
+                message.error('알림 삭제에 실패했습니다.');
+            });
+
+        hideDeleteAllModal();
+    };
+
+
     //로그아웃 버튼을 클릭하면 호출되며, 로컬 스토리지의 토큰을 삭제하고 로그아웃 액션을 디스패치합니다.
     //즉 로그 아웃 버튼 누르면 로컬 스토리지의 'auth-token'필드를 null 로 채우고, action.js에 등록된 logout관련 액션을 수행하도록 dispatch(강제 명령) 날림. 그리고 그 상태 값이 store.js의 switch문에 의해 변경됨
     const handleLogout = () => {
@@ -83,10 +137,30 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         navigate('/');
     };
 
-    // const handleSiteNameClick = () => { //사이트 이름 클릭하면 홈 화면으로 다시 라우팅
-    //     console.log("go home by site name");
-    //     navigate('/');
-    // };
+    const CustomTitle = () => (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                알림
+            </div>
+            <div>
+                <Button
+                    type="primary"
+                    value="small"
+                    style={{ marginRight: '3px' }}
+                    onClick={showDeleteReadModal}
+                >
+                    읽은 알림 삭제
+                </Button>
+                <Button
+                    type="primary"
+                    value="small"
+                    onClick={showDeleteAllModal}
+                >
+                    전체 알림 삭제
+                </Button>
+            </div>
+        </div>
+    );
 
     // 알림 카드 각각을 클릭했을 때 동작
     const handleCardClick = (postId, postType, notificationId) => {
@@ -120,16 +194,13 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         // }
 
         // navigate(`${lowerType}/detail/${postId}`); // 알림에 해당하는 게시물로 navigate 걸어줌
-        if (currentEndpoint === `/${lowerType}/detail/${postId}`) {
-            message.warning('이동하려는 페이지가 현재 보고있는 페이지입니다. 새로 고침을 눌러주세요.');
+
+        // 새 창을 열어서 페이지를 띄우기
+        const newWindow = window.open(`${lowerType}/detail/notify/${postId}`, '_blank');
+        if (newWindow) {
+            newWindow.opener = null; // 새 창에서 브라우저 열기
         } else {
-            // 새 창을 열어서 페이지를 띄우기
-            const newWindow = window.open(`${lowerType}/detail/notify/${postId}`, '_blank');
-            if (newWindow) {
-                newWindow.opener = null; // 새 창에서 브라우저 열기
-            } else {
-                message.error('팝업 창을 열 수 없습니다. 팝업 차단 설정을 확인하세요.');
-            }
+            message.error('팝업 창을 열 수 없습니다. 팝업 차단 설정을 확인하세요.');
         }
     };
 
@@ -166,13 +237,6 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                             onClick={handleLogoClick}
                             style={{ cursor: 'pointer', maxWidth: '200px', maxHeight: '40px' }}
                         />
-                        {/* <Title level={2} className="App-title" style={{color : 'whitesmoke'}} onClick={handleSiteNameClick}>
-                            <div style={{ display: "inline-block", fontSize: "30px", textDecoration: "none", cursor: 'pointer' }}>
-                                <div style={{color : 'white', fontWeight: 'bold'}}>P
-                                <span style={{color : 'dodgerblue'}}>!</span>
-                                ck Me</div>
-                            </div>
-                        </Title> */}
                     </div>
                     <div>
                         {/** 토글 형식, background: 'transparent' : 버튼 배경을 투명하게, padding: '20px 40px' : 각각 Top, Bottom 패딩 설정 */}
@@ -181,7 +245,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                                 <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={showDrawer}>
                                     Notification
                                 </Button>
-                                <Drawer title="알림" width={520} closable={false} onClose={onClose} open={open}>
+                                <Drawer title={<CustomTitle />} width={520} closable={false} onClose={onClose} open={open}>
                                     <div>
                                         {/* 알림 데이터를 Card 컴포넌트로 렌더링 */}
                                         {notificationData.length > 0 && (
@@ -236,6 +300,26 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                                         )}
                                     </div>
                                 </Drawer>
+                                <Modal
+                                    title="읽은 알림 삭제"
+                                    open={deleteReadModalVisible}
+                                    onOk={hideDeleteReadModal}
+                                    onCancel={confirmDeleteRead}
+                                    okText="아니오"
+                                    cancelText="예"
+                                >
+                                    읽은 알림을 모두 삭제하시겠습니까?
+                                </Modal>
+                                <Modal
+                                    title="전체 알림 삭제"
+                                    open={deleteAllModalVisible}
+                                    onOk={hideDeleteAllModal}
+                                    onCancel={confirmDeleteAll}
+                                    okText="아니오"
+                                    cancelText="예"
+                                >
+                                    전체 알림을 모두 삭제하시겠습니까?
+                                </Modal>
                                 <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={handleScrap}>
                                     Scrap
                                 </Button>

@@ -4,15 +4,15 @@ import { useDispatch } from "react-redux";
 import { request } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input } from 'antd';
 
-import '../ProjectPage.css';
-import './DetailProjectPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
+import '../StudyPage.css';
+import './DetailStudyPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
 const { TextArea } = Input;
 
-function DetailProjectNotifyPage() {
+function DetailStudyNotifyPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { projectId } = useParams(); // URL로부터 projectId 가져오기
+    const { studyId } = useParams(); // URL로부터 studyId 가져오기
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isApplicantOpen, setIsApplicantOpen] = useState(true);   // 초기 상태를 "지원자 목록 열기"로 설정
     const [applicantData, setApplicantData] = useState([]);     // 백엔드에서 가져온 지원자 목록 세팅
@@ -24,16 +24,16 @@ function DetailProjectNotifyPage() {
 
 
     useEffect(() => {
-        // ProjectId를 PathVariable로 보내기
-        request('GET', `/getProject/${projectId}`, {})
+        // StudyId를 PathVariable로 보내기
+        request('GET', `/getStudy/${studyId}`, {})
             .then((response) => {
-                //console.log("Fetched project data:", response.data); // Log the fetched data
+                //console.log("Fetched study data:", response.data); // Log the fetched data
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
 
 
                 // 게시물의 작성자라면, 지원자를 얻어오는 추가적인 쿼리를 날림
                 if (response.data.writer) {
-                    request('GET', `/getProjectApplicants/${projectId}`, {})
+                    request('GET', `/getStudyApplicants/${studyId}`, {})
                         .then((additionalResponse) => {
                             setApplicantData(additionalResponse.data);
                             console.log("additionalResponse.data : ", additionalResponse.data);
@@ -44,9 +44,9 @@ function DetailProjectNotifyPage() {
                 }
             })
             .catch((error) => {
-                console.error("Error fetching project data:", error);
+                console.error("Error fetching study data:", error);
             });
-    }, [projectId]);
+    }, [studyId]);
 
 
 
@@ -106,11 +106,11 @@ function DetailProjectNotifyPage() {
     };
 
     // 승인하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가
-    const handleApproveUser = async (applyUserNickName, projectId) => {
+    const handleApproveUser = async (applyUserNickName, studyId) => {
         try {
             const queryParams = new URLSearchParams({
                 nickName: applyUserNickName, // 닉네임
-                postsId: projectId,   // 게시물 ID
+                postsId: studyId,   // 게시물 ID
             });
 
             // 승인 상태를 '수정'하는 것이므로, put request 
@@ -134,11 +134,11 @@ function DetailProjectNotifyPage() {
     };
 
     // 승인 취소하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가 취소
-    const handleCancelApproval = async (applyUserNickName, projectId) => {
+    const handleCancelApproval = async (applyUserNickName, studyId) => {
         try {
             const queryParams = new URLSearchParams({
                 nickName: applyUserNickName, // 닉네임
-                postsId: projectId,   // 게시물 ID
+                postsId: studyId,   // 게시물 ID
             });
 
             // 승인 상태를 '수정'하는 것이므로, put request 
@@ -225,7 +225,7 @@ function DetailProjectNotifyPage() {
                     title="유저 승인"
                     open={approveModalVisible}
                     onOk={() => setApproveModalVisible(false)}
-                    onCancel={() => handleApproveUser(applyUserNickName, projectId)}
+                    onCancel={() => handleApproveUser(applyUserNickName, studyId)}
                     okText="아니오"
                     cancelText="예"
                 >
@@ -235,7 +235,7 @@ function DetailProjectNotifyPage() {
                     title="유저 승인 취소"
                     open={cancelModalVisible} // visible로 모달 열림 여부 설정
                     onOk={() => setCancelModalVisible(false)} // 취소 버튼을 누르면 모달 닫기
-                    onCancel={() => handleCancelApproval(applyUserNickName, projectId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
+                    onCancel={() => handleCancelApproval(applyUserNickName, studyId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
                     okText="아니오"
                     cancelText="예"
                 >
@@ -342,4 +342,4 @@ function DetailProjectNotifyPage() {
     )
 }
 
-export default DetailProjectNotifyPage;
+export default DetailStudyNotifyPage;

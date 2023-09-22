@@ -77,6 +77,9 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
 
     const handleLogoClick = () => { //로고 클릭하면 홈 화면으로 다시 라우팅
         console.log("go home by site logo");
+        dispatch(lastVisitedEndpoint('/','/'));
+        setLastVisitedEndpoint('/');
+        setLastLastVisitedEndpoint('/');
         navigate('/');
     };
 
@@ -87,6 +90,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
 
     // 알림 카드 각각을 클릭했을 때 동작
     const handleCardClick = (postId, postType, notificationId) => {
+
 
         // 알림을 읽으면, Notifications table의 checked를 true로 바꾸기 위해 put request 전송
         request('PUT', `sse/checkNotification/${notificationId}`, {})
@@ -107,14 +111,26 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
             setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
             setLastLastVisitedEndpoint(currentEndpoint);
         }
+
         
         const lowerType = postType.toLowerCase(); // 백엔드에서 받은 postType은 PROJECT , STUDY와 같은 형식이므로 navigate를 위해선 소문자로 바꿔줄 필요가 있음
 
+        // if (currentEndpoint === `/${lowerType}/detail/${postId}`) {
+        //     message.warning('이동하려는 페이지가 현재 보고있는 페이지입니다. 새로 고침을 눌러주세요.');
+        // }
+
+        // navigate(`${lowerType}/detail/${postId}`); // 알림에 해당하는 게시물로 navigate 걸어줌
         if (currentEndpoint === `/${lowerType}/detail/${postId}`) {
             message.warning('이동하려는 페이지가 현재 보고있는 페이지입니다. 새로 고침을 눌러주세요.');
+        } else {
+            // 새 창을 열어서 페이지를 띄우기
+            const newWindow = window.open(`${lowerType}/detail/notify/${postId}`, '_blank');
+            if (newWindow) {
+                newWindow.opener = null; // 새 창에서 브라우저 열기
+            } else {
+                message.error('팝업 창을 열 수 없습니다. 팝업 차단 설정을 확인하세요.');
+            }
         }
-
-        navigate(`${lowerType}/detail/${postId}`); // 알림에 해당하는 게시물로 navigate 걸어줌
     };
 
     // 알림 카드 닫기 버튼 클릭시 호출될 함수

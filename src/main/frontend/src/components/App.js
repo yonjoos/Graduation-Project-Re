@@ -26,6 +26,7 @@ import StudyPage from './views/StudyPage/StudyPage';
 import DetailStudyPage from './views/StudyPage/DetailStudyPage/DetailStudyPage';
 import UploadStudyPage from './views/StudyPage/UploadStudyPage/UploadStudyPage';
 import UpdateStudyPage from './views/StudyPage/UpdateStudyPage/UpdateStudyPage';
+import DetailProjectNotifyPage from './views/ProjectPage/DetailProjectPage/DetailProjectNotifyPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
 //import logo2 from '../logo2.png'
@@ -51,7 +52,7 @@ function App() {
                 {/** 로고 모양을 인자로 넘김 */}
                 <MyHeader logoSrc={logo4} />
                 <Content style={{ padding: '20px' }}>
-                    <div style={{ paddingLeft : '15%', paddingRight : '15%' }}>
+                    <div style={{ paddingLeft: '15%', paddingRight: '15%' }}>
                         <Routes>
                             {
                                 /**
@@ -179,7 +180,7 @@ function App() {
                                 element={Auth(UpdateStudyPage, true)}
                             />
                         </Routes>
-                        <Notifications/>
+                        <Notifications />
                     </div>
                     <div>
                         <Routes>
@@ -194,8 +195,24 @@ function App() {
                         </Routes>
                     </div>
                 </Content>
-                <Footer style={{ paddingLeft : '15%', paddingRight : '15%' }} logoSrc={logo4}/>
+                <Footer style={{ paddingLeft: '15%', paddingRight: '15%' }} logoSrc={logo4} />
             </Layout>
+            <Layout>
+                <Content>
+                <div>
+                    <Routes>
+                       
+                        <Route
+                            path="/project/detail/notify/:projectId"
+                            element={Auth(DetailProjectNotifyPage, true)}
+                        />
+                        
+                    </Routes>
+                </div>
+                </Content>
+                <Footer style={{ paddingLeft: '15%', paddingRight: '15%' }} logoSrc={logo4} />
+            </Layout>
+            
         </Router>
     );
 }

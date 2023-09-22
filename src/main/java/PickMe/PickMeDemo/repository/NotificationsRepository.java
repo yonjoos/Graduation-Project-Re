@@ -10,4 +10,6 @@ public interface NotificationsRepository extends JpaRepository<Notifications,Lon
 
     List<Notifications> findByUser(User user);
 
+    // 해당하는 유저의 알림 중, 읽은 알림을 모두 찾기
+    List<Notifications> findByUserAndChecked(User user, Boolean checked);
 }

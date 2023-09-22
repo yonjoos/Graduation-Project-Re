@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -188,5 +189,51 @@ public class NotificationService {
 
         // 변경 감지 후 저장
         notificationsRepository.save(findNotification);
+    }
+
+
+    // 읽은 알림 지우기
+    public List<NotificationDto> deleteReadNotification(String userEmail) {
+
+        // 이메일로 유저 찾기
+        User findUser = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        // 유저와 관련 있는 알림 중, 읽은 알림 찾기
+        List<Notifications> readNotifications = notificationsRepository.findByUserAndChecked(findUser, true);
+
+        // 읽은 알림 지우기
+        notificationsRepository.deleteAll(readNotifications);
+
+        // 안읽은 알림 찾기
+        List<Notifications> unreadNotifications = notificationsRepository.findByUserAndChecked(findUser, false);
+
+        // 안읽은 알림에 대한 DTO를 List로 묶어서 리턴하기
+        List<NotificationDto> unreadNotificationDtos = unreadNotifications.stream()
+                .map(notification -> NotificationDto.builder()
+                        .notificationId(notification.getId())
+                        .postId(notification.getPostId())
+                        .notificationMessage(notification.getNotificationMessage())
+                        .postType(notification.getPostType().toString())
+                        .isRead(notification.getChecked())
+                        .build())
+                .collect(Collectors.toList());
+
+        return unreadNotificationDtos;
+    }
+
+
+    // 전체 알림 지우기
+    public void deleteAllNotification(String userEmail) {
+
+        // 이메일로 유저 찾기
+        User findUser = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        // 유저와 관련 있는 알림 찾기
+        List<Notifications> notifications = notificationsRepository.findByUser(findUser);
+
+        // 전체 알림 지우기
+        notificationsRepository.deleteAll(notifications);
     }
 }

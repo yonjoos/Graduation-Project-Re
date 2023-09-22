@@ -89,4 +89,30 @@ public class NotificationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알림 읽음 처리에 실패했습니다.");
         }
     }
+
+    // 읽은 알림을 삭제하는 컨트롤러
+    @PostMapping("/deleteNotification/read")
+    public ResponseEntity<List<NotificationDto>> deleteReadNotification(Principal principal) {
+
+        String userEmail = principal.getName(); // 요청을 한 회원의 email을 찾음
+
+        List<NotificationDto> notificationDtos = notificationService.deleteReadNotification(userEmail);
+
+        return ResponseEntity.ok(notificationDtos);
+    }
+
+    // 모든 알림을 삭제하는 컨트롤러
+    @PostMapping("/deleteNotification/all")
+    public ResponseEntity<String> deleteAllNotification(Principal principal) {
+
+        String userEmail = principal.getName(); // 요청을 한 회원의 email을 찾음
+
+        try {
+            notificationService.deleteAllNotification(userEmail);
+            return ResponseEntity.ok("모든 알림이 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알림 삭제에 실패했습니다.");
+        }
+    }
 }

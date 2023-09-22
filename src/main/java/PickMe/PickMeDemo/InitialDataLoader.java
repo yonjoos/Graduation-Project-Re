@@ -1095,5 +1095,1037 @@ public class InitialDataLoader implements CommandLineRunner {
         // 초기 데이터 생성 및 저장(10)
         // ai 전문가 생성 예정
         // 게시물은 27부터 (유저 7, 9가 게시물이 4개임. 나머지는 3개.)
+
+
+
+
+
+
+
+        // 추천 시스템 검증 전용 더미 데이터 만들기
+        // 추천에 유효한 포폴까지만 생성하도록 하였음.
+        // 0000 ~ 4321까지 총 225개의 더미 데이터 생성 필요
+
+//        0000
+
+        User user0000 = User.builder()
+                .userName("0000")
+                .nickName("0000")
+                .email("0000")
+                .password(passwordEncoder.encode("0000"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0000);
+
+        Portfolio user0000Portfolio = Portfolio.builder()
+                .user(user0000)
+                .web(0)
+                .app(0)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("0000")
+                .introduce("0000")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0000Portfolio);
+
+//        0001
+
+        User user0001 = User.builder()
+                .userName("0001")
+                .nickName("0001")
+                .email("0001")
+                .password(passwordEncoder.encode("0001"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0001);
+
+        Portfolio user0001Portfolio = Portfolio.builder()
+                .user(user0001)
+                .web(0)
+                .app(0)
+                .game(0)
+                .ai(1)
+                .shortIntroduce("0001")
+                .introduce("0001")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0001Portfolio);
+
+//        0002
+
+        User user0002 = User.builder()
+                .userName("0002")
+                .nickName("0002")
+                .email("0002")
+                .password(passwordEncoder.encode("0002"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0002);
+
+        Portfolio user0002Portfolio = Portfolio.builder()
+                .user(user0002)
+                .web(0)
+                .app(0)
+                .game(0)
+                .ai(2)
+                .shortIntroduce("0002")
+                .introduce("0002")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0002Portfolio);
+
+//        0003
+
+        User user0003 = User.builder()
+                .userName("0003")
+                .nickName("0003")
+                .email("0003")
+                .password(passwordEncoder.encode("0003"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0003);
+
+        Portfolio user0003Portfolio = Portfolio.builder()
+                .user(user0003)
+                .web(0)
+                .app(0)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("0003")
+                .introduce("0003")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0003Portfolio);
+
+//        0004
+
+        User user0004 = User.builder()
+                .userName("0004")
+                .nickName("0004")
+                .email("0004")
+                .password(passwordEncoder.encode("0004"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0004);
+
+        Portfolio user0004Portfolio = Portfolio.builder()
+                .user(user0004)
+                .web(0)
+                .app(0)
+                .game(0)
+                .ai(4)
+                .shortIntroduce("0004")
+                .introduce("0004")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0004Portfolio);
+
+//        0010
+
+        User user0010 = User.builder()
+                .userName("0010")
+                .nickName("0010")
+                .email("0010")
+                .password(passwordEncoder.encode("0010"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0010);
+
+        Portfolio user0010Portfolio = Portfolio.builder()
+                .user(user0010)
+                .web(0)
+                .app(0)
+                .game(1)
+                .ai(0)
+                .shortIntroduce("0010")
+                .introduce("0010")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0010Portfolio);
+
+//        0012
+
+        User user0012 = User.builder()
+                .userName("0012")
+                .nickName("0012")
+                .email("0012")
+                .password(passwordEncoder.encode("0012"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0012);
+
+        Portfolio user0012Portfolio = Portfolio.builder()
+                .user(user0012)
+                .web(0)
+                .app(0)
+                .game(1)
+                .ai(2)
+                .shortIntroduce("0012")
+                .introduce("0012")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0012Portfolio);
+
+//        0013
+
+        User user0013 = User.builder()
+                .userName("0013")
+                .nickName("0013")
+                .email("0013")
+                .password(passwordEncoder.encode("0013"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0013);
+
+        Portfolio user0013Portfolio = Portfolio.builder()
+                .user(user0013)
+                .web(0)
+                .app(0)
+                .game(1)
+                .ai(3)
+                .shortIntroduce("0013")
+                .introduce("0013")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0013Portfolio);
+
+//        0014
+
+        User user0014 = User.builder()
+                .userName("0014")
+                .nickName("0014")
+                .email("0014")
+                .password(passwordEncoder.encode("0014"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0014);
+
+        Portfolio user0014Portfolio = Portfolio.builder()
+                .user(user0014)
+                .web(0)
+                .app(0)
+                .game(1)
+                .ai(4)
+                .shortIntroduce("0014")
+                .introduce("0014")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0014Portfolio);
+
+//        0020
+
+        User user0020 = User.builder()
+                .userName("0020")
+                .nickName("0020")
+                .email("0020")
+                .password(passwordEncoder.encode("0020"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0020);
+
+        Portfolio user0020Portfolio = Portfolio.builder()
+                .user(user0020)
+                .web(0)
+                .app(0)
+                .game(2)
+                .ai(0)
+                .shortIntroduce("0020")
+                .introduce("0020")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0020Portfolio);
+
+//        0021
+
+        User user0021 = User.builder()
+                .userName("0021")
+                .nickName("0021")
+                .email("0021")
+                .password(passwordEncoder.encode("0021"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0021);
+
+        Portfolio user0021Portfolio = Portfolio.builder()
+                .user(user0021)
+                .web(0)
+                .app(0)
+                .game(2)
+                .ai(1)
+                .shortIntroduce("0021")
+                .introduce("0021")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0021Portfolio);
+
+//        0023
+
+        User user0023 = User.builder()
+                .userName("0023")
+                .nickName("0023")
+                .email("0023")
+                .password(passwordEncoder.encode("0023"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0023);
+
+        Portfolio user0023Portfolio = Portfolio.builder()
+                .user(user0023)
+                .web(0)
+                .app(0)
+                .game(2)
+                .ai(3)
+                .shortIntroduce("0023")
+                .introduce("0023")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0023Portfolio);
+
+//        0024
+
+        User user0024 = User.builder()
+                .userName("0024")
+                .nickName("0024")
+                .email("0024")
+                .password(passwordEncoder.encode("0024"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0024);
+
+        Portfolio user0024Portfolio = Portfolio.builder()
+                .user(user0024)
+                .web(0)
+                .app(0)
+                .game(2)
+                .ai(4)
+                .shortIntroduce("0024")
+                .introduce("0024")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0024Portfolio);
+
+//        0030
+
+        User user0030 = User.builder()
+                .userName("0030")
+                .nickName("0030")
+                .email("0030")
+                .password(passwordEncoder.encode("0030"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0030);
+
+        Portfolio user0030Portfolio = Portfolio.builder()
+                .user(user0030)
+                .web(0)
+                .app(0)
+                .game(3)
+                .ai(0)
+                .shortIntroduce("0030")
+                .introduce("0030")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0030Portfolio);
+
+//        0031
+
+        User user0031 = User.builder()
+                .userName("0031")
+                .nickName("0031")
+                .email("0031")
+                .password(passwordEncoder.encode("0031"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0031);
+
+        Portfolio user0031Portfolio = Portfolio.builder()
+                .user(user0031)
+                .web(0)
+                .app(0)
+                .game(3)
+                .ai(1)
+                .shortIntroduce("0031")
+                .introduce("0031")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0031Portfolio);
+
+//        0032
+
+        User user0032 = User.builder()
+                .userName("0032")
+                .nickName("0032")
+                .email("0032")
+                .password(passwordEncoder.encode("0032"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0032);
+
+        Portfolio user0032Portfolio = Portfolio.builder()
+                .user(user0032)
+                .web(0)
+                .app(0)
+                .game(3)
+                .ai(2)
+                .shortIntroduce("0032")
+                .introduce("0032")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0032Portfolio);
+
+//        0034
+
+        User user0034 = User.builder()
+                .userName("0034")
+                .nickName("0034")
+                .email("0034")
+                .password(passwordEncoder.encode("0034"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0034);
+
+        Portfolio user0034Portfolio = Portfolio.builder()
+                .user(user0034)
+                .web(0)
+                .app(0)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("0034")
+                .introduce("0034")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0034Portfolio);
+
+//        0040
+
+        User user0040 = User.builder()
+                .userName("0040")
+                .nickName("0040")
+                .email("0040")
+                .password(passwordEncoder.encode("0040"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0040);
+
+        Portfolio user0040Portfolio = Portfolio.builder()
+                .user(user0040)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("0040")
+                .introduce("0040")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0040Portfolio);
+
+//        0041
+
+        User user0041 = User.builder()
+                .userName("0041")
+                .nickName("0041")
+                .email("0041")
+                .password(passwordEncoder.encode("0041"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0041);
+
+        Portfolio user0041Portfolio = Portfolio.builder()
+                .user(user0041)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(1)
+                .shortIntroduce("0041")
+                .introduce("0041")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0041Portfolio);
+
+//        0042
+
+        User user0042 = User.builder()
+                .userName("0042")
+                .nickName("0042")
+                .email("0042")
+                .password(passwordEncoder.encode("0042"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0042);
+
+        Portfolio user0042Portfolio = Portfolio.builder()
+                .user(user0042)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(2)
+                .shortIntroduce("0042")
+                .introduce("0042")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0042Portfolio);
+
+//        0043
+
+        User user0043 = User.builder()
+                .userName("0043")
+                .nickName("0043")
+                .email("0043")
+                .password(passwordEncoder.encode("0043"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0043);
+
+        Portfolio user0043Portfolio = Portfolio.builder()
+                .user(user0043)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("0043")
+                .introduce("0043")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0043Portfolio);
+
+//        0100
+
+        User user0100 = User.builder()
+                .userName("0100")
+                .nickName("0100")
+                .email("0100")
+                .password(passwordEncoder.encode("0100"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0100);
+
+        Portfolio user0100Portfolio = Portfolio.builder()
+                .user(user0100)
+                .web(0)
+                .app(1)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("0100")
+                .introduce("0100")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0100Portfolio);
+
+//        0102
+
+        User user0102 = User.builder()
+                .userName("0102")
+                .nickName("0102")
+                .email("0102")
+                .password(passwordEncoder.encode("0102"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0102);
+
+        Portfolio user0102Portfolio = Portfolio.builder()
+                .user(user0102)
+                .web(0)
+                .app(1)
+                .game(0)
+                .ai(2)
+                .shortIntroduce("0102")
+                .introduce("0102")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0102Portfolio);
+
+//        0103
+
+        User user0103 = User.builder()
+                .userName("0103")
+                .nickName("0103")
+                .email("0103")
+                .password(passwordEncoder.encode("0103"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0103);
+
+        Portfolio user0103Portfolio = Portfolio.builder()
+                .user(user0103)
+                .web(0)
+                .app(1)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("0103")
+                .introduce("0103")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0103Portfolio);
+
+//        0104
+
+        User user0104 = User.builder()
+                .userName("0104")
+                .nickName("0104")
+                .email("0104")
+                .password(passwordEncoder.encode("0104"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0104);
+
+        Portfolio user0104Portfolio = Portfolio.builder()
+                .user(user0104)
+                .web(0)
+                .app(1)
+                .game(0)
+                .ai(4)
+                .shortIntroduce("0104")
+                .introduce("0104")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0104Portfolio);
+
+//        0120
+
+        User user0120 = User.builder()
+                .userName("0120")
+                .nickName("0120")
+                .email("0120")
+                .password(passwordEncoder.encode("0120"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0120);
+
+        Portfolio user0120Portfolio = Portfolio.builder()
+                .user(user0120)
+                .web(0)
+                .app(1)
+                .game(2)
+                .ai(0)
+                .shortIntroduce("0120")
+                .introduce("0120")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0120Portfolio);
+
+//        0123
+
+        User user0123 = User.builder()
+                .userName("0123")
+                .nickName("0123")
+                .email("0123")
+                .password(passwordEncoder.encode("0123"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0123);
+
+        Portfolio user0123Portfolio = Portfolio.builder()
+                .user(user0123)
+                .web(0)
+                .app(1)
+                .game(2)
+                .ai(3)
+                .shortIntroduce("0123")
+                .introduce("0123")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0123Portfolio);
+
+//        0124
+
+        User user0124 = User.builder()
+                .userName("0124")
+                .nickName("0124")
+                .email("0124")
+                .password(passwordEncoder.encode("0124"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0124);
+
+        Portfolio user0124Portfolio = Portfolio.builder()
+                .user(user0124)
+                .web(0)
+                .app(1)
+                .game(2)
+                .ai(4)
+                .shortIntroduce("0124")
+                .introduce("0124")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0124Portfolio);
+
+//        0130
+
+        User user0130 = User.builder()
+                .userName("0130")
+                .nickName("0130")
+                .email("0130")
+                .password(passwordEncoder.encode("0130"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0130);
+
+        Portfolio user0130Portfolio = Portfolio.builder()
+                .user(user0130)
+                .web(0)
+                .app(1)
+                .game(3)
+                .ai(0)
+                .shortIntroduce("0130")
+                .introduce("0130")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0130Portfolio);
+
+//        0132
+
+        User user0132 = User.builder()
+                .userName("0132")
+                .nickName("0132")
+                .email("0132")
+                .password(passwordEncoder.encode("0132"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0132);
+
+        Portfolio user0132Portfolio = Portfolio.builder()
+                .user(user0132)
+                .web(0)
+                .app(1)
+                .game(3)
+                .ai(2)
+                .shortIntroduce("0132")
+                .introduce("0132")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0132Portfolio);
+
+//        0134
+
+        User user0134 = User.builder()
+                .userName("0134")
+                .nickName("0134")
+                .email("0134")
+                .password(passwordEncoder.encode("0134"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0134);
+
+        Portfolio user0134Portfolio = Portfolio.builder()
+                .user(user0134)
+                .web(0)
+                .app(1)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("0134")
+                .introduce("0134")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0134Portfolio);
+
+//        0140
+
+        User user0140 = User.builder()
+                .userName("0140")
+                .nickName("0140")
+                .email("0140")
+                .password(passwordEncoder.encode("0140"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0140);
+
+        Portfolio user0140Portfolio = Portfolio.builder()
+                .user(user0140)
+                .web(0)
+                .app(1)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("0140")
+                .introduce("0140")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0140Portfolio);
+
+//        0142
+
+        User user0142 = User.builder()
+                .userName("0142")
+                .nickName("0142")
+                .email("0142")
+                .password(passwordEncoder.encode("0142"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0142);
+
+        Portfolio user0142Portfolio = Portfolio.builder()
+                .user(user0142)
+                .web(0)
+                .app(1)
+                .game(4)
+                .ai(2)
+                .shortIntroduce("0142")
+                .introduce("0142")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0142Portfolio);
+
+//        0143
+
+        User user0143 = User.builder()
+                .userName("0143")
+                .nickName("0143")
+                .email("0143")
+                .password(passwordEncoder.encode("0143"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user0143);
+
+        Portfolio user0143Portfolio = Portfolio.builder()
+                .user(user0143)
+                .web(0)
+                .app(1)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("0143")
+                .introduce("0143")
+                .fileUrl("")
+                .build();
+
+        portfolioRepository.save(user0143Portfolio);
+
+//        0200
+//        0201
+//        0203
+//        0204
+//        0210
+//        0213
+//        0214
+//        0230
+//        0231
+//        0234
+//        0240
+//        0241
+//        0243
+//        0300
+//        0301
+//        0302
+//        0304
+//        0310
+//        0312
+//        0314
+//        0320
+//        0321
+//        0324
+//        0340
+//        0341
+//        0342
+//        0400
+//        0401
+//        0402
+//        0403
+//        0410
+//        0412
+//        0413
+//        0420
+//        0421
+//        0423
+//        0430
+//        0431
+//        0432
+//        1002
+//        1003
+//        1004
+//        1020
+//        1023
+//        1024
+//        1030
+//        1032
+//        1034
+//        1040
+//        1042
+//        1043
+//        1200
+//        1203
+//        1204
+//        1230
+//        1234
+//        1240
+//        1243
+//        1300
+//        1302
+//        1304
+//        1320
+//        1324
+//        1340
+//        1342
+//        1400
+//        1402
+//        1403
+//        1420
+//        1423
+//        1430
+//        1432
+//        2001
+//        2003
+//        2004
+//        2010
+//        2013
+//        2014
+//        2030
+//        2031
+//        2034
+//        2040
+//        2041
+//        2043
+//        2100
+//        2103
+//        2104
+//        2130
+//        2134
+//        2140
+//        2143
+//        2300
+//        2301
+//        2304
+//        2310
+//        2314
+//        2340
+//        2341
+//        2400
+//        2401
+//        2403
+//        2410
+//        2413
+//        2430
+//        2431
+//        3001
+//        3002
+//        3004
+//        3010
+//        3012
+//        3014
+//        3020
+//        3021
+//        3024
+//        3040
+//        3041
+//        3042
+//        3100
+//        3102
+//        3104
+//        3120
+//        3124
+//        3140
+//        3142
+//        3200
+//        3201
+//        3204
+//        3210
+//        3214
+//        3240
+//        3241
+//        3400
+//        3401
+//        3402
+//        3410
+//        3412
+//        3420
+//        3421
+//        4001
+//        4002
+//        4003
+//        4010
+//        4012
+//        4013
+//        4020
+//        4021
+//        4023
+//        4030
+//        4031
+//        4032
+//        4100
+//        4102
+//        4103
+//        4120
+//        4123
+//        4130
+//        4132
+//        4200
+//        4201
+//        4203
+//        4210
+//        4213
+//        4230
+//        4231
+//        4300
+//        4301
+//        4302
+//        4310
+//        4312
+//        4320
+//        4321
     }
 }

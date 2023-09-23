@@ -226,6 +226,7 @@ function ScrapPage() {
                     total={totalPages * pageSize}   // 내용물의 총 개수 = 페이지 수 * 페이지 당 몇 개씩
                     pageSize={pageSize}             // 한 페이지에 몇 개씩 보여줄 것인가?
                     onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                    showSizeChanger={false}
                 />
             </div>
         </div>

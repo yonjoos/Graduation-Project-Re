@@ -284,6 +284,7 @@ function ProjectPage() {
                     total={totalPages * pageSize}
                     pageSize={pageSize}
                     onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                    showSizeChanger={false}
                 />
             </div>
         </div>

@@ -5,14 +5,11 @@ import PickMe.PickMeDemo.repository.CategoryRepository;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.PostsRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.nio.CharBuffer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -25,6 +22,43 @@ public class InitialDataLoader implements CommandLineRunner {
     private final PortfolioRepository portfolioRepository;
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
+
+    private void createUserAndPortfolio(
+            String userName,
+            String nickName,
+            String email,
+            String password,
+            int web,
+            int app,
+            int game,
+            int ai,
+            String shortIntroduce,
+            String introduce,
+            String fileUrl
+    ) {
+        User user = User.builder()
+                .userName(userName)
+                .nickName(nickName)
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(Role.USER)
+                .build();
+
+        userRepository.save(user);
+
+        Portfolio portfolio = Portfolio.builder()
+                .user(user)
+                .web(web)
+                .app(app)
+                .game(game)
+                .ai(ai)
+                .shortIntroduce(shortIntroduce)
+                .introduce(introduce)
+                .fileUrl(fileUrl)
+                .build();
+
+        portfolioRepository.save(portfolio);
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -1095,5 +1129,314 @@ public class InitialDataLoader implements CommandLineRunner {
         // 초기 데이터 생성 및 저장(10)
         // ai 전문가 생성 예정
         // 게시물은 27부터 (유저 7, 9가 게시물이 4개임. 나머지는 3개.)
+
+
+
+
+
+
+
+        // 추천 시스템 검증 전용 더미 데이터 만들기
+        // 추천에 유효한 포폴까지만 생성하도록 하였음.
+        // 0000 ~ 4321까지 총 225개의 더미 데이터 생성 필요
+
+//        0000
+        createUserAndPortfolio("0000", "0000", "0000", "0000", 0, 0, 0, 0, "0000", "0000", "");
+//        0001
+        createUserAndPortfolio("0001", "0001", "0001", "0001", 0, 0, 0, 1, "0001", "0001", "");
+//        0002
+        createUserAndPortfolio("0002", "0002", "0002", "0002", 0, 0, 0, 2, "0002", "0002", "");
+//        0003
+        createUserAndPortfolio("0003", "0003", "0003", "0003", 0, 0, 0, 3, "0003", "0003", "");
+//        0004
+        createUserAndPortfolio("0004", "0004", "0004", "0004", 0, 0, 0, 4, "0004", "0004", "");
+//        0010
+        createUserAndPortfolio("0010", "0010", "0010", "0010", 0, 0, 1, 0, "0010", "0010", "");
+//        0012
+        createUserAndPortfolio("0012", "0012", "0012", "0012", 0, 0, 1, 2, "0012", "0012", "");
+//        0013
+        createUserAndPortfolio("0013", "0013", "0013", "0013", 0, 0, 1, 3, "0013", "0013", "");
+//        0014
+        createUserAndPortfolio("0014", "0014", "0014", "0014", 0, 0, 1, 4, "0014", "0014", "");
+//        0020
+        createUserAndPortfolio("0020", "0020", "0020", "0020", 0, 0, 2, 0, "0020", "0020", "");
+//        0021
+        createUserAndPortfolio("0021", "0021", "0021", "0021", 0, 0, 2, 1, "0021", "0021", "");
+//        0023
+        createUserAndPortfolio("0023", "0023", "0023", "0023", 0, 0, 2, 3, "0023", "0023", "");
+//        0024
+        createUserAndPortfolio("0024", "0024", "0024", "0024", 0, 0, 2, 4, "0024", "0024", "");
+//        0030
+        createUserAndPortfolio("0030", "0030", "0030", "0030", 0, 0, 3, 0, "0030", "0030", "");
+//        0031
+        createUserAndPortfolio("0031", "0031", "0031", "0031", 0, 0, 3, 1, "0031", "0031", "");
+//        0032
+        createUserAndPortfolio("0032", "0032", "0032", "0032", 0, 0, 3, 2, "0032", "0032", "");
+//        0034
+        createUserAndPortfolio("0034", "0034", "0034", "0034", 0, 0, 3, 4, "0034", "0034", "");
+//        0040
+        createUserAndPortfolio("0040", "0040", "0040", "0040", 0, 0, 4, 0, "0040", "0040", "");
+//        0041
+        createUserAndPortfolio("0041", "0041", "0041", "0041", 0, 0, 4, 1, "0041", "0041", "");
+//        0042
+        createUserAndPortfolio("0042", "0042", "0042", "0042", 0, 0, 4, 2, "0042", "0042", "");
+//        0043
+        createUserAndPortfolio("0043", "0043", "0043", "0043", 0, 0, 4, 3, "0043", "0043", "");
+//        0100
+        createUserAndPortfolio("0100", "0100", "0100", "0100", 0, 1, 0, 0, "0100", "0100", "");
+//        0102
+        createUserAndPortfolio("0102", "0102", "0102", "0102", 0, 1, 0, 2, "0102", "0102", "");
+//        0103
+        createUserAndPortfolio("0103", "0103", "0103", "0103", 0, 1, 0, 3, "0103", "0103", "");
+//        0104
+        createUserAndPortfolio("0104", "0104", "0104", "0104", 0, 1, 0, 4, "0104", "0104", "");
+//        0120
+        createUserAndPortfolio("0120", "0120", "0120", "0120", 0, 1, 2, 0, "0120", "0120", "");
+//        0123
+        createUserAndPortfolio("0123", "0123", "0123", "0123", 0, 1, 2, 3, "0123", "0123", "");
+//        0124
+        createUserAndPortfolio("0124", "0124", "0124", "0124", 0, 1, 2, 4, "0124", "0124", "");
+//        0130
+        createUserAndPortfolio("0130", "0130", "0130", "0130", 0, 1, 3, 0, "0130", "0130", "");
+//        0132
+        createUserAndPortfolio("0132", "0132", "0132", "0132", 0, 1, 3, 2, "0132", "0132", "");
+//        0134
+        createUserAndPortfolio("0134", "0134", "0134", "0134", 0, 1, 3, 4, "0134", "0134", "");
+//        0140
+        createUserAndPortfolio("0140", "0140", "0140", "0140", 0, 1, 4, 0, "0140", "0140", "");
+//        0142
+        createUserAndPortfolio("0142", "0142", "0142", "0142", 0, 1, 4, 2, "0142", "0142", "");
+//        0143
+        createUserAndPortfolio("0143", "0143", "0143", "0143", 0, 1, 4, 3, "0143", "0143", "");
+//        0200
+        createUserAndPortfolio("0200", "0200", "0200", "0200", 0, 2, 0, 0, "0200", "0200", "");
+//        0201
+        createUserAndPortfolio("0201", "0201", "0201", "0201", 0, 2, 0, 1, "0201", "0201", "");
+//        0203
+        createUserAndPortfolio("0203", "0203", "0203", "0203", 0, 2, 0, 3, "0203", "0203", "");
+//        0204
+        createUserAndPortfolio("0204", "0204", "0204", "0204", 0, 2, 0, 4, "0204", "0204", "");
+//        0210
+        createUserAndPortfolio("0210", "0210", "0210", "0210", 0, 2, 1, 0, "0210", "0210", "");
+//        0213
+        createUserAndPortfolio("0213", "0213", "0213", "0213", 0, 2, 1, 3, "0213", "0213", "");
+//        0214
+        createUserAndPortfolio("0214", "0214", "0214", "0214", 0, 2, 1, 4, "0214", "0214", "");
+//        0230
+        createUserAndPortfolio("0230", "0230", "0230", "0230", 0, 2, 3, 0, "0230", "0230", "");
+//        0231
+        createUserAndPortfolio("0231", "0231", "0231", "0231", 0, 2, 3, 1, "0231", "0231", "");
+//        0234
+        createUserAndPortfolio("0234", "0234", "0234", "0234", 0, 2, 3, 4, "0234", "0234", "");
+//        0240
+        createUserAndPortfolio("0240", "0240", "0240", "0240", 0, 2, 4, 0, "0240", "0240", "");
+//        0241
+        createUserAndPortfolio("0241", "0241", "0241", "0241", 0, 2, 4, 1, "0241", "0241", "");
+//        0243
+        createUserAndPortfolio("0243", "0243", "0243", "0243", 0, 2, 4, 3, "0243", "0243", "");
+//        0300
+        createUserAndPortfolio("0300", "0300", "0300", "0300", 0, 3, 0, 0, "0300", "0300", "");
+//        0301
+        createUserAndPortfolio("0301", "0301", "0301", "0301", 0, 3, 0, 1, "0301", "0301", "");
+//        0302
+        createUserAndPortfolio("0302", "0302", "0302", "0302", 0, 3, 0, 2, "0302", "0302", "");
+//        0304
+        createUserAndPortfolio("0304", "0304", "0304", "0304", 0, 3, 0, 4, "0304", "0304", "");
+//        0310
+        createUserAndPortfolio("0310", "0310", "0310", "0310", 0, 3, 1, 0, "0310", "0310", "");
+//        0312
+        createUserAndPortfolio("0312", "0312", "0312", "0312", 0, 3, 1, 2, "0312", "0312", "");
+//        0314
+        createUserAndPortfolio("0314", "0314", "0314", "0314", 0, 3, 1, 4, "0314", "0314", "");
+//        0320
+        createUserAndPortfolio("0320", "0320", "0320", "0320", 0, 3, 2, 0, "0320", "0320", "");
+//        0321
+        createUserAndPortfolio("0321", "0321", "0321", "0321", 0, 3, 2, 1, "0321", "0321", "");
+//        0324
+        createUserAndPortfolio("0324", "0324", "0324", "0324", 0, 3, 2, 4, "0324", "0324", "");
+//        0340
+        createUserAndPortfolio("0340", "0340", "0340", "0340", 0, 3, 4, 0, "0340", "0340", "");
+//        0341
+        createUserAndPortfolio("0341", "0341", "0341", "0341", 0, 3, 4, 1, "0341", "0341", "");
+//        0342
+        createUserAndPortfolio("0342", "0342", "0342", "0342", 0, 3, 4, 2, "0342", "0342", "");
+//        0400
+        createUserAndPortfolio("0400", "0400", "0400", "0400", 0, 4, 0, 0, "0400", "0400", "");
+//        0401
+        createUserAndPortfolio("0401", "0401", "0401", "0401", 0, 4, 0, 1, "0401", "0401", "");
+//        0402
+        createUserAndPortfolio("0402", "0402", "0402", "0402", 0, 4, 0, 2, "0402", "0402", "");
+//        0403
+        createUserAndPortfolio("0403", "0403", "0403", "0403", 0, 4, 0, 3, "0403", "0403", "");
+//        0410
+        createUserAndPortfolio("0410", "0410", "0410", "0410", 0, 4, 1, 0, "0410", "0410", "");
+//        0412
+        createUserAndPortfolio("0412", "0412", "0412", "0412", 0, 4, 1, 2, "0412", "0412", "");
+//        0413
+        createUserAndPortfolio("0413", "0413", "0413", "0413", 0, 4, 1, 3, "0413", "0413", "");
+//        0420
+        createUserAndPortfolio("0420", "0420", "0420", "0420", 0, 4, 2, 0, "0420", "0420", "");
+//        0421
+        createUserAndPortfolio("0421", "0421", "0421", "0421", 0, 4, 2, 1, "0421", "0421", "");
+//        0423
+        createUserAndPortfolio("0423", "0423", "0423", "0423", 0, 4, 2, 3, "0423", "0423", "");
+//        0430
+        createUserAndPortfolio("0430", "0430", "0430", "0430", 0, 4, 3, 0, "0430", "0430", "");
+//        0431
+        createUserAndPortfolio("0431", "0431", "0431", "0431", 0, 4, 3, 1, "0431", "0431", "");
+//        0432
+        createUserAndPortfolio("0432", "0432", "0432", "0432", 0, 4, 3, 2, "0432", "0432", "");
+//        1002
+        createUserAndPortfolio("1002", "1002", "1002", "1002", 1, 0, 0, 2, "1002", "1002", "");
+//        1003
+        createUserAndPortfolio("1003", "1003", "1003", "1003", 1, 0, 0, 3, "1003", "1003", "");
+//        1004
+        createUserAndPortfolio("1004", "1004", "1004", "1004", 1, 0, 0, 4, "1004", "1004", "");
+//        1020
+        createUserAndPortfolio("1020", "1020", "1020", "1020", 1, 0, 2, 0, "1020", "1020", "");
+//        1023
+        createUserAndPortfolio("1023", "1023", "1023", "1023", 1, 0, 2, 3, "1023", "1023", "");
+//        1024
+        createUserAndPortfolio("1024", "1024", "1024", "1024", 1, 0, 2, 4, "1024", "1024", "");
+//        1030
+        createUserAndPortfolio("1030", "1030", "1030", "1030", 1, 0, 3, 0, "1030", "1030", "");
+//        1032
+        createUserAndPortfolio("1032", "1032", "1032", "1032", 1, 0, 3, 2, "1032", "1032", "");
+//        1034
+        createUserAndPortfolio("1034", "1034", "1034", "1034", 1, 0, 3, 4, "1034", "1034", "");
+//        1040
+        createUserAndPortfolio("1040", "1040", "1040", "1040", 1, 0, 4, 0, "1040", "1040", "");
+//        1042
+        createUserAndPortfolio("1042", "1042", "1042", "1042", 1, 0, 4, 2, "1042", "1042", "");
+//        1043
+        createUserAndPortfolio("1043", "1043", "1043", "1043", 1, 0, 4, 3, "1043", "1043", "");
+//        1200
+        createUserAndPortfolio("1200", "1200", "1200", "1200", 1, 2, 0, 0, "1200", "1200", "");
+//        1203
+        createUserAndPortfolio("1203", "1203", "1203", "1203", 1, 2, 0, 3, "1203", "1203", "");
+//        1204
+        createUserAndPortfolio("1204", "1204", "1204", "1204", 1, 2, 0, 4, "1204", "1204", "");
+//        1230
+        createUserAndPortfolio("1230", "1230", "1230", "1230", 1, 2, 3, 0, "1230", "1230", "");
+//        1234
+        createUserAndPortfolio("1234", "1234", "1234", "1234", 1, 2, 3, 4, "1234", "1234", "");
+//        1240
+        createUserAndPortfolio("1240", "1240", "1240", "1240", 1, 2, 4, 0, "1240", "1240", "");
+//        1243
+        createUserAndPortfolio("1243", "1243", "1243", "1243", 1, 2, 4, 3, "1243", "1243", "");
+//        1300
+
+//        1302
+//        1304
+//        1320
+//        1324
+//        1340
+//        1342
+//        1400
+//        1402
+//        1403
+//        1420
+//        1423
+//        1430
+//        1432
+//        2001
+//        2003
+//        2004
+//        2010
+//        2013
+//        2014
+//        2030
+//        2031
+//        2034
+//        2040
+//        2041
+//        2043
+//        2100
+//        2103
+//        2104
+//        2130
+//        2134
+//        2140
+//        2143
+//        2300
+//        2301
+//        2304
+//        2310
+//        2314
+//        2340
+//        2341
+//        2400
+//        2401
+//        2403
+//        2410
+//        2413
+//        2430
+//        2431
+//        3001
+//        3002
+//        3004
+//        3010
+//        3012
+//        3014
+//        3020
+//        3021
+//        3024
+//        3040
+//        3041
+//        3042
+//        3100
+//        3102
+//        3104
+//        3120
+//        3124
+//        3140
+//        3142
+//        3200
+//        3201
+//        3204
+//        3210
+//        3214
+//        3240
+//        3241
+//        3400
+//        3401
+//        3402
+//        3410
+//        3412
+//        3420
+//        3421
+//        4001
+//        4002
+//        4003
+//        4010
+//        4012
+//        4013
+//        4020
+//        4021
+//        4023
+//        4030
+//        4031
+//        4032
+//        4100
+//        4102
+//        4103
+//        4120
+//        4123
+//        4130
+//        4132
+//        4200
+//        4201
+//        4203
+//        4210
+//        4213
+//        4230
+//        4231
+//        4300
+//        4301
+//        4302
+//        4310
+//        4312
+//        4320
+//        4321
     }
 }

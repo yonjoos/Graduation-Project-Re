@@ -56,11 +56,11 @@ function Notifications() {
                 if (firstColonIndex !== -1) { // 만약 : 가 있다면
                     // 첫 번째 ":" 다음의 내용을 추출
                     extractedContent = editedMessage.slice(firstColonIndex + 1).trim();
-        
+
                     // 숫자를 추출하기 위한 정규 표현식
                     const regex = /(\d+)$/; // 문자열 끝에 있는 숫자를 찾음
                     const match = extractedContent.match(regex);
-        
+
                     if (match) {
                         extractedNotificationId = parseInt(match[1], 10); // 추출된 숫자를 정수로 변환
                         // 숫자를 제외한 내용을 description에 넣기 위해 extractedContent를 업데이트
@@ -74,7 +74,7 @@ function Notifications() {
             console.log('newMessage : ', event.data);
             setMessages(prevMessages => [...prevMessages, newMessage]);
 
-            
+
 
             // antd의 notification을 사용하여 알림을 표시
             notification.info({
@@ -107,7 +107,7 @@ function Notifications() {
                         const match = newMessage.match(regex);
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
-                           
+
                             // 새 창을 열어서 페이지를 띄우기
                             const newWindow = window.open(`/project/detail/notify/${postId}`, '_blank');
                             if (newWindow) {
@@ -122,7 +122,7 @@ function Notifications() {
                         const match = newMessage.match(regex);
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
-                           
+
                             // 새 창을 열어서 페이지를 띄우기
                             const newWindow = window.open(`/study/detail/notify/${postId}`, '_blank');
                             if (newWindow) {
@@ -170,3 +170,177 @@ function Notifications() {
 }
 
 export default Notifications;
+
+// import { useEffect, useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import { EventSourcePolyfill } from "event-source-polyfill";
+// import { getAuthToken } from "../../hoc/request";
+// import { notification } from "antd";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { message } from "antd";
+// import { request } from "../../hoc/request";
+
+// function Notifications() {
+//     const navigate = useNavigate();
+//     const dispatch = useDispatch();
+//     const location = useLocation();
+//     const currentEndpoint = location.pathname;
+//     const nickName = useSelector(state => state.auth.userNickName);
+//     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+//     const [messages, setMessages] = useState([]);
+
+//     useEffect(() => {
+//         if (!isAuthenticated) {
+//             return; // 인증되지 않은 경우 SSE 연결하지 않음
+//         }
+
+//         console.log("Attempting to connect to SSE...");
+//         console.log("nickName : ", nickName);
+//         const authToken = getAuthToken(); // JWT 토큰 가져오기
+//         const eventSource = new EventSourcePolyfill(`http://localhost:9090/sse/subscribe/${nickName}`, {
+//             headers: {
+//                 Authorization: `Bearer ${authToken}`, // 헤더에 JWT 토큰 포함
+//             },
+//             withCredentials: true,
+//             heartbeatTimeout: 600000,
+//         });
+
+//         // Broadcast 채널 생성
+//         const notificationChannel = new BroadcastChannel("BroadcastNotification");
+//         console.log('notificationChannel', notificationChannel)
+
+//         eventSource.addEventListener('sse', event => {
+//             console.log("event", event);
+//             const eventData = JSON.parse(event.data);
+//             const newMessage = eventData.message;
+//             let editedMessage = eventData.message;
+//             let extractedContent = "";
+//             let extractedNotificationId = null;
+
+//             if (newMessage.startsWith("EventStream Created")) {
+//                 return;
+//             }
+
+//             if (editedMessage.startsWith("study") || editedMessage.startsWith("project")) {
+//                 const firstColonIndex = editedMessage.indexOf(":");
+
+//                 if (firstColonIndex !== -1) {
+//                     extractedContent = editedMessage.slice(firstColonIndex + 1).trim();
+//                     const regex = /(\d+)$/;
+//                     const match = extractedContent.match(regex);
+
+//                     if (match) {
+//                         extractedNotificationId = parseInt(match[1], 10);
+//                         extractedContent = extractedContent.replace(match[0], "").trim();
+//                     }
+//                 }
+//             }
+
+//             const notificationKey = new Date().getTime().toString();
+
+//             console.log('newMessage : ', event.data);
+//             setMessages(prevMessages => [...prevMessages, newMessage]);
+
+//             // Broadcast 채널을 통해 모든 열린 창/탭에 알림 브로드캐스트
+//             notificationChannel.postMessage({
+                
+//                 message: {
+//                     notificationKey,
+//                     extractedContent,
+//                     extractedNotificationId,
+//                     newMessage,
+//                 },
+//             });
+//         });
+
+//         eventSource.onopen = () => {
+//             console.log("SSE connection opened.");
+//             console.log('eventSource', eventSource);
+//         };
+
+//         eventSource.onmessage = (event) => {
+//             try {
+//                 console.log("SSE message received:", event.data);
+//                 const eventData = JSON.parse(event.data);
+//                 const newMessage = eventData.message;
+//                 setMessages(prevMessages => [...prevMessages, newMessage]);
+//             } catch (error) {
+//                 console.error("Error in onmessage:", error);
+//             }
+//         };
+
+//         eventSource.onerror = (error) => {
+//             console.error("SSE error:", error);
+//         };
+
+//         // 알림 채널에서 메시지 수신 대기
+//         notificationChannel.addEventListener("message", (event) => {
+
+//             console.log('broadcast', event.data.message);
+//             console.log('broad', event.data);
+
+            
+//                 const {
+//                     notificationKey,
+//                     extractedContent,
+//                     extractedNotificationId,
+//                     newMessage,
+//                 } = event.data.message;
+
+//                 // antd의 notification을 사용하여 알림을 표시
+//                 notification.info({
+//                     message: "New Notification",
+//                     description: extractedContent,
+//                     duration: 30,
+//                     key: notificationKey,
+//                     style: {
+//                         backgroundImage: "linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%)",
+//                         cursor: 'pointer',
+//                     },
+//                     onClick: () => {
+//                         request('PUT', `sse/checkNotification/${extractedNotificationId}`, {})
+//                             .then((response) => {
+//                                 console.log("알림을 읽었습니다.");
+//                             })
+//                             .catch((error) => {
+//                                 console.log("Error fetching data:", error);
+//                                 message.error('데이터베이스에서 checked를 true로 바꾸는데 실패했습니다.');
+//                             });
+
+//                         console.log('현재 path', currentEndpoint);
+
+//                         if (newMessage.startsWith("project")) {
+//                             const regex = /project\/detail\/(\d+)/;
+//                             const match = newMessage.match(regex);
+//                             if (match) {
+//                                 const postId = match[1];
+//                                 navigate(`/project/detail/notify/${postId}`);
+//                             }
+//                         } else if (newMessage.startsWith("study")) {
+//                             const regex = /study\/detail\/(\d+)/;
+//                             const match = newMessage.match(regex);
+//                             if (match) {
+//                                 const postId = match[1];
+//                                 navigate(`/study/detail/notify/${postId}`);
+//                             }
+//                         }
+
+//                         // 고유한 키를 통해, 클릭 시 해당 알림만 닫기
+//                         notification.destroy(notificationKey);
+//                     }
+//                 });
+            
+//         });
+
+//         return () => {
+//             eventSource.close();
+//             notificationChannel.close();
+//             console.log("SSE connection closed.");
+//         };
+//     }, [isAuthenticated, nickName, currentEndpoint]);
+
+//     // 알림 UI를 렌더링
+// }
+
+// export default Notifications;
+

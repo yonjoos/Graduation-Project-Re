@@ -120,7 +120,8 @@ const authReducer = (state = initialState, action) => {
 // 엔드포인트는 맨 처음 null로 세팅됨.
 const initialEndpointState = {
     lastVisitedEndpoint: null,
-    lastLastVisitedEndpoint: null
+    lastLastVisitedEndpoint: null,
+    lastLastLastVisitedEndpoint: null
 };
 
 const endpointReducer = (state = initialEndpointState, action) => {
@@ -130,7 +131,8 @@ const endpointReducer = (state = initialEndpointState, action) => {
         case 'SET_LAST_VISITED_ENDPOINT':
             return {
                 lastVisitedEndpoint: action.payload.endpoint,
-                lastLastVisitedEndpoint: action.payload.endEndPoint
+                lastLastVisitedEndpoint: action.payload.endEndPoint,
+                lastLastLastVisitedEndpoint: action.payload.endEndEndPoint
             };
         default:
             return state;

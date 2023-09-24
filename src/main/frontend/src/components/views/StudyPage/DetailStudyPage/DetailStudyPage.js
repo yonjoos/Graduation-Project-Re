@@ -5,7 +5,7 @@ import { request, getUserNickName } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { lastVisitedEndpoint } from "../../../../_actions/actions";
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint } from "../../../../hoc/request";
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
 import '../StudyPage.css';
 import './DetailStudyPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
@@ -17,6 +17,7 @@ function DetailStudyPage() {
     const { studyId } = useParams(); // URL로부터 studyId 가져오기
     const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
     const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
+    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isModalVisible, setIsModalVisible] = useState(false);    // 모달이 보이는지 여부 설정
@@ -277,20 +278,22 @@ function DetailStudyPage() {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
         // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint));    // 전역에 상태 저장을 위한 애.
+        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
         setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(visitedEndpoint);
-        navigate(`/portfolio/${nickName}`);
+        setLastLastVisitedEndpoint(visitedEndEndpoint);
+        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+        navigate(`/portfolio/notify/${nickName}`);
     };
 
     const handlePortfolioClick = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
         // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint));    // 전역에 상태 저장을 위한 애.
+        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint, '/portfoliocard', visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
         setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(visitedEndpoint);
-        navigate(`/portfolio/${nickName}`);
+        setLastLastVisitedEndpoint(visitedEndEndpoint);
+        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+        navigate(`/portfolio/notify/${nickName}`);
     };
 
     // 승인하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가

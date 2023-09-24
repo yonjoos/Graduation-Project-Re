@@ -53,8 +53,7 @@ function Main() {
     const renderHeader = () => {
         return (
             !location.pathname.includes('/project/detail/notify/') &&
-            !location.pathname.includes('/study/detail/notify/') &&
-            !location.pathname.includes('/portfolio/notify/')
+            !location.pathname.includes('/study/detail/notify/')
         );
     };
 
@@ -147,6 +146,10 @@ function Main() {
                             element={Auth(PortfolioPage, true)}
                         />
                         <Route
+                            path="/portfolio/notify/:nickName"
+                            element={Auth(PortfolioNotifyPage, true)}
+                        />
+                        <Route
                             path="/group"
                             element={Auth(GroupPage, true)}
                         />
@@ -204,18 +207,15 @@ function Main() {
                             element={Auth(DetailStudyPage, true)}
                         />
 
-                        <Route
+                        {/* <Route
                             path="/project/detail/notify/:projectId"
                             element={Auth(DetailProjectNotifyPage, true)}
                         />
                         <Route
                             path="/study/detail/notify/:studyId"
                             element={Auth(DetailStudyNotifyPage, true)}
-                        />
-                        <Route
-                            path="/portfolio/notify/:nickName"
-                            element={Auth(PortfolioNotifyPage, true)}
-                        />
+                        /> */}
+
                     </Routes>
                 </div>
             </Content>

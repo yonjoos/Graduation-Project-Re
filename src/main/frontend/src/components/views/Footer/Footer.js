@@ -12,8 +12,7 @@ function BottomFooter(props) {
     const renderFooter = () => {
         return (
             !location.pathname.includes('/project/detail/notify/') &&
-            !location.pathname.includes('/study/detail/notify/') &&
-            !location.pathname.includes('/portfolio/notify/')
+            !location.pathname.includes('/study/detail/notify/')
         );
     };
 

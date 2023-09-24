@@ -1,13 +1,19 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
 
 function PortfolioPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { nickName } = useParams();
-    const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
+    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
+    
 
     const [data, setData] = useState(null);
     const [hasPortfolio, setHasPortfolio] = useState('');
@@ -35,12 +41,18 @@ function PortfolioPage() {
             .catch((error) => {
                 console.error("Error fetching data:", error);
             });
+
+        dispatch(lastVisitedEndpoint(visitedEndpoint, visitedEndEndpoint, visitedEndEndEndpoint ));    // 전역에 상태 저장을 위한 애.
+        setLastVisitedEndpoint(visitedEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        setLastLastVisitedEndpoint(visitedEndEndpoint);
+        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
     }, [nickName]);
 
-    // 아무런 정보도 없는 유저의 포트폴리오에 접근 시 (존재하지 않는 유저의 포트폴리오에 접근 시) /portfolio로 강제로 이동
+    // 아무런 정보도 없는 유저의 포트폴리오에 접근 시 (존재하지 않는 유저의 포트폴리오에 접근 시) visitedEndpoint로 강제로 이동
     useEffect(() => {
         if (hasPortfolio === null) {
-            navigate('/portfolio');
+
+            navigate(visitedEndpoint);
         }
     }, [hasPortfolio]);
 
@@ -118,13 +130,11 @@ function PortfolioPage() {
 
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
-        // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
-        if (lastVisitedEndpoint) {
-            navigate(lastVisitedEndpoint);
+        if(visitedEndEndEndpoint === "/portfoliocard") {
+            navigate(visitedEndEndEndpoint);
         }
-        // 저장된 엔드포인트가 없다면, 랜딩페이지로 이동
         else {
-            navigate('/');
+            navigate(visitedEndpoint);
         }
     };
 

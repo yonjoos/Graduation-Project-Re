@@ -3,7 +3,7 @@ import { Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { lastVisitedEndpoint } from '../../../../_actions/actions';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint } from '../../../../hoc/request';
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../../hoc/request';
 
 function PortfolioCard(props) {
   const navigate = useNavigate();
@@ -12,9 +12,10 @@ function PortfolioCard(props) {
   const onClickHandler = () => {
     // 알림을 클릭하여 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
     // 가장 마지막에 저장한 엔드포인트인 /으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /로 설정
-    dispatch(lastVisitedEndpoint('/', '/'));
+    dispatch(lastVisitedEndpoint('/', '/', '/'));
     setLastVisitedEndpoint('/');
     setLastLastVisitedEndpoint('/');
+    setLastLastLastVisitedEndpoint('/');
 
     navigate('/portfoliocard')
   }

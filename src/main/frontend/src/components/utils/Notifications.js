@@ -5,7 +5,8 @@ import { getAuthToken } from "../../hoc/request";
 import { notification } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { message } from "antd";
-import { request } from "../../hoc/request";
+import { request, setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../hoc/request";
+import { lastVisitedEndpoint } from "../../_actions/actions";
 
 function Notifications() {
     const navigate = useNavigate();
@@ -14,6 +15,8 @@ function Notifications() {
     const currentEndpoint = location.pathname;
     const nickName = useSelector(state => state.auth.userNickName);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const visitedEndPoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    const visitedEndEndPoint = useSelector(state => state.endpoint.lastVisitedEndEndpoint);
     const [messages, setMessages] = useState([]);
 
 
@@ -108,14 +111,24 @@ function Notifications() {
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
 
-                            // 새 창을 열어서 페이지를 띄우기
-                            const newWindow = window.open(`/project/detail/notify/${postId}`, '_blank');
-                            if (newWindow) {
-                                newWindow.opener = null; // 새 창에서 브라우저 열기
-                            } else {
-                                message.error('팝업 창을 열 수 없습니다. 팝업 차단 설정을 확인하세요.');
+                            if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
+                            {
+                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                                setLastLastVisitedEndpoint(currentEndpoint);
+                                setLastLastLastVisitedEndpoint(currentEndpoint);
                             }
-                            //navigate(`/project/detail/notify/${postId}`); // 해당 게시물로 올바르게 navigate
+                            
+                            console.log('last2', currentEndpoint);
+                            console.log('last-last2',currentEndpoint);
+                            // // 새 창을 열어서 페이지를 띄우기
+                            // const newWindow = window.open(`/project/detail/notify/${postId}`, '_blank');
+                            // if (newWindow) {
+                            //     newWindow.opener = null; // 새 창에서 브라우저 열기
+                            // } else {
+                            //     message.error('팝업 창을 열 수 없습니다. 팝업 차단 설정을 확인하세요.');
+                            // }
+                            navigate(`/project/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     } else if (newMessage.startsWith("study")) { // 만약 newMessage가 study로 시작하면, study와 연관된 알림임
                         const regex = /study\/detail\/(\d+)/;
@@ -123,14 +136,24 @@ function Notifications() {
                         if (match) {
                             const postId = match[1]; // 백엔드에서 넘어온 게시물 id를 추출
 
-                            // 새 창을 열어서 페이지를 띄우기
-                            const newWindow = window.open(`/study/detail/notify/${postId}`, '_blank');
-                            if (newWindow) {
-                                newWindow.opener = null; // 새 창에서 브라우저 열기
-                            } else {
-                                message.error('팝업 창을 열 수 없습니다. 팝업 차단 설정을 확인하세요.');
+                            if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
+                            {
+                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                                setLastLastVisitedEndpoint(currentEndpoint);
+                                setLastLastLastVisitedEndpoint(currentEndpoint);
                             }
-                            //navigate(`/study/detail/notify/${postId}`); // 해당 게시물로 올바르게 navigate
+                            console.log('last2', currentEndpoint);
+                            console.log('last-last2',currentEndpoint);
+                            
+                            // // 새 창을 열어서 페이지를 띄우기
+                            // const newWindow = window.open(`/study/detail/notify/${postId}`, '_blank');
+                            // if (newWindow) {
+                            //     newWindow.opener = null; // 새 창에서 브라우저 열기
+                            // } else {
+                            //     message.error('팝업 창을 열 수 없습니다. 팝업 차단 설정을 확인하세요.');
+                            // }
+                            navigate(`/study/detail/${postId}`); // 해당 게시물로 올바르게 navigate
                         }
                     }
 
@@ -164,7 +187,7 @@ function Notifications() {
             eventSource.close();
             console.log("SSE connection closed.");
         };
-    }, [isAuthenticated, nickName]);
+    }, [isAuthenticated, nickName, currentEndpoint]);
 
 
 }
@@ -343,4 +366,3 @@ export default Notifications;
 // }
 
 // export default Notifications;
-

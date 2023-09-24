@@ -35,6 +35,11 @@ export const getLastLastVisitedEndpoint = () => {
     return window.localStorage.getItem('last_last_visited_endpoint');
 }
 
+export const getLastLastLastVisitedEndpoint = () => {
+    return window.localStorage.getItem('last_last_last_visited_endpoint');
+}
+
+
 //로컬 스토리지에 JWT 토큰을 'auth_token' 키로 저장하는 함수
 export const setAuthHeader = (token) => {
     window.localStorage.setItem('auth_token', token);
@@ -63,6 +68,10 @@ export const setLastVisitedEndpoint = (endPoint) => {
 //로컬스토리지에서 마지막 바로 전에 방문한 유효한 엔드포인트를 저장하는 함수
 export const setLastLastVisitedEndpoint = (endPoint) => {
     window.localStorage.setItem('last_last_visited_endpoint', endPoint);
+};
+
+export const setLastLastLastVisitedEndpoint = (endPoint) => {
+    window.localStorage.setItem('last_last_last_visited_endpoint', endPoint);
 };
 
 //axios의 기본 설정을 지정. 

@@ -15,8 +15,7 @@ function Notifications() {
     const currentEndpoint = location.pathname;
     const nickName = useSelector(state => state.auth.userNickName);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-    const visitedEndPoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
-    const visitedEndEndPoint = useSelector(state => state.endpoint.lastVisitedEndEndpoint);
+    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastVisitedEndEndEndpoint);
     const [messages, setMessages] = useState([]);
 
 
@@ -113,10 +112,10 @@ function Notifications() {
 
                             if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
                             {
-                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, '/portfoliocard'));    // 전역에 상태 저장을 위한 
                                 setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
                                 setLastLastVisitedEndpoint(currentEndpoint);
-                                setLastLastLastVisitedEndpoint(currentEndpoint);
+                                setLastLastLastVisitedEndpoint('/portfoliocard');
                             }
                             
                             console.log('last2', currentEndpoint);
@@ -138,10 +137,10 @@ function Notifications() {
 
                             if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
                             {
-                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, '/portfoliocard'));    // 전역에 상태 저장을 위한 
                                 setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
                                 setLastLastVisitedEndpoint(currentEndpoint);
-                                setLastLastLastVisitedEndpoint(currentEndpoint);
+                                setLastLastLastVisitedEndpoint('/portfoliocard');
                             }
                             console.log('last2', currentEndpoint);
                             console.log('last-last2',currentEndpoint);

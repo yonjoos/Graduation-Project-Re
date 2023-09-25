@@ -274,7 +274,7 @@ function DetailProjectPage() {
     };
 
 
-
+    // 지원한 사람의 포폴 확인 또는 작성자의 포폴 확인
     const handleNickNameClick = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /project/detail/${projectId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project/detail/${projectId}로 설정
@@ -1013,7 +1013,7 @@ function DetailProjectPage() {
 
                 <Row gutter={[16, 16]} justify="center" align="middle">
                     <Col span={16}>
-                        <div style={{ marginLeft: '5%', borderRight: '1px' }}>
+                        <div style={{ marginLeft: '5%', borderRight: '1px', cursor: 'pointer' }} onClick={() => handleNickNameClick(data.nickName)}>
                             닉네임: {data.nickName}
                         </div>
                     </Col>

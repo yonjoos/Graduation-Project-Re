@@ -21,6 +21,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     const currentEndpoint = location.pathname;
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
+    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [open, setOpen] = useState(false);
     const [notificationData, setNotificationData] = useState([]);
@@ -183,10 +184,10 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         
         // 디테일 페이지에서 알림 클릭 시, 목록으로 안돌아가지는 문제 해결을 위한 애.
         if (!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/")) {
-            dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, currentEndpoint));    // 전역에 상태 저장을 위한 
+            dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 
             setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
             setLastLastVisitedEndpoint(currentEndpoint);
-            setLastLastLastVisitedEndpoint(currentEndpoint);
+            setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
         }
 
         

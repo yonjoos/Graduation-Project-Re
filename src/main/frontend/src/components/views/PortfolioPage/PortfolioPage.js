@@ -1,17 +1,14 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
 
 function PortfolioPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const { nickName } = useParams();
     const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
-    const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
     const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
     
 
@@ -41,11 +38,6 @@ function PortfolioPage() {
             .catch((error) => {
                 console.error("Error fetching data:", error);
             });
-
-        dispatch(lastVisitedEndpoint(visitedEndpoint, visitedEndEndpoint, visitedEndEndEndpoint ));    // 전역에 상태 저장을 위한 애.
-        setLastVisitedEndpoint(visitedEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(visitedEndEndpoint);
-        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
     }, [nickName]);
 
     // 아무런 정보도 없는 유저의 포트폴리오에 접근 시 (존재하지 않는 유저의 포트폴리오에 접근 시) visitedEndpoint로 강제로 이동

@@ -125,6 +125,12 @@ function PortfolioPage() {
         if(visitedEndEndEndpoint === "/portfoliocard") {
             navigate(visitedEndEndEndpoint);
         }
+        else if(visitedEndEndEndpoint === '/group') {
+            navigate(visitedEndEndEndpoint);
+        }
+        else if(visitedEndEndEndpoint === '/scrap') {
+            navigate(visitedEndEndEndpoint);
+        }
         else {
             navigate(visitedEndpoint);
         }

@@ -320,7 +320,7 @@ function DetailStudyPage() {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
         // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint, '/portfoliocard', visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
+        dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
         setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
         setLastLastVisitedEndpoint(visitedEndEndpoint);
         setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);

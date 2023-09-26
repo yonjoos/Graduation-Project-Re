@@ -178,39 +178,70 @@ function DetailStudyPage() {
         setScrapAction(action);
     }
 
-    const handleModalConfirm = () => {
+    // const handleModalConfirm = () => {
+    //     // writer가 게시물 삭제 버튼을 누른 경우
+    //     if (modalAction === 'delete') {
+    //         request('POST', `/study/delete/${studyId}`, {})
+    //             .then((response) => {
+    //                 //console.log("Fetched study data:", response.data); // Log the fetched data
+    //                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
+    //             })
+    //             .catch((error) => {
+    //                 // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
+    //                 // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
+    //                 message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
+    //             });
+
+    //         navigate('/study');
+    //     }
+
+    //     // writer가 아닌 사람이 지원하기 버튼을 누른 경우
+    //     else if (modalAction === 'apply') {
+    //         request('POST', `/study/apply/${studyId}`, {})
+    //             .then((response) => {
+    //                 //console.log("Fetched study data:", response.data); // Log the fetched data
+    //                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
+    //             })
+    //             .catch((error) => {
+    //                 console.error("Error fetching study data:", error);
+    //             });
+
+    //         navigate(`/study/detail/${studyId}`);
+    //     }
+
+    //     setIsModalVisible(false);   // 모달 안보이게 숨김
+    // };
+
+    const handleModalConfirm = async () => {
         // writer가 게시물 삭제 버튼을 누른 경우
         if (modalAction === 'delete') {
-            request('POST', `/study/delete/${studyId}`, {})
-                .then((response) => {
-                    //console.log("Fetched study data:", response.data); // Log the fetched data
-                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
-                })
-                .catch((error) => {
-                    // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
-                    // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
-                    message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
-                });
-
-            navigate('/study');
+            try {
+                const response = await request('POST', `/study/delete/${studyId}`, {});
+                setData(response.data); // 백엔드에서 받아온 데이터 세팅
+    
+                navigate('/study');
+            } catch (error) {
+                // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
+                // 지원한 인원들이 모두 지원을 취소해야 비로소 삭제 가능. 이 부분은 정책 검토 필요.
+                message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
+            }
         }
-
+    
         // writer가 아닌 사람이 지원하기 버튼을 누른 경우
         else if (modalAction === 'apply') {
-            request('POST', `/study/apply/${studyId}`, {})
-                .then((response) => {
-                    //console.log("Fetched study data:", response.data); // Log the fetched data
-                    setData(response.data); // 백엔드에서 받아온 데이터 세팅
-                })
-                .catch((error) => {
-                    console.error("Error fetching study data:", error);
-                });
-
-            navigate(`/study/detail/${studyId}`);
+            try {
+                const response = await request('POST', `/study/apply/${studyId}`, {});
+                setData(response.data); // 백엔드에서 받아온 데이터 세팅
+    
+                navigate(`/study/detail/${studyId}`);
+            } catch (error) {
+                console.error("Error fetching study data:", error);
+            }
         }
-
+    
         setIsModalVisible(false);   // 모달 안보이게 숨김
     };
+    
 
     const handleCancelModalConfirm = async () => {
         try {

@@ -131,9 +131,6 @@ function PortfolioPage() {
         else if(visitedEndEndEndpoint === '/scrap') {
             navigate(visitedEndEndEndpoint);
         }
-        else if(visitedEndEndEndpoint === '/') {
-            navigate(visitedEndEndEndpoint);
-        }
         else {
             navigate(visitedEndpoint);
         }

@@ -2,29 +2,22 @@ package PickMe.PickMeDemo.service;
 
 import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.Portfolio;
-import PickMe.PickMeDemo.entity.QUser;
 import PickMe.PickMeDemo.entity.Role;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.mapper.UserMapper;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.CharBuffer;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -36,11 +29,6 @@ public class UserService {
     private final PortfolioRepository portfolioRepository;
     private final PasswordEncoder passwordEncoder;  // PasswordEncoder를 사용하여 비밀번호가 일반 텍스트로 저장되는 것을 방지하지만 해싱된 비밀번호는 읽을 수 없음.
     private final UserMapper userMapper;
-    private final JPAQueryFactory queryFactory;
-    private final EntityManager entityManager;
-    private final JdbcTemplate jdbcTemplate;
-
-
 
     public UserDto login(CredentialsDto credentialsDto) {
         // 인자로 넘어온 credentialsDto(아이디, 비번) 중 아이디를 찾아서 로그인 시도. 아이디가 없으면 Exception 발생
@@ -183,281 +171,4 @@ public class UserService {
 
         return existingUserWithNickname.isEmpty(); //비어있으면 available: true / 비어있지 않으면 available: false
     }
-
-
-    /*
-    ############################## Services for Recommendation ######################################
-    ############################## Services for Recommendation ######################################
-    ############################## Services for Recommendation ######################################
-     */
-    public Optional<UserRecommendationDto> getUserForRecommendation(final Long userId){
-
-        User user = userRepository.findById(userId).get();
-
-        UserRecommendationDto userRecommendationDto = UserRecommendationDto.builder()
-                .userId(user.getId())
-                .userEmail(user.getEmail())
-                .fieldsOfInterests(user.getFieldsOfInterests())
-                .build();
-
-        return Optional.ofNullable(userRecommendationDto);
-
-    }
-
-    public List<UserRecommendationDto> getUserForRecommendation2(final String nickName){
-
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-        System.out.println("=========A getUserForRecommendation2===========================");
-
-
-        User user = userRepository.findByNickName(nickName).get();
-        Long userId = user.getId();
-
-        UserRecommendationDto userRecommendationDto = UserRecommendationDto.builder()
-                .userId(user.getId())
-                .userEmail(user.getEmail())
-                .fieldsOfInterests(user.getFieldsOfInterests())
-                .build();
-
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-        System.out.println("=========B getUserForRecommendation2===========================");
-
-        List<Long> randomUserIds = fetchRandomUserIds2(userId);
-
-        System.out.println("=========CB getUserForRecoxmmendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-        System.out.println("=========CB getUserForRecommendation2===========================");
-
-        List<UserRecommendationDto> recommendedDtos = calculateSimilarity(user, randomUserIds, 3);
-
-
-
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-        System.out.println("=========C getUserForRecommendation2===========================");
-
-        return recommendedDtos;
-
-    }
-
-    private List<Long> fetchRandomUserIds(Long targetUserId) {
-        QUser user = QUser.user;
-        List<Long> randomUserIds = getRandomUserIds(targetUserId, 5);
-
-        return randomUserIds;
-    }
-
-    public List<Long> getRandomUserIds(Long targetUserId, int count) {
-        // Fetch 10 random user IDs (excluding the target user if necessary)
-        String sql = "SELECT id FROM users WHERE id != ? ORDER BY random() LIMIT ?";
-        List<Long> randomUserIds = jdbcTemplate.queryForList(sql, Long.class, targetUserId, count);
-
-        return randomUserIds;
-    }
-
-    private List<UserRecommendationDto> calculateSimilarity(User targetUser, List<Long> userIds, int topN) {
-        int[] target = targetUser.getFieldsOfInterests();
-
-        List<UserRecommendationDto> users = userIds.stream()
-                .map(userId -> getUserForRecommendation(userId))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-
-        List<UserSimilarity> userSimilarities = new ArrayList<>();
-        for (UserRecommendationDto user : users) {
-            int[] userVector = user.getFieldsOfInterests();
-            double similarity = calculateCosineSimilarity(target, userVector); // Calculate similarity for each user
-            userSimilarities.add(new UserSimilarity(user, similarity));
-        }
-
-        Collections.sort(userSimilarities, (a, b) -> Double.compare(b.getSimilarity(), a.getSimilarity()));
-        List<UserSimilarity> top3Similarities = userSimilarities.subList(0, Math.min(3, userSimilarities.size()));
-
-        // Extract the UserRecommendationDto objects from the top 3 similarities
-        List<UserRecommendationDto> top3Users = top3Similarities.stream()
-                .map(UserSimilarity::getUser)
-                .collect(Collectors.toList());
-
-        return top3Users;
-
-
-        // Now you can proceed to sort and select the top N users based on userSimilarities
-    }
-
-    public static double calculateCosineSimilarity(int[] targetUser, int[] userVector) {
-        double dotProduct = 0;
-        double magnitudeA = 0;
-        double magnitudeB = 0;
-
-        for (int i = 0; i < targetUser.length; i++) {
-            dotProduct += targetUser[i] * userVector[i];
-            magnitudeA += Math.pow(targetUser[i], 2);
-            magnitudeB += Math.pow(userVector[i], 2);
-        }
-
-        // Calculate the cosine similarity
-        double similarity;
-        if (magnitudeA == 0 || magnitudeB == 0) {
-            // Handle the case of zero magnitude (avoid division by zero)
-            similarity = 0.0;
-        } else {
-            similarity = dotProduct / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB));
-        }
-
-        return similarity;
-    }
-
-
-
-    private static class UserSimilarity {
-        private final UserRecommendationDto user;
-        private final double similarity;
-
-        public UserSimilarity(UserRecommendationDto user, double similarity) {
-            this.user = user;
-            this.similarity = similarity;
-        }
-
-        public UserRecommendationDto getUser() {
-            return user;
-        }
-
-        public double getSimilarity() {
-            return similarity;
-        }
-    }
-
-
-
-
-
-
-
-    private Random random = new Random();
-    private List<Long> fetchRandomUserIds2(Long targetUserId) {
-
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-A getUserForRecommendation2===========================");
-
-
-        // Generate random integers in Java
-        List<Integer> randomIntegers = new ArrayList<>();
-        int count = 5; // Number of random IDs to generate
-
-        while (randomIntegers.size() < count) {
-            System.out.println("=========B-B getUserForRecommendation2===========================");
-            System.out.println("=========B-B getUserForRecommendation2===========================");
-            System.out.println("=========B-B getUserForRecommendation2===========================");
-            System.out.println("=========B-B getUserForRecommendation2===========================");
-            System.out.println("=========B-B getUserForRecommendation2===========================");
-            System.out.println("=========B-B getUserForRecommendation2===========================");
-
-            int randomInt = getRandomInt(targetUserId.intValue()); // Generate a random integer
-            if (randomInt != targetUserId.intValue() && !randomIntegers.contains(randomInt)) {
-                randomIntegers.add(randomInt);
-            }
-        }
-
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-        System.out.println("=========B-C getUserForRecommendation2===========================");
-
-
-
-
-        // Convert the list of random integers to a list of Longs
-        List<Long> randomUserIds = randomIntegers.stream()
-                .map(Integer::longValue)
-                .collect(Collectors.toList());
-
-
-
-
-        return randomUserIds;
-    }
-
-    private int getRandomInt(int max) {
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-        System.out.println("=========B-B-A getUserForRecommendation2===========================");
-
-
-        return random.nextInt(max) + 1;
-    }
-
-
-
 }

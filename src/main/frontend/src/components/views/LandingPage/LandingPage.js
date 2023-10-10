@@ -4,11 +4,9 @@ import { Row, Col, Button, Card} from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import WelcomeContent from './Sections/WelcomeContent';
-import Auth from '../Auth/Auth';
 import PortfolioCard from './Sections/PortfolioCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
-import Search from '../../utils/Search';
 import SearchInLandingPage from './SearchInLandingPage';
 import { request } from '../../../hoc/request';
 import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
@@ -175,10 +173,6 @@ function LandingPage() {
             {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
-                        <h2> THIS IS AN ADMIN PAGE </h2>
-                        <Auth />
-                    </Col>
-                    <Col span={24}>
                         <SearchInLandingPage onSearch={handleSearch} />
                     </Col>
                     <Col span={24}>
@@ -199,10 +193,6 @@ function LandingPage() {
             )}
             {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
-                    <Col span={24}>
-                        <h2> THIS IS A USER PAGE </h2>
-                        <Auth />
-                    </Col>
                     <Col span={24}>
                         <SearchInLandingPage onSearch={handleSearch} />
                     </Col>

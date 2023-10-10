@@ -31,6 +31,7 @@ public class PostsService {
     private final CategoryRepository categoryRepository;
     private final UserApplyPostsRepository userApplyPostsRepository;
     private final ScrapPostsRepository scrapPostsRepository;
+    private final NotificationsRepository notificationsRepository;
     private final NotificationService notificationService;
     private final JPAQueryFactory queryFactory;
 
@@ -55,7 +56,7 @@ public class PostsService {
                 .postType(postType)
                 .title(postsFormDto.getTitle())
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
-                .counts(1)      // 맨 처음 지원자 수는 1명 (본인 포함)
+                //.counts(1)      // 맨 처음 지원자 수는 1명 (본인 포함)
                 .content(postsFormDto.getContent().replace("<br>", "\n"))
                 .promoteImageUrl(postsFormDto.getPromoteImageUrl())
                 .fileUrl(postsFormDto.getFileUrl())
@@ -80,48 +81,60 @@ public class PostsService {
 
 
 
-    // 프로젝트 게시물 리스트 조회
-    @Transactional(readOnly = true)
-    @EntityGraph(attributePaths = {"user", "category"})     // 페치 조인으로 조회할 대상 테이블
-    public List<PostsListDto> getProjectList() {
-        return getPostsList(PostType.PROJECT);
-    }
-
-    // 스터디 게시물 리스트 조회
-    @Transactional(readOnly = true)
-    @EntityGraph(attributePaths = {"user", "category"})     // 페치 조인으로 조회할 대상 테이블
-    public List<PostsListDto> getStudyList() {
-        return getPostsList(PostType.STUDY);
-    }
-
-    // 프로젝트 리스트 조회와 스터디 리스트 조회의 공통 코드를 분리하여 메서드로 만듦
-    private List<PostsListDto> getPostsList(PostType postType) {
-        List<Posts> postsList = postsRepository.findByPostType(postType);   // 게시물의 타입에 맞는 게시물 찾기
-
-        List<PostsListDto> postsListDtoList = new ArrayList<>();        // 빈 컬렉션 생성
-
-        for (Posts posts : postsList) {
-            Category category = posts.getCategory();        // posts라는 연결고리를 통해 연결고리로 접근
-            User user = posts.getUser();                    // posts라는 연결고리를 통해 연결고리로 접근
-
-            PostsListDto postsListDto = PostsListDto.builder()
-                    .id(posts.getId())
-                    .nickName(user.getNickName())   // user = posts.getUser()
-                    .title(posts.getTitle())
-                    .web(category.getWeb())     // category = posts.getCategory()
-                    .app(category.getApp())
-                    .game(category.getGame())
-                    .ai(category.getAi())
-                    .counts(posts.getCounts())
-                    .recruitmentCount(posts.getRecruitmentCount())
-                    .endDate(posts.getEndDate())
-                    .build();
-
-            postsListDtoList.add(postsListDto);     // 컬렉션에 추가
-        }
-
-        return postsListDtoList;
-    }
+//    // 프로젝트 게시물 리스트 조회 -> getFilteredProjects, getFilteredStudies로 대체
+//    @Transactional(readOnly = true)
+//    @EntityGraph(attributePaths = {"user", "category"})     // 페치 조인으로 조회할 대상 테이블
+//    public List<PostsListDto> getProjectList() {
+//        return getPostsList(PostType.PROJECT);
+//    }
+//
+//    // 스터디 게시물 리스트 조회
+//    @Transactional(readOnly = true)
+//    @EntityGraph(attributePaths = {"user", "category"})     // 페치 조인으로 조회할 대상 테이블
+//    public List<PostsListDto> getStudyList() {
+//        return getPostsList(PostType.STUDY);
+//    }
+//
+//    // 프로젝트 리스트 조회와 스터디 리스트 조회의 공통 코드를 분리하여 메서드로 만듦
+//    private List<PostsListDto> getPostsList(PostType postType) {
+//        List<Posts> postsList = postsRepository.findByPostType(postType);   // 게시물의 타입에 맞는 게시물 찾기
+//
+//        List<PostsListDto> postsListDtoList = new ArrayList<>();        // 빈 컬렉션 생성
+//
+//        for (Posts posts : postsList) {
+//            Category category = posts.getCategory();        // posts라는 연결고리를 통해 연결고리로 접근
+//            User user = posts.getUser();                    // posts라는 연결고리를 통해 연결고리로 접근
+//
+//            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+//            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
+//            Integer applyCount;
+//
+//            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+//            // null이라면, 인원 = 1(본인)
+//            if (applyCountOptional.isPresent()) {
+//                applyCount = applyCountOptional.get() + 1;
+//            } else {
+//                applyCount = 1;
+//            }
+//
+//            PostsListDto postsListDto = PostsListDto.builder()
+//                    .id(posts.getId())
+//                    .nickName(user.getNickName())   // user = posts.getUser()
+//                    .title(posts.getTitle())
+//                    .web(category.getWeb())     // category = posts.getCategory()
+//                    .app(category.getApp())
+//                    .game(category.getGame())
+//                    .ai(category.getAi())
+//                    .counts(applyCount)
+//                    .recruitmentCount(posts.getRecruitmentCount())
+//                    .endDate(posts.getEndDate())
+//                    .build();
+//
+//            postsListDtoList.add(postsListDto);     // 컬렉션에 추가
+//        }
+//
+//        return postsListDtoList;
+//    }
 
 
 
@@ -134,6 +147,18 @@ public class PostsService {
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         PostsDto postsDto;
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
 
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면 (게시물 작성자라면)
         if (posts.getUser().getEmail().equals(userEmail)) {
@@ -149,7 +174,8 @@ public class PostsService {
                     .content(posts.getContent())
                     .promoteImageUrl(posts.getPromoteImageUrl())
                     .fileUrl(posts.getFileUrl())
-                    .counts(posts.getCounts())
+                    //.counts(posts.getCounts())
+                     .counts(applyCount)
                     .recruitmentCount(posts.getRecruitmentCount())
                     .endDate(posts.getEndDate())
                     .build();
@@ -195,7 +221,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -216,7 +243,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -240,7 +268,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -261,7 +290,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -285,7 +315,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -306,7 +337,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -328,6 +360,18 @@ public class PostsService {
 
         PostsDto postsDto;
 
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
         if (posts.getUser().getEmail().equals(userEmail)) {
             postsDto = PostsDto.builder()
@@ -342,7 +386,8 @@ public class PostsService {
                     .content(posts.getContent())
                     .promoteImageUrl(posts.getPromoteImageUrl())
                     .fileUrl(posts.getFileUrl())
-                    .counts(posts.getCounts())
+                    //.counts(posts.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(posts.getRecruitmentCount())
                     .endDate(posts.getEndDate())
                     .build();
@@ -388,7 +433,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -409,7 +455,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -433,7 +480,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -454,7 +502,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -478,7 +527,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -499,7 +549,8 @@ public class PostsService {
                             .content(posts.getContent())
                             .promoteImageUrl(posts.getPromoteImageUrl())
                             .fileUrl(posts.getFileUrl())
-                            .counts(posts.getCounts())
+                            //.counts(posts.getCounts())
+                            .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
                             .build();
@@ -511,6 +562,46 @@ public class PostsService {
     }
 
 
+    // 게시물에 지원한 사람 모두 조회
+    @Transactional(readOnly = true)
+    @EntityGraph(attributePaths = {"user", "category"})
+    public List<ApplicantDto> getApplicants(String userEmail, Long postId) {
+
+        // postId와 userEmail로 게시물 찾기
+        Posts findPost = postsRepository.findByIdAndUser_Email(postId, userEmail)
+                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴. (그 중 승인 받은 애들의 개수만 가져옴)
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPost);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
+        // List<ApplicantDto> 객체 생성
+        List<ApplicantDto> applicantDtoList = new ArrayList<>();
+
+        // 검색된 모든 지원자 정보를 createdDate를 기준으로 오름차순으로 가져와서 ApplicantDto로 변환하여 리스트에 추가
+        List<UserApplyPosts> userApplyPostsList = userApplyPostsRepository.findByPosts_IdOrderByCreatedDateAsc(findPost.getId());
+
+        for (UserApplyPosts userApplyPosts : userApplyPostsList) {
+            User applicantUser = userApplyPosts.getUser();
+            ApplicantDto applicantDto = ApplicantDto.builder()
+                    .nickName(applicantUser.getNickName()) // 지원자의 닉네임
+                    .confirm(userApplyPosts.getConfirm()) // 승인 여부
+                    .count(applyCount)                      // 현재 지원자 수
+                    .build();
+            applicantDtoList.add(applicantDto);
+        }
+
+        return applicantDtoList;
+    }
+
     // ** 중요 **
     // postType을 Boolean 리스트로 받아오는 PostsUpdateFormDto 사용!
     @Transactional(readOnly = true)
@@ -520,6 +611,18 @@ public class PostsService {
         // projectId와 userEmail로 Project 찾기
         Posts findProject = postsRepository.findByIdAndUser_Email(projectId, userEmail)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findProject);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
 
         // postUpdateFormDto에 맞는 postType을 위해 List로 변환한다.
         List<Boolean> postTypeList = Arrays.asList(
@@ -533,7 +636,8 @@ public class PostsService {
         PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
                 .title(findProject.getTitle())
                 .postType(postTypeList)     // 리스트로 변환된 postType을 반환
-                .counts(findProject.getCounts())
+                //.counts(findProject.getCounts())
+                .counts(applyCount)
                 .recruitmentCount(findProject.getRecruitmentCount())
                 .endDate(findProject.getEndDate())
                 .content(findProject.getContent())
@@ -554,6 +658,18 @@ public class PostsService {
         Posts findStudy = postsRepository.findByIdAndUser_Email(studyId, userEmail)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findStudy);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
         // postUpdateFormDto에 맞는 postType을 위해 List로 변환한다.
         List<Boolean> postTypeList = Arrays.asList(
                 findStudy.getCategory().getWeb(),
@@ -566,7 +682,8 @@ public class PostsService {
         PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
                 .title(findStudy.getTitle())
                 .postType(postTypeList)     // 리스트로 변환된 postType을 반환
-                .counts(findStudy.getCounts())
+                //.counts(findStudy.getCounts())
+                .counts(applyCount)
                 .recruitmentCount(findStudy.getRecruitmentCount())
                 .endDate(findStudy.getEndDate())
                 .content(findStudy.getContent())
@@ -774,6 +891,18 @@ public class PostsService {
             Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
 
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             PostsListDto postsListDto = PostsListDto.builder()
                     .id(post.getId())
                     .nickName(user.getNickName())   // user = posts.getUser()
@@ -782,7 +911,8 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
-                    .counts(post.getCounts())
+                    //.counts(post.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
@@ -939,6 +1069,18 @@ public class PostsService {
             Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
 
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             PostsListDto postsListDto = PostsListDto.builder()
                     .id(post.getId())
                     .nickName(user.getNickName())   // user = posts.getUser()
@@ -947,7 +1089,8 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
-                    .counts(post.getCounts())
+                    //.counts(post.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .build();
@@ -1017,112 +1160,6 @@ public class PostsService {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // GroupPage에 내가 작성한 게시물 데이터를 가져오는 메서드
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션으로 설정
     public Page<GroupPostsDto> getWriterPosts(String userEmail, String sortOption, Pageable pageable) {
@@ -1145,6 +1182,19 @@ public class PostsService {
         for (Posts post : filteredPosts) { // 가져온 게시물을 순회
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
+
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, lastModifiedDate를 기준으로 정렬해서 가져옴
                     .stream()
                     .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))   // // 승인을 하는 순간, 데이터가 변경되므로, 승인버튼에서 유저의 위치가 뒤죽박죽 된다. 따라서 getLastModifiedDate가 아닌 getCreatedDate를 사용한다.
@@ -1168,7 +1218,8 @@ public class PostsService {
                     .app(postCategory.getApp()) // 카테고리의 앱 정보 설정
                     .game(postCategory.getGame()) // 카테고리의 게임 정보 설정
                     .ai(postCategory.getAi()) // 카테고리의 AI 정보 설정
-                    .counts(post.getCounts()) // 현재까지 승인된 인원 수 설정
+                    //.counts(post.getCounts()) // 현재까지 승인된 인원 수 설정
+                    .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount()) // 총 모집 인원 설정
                     .endDate(post.getEndDate()) // 게시물의 마감일 설정
                     .approved(approvedList) // userApplyPost에서 각 게시물에 대해 지원한 유저들의 승인 허가 여부 리스트 설정
@@ -1199,7 +1250,7 @@ public class PostsService {
         // 페이지 객체 생성하여 반환
         // subList : 시작 위치부터 시작 위치 + 페이지 크기 범위의 데이터만 추출
         // Pageable : 현재 페이지 번호, 페이지 크기 등이 포함되어 있어, 이를 기반으로 데이터를 추출하고 페이지 정보를 생성
-        // total : 전체 데이터의 개수를 나타
+        // total : 전체 데이터의 개수를 나타냄
         return new PageImpl<>(groupPostsDtosList.subList(offset, offset + pageSize), pageable, total);
     }
 
@@ -1244,6 +1295,18 @@ public class PostsService {
             Posts post = userApplyPost.getPosts();          // userApplyPost를 통해 posts에 접근한 것을 post로 명명
             Category postCategory = userApplyPost.getPosts().getCategory();        // userApplyPost에서 posts를 통해 카테고리로 접근한 것을 postCategory로 명명
 
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             GroupPostsDto groupPostsDto = GroupPostsDto.builder()
                     .id(post.getId())
                     .writerNickName(post.getUser().getNickName())   // post = userApplyPost.getPosts()
@@ -1254,7 +1317,8 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
-                    .counts(post.getCounts())
+                    //.counts(post.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .approved(null)                 // 지원한 게시물이므로, 지원 승인한 사람들의 리스트는 없음. null로 반환.
@@ -1270,8 +1334,6 @@ public class PostsService {
 
 
 
-    // 프로젝트에 지원하는 것과 관련된 메서드
-    // 어차피 프로젝트와 스터디는 모두 Posts라는 한 개의 테이블 안에 있기 때문에, applyProject와 applyStudy를 나눌 필요가 없음.
     // 프로젝트에 지원하는 것과 관련된 메서드
     // 어차피 프로젝트와 스터디는 모두 Posts라는 한 개의 테이블 안에 있기 때문에, applyProject와 applyStudy를 나눌 필요가 없음.
     public PostsDto applyPosts(String userEmail, Long postsId) {
@@ -1298,10 +1360,62 @@ public class PostsService {
 
         System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 새로운 지원자가 있습니다.\"); ======");
         System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
-        notificationService.notify(findPosts.getUser().getId(), "new applicant in your post.");
+
+        String findUserNickname= findUser.getNickName(); // 지원자 닉네임
+        String findPostsTitle = findPosts.getTitle(); // 게시물 제목
+        User findPostUser = findPosts.getUser(); // 게시물 작성자
+
+        NotificationMessageDto notificationMessage;
+        String notifyMessage;
+
+        if (PostType.PROJECT.equals(findPosts.getPostType())) {
+            // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
+            // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+        }
+        else  {
+            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+        }
+
+
+        // 지원을 하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+        // 실제 jpa를 통해 notification을 만들어 저장한다.
+        Notifications applyNotification = Notifications.builder()
+                .user(findPostUser)
+                .postId(postsId)
+                .notificationMessage(notifyMessage)
+                .postType(findPosts.getPostType())
+                .checked(false)
+                .build();
+
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 실시간 알림 전송
         System.out.println("==========================================================");
 
+
+
         PostsDto postsDto;
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
 
         // 해당 게시물을 스크랩했다면
         if (scrapPosts.isPresent()) {
@@ -1319,7 +1433,8 @@ public class PostsService {
                     .content(findPosts.getContent())
                     .promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
-                    .counts(findPosts.getCounts())
+                    //.counts(findPosts.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .build();
@@ -1340,7 +1455,8 @@ public class PostsService {
                     .content(findPosts.getContent())
                     .promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
-                    .counts(findPosts.getCounts())
+                    //.counts(findPosts.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .build();
@@ -1350,28 +1466,93 @@ public class PostsService {
     }
 
 
-    // 승인 허가
-    public Page<GroupPostsDto> approveUser(String userEmail, String nickName, Long projectId, String sortOption, Pageable pageable) {
+    // 그룹 페이지에서 승인 허가
+    public Page<GroupPostsDto> approveUser(String userEmail, String nickName, Long postsId, String sortOption, Pageable pageable) {
 
         // 닉네임을 UserApplyPosts 테이블에 함께 두면 쿼리 날리는 것을 한 번 줄일 수 있을텐데..
+        // 지원 승인하려는 유저
         User findUser = userRepository.findByNickName(nickName)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), projectId)
+        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
                 .orElseThrow(() -> new AppException("해당하는 지원 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        Posts findPosts = postsRepository.findById(projectId)
+        Posts findPosts = postsRepository.findById(postsId)
                 .orElseThrow(() -> new AppException("해당하는 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        // apply() : 인원 += 1. 인원을 한 명 추가해서 정원을 넘지 않았으면, apply는 "ok"를 반환함.
-        String apply = findPosts.apply();
+//        // apply() : 인원 += 1. 인원을 한 명 추가해서 정원을 넘지 않았으면, apply는 "ok"를 반환함.
+//        String apply = findPosts.apply();
+//
+//        if ("ok".equals(apply)) {
+//            // 정원을 넘지 않았으므로, 해당 유저를 승인해도 문제 없음. 따라서 해당 유저의 confirm을 true로 바꿈.
+//            findUserApplyPosts.setConfirm(true);
+//        }
 
-        if ("ok".equals(apply)) {
-            // 정원을 넘지 않았으므로, 해당 유저를 승인해도 문제 없음. 따라서 해당 유저의 confirm을 true로 바꿈.
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applicationCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applicationCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applicationCountOptional.isPresent()) {
+            applicationCount = applicationCountOptional.get() + 1;
+        } else {
+            applicationCount = 1;
+        }
+
+        // recruitmentCount(모집인원)과 같지 않아야 승인 가능
+        if (!findPosts.getRecruitmentCount().equals(applicationCount)) {
+            // 승인 여부를 true로 변경
             findUserApplyPosts.setConfirm(true);
+
+            // 지원 승인 시, 게시물 지원자에게 알림.
+            System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원이 승인되었습니다.\"); ======");
+            System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
+
+            String findWriterNickname = findPosts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = findPosts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다.";
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다.";
+            }
+
+            // 지원 승인을 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+            // 실제 jpa를 통해 notification을 만들어 저장한다.
+            Notifications applyNotification = Notifications.builder()
+                    .user(findUser)
+                    .postId(postsId)
+                    .notificationMessage(notifyMessage)
+                    .postType(findPosts.getPostType())
+                    .checked(false)
+                    .build();
+
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            // 지원을 승인하려는 유저에게 notify 발송
+            notificationService.notify(findUser.getId(), notificationMessage);
+            System.out.println("==========================================================");
         }
 
         userApplyPostsRepository.save(findUserApplyPosts);
+
+
+
+
 
         // 지원자가 '승인' 버튼을 눌렀을 때, 디테일 페이지에서 '승인 완료'버튼이 바로 보이고, 현재 인원 + 1이 되도록 하기 위해 동적 쿼리 생성
         QPosts posts = QPosts.posts;
@@ -1410,8 +1591,21 @@ public class PostsService {
 
             GroupPostsDto groupPostsDto;
 
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             // 정원이 다 찬 경우, isFull을 true로 담아서 내보낸다.
-            if (post.getCounts().equals(post.getRecruitmentCount())) {
+            //if (post.getCounts().equals(post.getRecruitmentCount())) {
+            if (applyCount.equals(post.getRecruitmentCount())) {
                 groupPostsDto = GroupPostsDto.builder()
                         .id(post.getId())
                         .writerNickName(user.getNickName())   // user = posts.getUser()
@@ -1422,7 +1616,8 @@ public class PostsService {
                         .app(postCategory.getApp())
                         .game(postCategory.getGame())
                         .ai(postCategory.getAi())
-                        .counts(post.getCounts())
+                        //.counts(post.getCounts())
+                        .counts(applyCount)
                         .recruitmentCount(post.getRecruitmentCount())
                         .endDate(post.getEndDate())
                         .approved(approvedList)         // approvedList : 사람들의 승인 허가 여부를 담은 리스트
@@ -1441,7 +1636,8 @@ public class PostsService {
                         .app(postCategory.getApp())
                         .game(postCategory.getGame())
                         .ai(postCategory.getAi())
-                        .counts(post.getCounts())
+                        //.counts(post.getCounts())
+                        .counts(applyCount)
                         .recruitmentCount(post.getRecruitmentCount())
                         .endDate(post.getEndDate())
                         .approved(approvedList)         // approvedList : 사람들의 승인 허가 여부를 담은 리스트
@@ -1473,10 +1669,117 @@ public class PostsService {
         // 페이지 객체 생성하여 반환
         // subList : 시작 위치부터 시작 위치 + 페이지 크기 범위의 데이터만 추출
         // Pageable : 현재 페이지 번호, 페이지 크기 등이 포함되어 있어, 이를 기반으로 데이터를 추출하고 페이지 정보를 생성
-        // total : 전체 데이터의 개수를 나타
+        // total : 전체 데이터의 개수를 나타냄
         return new PageImpl<>(groupPostsDtosList.subList(offset, offset + pageSize), pageable, total);
     }
 
+
+    // 디테일 페이지에서 직접 승인 허가
+    public List<ApplicantDto> approveUserInDetail(String userEmail, String nickName, Long postsId) {
+
+        // 지원 승인하려는 유저
+        User findUser = userRepository.findByNickName(nickName)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
+                .orElseThrow(() -> new AppException("해당하는 지원 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        Posts findPosts = postsRepository.findById(postsId)
+                .orElseThrow(() -> new AppException("해당하는 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applicationCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applicationCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applicationCountOptional.isPresent()) {
+            applicationCount = applicationCountOptional.get() + 1;
+        } else {
+            applicationCount = 1;
+        }
+
+        // recruitmentCount(모집인원)과 같지 않아야 승인 가능
+        if (!findPosts.getRecruitmentCount().equals(applicationCount)) {
+            // 승인 여부를 true로 변경
+            findUserApplyPosts.setConfirm(true);
+
+            // 지원 승인 시, 게시물 지원자에게 알림.
+            System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원이 승인되었습니다.\"); ======");
+            System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
+
+            String findWriterNickname = findPosts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = findPosts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다.";
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원이 승인되셨습니다.";
+            }
+
+            // 지원 승인을 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+            // 실제 jpa를 통해 notification을 만들어 저장한다.
+            Notifications applyNotification = Notifications.builder()
+                    .user(findUser)
+                    .postId(postsId)
+                    .notificationMessage(notifyMessage)
+                    .postType(findPosts.getPostType())
+                    .checked(false)
+                    .build();
+
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            // 지원을 승인하려는 유저에게 notify 발송
+            notificationService.notify(findUser.getId(), notificationMessage);
+            System.out.println("==========================================================");
+        }
+
+        userApplyPostsRepository.save(findUserApplyPosts);
+
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴. (그 중 승인 받은 애들의 개수만 가져옴)
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
+
+        // List<ApplicantDto> 객체 생성
+        List<ApplicantDto> applicantDtoList = new ArrayList<>();
+
+        // 검색된 모든 지원자 정보를 createdDate를 기준으로 오름차순으로 가져와서 ApplicantDto로 변환하여 리스트에 추가
+        List<UserApplyPosts> userApplyPostsList = userApplyPostsRepository.findByPosts_IdOrderByCreatedDateAsc(postsId);
+
+        for (UserApplyPosts userApplyPosts : userApplyPostsList) {
+            User applicantUser = userApplyPosts.getUser();
+            ApplicantDto applicantDto = ApplicantDto.builder()
+                    .nickName(applicantUser.getNickName()) // 지원자의 닉네임
+                    .confirm(userApplyPosts.getConfirm()) // 승인 여부
+                    .count(applyCount)                      // 현재 지원자 수
+                    .build();
+            applicantDtoList.add(applicantDto);
+        }
+
+        return applicantDtoList;
+    }
 
 
     // 지원 취소
@@ -1498,18 +1801,75 @@ public class PostsService {
         Optional<ScrapPosts> scrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
         // 승인한 사람이 지원 취소를 했다면, 인원 -= 1을 해야 함.
-        if ("approved".equals(action)) {
-            // 현재 counts 값이 2 이상일 때, counts -= 1을 진행함.
-            // 게시물에 최소 1명(본인)은 지원했으므로, counts의 최소 값은 1이고, 2 이상일 때 1을 빼줄 수 있다.
-            findPosts.cancel();
-            postsRepository.save(findPosts);    // 1 뺀 값을 디비에 저장해주기.
-        }
+//        if ("approved".equals(action)) {
+//            // 현재 counts 값이 2 이상일 때, counts -= 1을 진행함.
+//            // 게시물에 최소 1명(본인)은 지원했으므로, counts의 최소 값은 1이고, 2 이상일 때 1을 빼줄 수 있다.
+//            findPosts.cancel();
+//            postsRepository.save(findPosts);    // 1 뺀 값을 디비에 저장해주기.
+//        }
 
         // 지원한 게시물 삭제
         userApplyPostsRepository.delete(findUserApplyPosts);
 
 
+        // 게시물 지원 취소 시, 게시물 작성자에게 알림.
+        System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 지원을 취소한 사용자가 있습니다.\"); ======");
+        System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
+
+        String findUserNickname= findUser.getNickName(); // 지원 취소를 하고자 하는 사람 닉네임
+        String findPostsTitle = findPosts.getTitle(); // 지원 취소를 할 게시물 제목
+        User findPostUser = findPosts.getUser(); // 게시물 작성자
+
+        NotificationMessageDto notificationMessage;
+        String notifyMessage;
+
+        // notificationMessage : 실시간 알림 카드에 들어갈 내용
+        // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+        if (PostType.PROJECT.equals(findPosts.getPostType())) {
+            // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
+            // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+        }
+        else  {
+            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+        }
+
+        // 지원을 취소하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+        // 실제 jpa를 통해 notification을 만들어 저장한다.
+        Notifications applyNotification = Notifications.builder()
+                .user(findPostUser)
+                .postId(postsId)
+                .notificationMessage(notifyMessage)
+                .postType(findPosts.getPostType())
+                .checked(false)
+                .build();
+
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
+        System.out.println("==========================================================");
+
+
         PostsDto postsDto;
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
         // 삭제된 결과에 맞게 화면을 보여주기 위해, DTO 다시 만들기.
         // 이제 해당 유저는 게시물에 지원 안 한 사람과 동일하게 되었음.
         // 해당 게시물을 스크랩했다면
@@ -1528,7 +1888,8 @@ public class PostsService {
                     .content(findPosts.getContent())
                     .promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
-                    .counts(findPosts.getCounts())
+                    //.counts(findPosts.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .build();
@@ -1549,7 +1910,8 @@ public class PostsService {
                     .content(findPosts.getContent())
                     .promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
-                    .counts(findPosts.getCounts())
+                    //.counts(findPosts.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .build();
@@ -1561,7 +1923,7 @@ public class PostsService {
 
 
 
-    // 승인 허가 취소
+    // 그룹 페이지에서 승인 허가 취소
     public Page<GroupPostsDto> cancelApproveUser(String userEmail, String nickName, Long postsId, String sortOption, Pageable pageable) {
 
         // 닉네임을 UserApplyPosts에 함께 두면 쿼리 날리는 것을 한 번 줄일 수 있을텐데..
@@ -1576,14 +1938,61 @@ public class PostsService {
 
         // 승인 허가를 취소하므로, 지원할 수 있는 빈 자리가 하나 늘었다.
         // 따라서 인원 += 1
-        String cancel = findPosts.cancel();
+//        String cancel = findPosts.cancel();
+//
+//        if ("ok".equals(cancel)) {
+//            // 승인 허가가 취소되면, 해당 유저의 승인 허가 여부를 false로 바꾼다.
+//            findUserApplyPosts.setConfirm(false);
+//        }
 
-        if ("ok".equals(cancel)) {
-            // 승인 허가가 취소되면, 해당 유저의 승인 허가 여부를 false로 바꾼다.
-            findUserApplyPosts.setConfirm(false);
-        }
+        // 승인 여부를 false로 변경
+        findUserApplyPosts.setConfirm(false);
 
         userApplyPostsRepository.save(findUserApplyPosts);
+
+
+        // 지원 승인 허가 취소 시, 게시물 지원자에게 알림.
+        System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원 승인이 취소되었습니다.\"); ======");
+        System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
+
+        String findWriterNickname = findPosts.getUser().getNickName(); // 게시물 작성자 닉네임
+        String findPostTitle = findPosts.getTitle(); // 승인 취소를 할 게시물
+
+        NotificationMessageDto notificationMessage;
+        String notifyMessage;
+
+
+        // notificationMessage : 실시간 알림 카드에 들어갈 내용
+        // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+        if (PostType.PROJECT.equals(findPosts.getPostType())) {
+            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다.";
+        }
+        else  {
+            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다.";
+        }
+
+        // 승인 허가를 취소하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+        // 실제 jpa를 통해 notification을 만들어 저장한다.
+        Notifications applyNotification = Notifications.builder()
+                .user(findUser)
+                .postId(postsId)
+                .notificationMessage(notifyMessage)
+                .postType(findPosts.getPostType())
+                .checked(false)
+                .build();
+
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        // 지원을 승인하려는 유저에게 notify 발송
+        notificationService.notify(findUser.getId(), notificationMessage);
+        System.out.println("==========================================================");
+
 
         // '승인' 버튼을 눌렀을 때, '승인 완료'버튼이 바로 보이고, 현재 인원 + 1이 되도록 하기 위해 동적 쿼리 생성
         QPosts posts = QPosts.posts;
@@ -1606,6 +2015,19 @@ public class PostsService {
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
+
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, lastModifiedDate를 기준으로 정렬해서 가져옴
                     .stream()
                     .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))   // 승인을 취소하는 순간, 데이터가 변경되므로, 승인버튼에서 유저의 위치가 뒤죽박죽 된다. 따라서 getLastModifiedDate가 아닌 getCreatedDate를 사용한다.
@@ -1630,7 +2052,8 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
-                    .counts(post.getCounts())
+                    //.counts(post.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .approved(approvedList)         // approvedList : 사람들의 승인 허가 여부를 담은 리스트
@@ -1661,8 +2084,104 @@ public class PostsService {
         // 페이지 객체 생성하여 반환
         // subList : 시작 위치부터 시작 위치 + 페이지 크기 범위의 데이터만 추출
         // Pageable : 현재 페이지 번호, 페이지 크기 등이 포함되어 있어, 이를 기반으로 데이터를 추출하고 페이지 정보를 생성
-        // total : 전체 데이터의 개수를 나타
+        // total : 전체 데이터의 개수를 나타냄
         return new PageImpl<>(groupPostsDtosList.subList(offset, offset + pageSize), pageable, total);
+    }
+
+    // 디테일 페이지에서 직접 승인 허가 취소
+    public List<ApplicantDto> cancelApproveUserInDetail(String userEmail, String nickName, Long postsId) {
+
+        // 닉네임을 UserApplyPosts에 함께 두면 쿼리 날리는 것을 한 번 줄일 수 있을텐데..
+        User findUser = userRepository.findByNickName(nickName)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
+                .orElseThrow(() -> new AppException("해당하는 지원 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        Posts findPosts = postsRepository.findById(postsId)
+                .orElseThrow(() -> new AppException("해당하는 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+
+        // 승인 여부를 false로 변경
+        findUserApplyPosts.setConfirm(false);
+
+        userApplyPostsRepository.save(findUserApplyPosts);
+
+
+        // 지원 승인 허가 취소 시, 게시물 지원자에게 알림.
+        System.out.println("====== notificationService.notify(findPosts.getTitle(), \"게시물 지원 승인이 취소되었습니다.\"); ======");
+        System.out.println("findPosts.getTitle() = " + findPosts.getTitle());
+
+        String findWriterNickname = findPosts.getUser().getNickName(); // 게시물 작성자 닉네임
+        String findPostTitle = findPosts.getTitle(); // 승인 취소를 할 게시물
+
+        NotificationMessageDto notificationMessage;
+        String notifyMessage;
+
+
+        // notificationMessage : 실시간 알림 카드에 들어갈 내용
+        // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+        if (PostType.PROJECT.equals(findPosts.getPostType())) {
+            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다.";
+        }
+        else  {
+            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": \"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 스터디 게시물 : \"" + findPostTitle + "\"에 지원 승인이 취소되셨습니다.";
+        }
+
+        // 승인 허가를 취소하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+        // 실제 jpa를 통해 notification을 만들어 저장한다.
+        Notifications applyNotification = Notifications.builder()
+                .user(findUser)
+                .postId(postsId)
+                .notificationMessage(notifyMessage)
+                .postType(findPosts.getPostType())
+                .checked(false)
+                .build();
+
+        Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+        // 지원을 승인하려는 유저에게 notify 발송
+        notificationService.notify(findUser.getId(), notificationMessage);
+        System.out.println("==========================================================");
+
+
+
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴. (그 중 승인 받은 애들의 개수만 가져옴)
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
+
+        // List<ApplicantDto> 객체 생성
+        List<ApplicantDto> applicantDtoList = new ArrayList<>();
+
+        // 검색된 모든 지원자 정보를 createdDate를 기준으로 오름차순으로 가져와서 ApplicantDto로 변환하여 리스트에 추가
+        List<UserApplyPosts> userApplyPostsList = userApplyPostsRepository.findByPosts_IdOrderByCreatedDateAsc(postsId);
+
+        for (UserApplyPosts userApplyPosts : userApplyPostsList) {
+            User applicantUser = userApplyPosts.getUser();
+            ApplicantDto applicantDto = ApplicantDto.builder()
+                    .nickName(applicantUser.getNickName()) // 지원자의 닉네임
+                    .confirm(userApplyPosts.getConfirm()) // 승인 여부
+                    .count(applyCount)                      // 현재 지원자 수
+                    .build();
+            applicantDtoList.add(applicantDto);
+        }
+
+        return applicantDtoList;
     }
 
 
@@ -1700,6 +2219,18 @@ public class PostsService {
 
         PostsDto postsDto;
 
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
         // 게시물 지원 안한 사람
         if (!hasApplied) {
             postsDto = PostsDto.builder()
@@ -1716,7 +2247,8 @@ public class PostsService {
                     .content(savedScrapPosts.getPosts().getContent())
                     .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
                     .fileUrl(savedScrapPosts.getPosts().getFileUrl())
-                    .counts(savedScrapPosts.getPosts().getCounts())
+                    //.counts(savedScrapPosts.getPosts().getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                     .endDate(savedScrapPosts.getPosts().getEndDate())
                     .build();
@@ -1739,7 +2271,8 @@ public class PostsService {
                         .content(savedScrapPosts.getPosts().getContent())
                         .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
                         .fileUrl(savedScrapPosts.getPosts().getFileUrl())
-                        .counts(savedScrapPosts.getPosts().getCounts())
+                        //.counts(savedScrapPosts.getPosts().getCounts())
+                        .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                         .endDate(savedScrapPosts.getPosts().getEndDate())
                         .build();
@@ -1760,7 +2293,8 @@ public class PostsService {
                         .content(savedScrapPosts.getPosts().getContent())
                         .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
                         .fileUrl(savedScrapPosts.getPosts().getFileUrl())
-                        .counts(savedScrapPosts.getPosts().getCounts())
+                        //.counts(savedScrapPosts.getPosts().getCounts())
+                        .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                         .endDate(savedScrapPosts.getPosts().getEndDate())
                         .build();
@@ -1801,6 +2335,18 @@ public class PostsService {
 
         PostsDto postsDto;
 
+        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
+        Integer applyCount;
+
+        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+        // null이라면, 인원 = 1(본인)
+        if (applyCountOptional.isPresent()) {
+            applyCount = applyCountOptional.get() + 1;
+        } else {
+            applyCount = 1;
+        }
+
         // 해당 게시물을 방금 스크랩 취소했으므로 다음과 같은 DTO 반환 (.scrap(false))
         // 게시물 지원 안한 사람
         if (!hasApplied) {
@@ -1818,7 +2364,8 @@ public class PostsService {
                     .content(findPosts.getContent())
                     .promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
-                    .counts(findPosts.getCounts())
+                    //.counts(findPosts.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .build();
@@ -1841,7 +2388,8 @@ public class PostsService {
                         .content(findPosts.getContent())
                         .promoteImageUrl(findPosts.getPromoteImageUrl())
                         .fileUrl(findPosts.getFileUrl())
-                        .counts(findPosts.getCounts())
+                        //.counts(findPosts.getCounts())
+                        .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())
                         .endDate(findPosts.getEndDate())
                         .build();
@@ -1862,7 +2410,8 @@ public class PostsService {
                         .content(findPosts.getContent())
                         .promoteImageUrl(findPosts.getPromoteImageUrl())
                         .fileUrl(findPosts.getFileUrl())
-                        .counts(findPosts.getCounts())
+                        //.counts(findPosts.getCounts())
+                        .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())
                         .endDate(findPosts.getEndDate())
                         .build();
@@ -1914,6 +2463,18 @@ public class PostsService {
             Posts post = scrapPost.getPosts();
             Category postCategory = post.getCategory();
 
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             ScrapPostsDto scrapPostsDto = ScrapPostsDto.builder()
                     .id(post.getId())
                     .nickName(post.getUser().getNickName())
@@ -1923,7 +2484,8 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
-                    .counts(post.getCounts())
+                    //.counts(post.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     // userApplyPost == null인 경우 isApplied와 isApproved는 false로 설정되고, userApplyPost != null인 경우 true로 설정됨
@@ -1979,6 +2541,18 @@ public class PostsService {
             Posts post = scrapPost.getPosts();
             Category postCategory = post.getCategory();
 
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
             ScrapPostsDto scrapPostsDto = ScrapPostsDto.builder()
                     .id(post.getId())
                     .nickName(post.getUser().getNickName())
@@ -1988,7 +2562,8 @@ public class PostsService {
                     .app(postCategory.getApp())
                     .game(postCategory.getGame())
                     .ai(postCategory.getAi())
-                    .counts(post.getCounts())
+                    //.counts(post.getCounts())
+                    .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     // userApplyPost == null인 경우 isApplied와 isApproved는 false로 설정되고, userApplyPost != null인 경우 true로 설정됨

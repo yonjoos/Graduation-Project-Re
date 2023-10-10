@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import javax.sound.sampled.Port;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +36,9 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
 
     @OneToMany(mappedBy = "user")
     private List<UserApplyPosts> userApplyPosts = new ArrayList<>(); // 연관관계의 거울로 작용, 지원한 게시물 table과 엮임(db필드에 안들어감)
+
+    @OneToMany(mappedBy = "user")
+    private List<Notifications> notifications = new ArrayList<>(); // 연관관계의 거울로 작용, 알림 table과 엮임(db필드에 안들어감)
 
     @Column(name = "user_name", nullable = false)
     @Size(max = 100)
@@ -80,17 +82,5 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
         this.password = password;
         this.role = role;
         this.lastAccessDate = lastAccessDate;
-    }
-
-    /*
-    #################### logics for Recommendation #################################################
-    #################### logics for Recommendation #################################################
-     */
-
-    // convert to vector
-    public int[] getFieldsOfInterests(){
-        Portfolio portfolio = this.getPortfolio();
-        int[] result = {portfolio.getWeb(), portfolio.getApp(), portfolio.getGame(), portfolio.getAi()};
-        return result;
     }
 }

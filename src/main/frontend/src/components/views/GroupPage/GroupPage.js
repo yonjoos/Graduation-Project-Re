@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, Modal, message } from 'antd';
-import { request } from '../../../hoc/request';
+import { request, setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import { lastVisitedEndpoint } from '../../../_actions/actions'
-import { setLastVisitedEndpoint } from '../../../hoc/request';
 import './GroupPage.css';
 
 function GroupPage() {
@@ -57,8 +56,12 @@ function GroupPage() {
     const handleRowClick = (postsId, postType) => {
         // /project/detail/${postsId} 또는 /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
-        dispatch(lastVisitedEndpoint('/group'));
+        // 인자 1 : 유효한 전 페이지 / 인자 2 : 유효한 전 전 페이지 / 인자 3: 유효한 전 전 전 페이지
+        dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
         setLastVisitedEndpoint('/group');
+        setLastLastVisitedEndpoint('/group');
+        setLastLastLastVisitedEndpoint('/group');
+        
 
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);
@@ -95,8 +98,10 @@ function GroupPage() {
     const handleNickNameClick = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
-        dispatch(lastVisitedEndpoint('/group'));
+        dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
         setLastVisitedEndpoint('/group');
+        setLastLastVisitedEndpoint('/group');
+        setLastLastLastVisitedEndpoint('/group');
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
     }
@@ -323,6 +328,7 @@ function GroupPage() {
                     total={totalPages * pageSize}   // 내용물의 총 개수 = 페이지 수 * 페이지 당 몇 개씩
                     pageSize={pageSize}             // 한 페이지에 몇 개씩 보여줄 것인가?
                     onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                    showSizeChanger={false}
                 />
             </div>
             <Modal

@@ -41,7 +41,7 @@ public class PortfolioCardController {
     public ResponseEntity<Page<PortfolioCardDto>> getCards(
             @RequestParam(name = "selectedBanners") List<String> selectedBanners, //프론트엔드에서 넘어온 선택된 배너정보
             @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
-            @RequestParam(name = "size", defaultValue = "3") int size, //프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
+            @RequestParam(name = "size", defaultValue = "9") int size, //프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
             @RequestParam(name = "searchTerm", required = false) String searchTerm){
 
         Page<PortfolioCardDto> result = portfolioService.getCards(selectedBanners, searchTerm, PageRequest.of(page, size));

@@ -19,14 +19,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PortfolioCardController {
 
-    private final UserService userService;
     private final PortfolioService portfolioService;
-    @GetMapping("/getPortfolioCards")
-    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
 
-        return ResponseEntity.ok(portfolioService.getPortfolioCard());
-
-    }
+//    @GetMapping("/getPortfolioCards")
+//    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
+//
+//        return ResponseEntity.ok(portfolioService.getPortfolioCard());
+//
+//    }
 
     /*
     const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.

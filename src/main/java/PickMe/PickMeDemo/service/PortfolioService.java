@@ -1,13 +1,11 @@
 package PickMe.PickMeDemo.service;
 
-import PickMe.PickMeDemo.dto.PortfolioCardDto;
-import PickMe.PickMeDemo.dto.PortfolioDto;
-import PickMe.PickMeDemo.dto.PortfolioFormDto;
-import PickMe.PickMeDemo.dto.PostsListDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
+import PickMe.PickMeDemo.repository.ViewCountPortfolioRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -37,6 +35,7 @@ public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final UserRepository userRepository; // Add this if not already defined
     // Portfolio Mapper를 사용하고자 했으나, 이상하게 스프링 빈으로 등록이 안되어서, private final 변수로 사용할 수 없었음.
+    private final ViewCountPortfolioRepository viewCountPortfolioRepository;
     
     
     // 포트폴리오 등록
@@ -89,7 +88,7 @@ public class PortfolioService {
     // 나의 포트폴리오 조회
     @Transactional(readOnly = true)
     @EntityGraph(attributePaths = "user")
-    public PortfolioDto getPortfolio(String userEmail) {
+    public PortfolioReturnDto getPortfolio(String userEmail) {
         // UserEmail을 통해 해당 User 찾기
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
@@ -97,12 +96,16 @@ public class PortfolioService {
         // User를 통해 User가 갖고 있는 포트폴리오 찾기
         Optional<Portfolio> findPortfolio = portfolioRepository.findByUser(user);
 
-        // PortfolioDto를 빌더를 통해 생성
-        PortfolioDto portfolioDto;
+        Optional<Integer> viewCountOptional = viewCountPortfolioRepository.countByPortfolio_Id(findPortfolio.get().getId());
+
+        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
+        // PortfolioReturnDtoDto를 빌더를 통해 생성
+        PortfolioReturnDto portfolioReturnDto;
 
         if (findPortfolio.isPresent()) {
-            // PortfolioDto를 빌더를 통해 생성
-            portfolioDto = PortfolioDto.builder()
+            // portfolioReturnDto를 빌더를 통해 생성
+            portfolioReturnDto = PortfolioReturnDto.builder()
                     .isCreated(true)
                     .nickName(user.getNickName())
                     .email(user.getEmail())
@@ -113,10 +116,11 @@ public class PortfolioService {
                     .shortIntroduce(findPortfolio.get().getShortIntroduce())
                     .introduce(findPortfolio.get().getIntroduce())
                     .fileUrl(findPortfolio.get().getFileUrl())
+                    .viewCount(viewCount)
                     .build();
         }
         else {
-            portfolioDto = PortfolioDto.builder()
+            portfolioReturnDto = PortfolioReturnDto.builder()
                     .isCreated(false)
                     .nickName(user.getNickName())
                     .email(user.getEmail())
@@ -127,10 +131,11 @@ public class PortfolioService {
                     .shortIntroduce(null)
                     .introduce(null)
                     .fileUrl(null)
+                    .viewCount(null)
                     .build();
         }
 
-        return portfolioDto;
+        return portfolioReturnDto;
     }
 
 
@@ -229,14 +234,19 @@ public class PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
-    @Transactional(readOnly = true)
-    public PortfolioDto getUserPortfolio(String nickName) {
+    //@Transactional(readOnly = true)   // 포트폴리오 조회 함수지만, 조회 시 조회 수를 카운트하기 위해 ViewCountPortfolio에 값을 넣어주어야 하므로, readOnly = true를 쓰면 안됨.
+    public PortfolioReturnDto getUserPortfolio(String nickName, String userEmail) {
 
+        // Email로 현재 로그인 한 유저 찾기
+        User loginUser = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        // 포트폴리오를 쓴 유저
         Optional<User> findUser = userRepository.findByNickName(nickName);
 
-        // PortfolioDto를 빌더를 통해 생성
+        // PortfolioReturnDto를 빌더를 통해 생성
         // 유저가 없는 경우, 모든 값이 null로 세팅된 아래의 DTO를 프론트에 넘길 것임.
-        PortfolioDto portfolioDto = PortfolioDto.builder()
+        PortfolioReturnDto portfolioReturnDto = PortfolioReturnDto.builder()
                 .isCreated(null)
                 .nickName(null)
                 .email(null)
@@ -247,6 +257,7 @@ public class PortfolioService {
                 .shortIntroduce(null)
                 .introduce(null)
                 .fileUrl(null)
+                .viewCount(null)
                 .build();
 
         // 유저가 있는 경우 정상적인 DTO 생성
@@ -256,8 +267,26 @@ public class PortfolioService {
 
             // 유저와 포트폴리오가 모두 있는 경우
             if (findUserPortfolio.isPresent()) {
-                // PortfolioDto를 빌더를 통해 생성
-                portfolioDto = PortfolioDto.builder()
+
+                // 포트폴리오를 조회한 사람(loginUser)이 포트폴리오 작성자(findUser)가 아니어야 조회수 + 1
+                if (!loginUser.getId().equals(findUser.get().getId())) {
+                    // 단, 해당 유저가 해당 포트폴리오를 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
+                    if (viewCountPortfolioRepository.findByPortfolio_IdAndUser_Id(findUserPortfolio.get().getId(), loginUser.getId()).isEmpty()) {
+                        ViewCountPortfolio viewCountPortfolio = ViewCountPortfolio.builder()
+                                .user(loginUser)
+                                .portfolio(findUserPortfolio.get())
+                                .build();
+
+                        viewCountPortfolioRepository.save(viewCountPortfolio);
+                    }
+                }
+
+                Optional<Integer> viewCountOptional = viewCountPortfolioRepository.countByPortfolio_Id(findUserPortfolio.get().getId());
+
+                Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
+                // PortfolioReturnDto를 빌더를 통해 생성
+                portfolioReturnDto = PortfolioReturnDto.builder()
                         .isCreated(true)
                         .nickName(findUser.get().getNickName())
                         .email(findUser.get().getEmail())
@@ -268,11 +297,12 @@ public class PortfolioService {
                         .shortIntroduce(findUserPortfolio.get().getShortIntroduce())
                         .introduce(findUserPortfolio.get().getIntroduce())
                         .fileUrl(findUserPortfolio.get().getFileUrl())
+                        .viewCount(viewCount)
                         .build();
             }
             // 유저는 있는데 포트폴리오가 없는 경우
             else {
-                portfolioDto = PortfolioDto.builder()
+                portfolioReturnDto = PortfolioReturnDto.builder()
                         .isCreated(false)
                         .nickName(findUser.get().getNickName())
                         .email(findUser.get().getEmail())
@@ -283,11 +313,12 @@ public class PortfolioService {
                         .shortIntroduce(null)
                         .introduce(null)
                         .fileUrl(null)
+                        .viewCount(null)
                         .build();
             }
         }
 
-        return portfolioDto;
+        return portfolioReturnDto;
     }
 
      /*
@@ -295,69 +326,69 @@ public class PortfolioService {
      */
 
 
-    public boolean ToBoolean(Integer interest){
-        if(interest > 0) return true;
-        else if(interest == null) return false; //필요한가?
-        else return false;
-    }
-
-
-    /*
-    private String nickName;
-    private String email;
-    private Integer web;
-    private Integer app;
-    private Integer game;
-    private Integer ai;
-    private String shortIntroduce;
-     */
-
-    @EntityGraph(attributePaths = "user")
-    @Transactional(readOnly = true)
-    public List<PortfolioCardDto> getPortfolioCard(){
-
-        List<Portfolio> portfolios = portfolioRepository.findAll();
-
-        List<PortfolioCardDto> portfolioCardDtos = new ArrayList<>();
-
-
-//        List<PortfolioCardDto> resultDto = portfolios.stream()
-//                .map(data -> modelMapper.map(data, PortfolioCardDto.class))
-//                .collect(Collectors.toList());
-
-
-        for(Portfolio portfolio : portfolios){
-
-//            User user = userRepository.findById(portfolio.getUser().getId()).get();
-            User user = portfolio.getUser();
-
-            PortfolioCardDto portfolioDto = PortfolioCardDto.builder()
-                    .nickName(user.getNickName())
-                    .email(user.getEmail())// user = posts.getUser()
-                    .shortIntroduce(portfolio.getShortIntroduce())
-                    .web(portfolio.getWeb())
-                    .app(portfolio.getApp())
-                    .ai(portfolio.getAi())
-                    .game(portfolio.getGame())
-                    .build();
-
-            portfolioCardDtos.add(portfolioDto);
-        }
-
-
-
-
-            /*
-            private String nickName;
-            private String email;
-            private String shortIntroduce;
-             */
-
-
-
-        return portfolioCardDtos;
-
-    }
+//    public boolean ToBoolean(Integer interest){
+//        if(interest > 0) return true;
+//        else if(interest == null) return false; //필요한가?
+//        else return false;
+//    }
+//
+//
+//    /*
+//    private String nickName;
+//    private String email;
+//    private Integer web;
+//    private Integer app;
+//    private Integer game;
+//    private Integer ai;
+//    private String shortIntroduce;
+//     */
+//
+//    @EntityGraph(attributePaths = "user")
+//    @Transactional(readOnly = true)
+//    public List<PortfolioCardDto> getPortfolioCard(){
+//
+//        List<Portfolio> portfolios = portfolioRepository.findAll();
+//
+//        List<PortfolioCardDto> portfolioCardDtos = new ArrayList<>();
+//
+//
+////        List<PortfolioCardDto> resultDto = portfolios.stream()
+////                .map(data -> modelMapper.map(data, PortfolioCardDto.class))
+////                .collect(Collectors.toList());
+//
+//
+//        for(Portfolio portfolio : portfolios){
+//
+////            User user = userRepository.findById(portfolio.getUser().getId()).get();
+//            User user = portfolio.getUser();
+//
+//            PortfolioCardDto portfolioDto = PortfolioCardDto.builder()
+//                    .nickName(user.getNickName())
+//                    .email(user.getEmail())// user = posts.getUser()
+//                    .shortIntroduce(portfolio.getShortIntroduce())
+//                    .web(portfolio.getWeb())
+//                    .app(portfolio.getApp())
+//                    .ai(portfolio.getAi())
+//                    .game(portfolio.getGame())
+//                    .build();
+//
+//            portfolioCardDtos.add(portfolioDto);
+//        }
+//
+//
+//
+//
+//            /*
+//            private String nickName;
+//            private String email;
+//            private String shortIntroduce;
+//             */
+//
+//
+//
+//        return portfolioCardDtos;
+//
+//    }
 
 
 
@@ -422,6 +453,7 @@ public class PortfolioService {
             query = query.where(titleOrContentConditions);
         }
 
+        query = query.orderBy(portfolios.lastModifiedDate.desc());
 
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Portfolio> countQuery = queryFactory.selectFrom(portfolios)
@@ -451,6 +483,10 @@ public class PortfolioService {
             //User portfolioUser = portfolio.getUser();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = portfolio.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
 
+            Optional<Integer> viewCountOptional = viewCountPortfolioRepository.countByPortfolio_Id(portfolio.getId());
+
+            Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
             PortfolioCardDto cardDto = PortfolioCardDto.builder()
                     .nickName(user.getNickName())   // user = posts.getUser()
                     .web(portfolio.getWeb())     // category = posts.getCategory()
@@ -458,6 +494,7 @@ public class PortfolioService {
                     .game(portfolio.getGame())
                     .ai(portfolio.getAi())
                     .shortIntroduce(portfolio.getShortIntroduce())
+                    .viewCount(viewCount)
                     .build();
 
             portfolioCardDtos.add(cardDto);     // 컬렉션에 추가

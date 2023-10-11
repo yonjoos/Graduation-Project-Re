@@ -2,6 +2,7 @@ package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.dto.PortfolioDto;
 import PickMe.PickMeDemo.dto.PortfolioFormDto;
+import PickMe.PickMeDemo.dto.PortfolioReturnDto;
 import PickMe.PickMeDemo.service.PortfolioService;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
@@ -35,11 +36,11 @@ public class PortfolioController {
 
     // 나의 포트폴리오 정보 가져오기
     @GetMapping("/getPortfolio")
-    public ResponseEntity<PortfolioDto> getPortfolio(Principal principal) {
+    public ResponseEntity<PortfolioReturnDto> getPortfolio(Principal principal) {
         String userEmail = principal.getName(); // JWT 토큰에서 이메일 가져오기
 
         // getPortfolio : 이메일을 통해 포트폴리오를 가져오는 함수
-        PortfolioDto portfolio = portfolioService.getPortfolio(userEmail);
+        PortfolioReturnDto portfolio = portfolioService.getPortfolio(userEmail);
 
         return ResponseEntity.ok(portfolio);
     }
@@ -89,10 +90,11 @@ public class PortfolioController {
 
     // 닉네임으로 상대방 포트폴리오 정보 가져오기
     @GetMapping("/getUserPortfolio")
-    public ResponseEntity<PortfolioDto> getPortfolioByNickName(@RequestParam String nickName) {
+    public ResponseEntity<PortfolioReturnDto> getPortfolioByNickName(@RequestParam String nickName, Principal principal) {
+        String userEmail = principal.getName();         // JWT 토큰으로부터 이메일 파싱
 
         // getUserPortfolio : 유저의 닉네임을 통해 해당 유저의 포트폴리오를 가져오는 함수
-        PortfolioDto portfolio = portfolioService.getUserPortfolio(nickName);
+        PortfolioReturnDto portfolio = portfolioService.getUserPortfolio(nickName, userEmail);
 
         return ResponseEntity.ok(portfolio);
     }

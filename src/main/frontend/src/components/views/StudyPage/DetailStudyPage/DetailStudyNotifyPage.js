@@ -288,9 +288,14 @@ function DetailStudyNotifyPage() {
                     </Col>
                     {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                     <Col span={8} className="vertical-line">
-                        <div style={{ marginLeft: '3px' }}>
-                            {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                            분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ marginLeft: '3px' }}>
+                                {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                                분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
+                            </div>
+                            <div style={{ marginRight: '15px' }}>
+                                조회 수: {data.viewCount}
+                            </div>
                         </div>
                     </Col>
                 </Row>

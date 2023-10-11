@@ -73,17 +73,17 @@ function PortfolioCardPage() {
 
     // REQUEST ###############################################
 
-    const fetchCards = async () => {
+    // const fetchCards = async () => {
 
-        try {
+    //     try {
 
-            const response = await request('GET', `/getPortfolioCards`);
-            setData(response.data);
+    //         const response = await request('GET', `/getPortfolioCards`);
+    //         setData(response.data);
 
-        } catch (error) {
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
 
 
     const fetchUsers = async () => {
@@ -194,11 +194,11 @@ function PortfolioCardPage() {
                             <Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
                                 {/* style = {{cursor: 'pointer'}} */}
                                 <b>Field Of Interests</b>
-                                <br></br>
+                                <br/>
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                <Divider></Divider>
+                                <Divider/>
                                 <b>Brief Introduction</b>
-                                <br></br>
+                                <br/>
                                 {item.shortIntroduce}
                             </Card>
                         </Col>

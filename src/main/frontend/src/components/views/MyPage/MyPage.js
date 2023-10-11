@@ -222,172 +222,149 @@ function MyPage() {
 
     return (
         <div>
-            <div>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <div style={{ width: '25%' }}>
-                        <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
-                            <Menu.Item key="info">정보 수정</Menu.Item>
-                            <Menu.Item key="password">비밀번호 변경</Menu.Item>
-                            <Menu.Item key="withdrawal">회원 탈퇴</Menu.Item>
-                        </Menu>
-                    </div>
-                    <div style={{ width: '75%' }}>
-                        {selectedOption === 'info' && (
-                            <Card title="정보 수정" style={{ width: '100%' }}>
-                                {userBaseInfo && (
-                                    <Form>
-                                        <div>
-                                            <Item label="등록된 이메일 주소">
-                                                <Input
-                                                    type="email"
-                                                    value={userBaseInfo.email}
-                                                    readOnly
-                                                    disabled // Prevent interaction with the field
-                                                    style={{ backgroundColor: '#f0f0f0' }} />
-                                            </Item>
-                                        </div>
-                                        <div>
-                                            <Item label="닉네임">
-                                                <Input
-                                                    type="text"
-                                                    value={userBaseInfo.nickName}
-                                                    placeholder = "닉네임을 입력해주세요"
-                                                    onChange={(e) => handleInputChange('nickName', e.target.value)} 
-                                                    />
-                                            </Item>
-                                        </div>
-                                        <div>
-                                            <Item label="이름">
-                                                <Input
-                                                    type="text"
-                                                    value={userBaseInfo.userName}
-                                                    placeholder="이름을 입력해주세요"
-                                                    onChange={(e) => handleInputChange('userName', e.target.value)} />
-                                            </Item>
-                                        </div>
-                                        <div>
-                                            <Item label="패스워드">
-                                                <Input
-                                                    type="password"
-                                                    value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
-                                                    placeholder="비밀번호를 입력해주세요"
-                                                    onChange={(e) => handleInputChange('password', e.target.value)} />
-                                            </Item>
-                                        </div>
-
-                                        <Button type="primary" onClick={() => updateInfo(userBaseInfo)}
-                                            disabled={!isUpdateButtonEnabled}>
-                                            정보 업데이트
-                                        </Button>
-                                    </Form>
-                                )}
-                            </Card>
-                        )}
-                        {selectedOption === 'password' && (
-                            <Card title="비밀번호 변경" style={{ width: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <div style={{ width: '25%' }}>
+                    <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
+                        <Menu.Item key="info">정보 수정</Menu.Item>
+                        <Menu.Item key="password">비밀번호 변경</Menu.Item>
+                        <Menu.Item key="withdrawal">회원 탈퇴</Menu.Item>
+                    </Menu>
+                </div>
+                <div style={{ width: '75%' }}>
+                    {selectedOption === 'info' && (
+                        <Card title="정보 수정" style={{ width: '100%' }}>
+                            {userBaseInfo && (
                                 <Form>
                                     <div>
                                         <Item label="등록된 이메일 주소">
                                             <Input
                                                 type="email"
-                                                value={userBaseInfo.email} //이메일은 화면에 보여주되, 변경 불가능하게 disable설정
+                                                value={userBaseInfo.email}
                                                 readOnly
-                                                disabled
-                                                style={{ backgroundColor: '#f0f0f0' }}
-                                            />
+                                                disabled // Prevent interaction with the field
+                                                style={{ backgroundColor: '#f0f0f0' }} />
                                         </Item>
                                     </div>
                                     <div>
-                                        <Item label="기존 비밀번호">
+                                        <Item label="닉네임">
                                             <Input
-                                                type="password"
-                                                value={currentPassword}
-                                                placeholder="기존에 사용하던 비밀번호를 입력해주세요"
-                                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                            />
+                                                type="text"
+                                                value={userBaseInfo.nickName}
+                                                placeholder = "닉네임을 입력해주세요"
+                                                onChange={(e) => handleInputChange('nickName', e.target.value)} 
+                                                />
                                         </Item>
                                     </div>
                                     <div>
-                                        <Item label="새로운 비밀번호">
+                                        <Item label="이름">
                                             <Input
-                                                type="password"
-                                                value={newPassword}
-                                                placeholder = "기존 비밀번호와 다른 비밀번호를 입력해주세요"
-                                                onChange={(e) => setNewPassword(e.target.value)}
-                                            />
+                                                type="text"
+                                                value={userBaseInfo.userName}
+                                                placeholder="이름을 입력해주세요"
+                                                onChange={(e) => handleInputChange('userName', e.target.value)} />
                                         </Item>
                                     </div>
                                     <div>
-                                        <Item label="새로운 비밀번호 확인">
+                                        <Item label="패스워드">
                                             <Input
                                                 type="password"
-                                                value={confirmNewPassword}
-                                                onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                            />
+                                                value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
+                                                placeholder="비밀번호를 입력해주세요"
+                                                onChange={(e) => handleInputChange('password', e.target.value)} />
                                         </Item>
                                     </div>
-                                    <Button
-                                        type="primary"
-                                        onClick={updatePassword}
-                                        disabled={!isPasswordUpdateButtonEnabled}
-                                    >
-                                        비밀번호 변경
+
+                                    <Button type="primary" onClick={() => updateInfo(userBaseInfo)}
+                                        disabled={!isUpdateButtonEnabled}>
+                                        정보 업데이트
                                     </Button>
                                 </Form>
-                            </Card>
-                        )}
-                        {selectedOption === 'withdrawal' && (
-                            <Card title="회원 탈퇴" style={{ width: '100%' }}>
-                                <Item label="기존 비밀번호">
-                                    <Input
-                                        type="password"
-                                        value={currentPasswordForSignOut}
-                                        onChange={(e) => setCurrentPasswordForSignOut(e.target.value)}
-                                    />
-                                </Item>
-                                {/* 탈퇴 버튼 */}
-                                <Button
-                                    type="primary"
-                                    onClick={() => setIsWithdrawModalVisible(true)}
-                                    disabled={!isSignOutButtonEnabled}>
-                                    탈퇴하기
-                                </Button>
-                                {/** Ok와 Cancel 함수가 크로스 되어 있음 */}
-                                <Modal
-                                    title="회원 탈퇴 확인"
-                                    open={isWithdrawModalVisible}
-                                    onOk={handleWithdrawCancel}
-                                    onCancel={handleWithdrawConfirm}
-                                    okText="아니오"
-                                    cancelText="네"
-                                >
-                                    <p>정말로 탈퇴하시겠습니까?</p>
-                                </Modal>
-                            </Card>
-                        )}
-                    </div>
-                </div>
-            </div>
-            <div>
-                <Row justify="center" style={{ marginTop: '20px' }}>
-                    <Col xs={24} sm={16} md={12} lg={8}>
-                        <Card title="Backend Response in Project Page" style={{ width: '100%' }}>
-                            <div>현재 계정 정보</div>
-                            {userBaseInfo && (
-                                <ul>
-                                    {/** data로 받아온 Boolean 값은, data.isCreated만으로는 화면에 나타나지 않는다.
-                                     * 따라서 ?를 사용하여 참일때 true가 보이고, 거짓일 때 false가 보이도록 설정한다.
-                                     */}
-                                    <li><strong>isCreated:</strong> {userBaseInfo.isCreated ? 'true' : 'false'}</li>
-                                    <li><strong>User Name:</strong> {userBaseInfo.userName}</li>
-                                    <li><strong>Nick Name:</strong> {userBaseInfo.nickName}</li>
-                                    <li><strong>Email:</strong> {userBaseInfo.email}</li>
-                                    {/* Add other properties as needed */}
-                                </ul>
                             )}
                         </Card>
-                    </Col>
-                </Row>
+                    )}
+                    {selectedOption === 'password' && (
+                        <Card title="비밀번호 변경" style={{ width: '100%' }}>
+                            <Form>
+                                <div>
+                                    <Item label="등록된 이메일 주소">
+                                        <Input
+                                            type="email"
+                                            value={userBaseInfo.email} //이메일은 화면에 보여주되, 변경 불가능하게 disable설정
+                                            readOnly
+                                            disabled
+                                            style={{ backgroundColor: '#f0f0f0' }}
+                                        />
+                                    </Item>
+                                </div>
+                                <div>
+                                    <Item label="기존 비밀번호">
+                                        <Input
+                                            type="password"
+                                            value={currentPassword}
+                                            placeholder="기존에 사용하던 비밀번호를 입력해주세요"
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                        />
+                                    </Item>
+                                </div>
+                                <div>
+                                    <Item label="새로운 비밀번호">
+                                        <Input
+                                            type="password"
+                                            value={newPassword}
+                                            placeholder = "기존 비밀번호와 다른 비밀번호를 입력해주세요"
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                        />
+                                    </Item>
+                                </div>
+                                <div>
+                                    <Item label="새로운 비밀번호 확인">
+                                        <Input
+                                            type="password"
+                                            value={confirmNewPassword}
+                                            onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                        />
+                                    </Item>
+                                </div>
+                                <Button
+                                    type="primary"
+                                    onClick={updatePassword}
+                                    disabled={!isPasswordUpdateButtonEnabled}
+                                >
+                                    비밀번호 변경
+                                </Button>
+                            </Form>
+                        </Card>
+                    )}
+                    {selectedOption === 'withdrawal' && (
+                        <Card title="회원 탈퇴" style={{ width: '100%' }}>
+                            <Item label="기존 비밀번호">
+                                <Input
+                                    type="password"
+                                    value={currentPasswordForSignOut}
+                                    onChange={(e) => setCurrentPasswordForSignOut(e.target.value)}
+                                />
+                            </Item>
+                            {/* 탈퇴 버튼 */}
+                            <Button
+                                type="primary"
+                                onClick={() => setIsWithdrawModalVisible(true)}
+                                disabled={!isSignOutButtonEnabled}>
+                                탈퇴하기
+                            </Button>
+                            {/** Ok와 Cancel 함수가 크로스 되어 있음 */}
+                            <Modal
+                                title="회원 탈퇴 확인"
+                                open={isWithdrawModalVisible}
+                                onOk={handleWithdrawCancel}
+                                onCancel={handleWithdrawConfirm}
+                                okText="아니오"
+                                cancelText="네"
+                            >
+                                <p>정말로 탈퇴하시겠습니까?</p>
+                            </Modal>
+                        </Card>
+                    )}
+                </div>
             </div>
         </div>
     );

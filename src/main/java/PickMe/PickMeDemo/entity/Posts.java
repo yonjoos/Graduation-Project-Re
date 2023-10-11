@@ -36,6 +36,9 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @OneToMany(mappedBy = "posts")
     private List<UserApplyPosts> userApplyPosts = new ArrayList<>(); //연관관계의 거울로 작용, 지원한 게시물 table과 엮임(db필드에 안들어감)
 
+    @OneToMany(mappedBy = "posts")
+    private List<ViewCountPosts> viewCountPosts = new ArrayList<>(); // 연관관계의 거울로 작용, 게시물 조회 수 table과 엮임(db필드에 안들어감)
+
     @Enumerated(EnumType.STRING)
     private PostType postType; // 게시물 타입 (project/study)으로 구분
 

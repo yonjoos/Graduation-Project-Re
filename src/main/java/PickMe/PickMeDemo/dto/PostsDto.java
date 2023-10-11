@@ -29,5 +29,6 @@ public class PostsDto {
     private Integer counts;
     private Integer recruitmentCount;
     private LocalDate endDate;
+    private Integer viewCount;
 
 }

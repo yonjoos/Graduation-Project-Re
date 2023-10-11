@@ -40,6 +40,12 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
     @OneToMany(mappedBy = "user")
     private List<Notifications> notifications = new ArrayList<>(); // 연관관계의 거울로 작용, 알림 table과 엮임(db필드에 안들어감)
 
+    @OneToMany(mappedBy = "user")
+    private List<ViewCountPosts> viewCountPosts = new ArrayList<>(); // 연관관계의 거울로 작용, 게시물 조회 수 table과 엮임(db필드에 안들어감)
+
+    @OneToMany(mappedBy = "user")
+    private List<ViewCountPortfolio> viewCountPortfolios = new ArrayList<>(); // 연관관계의 거울로 작용, 포트폴리오 조회 수 table과 엮임(db필드에 안들어감)
+
     @Column(name = "user_name", nullable = false)
     @Size(max = 100)
     private String userName; //회원의 이름

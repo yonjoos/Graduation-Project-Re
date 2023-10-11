@@ -1,6 +1,5 @@
 package PickMe.PickMeDemo.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PortfolioCardDto {
+public class PortfolioReturnDto {
 
-    // 전체 포트폴리오만 필요할 경우에는 DTO 불러올 때, 유저는 알 필요가 없다.
-    // 특정 유저의 포트폴리오가 필요할 때 불러옴
+    // 나중에 회원 사진 추가 필요
+    private Boolean isCreated;
     private String nickName;
     private String email;
     private Integer web;
@@ -21,7 +20,8 @@ public class PortfolioCardDto {
     private Integer game;
     private Integer ai;
     private String shortIntroduce;
+    private String introduce;
+    private String fileUrl;
     private Integer viewCount;
 
 }
-

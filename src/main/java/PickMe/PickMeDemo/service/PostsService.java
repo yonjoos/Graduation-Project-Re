@@ -32,6 +32,7 @@ public class PostsService {
     private final UserApplyPostsRepository userApplyPostsRepository;
     private final ScrapPostsRepository scrapPostsRepository;
     private final NotificationsRepository notificationsRepository;
+    private final ViewCountPostsRepository viewCountPostsRepository;
     private final NotificationService notificationService;
     private final JPAQueryFactory queryFactory;
 
@@ -139,9 +140,12 @@ public class PostsService {
 
 
     // 프로젝트 단건 조회
-    @Transactional(readOnly = true)
+    // @Transactional(readOnly = true) // 조회 함수지만, viewCount를 저장하려면, readOnly = true이면 안됨.
     @EntityGraph(attributePaths = {"user", "category"})
     public PostsDto getProject(String userEmail, Long projectId) {
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         Posts posts = postsRepository.findByIdAndPostType(projectId, PostType.PROJECT)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
@@ -160,6 +164,24 @@ public class PostsService {
             applyCount = 1;
         }
 
+        // 프로젝트 게시물 작성자라면, viewCount를 저장하지 않고
+        // 프로젝트 게시물 작성자가 아니라면 viewCount 저장
+        if (!userEmail.equals(posts.getUser().getEmail())) {
+            // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
+            if (viewCountPostsRepository.findByPosts_IdAndUser_Id(projectId, user.getId()).isEmpty()) {
+                ViewCountPosts viewCountPosts = ViewCountPosts.builder()
+                        .posts(posts)
+                        .user(user)
+                        .build();
+
+                viewCountPostsRepository.save(viewCountPosts);
+            }
+        }
+
+        Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(projectId);
+
+        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면 (게시물 작성자라면)
         if (posts.getUser().getEmail().equals(userEmail)) {
              postsDto = PostsDto.builder()
@@ -175,9 +197,10 @@ public class PostsService {
                     .promoteImageUrl(posts.getPromoteImageUrl())
                     .fileUrl(posts.getFileUrl())
                     //.counts(posts.getCounts())
-                     .counts(applyCount)
+                    .counts(applyCount)
                     .recruitmentCount(posts.getRecruitmentCount())
                     .endDate(posts.getEndDate())
+                    .viewCount(viewCount)
                     .build();
         }
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
@@ -225,6 +248,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
                 // 스크랩 안한 사람
@@ -247,6 +271,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
             }
@@ -272,6 +297,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
                 // 스크랩 안한 사람
@@ -294,6 +320,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
             }
@@ -319,6 +346,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
                 // 스크랩 안한 사람
@@ -341,6 +369,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
             }
@@ -351,9 +380,12 @@ public class PostsService {
 
 
     // 스터디 단건 조회
-    @Transactional(readOnly = true)
+    // @Transactional(readOnly = true) // 조회 함수지만, viewCount를 저장하려면, readOnly = true이면 안됨.
     @EntityGraph(attributePaths = {"user", "category"})
     public PostsDto getStudy(String userEmail, Long studyId) {
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         Posts posts = postsRepository.findByIdAndPostType(studyId, PostType.STUDY)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
@@ -371,6 +403,24 @@ public class PostsService {
         } else {
             applyCount = 1;
         }
+
+        // 스터디 게시물 작성자라면, viewCount를 저장하지 않고
+        // 스터디 게시물 작성자가 아니라면 viewCount 저장
+        if (!userEmail.equals(posts.getUser().getEmail())) {
+            // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
+            if (viewCountPostsRepository.findByPosts_IdAndUser_Id(studyId, user.getId()).isEmpty()) {
+                ViewCountPosts viewCountPosts = ViewCountPosts.builder()
+                        .posts(posts)
+                        .user(user)
+                        .build();
+
+                viewCountPostsRepository.save(viewCountPosts);
+            }
+        }
+
+        Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(studyId);
+
+        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
 
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
         if (posts.getUser().getEmail().equals(userEmail)) {
@@ -390,6 +440,7 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(posts.getRecruitmentCount())
                     .endDate(posts.getEndDate())
+                    .viewCount(viewCount)
                     .build();
         }
         // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
@@ -437,6 +488,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
                 // 스크랩 안한 사람
@@ -459,6 +511,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
             }
@@ -484,6 +537,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
                 // 스크랩 안한 사람
@@ -506,6 +560,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
             }
@@ -531,6 +586,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
                 // 스크랩 안한 사람
@@ -553,6 +609,7 @@ public class PostsService {
                             .counts(applyCount)
                             .recruitmentCount(posts.getRecruitmentCount())
                             .endDate(posts.getEndDate())
+                            .viewCount(viewCount)
                             .build();
                 }
             }
@@ -903,6 +960,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             PostsListDto postsListDto = PostsListDto.builder()
                     .id(post.getId())
                     .nickName(user.getNickName())   // user = posts.getUser()
@@ -916,6 +985,7 @@ public class PostsService {
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
+                    .viewCount(viewCount)
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가
@@ -1081,6 +1151,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             PostsListDto postsListDto = PostsListDto.builder()
                     .id(post.getId())
                     .nickName(user.getNickName())   // user = posts.getUser()
@@ -1093,6 +1175,8 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
+                    .briefContent(post.getContent())
+                    .viewCount(viewCount)
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가

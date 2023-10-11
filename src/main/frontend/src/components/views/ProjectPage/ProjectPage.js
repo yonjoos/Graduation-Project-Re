@@ -177,6 +177,9 @@ function ProjectPage() {
                                     <div style={{ marginLeft: '3px', fontSize: '13px' }}>
                                         모집 마감일: {formatDate(item.endDate)}
                                     </div>
+                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                        조회 수: {item.viewCount}
+                                    </div>
                                 </Col>
                             </Row>
                         </div>

@@ -3,6 +3,9 @@ package PickMe.PickMeDemo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -19,6 +22,9 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
     @OneToOne (fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user; //포트폴리오의 대상이 되는 회원 - 연관관계의 주인, 회원 table과 엮임(회원의 외래키를 가지고 있음)
+
+    @OneToMany(mappedBy = "portfolio")
+    private List<ViewCountPortfolio> viewCountPortfolios = new ArrayList<>(); // 연관관계의 거울로 작용, 포트폴리오 조회 수 table과 엮임(db필드에 안들어감)
 
     // User와 1대1로 걸려있고, cascade 걸려있으므로, nullable = false에서 문제 생길 수 있음
     @Column(name = "web", nullable = false)

@@ -164,8 +164,13 @@ function StudyPage() {
                                     </div>
                                 </Col>
                                 <Col span={6} className="vertical-line">
-                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        인원: {item.counts} / {item.recruitmentCount}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                            인원: {item.counts} / {item.recruitmentCount}
+                                        </div>
+                                        <div className="shape-outline mb-1" style={{ marginRight: '30%' }}>
+                                            조회 수: {item.viewCount}
+                                        </div>
                                     </div>
                                     <div style={{ marginLeft: '3px' }}>
                                         모집 마감일: {formatDate(item.endDate)}

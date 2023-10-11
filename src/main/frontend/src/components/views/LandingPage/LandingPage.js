@@ -1,14 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Button, Card} from 'antd';
+import { Row, Col, Button, Card } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import WelcomeContent from './Sections/WelcomeContent';
-import Auth from '../Auth/Auth';
 import PortfolioCard from './Sections/PortfolioCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
-import Search from '../../utils/Search';
 import SearchInLandingPage from './SearchInLandingPage';
 import { request } from '../../../hoc/request';
 import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
@@ -79,7 +77,7 @@ function LandingPage() {
     // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
     const truncateString = (str, maxLength) => {
         if (str.length > maxLength) {
-            return str.slice(0, maxLength) + '...'; 
+            return str.slice(0, maxLength) + '...';
         }
         return str;
     };
@@ -116,9 +114,9 @@ function LandingPage() {
         // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
         if (dataArray && dataArray.length > 0) {
             return (
-                <Col span={24} style={{ textAlign: 'center' }}>
-                    <Card size='small' style={{padding: 0, margin: 0 }}>
-                        <div style={{ width: 800, textAlign: 'left', padding: 0}}>
+                <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                    <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
+                        <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
                             <strong># {title}</strong>
                         </div>
                         <div style={{ margin: 0 }}>
@@ -126,7 +124,7 @@ function LandingPage() {
                                 <Button
                                     key={item.id}
                                     type="text"
-                                    style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0}}
+                                    style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0 }}
                                     onClick={() => handleButtonClick(title, item.id, item.name)}
                                 >
                                     {truncateString(item.name, 55)}
@@ -139,9 +137,9 @@ function LandingPage() {
         }
         return null;
     };
-    
-    
-    
+
+
+
 
     return (
         <div>
@@ -175,17 +173,13 @@ function LandingPage() {
             {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
-                        <h2> THIS IS AN ADMIN PAGE </h2>
-                        <Auth />
-                    </Col>
-                    <Col span={24}>
                         <SearchInLandingPage onSearch={handleSearch} />
                     </Col>
                     <Col span={24}>
+                        {renderSection('User', data.userSearchDtoList)}
                         {renderSection('Project', data.projectSearchDtoList)}
                         {renderSection('Study', data.studySearchDtoList)}
-                        {renderSection('User', data.userSearchDtoList)}
-                    </Col>                   
+                    </Col>
                     <Col xs={24} sm={8}>
                         <PortfolioCard />
                     </Col>
@@ -200,16 +194,13 @@ function LandingPage() {
             {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
                 <Row gutter={[16, 16]}>
                     <Col span={24}>
-                        <h2> THIS IS A USER PAGE </h2>
-                        <Auth />
-                    </Col>
-                    <Col span={24}>
                         <SearchInLandingPage onSearch={handleSearch} />
                     </Col>
                     <Col span={24}>
+                        
+                        {renderSection('User', data.userSearchDtoList)}
                         {renderSection('Project', data.projectSearchDtoList)}
                         {renderSection('Study', data.studySearchDtoList)}
-                        {renderSection('User', data.userSearchDtoList)}
                     </Col>
                     <Col xs={24} sm={8}>
                         <PortfolioCard />

@@ -19,14 +19,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PortfolioCardController {
 
-    private final UserService userService;
     private final PortfolioService portfolioService;
-    @GetMapping("/getPortfolioCards")
-    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
 
-        return ResponseEntity.ok(portfolioService.getPortfolioCard());
-
-    }
+//    @GetMapping("/getPortfolioCards")
+//    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
+//
+//        return ResponseEntity.ok(portfolioService.getPortfolioCard());
+//
+//    }
 
     /*
     const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
@@ -40,11 +40,12 @@ public class PortfolioCardController {
     @GetMapping("/getCards")
     public ResponseEntity<Page<PortfolioCardDto>> getCards(
             @RequestParam(name = "selectedBanners") List<String> selectedBanners, //프론트엔드에서 넘어온 선택된 배너정보
+            @RequestParam(defaultValue = "latestPortfolio") String sortOption, //프론트엔드에서 넘어온 선택된 옵션정보: 디폴트는 최신등록순
             @RequestParam(name = "page", defaultValue = "0") int page, // 프론트엔드에서 넘어온 선택된 페이지
             @RequestParam(name = "size", defaultValue = "9") int size, //프론트엔드에서 넘어온 한 페이지당 가져올 컨텐츠 수
             @RequestParam(name = "searchTerm", required = false) String searchTerm){
 
-        Page<PortfolioCardDto> result = portfolioService.getCards(selectedBanners, searchTerm, PageRequest.of(page, size));
+        Page<PortfolioCardDto> result = portfolioService.getCards(selectedBanners, sortOption, searchTerm, PageRequest.of(page, size));
         return ResponseEntity.ok(result);
     }
 

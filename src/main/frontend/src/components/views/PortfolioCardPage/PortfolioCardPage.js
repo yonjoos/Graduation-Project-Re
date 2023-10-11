@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Card, Row, Col, Divider, Button, Pagination } from 'antd';
+import { Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
 import { request } from '../../../hoc/request';
 import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
@@ -24,6 +24,7 @@ function PortfolioCardPage() {
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
+    const [sortOption, setSortOption] = useState('latestPortfolio'); // 최신 등록 순 기본으로 선택
     const [reload, setReload] = useState(0);
 
 
@@ -67,23 +68,23 @@ function PortfolioCardPage() {
         console.log('현재 선택된 배너 정보', selectedBanners);
         console.log('현재 검색된 키워드: ', searchTerm);
         fetchUsers();
-    }, [selectedBanners, currentPage, searchTerm]);
+    }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
 
 
     // REQUEST ###############################################
 
-    const fetchCards = async () => {
+    // const fetchCards = async () => {
 
-        try {
+    //     try {
 
-            const response = await request('GET', `/getPortfolioCards`);
-            setData(response.data);
+    //         const response = await request('GET', `/getPortfolioCards`);
+    //         setData(response.data);
 
-        } catch (error) {
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
 
 
     const fetchUsers = async () => {
@@ -93,6 +94,7 @@ function PortfolioCardPage() {
                 selectedBanners: selectedBanners.join(','), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
                 page: currentPage, //현재 페이지 정보
                 size: pageSize, //페이징을 할 크기(현재는 한페이지에 9개씩만 나오도록 구성했음)
+                sortOption: sortOption, // 최신 등록순, 조회수 순
                 searchTerm: searchTerm // 검색어 키워드 문자열
             });
 
@@ -176,6 +178,18 @@ function PortfolioCardPage() {
     }
 
 
+    // 드롭다운을 위한 코드
+    const menu = (
+        <Menu selectedKeys={[sortOption]}>
+            <Menu.Item key="latestPortfolio" onClick={() => setSortOption('latestPortfolio')}>
+                최신 등록 순
+            </Menu.Item>
+            <Menu.Item key="byViewCount" onClick={() => setSortOption('byViewCount')}>
+                조회수 순
+            </Menu.Item>
+        </Menu>
+    );      
+
 
     // COMPONENTS ###############################################
 
@@ -194,12 +208,15 @@ function PortfolioCardPage() {
                             <Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
                                 {/* style = {{cursor: 'pointer'}} */}
                                 <b>Field Of Interests</b>
-                                <br></br>
+                                <br/>
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                <Divider></Divider>
+                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                 <b>Brief Introduction</b>
-                                <br></br>
+                                <br/>
                                 {item.shortIntroduce}
+                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
+                                <b>조회 수 : </b>
+                                {item.viewCount}
                             </Card>
                         </Col>
                     ))}
@@ -218,47 +235,60 @@ function PortfolioCardPage() {
             <SearchInPortfolioCardPage setSearchTerm={handleSearch} />
 
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                <Button type={selectedBanners.includes('all') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('all')}
-                    style={{ marginRight: '10px' }}>
-                    All
-                </Button>
-                <Button
-                    type={selectedBanners.includes('web') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('web')}>
-                    Web
-                </Button>
-                <Button
-                    type={selectedBanners.includes('app') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('app')}>
-                    App
-                </Button>
-                <Button
-                    type={selectedBanners.includes('game') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('game')}>
-                    Game
-                </Button>
-                <Button
-                    type={selectedBanners.includes('ai') ? 'primary' : 'default'}
-                    onClick={() => toggleBanner('ai')}>
-                    AI
-                </Button>
+                <Row style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button type={selectedBanners.includes('all') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('all')}
+                        style={{ marginRight: '10px' }}>
+                        All
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('web') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('web')}>
+                        Web
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('app') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('app')}>
+                        App
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('game') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('game')}>
+                        Game
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('ai') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('ai')}>
+                        AI
+                    </Button>
+                </Row>
             </div>
-            <div style={{ textAlign: 'left', margin: "0 0", marginTop: '15px' }}>
-                {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload}>
-                    Portfolio Card
-                </Button>
-                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
-                    Project
-                </Button>
-                <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
-                    Study
-                </Button>
-                <Button onClick={onGetRecommend} >
-                    RECOMMEND
-                </Button>
-                <hr></hr>
+            <div style={{ textAlign: 'center', marginTop: '15px', marginBottom: '15px' }}>
+                <Row>
+                    <Col span={18} style={{ textAlign: 'left' }}>
+                        {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                        <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload}>
+                            Portfolio Card
+                        </Button>
+                        <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
+                            Project
+                        </Button>
+                        <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
+                            Study
+                        </Button>
+                        <Button onClick={onGetRecommend} >
+                            RECOMMEND
+                        </Button>
+                    </Col>
+                    <Col span={6} style={{ textAlign: 'right' }}>
+                        <Dropdown overlay={menu} placement="bottomRight">
+                            <Button>
+                                정렬
+                            </Button>
+                        </Dropdown>
+                    </Col>
+                </Row>
+                <hr/>
             </div>
             <div>
                 {renderCards(data)}
@@ -278,5 +308,3 @@ function PortfolioCardPage() {
 
 
 export default PortfolioCardPage;
-
-

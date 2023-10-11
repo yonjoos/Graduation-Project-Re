@@ -23,5 +23,6 @@ public class PostsListDto {
     private Integer recruitmentCount;
     private LocalDate endDate;
     private String briefContent;
+    private Integer viewCount;
 
 }

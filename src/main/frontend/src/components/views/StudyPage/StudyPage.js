@@ -151,16 +151,6 @@ function StudyPage() {
                                 <Col span={2} style={{ marginRight: '10px', marginLeft : '5px' , textAlign: 'left' }} align = "left">
                                     <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
                                 </Col>
-<<<<<<< Updated upstream
-                                <Col span={6} className="vertical-line">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                            인원: {item.counts} / {item.recruitmentCount}
-                                        </div>
-                                        <div className="shape-outline mb-1" style={{ marginRight: '30%' }}>
-                                            조회 수: {item.viewCount}
-                                        </div>
-=======
                                 <Col span = {16}>
                                     <Row>
                                         <Col>
@@ -184,10 +174,12 @@ function StudyPage() {
                                 <Col span={4} >
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
                                         인원: {item.counts} / {item.recruitmentCount}
->>>>>>> Stashed changes
                                     </div>
                                     <div style={{ marginLeft: '3px', fontSize: '13px' }}>
                                         모집 마감일: {formatDate(item.endDate)}
+                                    </div>
+                                    <div className="shape-outline mb-1" style={{ marginRight: '30%' }}>
+                                            조회 수: {item.viewCount}
                                     </div>
                                 </Col>
                             </Row>

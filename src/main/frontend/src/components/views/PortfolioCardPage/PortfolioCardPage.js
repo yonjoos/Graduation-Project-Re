@@ -61,22 +61,9 @@ function PortfolioCardPage() {
 
 
 
-<<<<<<< Updated upstream
-    // const fetchCards = async () => {
 
-    //     try {
-
-    //         const response = await request('GET', `/getPortfolioCards`);
-    //         setData(response.data);
-
-    //     } catch (error) {
-
-    //     }
-    // }
-=======
     // REQUEST ###########################################################################################
     // REQUEST ###########################################################################################
->>>>>>> Stashed changes
 
 
     const fetchUsers = async () => {
@@ -249,7 +236,6 @@ function PortfolioCardPage() {
                     </Button>
                 </Row>
             </div>
-<<<<<<< Updated upstream
             <div style={{ textAlign: 'center', marginTop: '15px', marginBottom: '15px' }}>
                 <Row>
                     <Col span={18} style={{ textAlign: 'left' }}>
@@ -263,7 +249,7 @@ function PortfolioCardPage() {
                         <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                             Study
                         </Button>
-                        <Button onClick={onGetRecommend} >
+                        <Button >
                             RECOMMEND
                         </Button>
                     </Col>
@@ -276,23 +262,6 @@ function PortfolioCardPage() {
                     </Col>
                 </Row>
                 <hr/>
-=======
-            <div style={{ textAlign: 'left', margin: "0 0", marginTop: '15px' }}>
-                {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload}>
-                    Portfolio Card
-                </Button>
-                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
-                    Project
-                </Button>
-                <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
-                    Study
-                </Button>
-                <Button  >
-                    RECOMMEND
-                </Button>
-                <hr></hr>
->>>>>>> Stashed changes
             </div>
             <div>
                 {renderCards(data)}

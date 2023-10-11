@@ -29,6 +29,9 @@ import UpdateStudyPage from './views/StudyPage/UpdateStudyPage/UpdateStudyPage';
 import DetailProjectNotifyPage from './views/ProjectPage/DetailProjectPage/DetailProjectNotifyPage';
 import DetailStudyNotifyPage from './views/StudyPage/DetailStudyPage/DetailStudyNotifyPage';
 import PortfolioNotifyPage from './views/PortfolioPage/PortfolioNotifyPage';
+import SearchPortfolioListPage from './views/SearchListPage/SearchPortfolioListPage';
+import SearchProjectListPage from './views/SearchListPage/SearchProjectListPage';
+import SearchStudyListPage from './views/SearchListPage/SearchStudyListPage';
 import Footer from './views/Footer/Footer';
 import './App.css';
 //import logo2 from '../logo2.png'
@@ -192,6 +195,18 @@ function Main() {
                         <Route
                             path="/study/update/:studyId"
                             element={Auth(UpdateStudyPage, true)}
+                        />
+                        <Route
+                            path="/search/portfoliocard/query/:searchTerm"
+                            element={Auth(SearchPortfolioListPage, true)}
+                        />
+                        <Route
+                            path="/search/project/query/:searchTerm"
+                            element={Auth(SearchProjectListPage, true)}
+                        />
+                        <Route
+                            path="/search/study/query/:searchTerm"
+                            element={Auth(SearchStudyListPage, true)}
                         />
                     </Routes>
                     <Notifications />

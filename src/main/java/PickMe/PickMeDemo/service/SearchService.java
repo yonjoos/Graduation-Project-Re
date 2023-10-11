@@ -16,10 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -174,6 +171,7 @@ public class SearchService {
 
         QPortfolio portfolios = QPortfolio.portfolio;
         QUser users = QUser.user;
+        QViewCountPortfolio viewCountPortfolio = QViewCountPortfolio.viewCountPortfolio;
 
         BooleanExpression bannerConditions = buildBannerConditions(portfolios, selectedBanners);
         // 검색어 기반으로 필터링할 때 쓰는 BooleanExpression 조건
@@ -215,14 +213,7 @@ public class SearchService {
             query = query.where(titleOrContentConditions);
         }
 
-        if(sortOption.equals("latestPortfolio"))
-        {
-            query = query.orderBy(portfolios.lastModifiedDate.desc());
-        }
-        else {
-            query = query.orderBy(portfolios.lastModifiedDate.desc());
-        }
-
+        query = query.orderBy(portfolios.lastModifiedDate.desc());
 
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Portfolio> countQuery = queryFactory.selectFrom(portfolios)
@@ -267,6 +258,11 @@ public class SearchService {
                     .build();
 
             portfolioCardDtos.add(cardDto);     // 컬렉션에 추가
+        }
+
+        if ("byViewCount".equals(sortOption)) {
+            // 조회수를 기준으로 내림차순으로 정렬
+            portfolioCardDtos.sort(Comparator.comparing(PortfolioCardDto::getViewCount).reversed());
         }
 
         return new PageImpl<>(portfolioCardDtos, pageable, total); // 동적쿼리의 결과를 반환

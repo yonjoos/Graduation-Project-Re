@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Row, Col, Button, Card, Pagination, Divider } from 'antd';
+import { Row, Col, Button, Card, Pagination, Divider, Menu, Dropdown } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInLandingPage from '../LandingPage/SearchInLandingPage';
 function SearchPortfolioListPage(onSearch) {
@@ -25,7 +25,7 @@ function SearchPortfolioListPage(onSearch) {
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [sortOption, setSortOption] = useState('latestPortfolio'); //최신등록순: latestPosts / 조회수순: byViewCount
     const pageSize = 9;
- 
+
 
     // 키워드를 치는 순간 순간마다 백엔드에서 데이터 받아옴
     useEffect(() => {
@@ -101,6 +101,18 @@ function SearchPortfolioListPage(onSearch) {
         setCurrentPage(0); // 만약 배너를 다른 걸 고르면 1페이지로 강제 이동시킴
     }
 
+    // 드롭다운을 위한 코드
+    const menu = (
+        <Menu selectedKeys={[sortOption]}>
+            <Menu.Item key="latestPortfolio" onClick={() => setSortOption('latestPortfolio')}>
+                최신 등록 순
+            </Menu.Item>
+            <Menu.Item key="byViewCount" onClick={() => setSortOption('byViewCount')}>
+                조회수 순
+            </Menu.Item>
+        </Menu>
+    );
+
     // 최신등록순, 마감일 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
     const handleSortOptionChange = (option) => {
         setSortOption(option);
@@ -123,15 +135,16 @@ function SearchPortfolioListPage(onSearch) {
                                 <b>Field Of Interests</b>
                                 <br />
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                <Divider />
+                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                 <b>Brief Introduction</b>
                                 <br />
                                 {item.shortIntroduce}
+                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
+                                <b>조회 수 : </b>
+                                {item.viewCount}
                             </Card>
                         </Col>
                     ))}
-
-
                 </Row>
             </div>
         )
@@ -263,70 +276,58 @@ function SearchPortfolioListPage(onSearch) {
             </div>
 
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                <Row>
-                    <Col span={6}>
-                        <Button
-                            type={sortOption === 'latestPortfolio' ? 'primary' : 'default'}
-                            onClick={() => handleSortOptionChange('latestPortfolio')}
-                            style={{ marginRight: '10px' }}
-                        >
-                            최신 등록순
-                        </Button>
-                        <Button
-                            type={sortOption === 'byViewCount' ? 'primary' : 'default'}
-                            onClick={() => handleSortOptionChange('byViewCount')}
-                        >
-                            조회수순
-                        </Button>
-                    </Col>
-                    <Col span={12} style={{ textAlign: 'center' }}>
-                        <Button
-                            type={selectedBanners.includes('all') ? 'primary' : 'default'}
-                            onClick={() => toggleBanner('all')}
-                            style={{ marginRight: '10px' }}
-                        >
-                            All
-                        </Button>
-                        <Button
-                            type={selectedBanners.includes('web') ? 'primary' : 'default'}
-                            onClick={() => toggleBanner('web')}
-                        >
-                            Web
-                        </Button>
-                        <Button
-                            type={selectedBanners.includes('app') ? 'primary' : 'default'}
-                            onClick={() => toggleBanner('app')}
-                        >
-                            App
-                        </Button>
-                        <Button
-                            type={selectedBanners.includes('game') ? 'primary' : 'default'}
-                            onClick={() => toggleBanner('game')}
-                        >
-                            Game
-                        </Button>
-                        <Button
-                            type={selectedBanners.includes('ai') ? 'primary' : 'default'}
-                            onClick={() => toggleBanner('ai')}
-                        >
-                            AI
-                        </Button>
-                    </Col>
+                <Row style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button type={selectedBanners.includes('all') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('all')}
+                        style={{ marginRight: '10px' }}>
+                        All
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('web') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('web')}>
+                        Web
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('app') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('app')}>
+                        App
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('game') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('game')}>
+                        Game
+                    </Button>
+                    <Button
+                        type={selectedBanners.includes('ai') ? 'primary' : 'default'}
+                        onClick={() => toggleBanner('ai')}>
+                        AI
+                    </Button>
                 </Row>
-
             </div>
 
             <div style={{ textAlign: 'left', margin: "0 0" }}>
-                {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname.includes('/search/portfoliocard') ? 'primary' : 'default'} onClick={handleSearchPortfolioCard}>
-                    Portfolio Card
-                </Button>
-                <Button type={location.pathname.includes('/search/project') ? 'primary' : 'default'} onClick={handleSearchProject}>
-                    Project
-                </Button>
-                <Button type={location.pathname.includes('/search/study') ? 'primary' : 'default'} onClick={handleSearchStudy}>
-                    Study
-                </Button>
+                <Row>
+                    <Col span={18} style={{ textAlign: 'left' }}>
+                        {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                        <Button type={location.pathname.includes('/search/portfoliocard') ? 'primary' : 'default'} onClick={handleSearchPortfolioCard}>
+                            Portfolio Card
+                        </Button>
+                        <Button type={location.pathname.includes('/search/project') ? 'primary' : 'default'} onClick={handleSearchProject}>
+                            Project
+                        </Button>
+                        <Button type={location.pathname.includes('/search/study') ? 'primary' : 'default'} onClick={handleSearchStudy}>
+                            Study
+                        </Button>
+                    </Col>
+                    <Col span={6} style={{ textAlign: 'right' }}>
+                        <Dropdown overlay={menu} placement="bottomRight">
+                            <Button>
+                                정렬
+                            </Button>
+                        </Dropdown>
+                    </Col>
+                </Row>
+
                 <hr />
 
 

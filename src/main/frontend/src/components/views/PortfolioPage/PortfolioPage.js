@@ -161,7 +161,7 @@ function PortfolioPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', marginLeft: '20%', marginBottom: '20px' }}>
+                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div>
                         
                             <div style={{ fontSize: '35px' }}>
@@ -175,14 +175,26 @@ function PortfolioPage() {
                                     
                                 */}
                             </div>
-                            <div style={{ fontSize: '12px' }}><strong>CONTACT :</strong> {data && data.email}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>CONTACT : </strong>
+                                    {data && data.email}
+                                </div>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>조회수 : </strong>
+                                    {data && data.viewCount}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
                     <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '0.1px solid black' }} />
 
-                    <div style={{ marginLeft: '20%', fontSize: '12px' }}><strong>첨부 파일:</strong> {data && data.fileUrl}</div>
+                    <div style={{ marginLeft: '20%', fontSize: '12px' }}>
+                        <strong>첨부 파일:</strong>
+                        {data && data.fileUrl}
+                    </div>
 
                     <Row justify="center" style={{ marginTop: '20px' }}>
                         <Col span={16}>
@@ -197,8 +209,8 @@ function PortfolioPage() {
 
                                         <h6>Nick Name</h6>
                                         {nickName}
-                                        <br></br>
-                                        <br></br>
+                                        <br/>
+                                        <br/>
                                         <h6>Brief Introduction</h6>
                                         {data && data.shortIntroduce ? (
                                             data.shortIntroduce
@@ -206,8 +218,6 @@ function PortfolioPage() {
                                             <p>No introduction available</p>
                                         )}
                                         </Card>
-
-
                                 </Col>
                                 <Col span={10}>
                                     <Card title="관심 분야 선호도" style={{ height: '100%' }}> 
@@ -220,7 +230,6 @@ function PortfolioPage() {
                                         {renderPreferenceBar('game')}
                                         {renderPreferenceBar('ai')}
                                     </Card>
-
                                 </Col>
                             </Row>
                         </Col>

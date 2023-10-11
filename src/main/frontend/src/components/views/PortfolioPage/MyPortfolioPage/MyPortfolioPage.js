@@ -176,7 +176,7 @@ function MyPortfolioPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', marginLeft: '20%', marginBottom: '20px' }}>
+                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div>
                             <div style={{ fontSize: '35px' }}>
                                 <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
@@ -187,7 +187,16 @@ function MyPortfolioPage() {
                                     
                                 */}
                             </div>
-                            <div style={{ fontSize: '12px' }}><strong>CONTACT :</strong> {data && data.email}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>CONTACT : </strong>
+                                    {data && data.email}
+                                </div>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>조회수 : </strong>
+                                    {data && data.viewCount}
+                                </div>
+                            </div>
                         </div>
                     </div>
 

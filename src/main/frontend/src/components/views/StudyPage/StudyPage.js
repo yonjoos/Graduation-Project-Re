@@ -145,24 +145,13 @@ function StudyPage() {
 
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <Divider className="bold-divider" />
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                                <Col span={6}>
-                                    <div style={{ borderRight: '1px' }}>
-                                        <strong style={{ fontSize: '18px' }}> {item.nickName} </strong>
-                                    </div>
-                                </Col>
+                            <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="center" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={12} className="vertical-line">
-                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        <strong style={{ fontSize: '18px' }}>{item.title}</strong>
-                                    </div>
-                                    {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                    <div style={{ marginLeft: '3px' }}>
-                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                    </div>
+                                <Col span={2} style={{ marginRight: '10px', marginLeft : '5px' , textAlign: 'left' }} align = "left">
+                                    <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
                                 </Col>
+<<<<<<< Updated upstream
                                 <Col span={6} className="vertical-line">
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
@@ -171,14 +160,38 @@ function StudyPage() {
                                         <div className="shape-outline mb-1" style={{ marginRight: '30%' }}>
                                             조회 수: {item.viewCount}
                                         </div>
+=======
+                                <Col span = {16}>
+                                    <Row>
+                                        <Col>
+                                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                                <strong style={{ fontSize: '15px' }}>{item.title}</strong>
+                                            </div>
+                                           
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                    </Row>
+                                    <Divider></Divider>
+                                    <Row>
+                                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                        {item.briefContent}
+                                        </div>
+                                    </Row>
+
+                                </Col>
+                                <Col span={4} >
+                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                        인원: {item.counts} / {item.recruitmentCount}
+>>>>>>> Stashed changes
                                     </div>
-                                    <div style={{ marginLeft: '3px' }}>
+                                    <div style={{ marginLeft: '3px', fontSize: '13px' }}>
                                         모집 마감일: {formatDate(item.endDate)}
                                     </div>
                                 </Col>
                             </Row>
                         </div>
-                        <Divider className="bold-divider" />
                     </Card>
 
                 ))}

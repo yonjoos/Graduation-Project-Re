@@ -19,10 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -396,10 +393,11 @@ public class PortfolioService {
     ################################################################################
      */
     @Transactional(readOnly = true) //읽기 전용
-    public Page<PortfolioCardDto> getCards(List<String> selectedBanners, String searchTerm, Pageable pageable) {
+    public Page<PortfolioCardDto> getCards(List<String> selectedBanners, String sortOption, String searchTerm, Pageable pageable) {
 
         QPortfolio portfolios = QPortfolio.portfolio;
         QUser users = QUser.user;
+        QViewCountPortfolio viewCountPortfolio = QViewCountPortfolio.viewCountPortfolio;
 
         //System.out.println("pageable.getOffset() = " + pageable.getOffset());
         //System.out.println("pageable.getPageSize() = " + pageable.getPageSize());
@@ -498,6 +496,11 @@ public class PortfolioService {
                     .build();
 
             portfolioCardDtos.add(cardDto);     // 컬렉션에 추가
+        }
+
+        if ("byViewCount".equals(sortOption)) {
+            // 조회수를 기준으로 내림차순으로 정렬
+            portfolioCardDtos.sort(Comparator.comparing(PortfolioCardDto::getViewCount).reversed());
         }
 
         return new PageImpl<>(portfolioCardDtos, pageable, total); // 동적쿼리의 결과를 반환

@@ -196,10 +196,13 @@ function PortfolioCardPage() {
                                 <b>Field Of Interests</b>
                                 <br/>
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                <Divider/>
+                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                 <b>Brief Introduction</b>
                                 <br/>
                                 {item.shortIntroduce}
+                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
+                                <b>조회 수 : </b>
+                                {item.viewCount}
                             </Card>
                         </Col>
                     ))}
@@ -278,5 +281,3 @@ function PortfolioCardPage() {
 
 
 export default PortfolioCardPage;
-
-

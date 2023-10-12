@@ -15,7 +15,7 @@ function SearchInLandingPage({ onSearch, initialSearchTerm }) {
     const handleSearch = () => {
         //setSearchTerm(value);
         onSearch(localSearchTerm);
-        navigate(`/search/portfoliocard/query/${localSearchTerm}`);
+        navigate(`/search/portfoliocard/query/${localSearchTerm}`); // 검색어 입력 후 클릭 누르면, search/portfoliocard로 default 이동
         console.log('클릭', localSearchTerm);
 
         setLocalSearchTerm(''); // 클릭하면 랜딩페이지에서 검색어 비워주기
@@ -30,7 +30,7 @@ function SearchInLandingPage({ onSearch, initialSearchTerm }) {
 
             // Send a request to the backend with the current searchTerm
             onSearch(localSearchTerm);
-            navigate(`/search/portfoliocard/query/${localSearchTerm}`);
+            navigate(`/search/portfoliocard/query/${localSearchTerm}`); // 검색어 입력 후 클릭 누르면, search/portfoliocard로 default 이동
             console.log('엔터', localSearchTerm);
 
 

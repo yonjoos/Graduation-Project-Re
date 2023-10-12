@@ -20,7 +20,6 @@ function PortfolioCardPage() {
 
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [recommend, setRecommend] = useState("");
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
@@ -31,39 +30,28 @@ function PortfolioCardPage() {
     // const page = 0;
     const pageSize = 9;
 
-    // USE EFFECT ###############################################
-
-    /*
-    useEffect(() => {
-
-        if(searchTerm == ''){
-            fetchCards();
-        }
-        
-        console.log('현재 검색된 키워드: ', searchTerm);
-        fetchUsers();
-    
-    }, [searchTerm, currentPage, selectedBanners]);
+    // USE EFFECT #########################################################################################
+    // USE EFFECT #########################################################################################
 
 
-    //BUG : 첫 화면 진입 시, fetchUsers 가 먼저 실행되는 것 방지
-    useEffect(() => {
-        fetchCards();
-    }, []); 
 
-    */
-
+    // <Button> PortfolioCard 다시 눌렀을 때 실행
+    // Handler : handleReload() 에 의해 호출됨
     useEffect(() => {
         setCurrentPage(0);
         setTotalPages(0);
         setSearchTerm("");
         setSelectedBanners(['all']);
 
+        // REQUEST FUNCTION 
         fetchUsers();
+
         setReload(0);
     }, [reload]);
 
 
+    // 검색 조건이 바뀔 때 실행
+    // Handler : toggleBanner / handleSearch, toggleBanner, Pagination / handleSearch
     useEffect(() => {
         console.log('현재 선택된 배너 정보', selectedBanners);
         console.log('현재 검색된 키워드: ', searchTerm);
@@ -72,19 +60,10 @@ function PortfolioCardPage() {
 
 
 
-    // REQUEST ###############################################
 
-    // const fetchCards = async () => {
 
-    //     try {
-
-    //         const response = await request('GET', `/getPortfolioCards`);
-    //         setData(response.data);
-
-    //     } catch (error) {
-
-    //     }
-    // }
+    // REQUEST ###########################################################################################
+    // REQUEST ###########################################################################################
 
 
     const fetchUsers = async () => {
@@ -107,9 +86,10 @@ function PortfolioCardPage() {
     };
 
 
-    // HANDLER FUNCTIONS ###############################################
+    // HANDLER FUNCTIONS ###########################################################################################################
+    // HANDLER FUNCTIONS ###########################################################################################################
 
-    // function name : onClickHandler
+    // 포트폴리오 카드 클릭 핸들러, 해당 유저의 포트폴리오로 이동
     const onClickHandler = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
@@ -124,32 +104,25 @@ function PortfolioCardPage() {
     }
 
 
-    // function name : handleSearch
     // for Searching component
     const handleSearch = (value) => {
         setSearchTerm(value); // 검색어를 세팅
         setCurrentPage(0); // 검색어가 바뀌면, 강제로 1페이지로 이동시킴
     };
 
-    const onGetRecommend = async () => {
 
-        setRecommend("please");
-
-    };
-
-
-    // function name ; handleProjectPage
     // <Button> Project의 핸들러, ProjectPage로 이동
     const handleProjectPage = () => {
         navigate('/project');
     };
 
+
+    // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
         setReload(1);
     };
 
 
-    // function name ; handleStudyPage
     // <Button> Study의 핸들러, StudyPage로 이동
     const handleStudyPage = () => {
         navigate('/study');
@@ -276,7 +249,7 @@ function PortfolioCardPage() {
                         <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                             Study
                         </Button>
-                        <Button onClick={onGetRecommend} >
+                        <Button >
                             RECOMMEND
                         </Button>
                     </Col>

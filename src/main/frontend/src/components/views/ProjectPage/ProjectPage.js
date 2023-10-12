@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Row, Col, Button, Card, Pagination, Dropdown, Menu } from 'antd';
+import { Row, Col, Button, Card, Pagination, Dropdown, Menu, Divider } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInProjectPage from './SearchInProjectPage';
 import { lastVisitedEndpoint } from '../../../_actions/actions'
@@ -159,34 +159,34 @@ function ProjectPage() {
         return (
             <div>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 10px 0', }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
+                    <Card key={index} style={{ margin: '0 0 0 0', padding: '1px', textAlign: 'left'}}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
 
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="center" align="middle">
+                            <Row gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px' }} justify="space-between" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={20}>
+                                <Col span={2} style={{ marginRight: '10px', marginLeft : '5px' , textAlign: 'left' }} align = "left">
+                                    <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
+                                </Col>
+                                <Col span = {16}>
                                     <Row>
-                                        <Col style={{ marginRight: '20px' }}>
-                                            <div >
-                                                <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
-                                            </div>
-                                        </Col>
                                         <Col>
-                                            <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                                                 <strong style={{ fontSize: '15px' }}>{item.title}</strong>
-                                            </div>
-                                            {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                            <div style={{ marginLeft: '3px' }}>
-                                                분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                            </div>
-                                            <hr></hr>
-                                            <div>
-                                                {item.briefContent}
                                             </div>
                                         </Col>
                                     </Row>
+                                    <Row>
+                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                    </Row>
+                                    <Divider></Divider>
+                                    <Row>
+                                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                        {item.briefContent}
+                                        </div>
+                                    </Row>
+
                                 </Col>
                                 <Col span={4} >
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>

@@ -290,6 +290,15 @@ public class PostsController {
         return ResponseEntity.ok(filteredProjects);
     }
 
+    @GetMapping("/getUsersPosts")
+    public ResponseEntity<List<PostsListDto>> getUsersPosts(Principal principal) {
+        String email = principal.getName();
+        String nickName = userService.findByEmail(email).getNickName();
+        List<PostsListDto> usersPosts = postsService.getUsersPosts(nickName);
+        return ResponseEntity.ok(usersPosts);
+    }
+
+
     // 스터디 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
     @GetMapping("/getFilteredStudies")
     public ResponseEntity<Page<PostsListDto>> getFilteredStudies(

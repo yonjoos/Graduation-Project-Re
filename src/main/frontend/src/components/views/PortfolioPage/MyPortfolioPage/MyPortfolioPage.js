@@ -12,6 +12,7 @@ function MyPortfolioPage() {
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);    // 모달이 보이는지 안보이는지 설정하기 위한 애
 
     const [data, setData] = useState(null);
+    const [postData, setPostData] = useState([]);
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
         app: 0,
@@ -48,20 +49,7 @@ function MyPortfolioPage() {
 
     
 
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={data && existingPreferences[field]} // Assuming the data structure contains the preference values
-            style={{ cursor: 'default' }}
-        >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
-        </Radio.Group>
-    );
 
-    
 
     // 선호도 그래프 관련
     const renderPreferenceBar = (field) => {
@@ -120,6 +108,31 @@ function MyPortfolioPage() {
         
         return chunks;
     }
+
+
+    const onLoadPosts = () => {
+
+        
+            const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+                size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+                searchTerm: data.nickName // 검색어 키워드 문자열
+            });
+
+            request('GET', `/getUsersPosts?${queryParams}`)
+            .then((response) => {
+
+                setPostData(response.data);
+
+            })
+            .catch((error) => {
+
+                console.error("Error fetching posts:", error);
+
+            });
+        
+        
+
+    };
 
 
     // 포트폴리오 업로드 버튼 클릭 시 해당 엔드포인터로 이동
@@ -270,6 +283,41 @@ function MyPortfolioPage() {
                             </Card>
                         </Col>
                     </Row>
+                    <br></br>
+                    <Row justify="center">
+                        <Col span = {16}>
+                            <Card >
+                                <Row justify="space-between">
+                                    <Col span={8}>
+                                        Post
+                                    </Col>
+                                    <Col span={8} style={{ textAlign: 'right' }}>
+                                        <div onClick={()=>onLoadPosts()}>
+                                            <strong>more</strong>
+                                        </div>
+                                    </Col>
+
+                                </Row>
+                                
+                            </Card>
+                        </Col>
+                    </Row>
+                    {postData && postData.length > 0 ? (
+                        postData.map((post) => (
+                            <Row justify="center" key={post.id}>
+                            <Col span={16}>
+                                <Card title={post.title}>
+                                    {post.briefContent}
+                                </Card>
+                            </Col>
+                            </Row>
+                        ))
+                        ) : (
+                            <div>
+                                </div>
+                    )}
+
+
 
                     <br />
                     <br />

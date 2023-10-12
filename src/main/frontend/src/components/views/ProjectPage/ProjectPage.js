@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
+import { Row, Col, Button, Card, Pagination, Dropdown, Menu, Divider } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInProjectPage from './SearchInProjectPage';
 import { lastVisitedEndpoint } from '../../../_actions/actions'
@@ -136,39 +136,57 @@ function ProjectPage() {
         setCurrentPage(0); // 검색어가 변경되면 0페이지로 이동
     };
 
+    // 드롭다운 박스에서 정렬 옵션
+    const sortMenu = (
+        <Menu>
+            <Menu.Item key="latestPosts" onClick={() => handleSortOptionChange('latestPosts')}>
+                최신 등록순
+            </Menu.Item>
+            <Menu.Item key="nearDeadline" onClick={() => handleSortOptionChange('nearDeadline')}>
+                가까운 마감일 순
+            </Menu.Item>
+            <Menu.Item key="byViewCount" onClick={() => handleSortOptionChange('byViewCount')}>
+                조회수 순
+            </Menu.Item>
+            {/* <Menu.Item key="viewExpired" onClick={() => handleSortOptionChange('viewExpired')}>
+                마감 지난 게시물 보기
+            </Menu.Item> */}
+        </Menu>
+    );
+
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
             <div>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 10px 0', }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
+                    <Card key={index} style={{ margin: '0 0 0 0', padding: '1px', textAlign: 'left'}}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
 
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="center" align="middle">
+                            <Row gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px' }} justify="space-between" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={20}>
+                                <Col span={2} style={{ marginRight: '10px', marginLeft : '5px' , textAlign: 'left' }} align = "left">
+                                    <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
+                                </Col>
+                                <Col span = {16}>
                                     <Row>
-                                        <Col style={{ marginRight: '20px' }}>
-                                            <div >
-                                                <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
-                                            </div>
-                                        </Col>
                                         <Col>
-                                            <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                                                 <strong style={{ fontSize: '15px' }}>{item.title}</strong>
-                                            </div>
-                                            {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                            <div style={{ marginLeft: '3px' }}>
-                                                분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                            </div>
-                                            <hr></hr>
-                                            <div>
-                                                {item.briefContent}
                                             </div>
                                         </Col>
                                     </Row>
+                                    <Row>
+                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                    </Row>
+                                    <Divider></Divider>
+                                    <Row>
+                                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                        {item.briefContent}
+                                        </div>
+                                    </Row>
+
                                 </Col>
                                 <Col span={4} >
                                     <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
@@ -204,21 +222,6 @@ function ProjectPage() {
                 <Row>
                     {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}
                     <Col span={6}>
-
-                        {/* Sort buttons - 최신등록순, 마감일자 순 버튼*/}
-                        <Button
-                            type={sortOption === 'latestPosts' ? 'primary' : 'default'}
-                            onClick={() => handleSortOptionChange('latestPosts')}
-                            style={{ marginRight: '10px' }}
-                        >
-                            최신 등록순
-                        </Button>
-                        <Button
-                            type={sortOption === 'nearDeadline' ? 'primary' : 'default'}
-                            onClick={() => handleSortOptionChange('nearDeadline')}
-                        >
-                            가까운 마감일순
-                        </Button>
 
                     </Col>
                     <Col span={12} style={{ textAlign: 'center' }}>
@@ -262,20 +265,28 @@ function ProjectPage() {
                 </Row>
             </div>
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
-            <div style={{ textAlign: 'left', margin: "0 0" }}>
-                {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
-                    Portfolio Card
-                </Button>
-                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
-                    Project
-                </Button>
-                <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
-                    Study
-                </Button>
-                <hr></hr>
-
-            </div>
+            <Row>
+                <Col span={12} style={{ textAlign: 'left', margin: "0 0" }}>
+                    {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                    <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
+                        Portfolio Card
+                    </Button>
+                    <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
+                        Project
+                    </Button>
+                    <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
+                        Study
+                    </Button>
+                </Col>
+                <Col span={12} style={{ textAlign: 'right', margin: "0 0"}}>
+                    <Dropdown overlay={sortMenu} placement="bottomRight">
+                        <Button>
+                            정렬
+                        </Button>
+                    </Dropdown>
+                </Col>
+            </Row>
+            <hr/>
 
             {renderPosts(data)}
 

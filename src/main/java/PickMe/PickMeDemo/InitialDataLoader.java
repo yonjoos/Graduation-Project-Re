@@ -171,7 +171,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category1.validateFieldCount();
         categoryRepository.save(category1);
 
-        String initialEndDate2 = "2023-10-10";
+        String initialEndDate2 = "2023-12-10";
         DateTimeFormatter dateFormatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate2 = LocalDate.parse(initialEndDate2, dateFormatter2);
 
@@ -200,7 +200,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category2.validateFieldCount();
         categoryRepository.save(category2);
 
-        String initialEndDate3 = "2023-09-16";
+        String initialEndDate3 = "2023-11-16";
         DateTimeFormatter dateFormatter3 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate3 = LocalDate.parse(initialEndDate3, dateFormatter3);
 
@@ -253,7 +253,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(user3Portfolio);
 
-        String initialEndDate4 = "2023-09-12"; // 원하는 종료 날짜를 스트링으로 받음
+        String initialEndDate4 = "2023-12-12"; // 원하는 종료 날짜를 스트링으로 받음
         DateTimeFormatter dateFormatter4 = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // 날짜 포맷터를 사용하여 날짜 문자열을 'LocalDate' 개체로 변환
         LocalDate endDate4 = LocalDate.parse(initialEndDate4, dateFormatter4);
 
@@ -283,7 +283,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category4.validateFieldCount();
         categoryRepository.save(category4);
 
-        String initialEndDate5 = "2023-09-23";
+        String initialEndDate5 = "2023-11-23";
         DateTimeFormatter dateFormatter5 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate5 = LocalDate.parse(initialEndDate5, dateFormatter5);
 
@@ -313,7 +313,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category5);
 
 
-        String initialEndDate6 = "2023-09-20";
+        String initialEndDate6 = "2023-12-20";
         DateTimeFormatter dateFormatter6 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate6 = LocalDate.parse(initialEndDate6, dateFormatter6);
 
@@ -469,7 +469,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category8);
 
 
-        String initialEndDate9 = "2023-09-20";
+        String initialEndDate9 = "2023-11-20";
         DateTimeFormatter dateFormatter9 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate9 = LocalDate.parse(initialEndDate9, dateFormatter9);
 
@@ -522,7 +522,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(user5Portfolio);
 
-        String initialEndDate10 = "2023-09-20";
+        String initialEndDate10 = "2023-11-20";
         DateTimeFormatter dateFormatter10 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate10 = LocalDate.parse(initialEndDate10, dateFormatter10);
 
@@ -552,7 +552,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category10.validateFieldCount();
         categoryRepository.save(category10);
 
-        String initialEndDate11 = "2023-10-01";
+        String initialEndDate11 = "2023-12-01";
         DateTimeFormatter dateFormatter11 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate11 = LocalDate.parse(initialEndDate11, dateFormatter11);
 
@@ -582,7 +582,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category11);
 
 
-        String initialEndDate12 = "2023-10-05";
+        String initialEndDate12 = "2023-11-05";
         DateTimeFormatter dateFormatter12 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate12 = LocalDate.parse(initialEndDate12, dateFormatter12);
 
@@ -636,7 +636,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(user6Portfolio);
 
-        String initialEndDate13 = "2023-09-19";
+        String initialEndDate13 = "2023-12-19";
         DateTimeFormatter dateFormatter13 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate13 = LocalDate.parse(initialEndDate13, dateFormatter13);
 
@@ -666,7 +666,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category13.validateFieldCount();
         categoryRepository.save(category13);
 
-        String initialEndDate14 = "2023-10-30";
+        String initialEndDate14 = "2023-11-30";
         DateTimeFormatter dateFormatter14 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate14 = LocalDate.parse(initialEndDate14, dateFormatter14);
 
@@ -696,7 +696,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category14);
 
 
-        String initialEndDate15 = "2023-10-07";
+        String initialEndDate15 = "2023-12-07";
         DateTimeFormatter dateFormatter15 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate15 = LocalDate.parse(initialEndDate15, dateFormatter15);
 
@@ -750,7 +750,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(user7Portfolio);
 
-        String initialEndDate19 = "2023-09-15"; // 원하는 종료 날짜를 스트링으로 받음
+        String initialEndDate19 = "2023-11-15"; // 원하는 종료 날짜를 스트링으로 받음
         DateTimeFormatter dateFormatter19 = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // 날짜 포맷터를 사용하여 날짜 문자열을 'LocalDate' 개체로 변환
         LocalDate endDate19 = LocalDate.parse(initialEndDate19, dateFormatter19);
 
@@ -780,7 +780,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category19.validateFieldCount();
         categoryRepository.save(category19);
 
-        String initialEndDate20 = "2023-09-28";
+        String initialEndDate20 = "2023-12-28";
         DateTimeFormatter dateFormatter20 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate20 = LocalDate.parse(initialEndDate20, dateFormatter20);
 
@@ -810,7 +810,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category20);
 
 
-        String initialEndDate21 = "2023-09-20";
+        String initialEndDate21 = "2023-11-20";
         DateTimeFormatter dateFormatter21 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate21 = LocalDate.parse(initialEndDate21, dateFormatter21);
 
@@ -839,7 +839,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category21.validateFieldCount();
         categoryRepository.save(category21);
 
-        String initialEndDate22 = "2023-09-20";
+        String initialEndDate22 = "2023-12-20";
         DateTimeFormatter dateFormatter22 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate22 = LocalDate.parse(initialEndDate21, dateFormatter22);
 
@@ -923,7 +923,7 @@ public class InitialDataLoader implements CommandLineRunner {
         category16.validateFieldCount();
         categoryRepository.save(category16);
 
-        String initialEndDate17 = "2023-11-03";
+        String initialEndDate17 = "2023-12-03";
         DateTimeFormatter dateFormatter17 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate17 = LocalDate.parse(initialEndDate17, dateFormatter17);
 
@@ -953,7 +953,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category17);
 
 
-        String initialEndDate18 = "2023-10-02";
+        String initialEndDate18 = "2023-11-02";
         DateTimeFormatter dateFormatter18 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate18 = LocalDate.parse(initialEndDate18, dateFormatter18);
 
@@ -1007,7 +1007,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(user9Portfolio);
 
-        String initialEndDate23 = "2023-11-12";
+        String initialEndDate23 = "2023-12-12";
         DateTimeFormatter dateFormatter23 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate23 = LocalDate.parse(initialEndDate23, dateFormatter23);
 
@@ -1067,7 +1067,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category24);
 
 
-        String initialEndDate25 = "2023-10-16";
+        String initialEndDate25 = "2023-11-16";
         DateTimeFormatter dateFormatter25 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate25 = LocalDate.parse(initialEndDate25, dateFormatter25);
 
@@ -1097,7 +1097,7 @@ public class InitialDataLoader implements CommandLineRunner {
         categoryRepository.save(category25);
 
 
-        String initialEndDate26 = "2023-10-26";
+        String initialEndDate26 = "2023-12-12";
         DateTimeFormatter dateFormatter26 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate endDate26 = LocalDate.parse(initialEndDate26, dateFormatter26);
 

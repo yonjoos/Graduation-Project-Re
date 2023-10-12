@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -859,6 +860,7 @@ public class PostsService {
 
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
+        QViewCountPosts viewCountPosts = QViewCountPosts.viewCountPosts;
 
         //System.out.println("pageable.getOffset() = " + pageable.getOffset());
         //System.out.println("pageable.getPageSize() = " + pageable.getPageSize());
@@ -902,10 +904,19 @@ public class PostsService {
 //            -----> 따라서 순서에 상관 없이 게시물 내용이나 제목에 '오늘', '김밥', '먹음'이 모두 포함된 게시물만 필터링되는 조건 완성
         }
 
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // endDate가 현재 날짜 이후인 게시물을 필터링하기 위한 조건
+        BooleanExpression notExpiredCondition = posts.endDate.goe(currentDate);
+
+        // 다른 조건과 연결
+        BooleanExpression finalConditions = bannerConditions.and(notExpiredCondition);
+
         // '데이터'를 가져오는 쿼리
         JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
                 .join(posts.category, category).fetchJoin() // 게시물을 카테고리와 조인한 형태로 가져올거임
-                .where(bannerConditions,posts.postType.eq(PostType.valueOf("PROJECT")));
+                .where(finalConditions, posts.postType.eq(PostType.valueOf("PROJECT")));
                 // (where로 조건 추가 1.) 근데 조건은 이러하고 (밑에 있음)
                 // (where로 조건 추가 2.) 게시물의 TYPE이 프로젝트인 것만 가져옴
 
@@ -915,9 +926,16 @@ public class PostsService {
         }
 
         // 정렬 옵션에 따른 조건 추가
-        query=query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.lastModifiedDate.desc());
-                //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
-
+        if (sortOption.equals("nearDeadline")) {    // 가까운 마감일 순 정렬
+            query = query.orderBy(posts.endDate.asc());
+        } else if (sortOption.equals("byViewCount")) {  // 조회수 순 정렬
+            query = query
+                    .leftJoin(viewCountPosts).on(posts.id.eq(viewCountPosts.posts.id))
+                    .groupBy(posts, category)
+                    .orderBy(viewCountPosts.count().intValue().desc(), posts.lastModifiedDate.desc());
+        } else {    // 최신 등록 순 정렬
+            query = query.orderBy(posts.lastModifiedDate.desc());
+        }
 
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
@@ -992,7 +1010,6 @@ public class PostsService {
         }
 
         return new PageImpl<>(postsListDtoList, pageable, total); // 동적쿼리의 결과를 반환
-
     }
 
     // 프로젝트 게시물 조회에서 선택된 배너[app,web,ai,game] 에 따라 동적 쿼리의 where절에 들어갈 조건 생성하기
@@ -1058,6 +1075,7 @@ public class PostsService {
 
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
+        QViewCountPosts viewCountPosts = QViewCountPosts.viewCountPosts;
 
 //        System.out.println("pageable.getOffset() = " + pageable.getOffset());
 //        System.out.println("pageable.getPageSize() = " + pageable.getPageSize());
@@ -1094,10 +1112,19 @@ public class PostsService {
 //            -----> 따라서 순서에 상관 없이 게시물 내용이나 제목에 '오늘', '김밥', '먹음'이 모두 포함된 게시물만 필터링되는 조건 완성
         }
 
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // endDate가 현재 날짜 이후인 게시물을 필터링하기 위한 조건
+        BooleanExpression notExpiredCondition = posts.endDate.goe(currentDate);
+
+        // 다른 조건과 연결
+        BooleanExpression finalConditions = bannerConditions.and(notExpiredCondition);
+
         // 데이터를 가져오는 쿼리
         JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
                 .join(posts.category, category).fetchJoin() // 게시물을 카테고리와 조인한 형태로 가져올거임
-                .where(bannerConditions,posts.postType.eq(PostType.valueOf("STUDY")));
+                .where(finalConditions, posts.postType.eq(PostType.valueOf("STUDY")));
                 // (where로 조건 추가 1.) 근데 조건은 이러하고 (밑에 있음)
                 // (where로 조건 추가 2.) 게시물의 TYPE이 스터디인 것만 가져옴
 
@@ -1108,8 +1135,16 @@ public class PostsService {
         }
 
         // 정렬 옵션에 따른 조건 추가
-        query = query.orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.lastModifiedDate.desc());
-                //만약 소트 조건이 마감일순이면 마감일 순 정렬, 아니면 최신등록순 정렬
+        if (sortOption.equals("nearDeadline")) {    // 가까운 마감일 순 정렬
+            query = query.orderBy(posts.endDate.asc());
+        } else if (sortOption.equals("byViewCount")) {  // 조회수 순 정렬
+            query = query
+                    .leftJoin(viewCountPosts).on(posts.id.eq(viewCountPosts.posts.id))
+                    .groupBy(posts, category)
+                    .orderBy(viewCountPosts.count().intValue().desc(), posts.lastModifiedDate.desc());
+        } else {    // 최신 등록 순 정렬
+            query = query.orderBy(posts.lastModifiedDate.desc());
+        }
 
         // 카운트 쿼리 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)

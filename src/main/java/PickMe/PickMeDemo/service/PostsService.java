@@ -1211,10 +1211,7 @@ public class PostsService {
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
-<<<<<<< Updated upstream
                     .viewCount(viewCount)
-=======
->>>>>>> Stashed changes
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가

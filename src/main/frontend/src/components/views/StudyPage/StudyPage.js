@@ -164,7 +164,7 @@ function StudyPage() {
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="center" align="middle">
+                            <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="space-between" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
                                 <Col span={2} style={{ marginRight: '10px', marginLeft : '5px' , textAlign: 'left' }} align = "left">
                                     <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>

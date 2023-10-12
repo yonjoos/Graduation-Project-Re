@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Divider, Row, Col, Button, Card, Pagination } from 'antd';
+import { Divider, Row, Col, Button, Card, Pagination, Dropdown, Menu } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInStudyPage from './SearchInStudyPage';
 import { lastVisitedEndpoint } from '../../../_actions/actions'
@@ -136,6 +136,24 @@ function StudyPage() {
         setCurrentPage(0); // 검색어가 변경되면 0페이지로 이동
     };
 
+    // 드롭다운 박스에서 정렬 옵션
+    const sortMenu = (
+        <Menu>
+            <Menu.Item key="latestPosts" onClick={() => handleSortOptionChange('latestPosts')}>
+                최신 등록순
+            </Menu.Item>
+            <Menu.Item key="nearDeadline" onClick={() => handleSortOptionChange('nearDeadline')}>
+                가까운 마감일 순
+            </Menu.Item>
+            <Menu.Item key="byViewCount" onClick={() => handleSortOptionChange('byViewCount')}>
+                조회수 순
+            </Menu.Item>
+            {/* <Menu.Item key="viewExpired" onClick={() => handleSortOptionChange('viewExpired')}>
+                마감 지난 게시물 보기
+            </Menu.Item> */}
+        </Menu>
+    );
+
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
@@ -206,21 +224,6 @@ function StudyPage() {
                     {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}
                     <Col span={6}>
 
-                        {/* Sort buttons - 최신등록순, 마감일자 순 버튼*/}
-                        <Button
-                            type={sortOption === 'latestPosts' ? 'primary' : 'default'}
-                            onClick={() => handleSortOptionChange('latestPosts')}
-                            style={{ marginRight: '10px' }}
-                        >
-                            최신 등록순
-                        </Button>
-                        <Button
-                            type={sortOption === 'nearDeadline' ? 'primary' : 'default'}
-                            onClick={() => handleSortOptionChange('nearDeadline')}
-                        >
-                            가까운 마감일순
-                        </Button>
-
                     </Col>
                     <Col span={12} style={{ textAlign: 'center' }}>
                         <Button
@@ -263,20 +266,28 @@ function StudyPage() {
                 </Row>
             </div>
             {/* 각 페이지로 navigate하는 버튼들 추가 완료*/}
-            <div style={{ textAlign: 'left', margin: "0 0" }}>
-                {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
-                <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
-                    Portfolio Card
-                </Button>
-                <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
-                    Project
-                </Button>
-                <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
-                    Study
-                </Button>
-                <hr></hr>
-                
-            </div>
+            <Row>
+                <Col span={12} style={{ textAlign: 'left', margin: "0 0" }}>
+                    {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                    <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
+                        Portfolio Card
+                    </Button>
+                    <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
+                        Project
+                    </Button>
+                    <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
+                        Study
+                    </Button>
+                </Col>
+                <Col span={12} style={{ textAlign: 'right', margin: "0 0"}}>
+                    <Dropdown overlay={sortMenu} placement="bottomRight">
+                        <Button>
+                            정렬
+                        </Button>
+                    </Dropdown>
+                </Col>
+            </Row>
+            <hr/>
 
             {renderPosts(data)}
 

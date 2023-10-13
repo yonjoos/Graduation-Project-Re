@@ -21,7 +21,7 @@ function StudyPage() {
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const [searchTerm, setSearchTerm] = useState(""); //스터디 페이지 내의 검색어 키워드
     
-    const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
+    const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
     // 페이지가 새로 마운트 될 때마다 실행됨. 
     // 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 

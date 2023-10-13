@@ -974,7 +974,7 @@ public class PostsService {
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
                 .join(posts.category, category) // Join with category
-                .where(bannerConditions,posts.postType.eq(PostType.valueOf("PROJECT")));
+                .where(bannerConditions,posts.postType.eq(PostType.valueOf("PROJECT")), notExpiredCondition);
 
 //              .orderBy(posts.lastModifiedDate.desc()); 카운트 쿼리에선 정렬 필요없음
 
@@ -1183,7 +1183,7 @@ public class PostsService {
         // 카운트 쿼리 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
                 .join(posts.category, category) // Join with category
-                .where(bannerConditions,posts.postType.eq(PostType.valueOf("STUDY")));
+                .where(bannerConditions,posts.postType.eq(PostType.valueOf("STUDY")), notExpiredCondition);
 
         // .orderBy(posts.lastModifiedDate.desc()); 카운트 쿼리에선 정렬 필요없음
 

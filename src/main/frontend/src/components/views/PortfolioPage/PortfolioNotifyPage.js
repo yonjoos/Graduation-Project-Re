@@ -142,12 +142,12 @@ function PortfolioNotifyPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', marginLeft: '20%', marginBottom: '20px' }}>
+                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div>
-
+                        
                             <div style={{ fontSize: '35px' }}>
-
-
+                                
+                                
                                 <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
                                 {/* 
                                         == 변경사항 ==
@@ -156,9 +156,19 @@ function PortfolioNotifyPage() {
                                     
                                 */}
                             </div>
-                            <div style={{ fontSize: '12px' }}><strong>CONTACT :</strong> {data && data.email}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>CONTACT : </strong>
+                                    {data && data.email}
+                                </div>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>조회수 : </strong>
+                                    {data && data.viewCount}
+                                </div>
+                            </div>
                         </div>
                     </div>
+
 
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
                     <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '0.1px solid black' }} />

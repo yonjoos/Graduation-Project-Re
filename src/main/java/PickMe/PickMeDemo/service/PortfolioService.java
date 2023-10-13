@@ -441,7 +441,7 @@ public class PortfolioService {
 
         // '데이터'를 가져오는 쿼리
         JPAQuery<Portfolio> query = queryFactory.selectFrom(portfolios) // 게시물을 추출할 건데,
-                .join(portfolios.user, users).fetchJoin() // 게시물을 카테고리와 조인한 형태로 가져올거임
+                .join(portfolios.user, users) // 게시물을 카테고리와 조인한 형태로 가져올거임
                 .where(bannerConditions, portfolios.user.nickName.eq(users.nickName));
         // (where로 조건 추가 1.) 근데 조건은 이러하고 (밑에 있음)
         // (where로 조건 추가 2.) 게시물의 TYPE이 프로젝트인 것만 가져옴
@@ -451,7 +451,14 @@ public class PortfolioService {
             query = query.where(titleOrContentConditions);
         }
 
-        query = query.orderBy(portfolios.lastModifiedDate.desc());
+        if ("byViewCount".equals(sortOption)) {
+            query = query
+                    .leftJoin(viewCountPortfolio).on(portfolios.id.eq(viewCountPortfolio.portfolio.id)).fetchJoin() // 위쪽에서 fetchJoin()을 써버리면, 조회수 순 정렬을 할 때 오류가 발생한다!!
+                    .groupBy(portfolios, users)
+                    .orderBy(viewCountPortfolio.count().intValue().desc());
+        } else {
+            query = query.orderBy(portfolios.lastModifiedDate.desc());
+        }
 
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Portfolio> countQuery = queryFactory.selectFrom(portfolios)
@@ -496,11 +503,6 @@ public class PortfolioService {
                     .build();
 
             portfolioCardDtos.add(cardDto);     // 컬렉션에 추가
-        }
-
-        if ("byViewCount".equals(sortOption)) {
-            // 조회수를 기준으로 내림차순으로 정렬
-            portfolioCardDtos.sort(Comparator.comparing(PortfolioCardDto::getViewCount).reversed());
         }
 
         return new PageImpl<>(portfolioCardDtos, pageable, total); // 동적쿼리의 결과를 반환

@@ -3,14 +3,17 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Row, Col, Button, Card, Pagination, Divider, Menu, Dropdown } from 'antd';
 import { request } from '../../../hoc/request';
+import { lastVisitedEndpoint } from '../../../_actions/actions';
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInLandingPage from '../LandingPage/SearchInLandingPage';
+
 function SearchPortfolioListPage(onSearch) {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
-    const [searchTerm, setSearchTerm] = useState(useParams());
+    const [searchTerm, setSearchTerm] = useState(useParams()); // 현재 추적중인 검색어 값
     const currentSearchTerm = useParams(); // 이건 한번 유효한 검색이 완료된 후에는 일시적으로 고정된 값
 
     // 백엔드에서 받은 검색어 기반 결과 리스트(3개)를 정의. 처음에 이 페이지에 들어오면 빈 배열
@@ -33,6 +36,8 @@ function SearchPortfolioListPage(onSearch) {
         fetchFilteredSearchLists();
     }, [searchTerm]);
 
+    // http://localhost:3000/search/portfoliocard/query/검색어값 인 경우
+    // 검색어를 추출해서, 그 값을 기반으로 백엔드에 관련 포폴 카드를 가져오기
     useEffect(() => {
         console.log('현재 쿼리 스트링 키워드: ', currentSearchTerm.searchTerm);
         console.log('현재 선택된 배너 정보', selectedBanners);
@@ -40,7 +45,7 @@ function SearchPortfolioListPage(onSearch) {
     }, [currentSearchTerm.searchTerm, currentPage, selectedBanners, sortOption]);
 
 
-    // 백엔드에 입력된 검색어 기반으로, match되는 검색 결과물 가져오기
+    // 백엔드에 입력 완료된 검색어 기반으로, match되는 검색 결과물 가져오기
     const fetchSearchResultLists = async () => {
         try {
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
@@ -63,12 +68,14 @@ function SearchPortfolioListPage(onSearch) {
     }
 
     const onClickHandler = (nickName) => {
+
+        // 변경해야함
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
-        // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
-        // dispatch(lastVisitedEndpoint('/portfoliocard', '/portfoliocard', '/portfoliocard'));
-        // setLastVisitedEndpoint('/portfoliocard');
-        // setLastLastVisitedEndpoint('/portfoliocard');
-        // setLastLastLastVisitedEndpoint('/portfoliocard');
+        // 가장 마지막에 저장한 엔드포인트인 /search/portfoliocard/query/${currentSearchTerm.searchTerm}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /search/portfoliocard/query/${currentSearchTerm.searchTerm}로 설정
+        dispatch(lastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`, `/search/portfoliocard/query/${currentSearchTerm.searchTerm}`, `/search/portfoliocard/query/${currentSearchTerm.searchTerm}`));
+        setLastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`);
+        setLastLastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`);
+        setLastLastLastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`);
 
         // Error name : Actions must be plain objects. Instead, the actual type was: 'undefined'.
         // Solution : SetLastVisitedEndpoint is not a typical Redux action creator, cannot be stated in dispatch().
@@ -104,21 +111,22 @@ function SearchPortfolioListPage(onSearch) {
     // 드롭다운을 위한 코드
     const menu = (
         <Menu selectedKeys={[sortOption]}>
-            <Menu.Item key="latestPortfolio" onClick={() => setSortOption('latestPortfolio')}>
+            <Menu.Item key="latestPortfolio" onClick={() => handleSortOptionChange('latestPortfolio')}>
                 최신 등록 순
             </Menu.Item>
-            <Menu.Item key="byViewCount" onClick={() => setSortOption('byViewCount')}>
+            <Menu.Item key="byViewCount" onClick={() => handleSortOptionChange('byViewCount')}>
                 조회수 순
             </Menu.Item>
         </Menu>
     );
 
-    // 최신등록순, 마감일 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
+    // 최신등록순, 조회수 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
     const handleSortOptionChange = (option) => {
         setSortOption(option);
         setCurrentPage(0);
     };
 
+    // 포폴 카드 렌더링 관련
     const renderCards = (cards) => {
         if (!cards || cards.length === 0) {
             return <div>No data available</div>; // or any other appropriate message
@@ -308,7 +316,7 @@ function SearchPortfolioListPage(onSearch) {
             <div style={{ textAlign: 'left', margin: "0 0" }}>
                 <Row>
                     <Col span={18} style={{ textAlign: 'left' }}>
-                        {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
+                        {/** 현재 경로가 localhost:3000/search/portfoliocard이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                         <Button type={location.pathname.includes('/search/portfoliocard') ? 'primary' : 'default'} onClick={handleSearchPortfolioCard}>
                             Portfolio Card
                         </Button>

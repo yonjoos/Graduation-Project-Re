@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Row, Col, Button, Card, Pagination, Divider, Menu, Dropdown } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInLandingPage from '../LandingPage/SearchInLandingPage';
+import { lastVisitedEndpoint } from '../../../_actions/actions';
+import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 
 
 function SearchStudyListPage(onSearch) {
@@ -68,12 +70,12 @@ function SearchStudyListPage(onSearch) {
     // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
     const handleRowClick = (studyId) => {
 
-        // // /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
-        // // 가장 마지막에 저장한 엔드포인트인 /study로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study로 설정
-        // dispatch(lastVisitedEndpoint('/study', '/study', '/study'));    // 전역에 상태 저장을 위한 애.
-        // setLastVisitedEndpoint('/study');   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        // setLastLastVisitedEndpoint('/study');
-        // setLastLastLastVisitedEndpoint('/study');
+        // /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
+        // 가장 마지막에 저장한 엔드포인트인 /search/study/query/${currentSearchTerm.searchTerm}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /search/study/query/${currentSearchTerm.searchTerm}로 설정
+        dispatch(lastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`, `/search/study/query/${currentSearchTerm.searchTerm}`, `/search/study/query/${currentSearchTerm.searchTerm}`));    // 전역에 상태 저장을 위한 애.
+        setLastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        setLastLastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`);
+        setLastLastLastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`);
         navigate(`/study/detail/${studyId}`);
     }
 

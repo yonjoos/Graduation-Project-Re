@@ -134,6 +134,9 @@ function PortfolioPage() {
         else if(visitedEndEndEndpoint === '/') {
             navigate(visitedEndEndEndpoint);
         }
+        else if(visitedEndEndEndpoint.includes('search/portfoliocard/query')) {
+            navigate(visitedEndEndEndpoint);
+        }
         else {
             navigate(visitedEndpoint);
         }

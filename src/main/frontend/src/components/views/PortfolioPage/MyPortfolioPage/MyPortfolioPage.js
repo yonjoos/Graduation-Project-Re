@@ -21,6 +21,10 @@ function MyPortfolioPage() {
     });
 
 
+    /*
+    useEffect ################################################################################################################
+    useEffect ################################################################################################################
+    */
     // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {
         request('GET', '/getPortfolio', {})
@@ -51,6 +55,10 @@ function MyPortfolioPage() {
 
 
 
+    /*
+    Components ################################################################################################################
+    Components ################################################################################################################
+    */
     // 선호도 그래프 관련
     const renderPreferenceBar = (field) => {
         const preferenceValue = data && existingPreferences[field];
@@ -109,13 +117,39 @@ function MyPortfolioPage() {
         return chunks;
     }
 
+    const renderPosts = (posts) => {
 
+        return(
+            
+            posts.map((post) => (
+                <Row justify="center" key={post.id}>
+                <Col span={16}>
+                    <Card title={
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                            <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
+                      </div>
+                    }>
+                        {post.briefContent}
+                    </Card>
+                </Col>
+                </Row>
+            ))
+        )
+
+
+    };
+
+
+    /*
+    Handler ################################################################################################################
+    HAndler ################################################################################################################
+    */
     const onLoadPosts = () => {
 
         
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
                 size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-                searchTerm: data.nickName // 검색어 키워드 문자열
             });
 
             request('GET', `/getUsersPosts?${queryParams}`)
@@ -169,6 +203,12 @@ function MyPortfolioPage() {
         hideDeleteModal();
     };
 
+
+
+    /*
+    RETURN ################################################################################################################
+    RETURN ################################################################################################################
+    */
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
         <div>
@@ -292,7 +332,7 @@ function MyPortfolioPage() {
                                         Post
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
-                                        <div onClick={()=>onLoadPosts()}>
+                                        <div onClick={onLoadPosts}>
                                             <strong>more</strong>
                                         </div>
                                     </Col>
@@ -303,15 +343,7 @@ function MyPortfolioPage() {
                         </Col>
                     </Row>
                     {postData && postData.length > 0 ? (
-                        postData.map((post) => (
-                            <Row justify="center" key={post.id}>
-                            <Col span={16}>
-                                <Card title={post.title}>
-                                    {post.briefContent}
-                                </Card>
-                            </Col>
-                            </Row>
-                        ))
+                        renderPosts(postData)
                         ) : (
                             <div>
                                 </div>

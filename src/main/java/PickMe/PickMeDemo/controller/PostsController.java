@@ -291,10 +291,10 @@ public class PostsController {
     }
 
     @GetMapping("/getUsersPosts")
-    public ResponseEntity<List<PostsListDto>> getUsersPosts(Principal principal) {
+    public ResponseEntity<List<UsersPostsListDto>> getUsersPosts(Principal principal) {
         String email = principal.getName();
         String nickName = userService.findByEmail(email).getNickName();
-        List<PostsListDto> usersPosts = postsService.getUsersPosts(nickName);
+        List<UsersPostsListDto> usersPosts = postsService.getUsersPosts(nickName);
         return ResponseEntity.ok(usersPosts);
     }
 
@@ -317,6 +317,7 @@ public class PostsController {
 
         return ResponseEntity.ok(filteredStudies);
     }
+
 
 
 

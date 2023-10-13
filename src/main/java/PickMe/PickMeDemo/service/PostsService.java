@@ -854,7 +854,7 @@ public class PostsService {
 
 
     @Transactional(readOnly = true)
-    public List<PostsListDto> getUsersPosts(String nickName){
+    public List<UsersPostsListDto> getUsersPosts(String nickName){
         User user = userRepository.findByNickName(nickName).get();
         QPosts posts = QPosts.posts;
         JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
@@ -863,11 +863,12 @@ public class PostsService {
         List<Posts> usersPosts = query
                 .fetch();
 
-        List<PostsListDto> usersPostsDto = new ArrayList<>();
+        List<UsersPostsListDto> usersPostsDto = new ArrayList<>();
         for(Posts post : usersPosts){
             Category category = post.getCategory();
+            PostType postType = post.getPostType();
 
-            PostsListDto postsListDto = PostsListDto.builder()
+            UsersPostsListDto usersPostsListDto = UsersPostsListDto.builder()
                     .id(post.getId())
                     .nickName(user.getNickName())   // user = posts.getUser()
                     .title(post.getTitle())
@@ -879,9 +880,10 @@ public class PostsService {
                     .recruitmentCount(post.getRecruitmentCount())
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
+                    .postType(postType)
                     .build();
 
-            usersPostsDto.add(postsListDto);
+            usersPostsDto.add(usersPostsListDto);
 
         }
         return usersPostsDto;

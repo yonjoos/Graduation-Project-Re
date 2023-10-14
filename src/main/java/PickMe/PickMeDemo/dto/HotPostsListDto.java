@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FamousPostsListDto {
+public class HotPostsListDto {
 
     private Long id;
     private String postType;

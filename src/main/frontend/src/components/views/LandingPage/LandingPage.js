@@ -25,7 +25,7 @@ function LandingPage() {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
 
-    const [famousPost, setFamousPost] = useState([]);
+    const [hotPost, setHotPost] = useState([]);
     // 백엔드에서 받은 검색어 기반 결과 리스트(3개)를 정의. 처음에 이 페이지에 들어오면 빈 배열
     const [data, setData] = useState({
         projectSearchDtoList: [], // 프로젝트 제목 관련 최대 5개 가져옴
@@ -37,19 +37,19 @@ function LandingPage() {
 
     useEffect(() => {
         if ((isAuthenticated && userRole === 'ADMIN') || (isAuthenticated && userRole === 'USER')) {
-            getFamousPost();
+            getHotPost();
         }
     }, [isAuthenticated, userRole]);
 
-    const getFamousPost = async () => {
+    const getHotPost = async () => {
         try {
-            const response = await request('GET', '/getFamousPost');
+            const response = await request('GET', '/getHotPost');
 
             if (response) {
-                setFamousPost(response.data);
-                console.log("famous post : ", famousPost);
+                setHotPost(response.data);
+                console.log("hot post : ", hotPost);
             } else {
-                console.error("Error fetching data: getFamousPost response.data is undefined");
+                console.error("Error fetching data: getHotPost response.data is undefined");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -259,7 +259,7 @@ function LandingPage() {
                                 <br/>
                                 <br/>
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
-                                    {famousPost.map((item) => (
+                                    {hotPost.map((item) => (
                                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
                                                 style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
@@ -339,7 +339,7 @@ function LandingPage() {
                                 <br/>
                                 <br/>
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
-                                    {famousPost.map((item) => (
+                                    {hotPost.map((item) => (
                                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
                                                 style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 

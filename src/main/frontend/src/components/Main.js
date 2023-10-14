@@ -113,10 +113,6 @@ function Main() {
                              */
                         }
                         <Route
-                            path="/"
-                            element={Auth(LandingPage, null)}
-                        />
-                        <Route
                             path="/adminPage"
                             element={Auth(AdminPage, null, true)}
                         />
@@ -213,6 +209,10 @@ function Main() {
                 </div>
                 <div>
                     <Routes>
+                        <Route
+                            path="/"
+                            element={Auth(LandingPage, null)}
+                        />
                         <Route
                             path="/project/detail/:projectId"
                             element={Auth(DetailProjectPage, true)}

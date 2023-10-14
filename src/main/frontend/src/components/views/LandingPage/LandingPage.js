@@ -203,34 +203,8 @@ function LandingPage() {
                 // span : Col 구성 요소가 확장되어야 하는 열 수를 지정함.
                 // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
-                <Row gutter={[16, 16]}>
-                    <Col span={24}>
-                        <WelcomeContent />
-                    </Col>
-                    <Col span={8}>
-                        <PortfolioCard />
-                    </Col>
-                    <Col span={8}>
-                        <ProjectCard />
-                    </Col>
-                    <Col span={8}>
-                        <StudyCard />
-                    </Col>
-                </Row>
-            )}
-            {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
                 <div>
-                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
-                        <Row gutter={[16, 16]}>
-                            <Col span={24}>
-                                <SearchInLandingPage onSearch={handleSearch} />
-                            </Col>
-                            <br/>
-                            <br/>
-                            <br/>
-                        </Row>
-                    </div>
-                    <div style={{ backgroundColor: '#C0FFFF', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
+                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
                         <br/>
                         <Carousel autoplay className="my-background-color">
                             <Card className="my-background-color">
@@ -239,8 +213,41 @@ function LandingPage() {
                         </Carousel>
                         <br/>
                     </div>
+                    <br/>
+                    <br/>
+                    <div style={{ marginLeft: '15%', marginRight: '15%'}}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={8}>
+                                <PortfolioCard />
+                            </Col>
+                            <Col span={8}>
+                                <ProjectCard />
+                            </Col>
+                            <Col span={8}>
+                                <StudyCard />
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
+            )}
+            {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
+                <div>
+                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
+                        <br/>
+                        <Carousel autoplay className="my-background-color">
+                            <Card className="my-background-color">
+                                공지사항 또는 P!ckMe 홍보 카드
+                            </Card>
+                        </Carousel>
+                        <br/>
+                    </div>
+                    <br/>
+                    <br/>
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                <SearchInLandingPage onSearch={handleSearch} />
+                            </Col>
                             <Col span={24}>
                                 {renderSection('User', data.userSearchDtoList)}
                                 {renderSection('Project', data.projectSearchDtoList)}
@@ -305,17 +312,7 @@ function LandingPage() {
             )}
             {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
                 <div>
-                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
-                        <Row gutter={[16, 16]}>
-                            <Col span={24}>
-                                <SearchInLandingPage onSearch={handleSearch} />
-                            </Col>
-                            <br/>
-                            <br/>
-                            <br/>
-                        </Row>
-                    </div>
-                    <div style={{ backgroundColor: '#C0FFFF', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
+                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
                         <br/>
                         <Carousel autoplay className="my-background-color">
                             <Card className="my-background-color">
@@ -324,8 +321,13 @@ function LandingPage() {
                         </Carousel>
                         <br/>
                     </div>
+                    <br/>
+                    <br/>
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                <SearchInLandingPage onSearch={handleSearch} />
+                            </Col>
                             <Col span={24}>
                                 {renderSection('User', data.userSearchDtoList)}
                                 {renderSection('Project', data.projectSearchDtoList)}

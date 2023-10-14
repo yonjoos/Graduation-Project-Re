@@ -2697,5 +2697,81 @@ public class PostsService {
 
         return new PageImpl<>(scrapPostsDtosList, pageable, total); // 동적 쿼리의 결과를 반환
     }
+
+    public List<FamousPostsListDto> getFamousPosts() {
+
+        QPosts posts = QPosts.posts;
+        QCategory category = QCategory.category;
+        QViewCountPosts viewCountPosts = QViewCountPosts.viewCountPosts;
+
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // endDate가 현재 날짜 이후인 게시물을 필터링하기 위한 조건
+        BooleanExpression notExpiredCondition = posts.endDate.goe(currentDate);
+
+        // 데이터를 가져오는 쿼리
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
+                .join(posts.category, category).fetchJoin() // 게시물을 카테고리와 조인한 형태로 가져올거임
+                .where(notExpiredCondition)
+                .leftJoin(viewCountPosts).on(posts.id.eq(viewCountPosts.posts.id))
+                .groupBy(posts, category)
+                .orderBy(viewCountPosts.count().intValue().desc(), posts.lastModifiedDate.desc());
+
+        List<Posts> filteredPosts = query
+                .limit(12)
+                .fetch();
+
+        List<FamousPostsListDto> famousPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+
+        // 동적 쿼리의 결과를 순회하며 dto로 변환
+        for (Posts post : filteredPosts) {
+            Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
+
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
+
+            Integer applyCount;
+
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
+
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
+            FamousPostsListDto famousPostsListDto = FamousPostsListDto.builder()
+                    .id(post.getId())
+                    .postType(post.getPostType().toString())
+                    .title(post.getTitle())
+                    .web(postCategory.getWeb())     // category = posts.getCategory()
+                    .app(postCategory.getApp())
+                    .game(postCategory.getGame())
+                    .ai(postCategory.getAi())
+                    .counts(applyCount)
+                    .recruitmentCount(post.getRecruitmentCount())
+                    .endDate(post.getEndDate())
+                    .viewCount(viewCount)
+                    .build();
+
+            famousPostsListDtosList.add(famousPostsListDto);     // 컬렉션에 추가
+        }
+
+        return famousPostsListDtosList; // 동적쿼리의 결과를 반환
+    }
 }
 

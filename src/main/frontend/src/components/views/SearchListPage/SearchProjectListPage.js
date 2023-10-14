@@ -267,11 +267,11 @@ function SearchProjectListPage(onSearch) {
 
         const handleButtonClick = (title, id, name) => {
 
-            // // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
-            // dispatch(lastVisitedEndpoint('/', '/', '/'));
-            // setLastVisitedEndpoint('/');
-            // setLastLastVisitedEndpoint('/');
-            // setLastLastLastVisitedEndpoint('/');
+
+            dispatch(lastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`));    // 전역에 상태 저장을 위한 애.
+            setLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+            setLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
+            setLastLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'Project') {

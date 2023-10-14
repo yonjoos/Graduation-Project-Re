@@ -14,26 +14,125 @@ function ProjectPage() {
     const dispatch = useDispatch();
     const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
+    const [searchTerm, setSearchTerm] = useState(""); // 검색어 값 - 엔터나 클릭 시에만 변경
+    const [currentSearchTerm, setCurrentSearchTerm] = useState(""); // 추적하는 검색어 값, 타이핑 시마다 변경
+    const [relatedSearchTermEnable, setRelatedSearchTermEnable] = useState(true); // 연관 검색어 렌더링 필드 활성화 여부
+
+    // 실시간 검색어 기반으로 가져온 연관 검색어 목록
+    const [searchData, setSearchData] = useState({
+        projectSearchDtoList: [], // 프로젝트 제목 관련 최대 5개 가져옴
+    });
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
-    const [searchTerm, setSearchTerm] = useState(""); //프로젝트 페이지 내의 검색어 키워드
 
-    const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
+
+    const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 5개 단위로 하였음
+
+    // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
+    useEffect(() => {
+        console.log('현재 검색된 키워드: ', currentSearchTerm);
+        setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
+        fetchFilteredSearchLists();
+    }, [currentSearchTerm]);
 
     // 페이지가 새로 마운트 될 때마다 실행됨.
     // 현재의 selectedBanners상태(어떤 배너가 선택되어있는지)와 
     // 현재 사용자가 하이라이트한 페이지 번호 상태, 
-    // 최신일순/마감일순에 대한 정렬 옵션,
+    // 최신일순/마감일순, 조회순에 대한 정렬 옵션,
     // 검색어 키워드 문자열
     // 를 기반으로 백엔드에 동적쿼리 보냄
     useEffect(() => {
         console.log('현재 선택된 배너 정보', selectedBanners);
-        console.log('현재 검색된 키워드: ', searchTerm);
+        console.log('현재 검색 완료된 키워드: ', searchTerm);
         fetchFilteredPosts();
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
+
+    // 백엔드에 연관 검색어에 기반한 프로젝트 제목 값을 받아오기 위한 요청 보내기
+    const fetchFilteredSearchLists = async () => {
+        try {
+            // 만약 검색어가 있다면,
+            if (currentSearchTerm !== "") {
+                const queryParams = new URLSearchParams({
+                    searchTerm: currentSearchTerm, // 검색어 세팅
+                });
+
+                // 백엔드에서 데이터 받아오기
+                const response = await request('GET', `/getFilteredSearchLists?${queryParams}`);
+
+                // 데이터가 있다면 세팅, 없으면 각각 빈 배열로 세팅
+                if (response.data) {
+                    setSearchData({
+                        projectSearchDtoList: response.data.projectSearchDtoList || [],
+                    });
+                } else {
+                    // Handle the case where response.data.content is undefined
+                    console.error("Error fetching data: response.data.content is undefined");
+                }
+            } else {
+                // 검색어가 없다면, 빈 배열로 세팅
+                setSearchData({
+                    projectSearchDtoList: [],
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
+    const truncateString = (str, maxLength) => {
+        if (str.length > maxLength) {
+            return str.slice(0, maxLength) + '...';
+        }
+        return str;
+    };
+
+    // 백엔드에서 받아온 연관 검색어(프로젝트) 결과를 가지고 실제 렌더링 진행.
+    // 프로젝트를 각각 카드로 감싸고, 그 안엔 버튼으로 감쌈
+    const renderSection = (title, dataArray) => {
+
+        const handleButtonClick = (title, id, name) => {
+
+            dispatch(lastVisitedEndpoint('/project', '/project', '/project'));
+            setLastVisitedEndpoint('/project');
+            setLastLastVisitedEndpoint('/project');
+            setLastLastLastVisitedEndpoint('/project');;
+
+            // 각각에 대해 올바르게 라우팅 걸어주기
+            if (title === 'Project') {
+                navigate(`/project/detail/${id}`);
+            }
+        };
+
+        // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
+        if (dataArray && dataArray.length > 0) {
+            return (
+                <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                    <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
+                        <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                            <strong># {title}</strong>
+                        </div>
+                        <div style={{ margin: 0 }}>
+                            {dataArray.map(item => (
+                                <Button
+                                    key={item.id}
+                                    type="text"
+                                    style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0 }}
+                                    onClick={() => handleButtonClick(title, item.id, item.name)}
+                                >
+                                    {truncateString(item.name, 55)}
+                                </Button>
+                            ))}
+                        </div>
+                    </Card>
+                </Col>
+            );
+        }
+        return null;
+    };
 
     // 실제 백엔드에 동적 쿼리 보내는 곳
     const fetchFilteredPosts = async () => {
@@ -133,8 +232,16 @@ function ProjectPage() {
     // 검색어가 새로이 입력되거나 변경되면 여기서 감지해서 백엔드에 보낼 searchTerm을 세팅함
     const handleSearch = (value) => {
         setSearchTerm(value); // 검색어를 세팅
+        setRelatedSearchTermEnable(false); // 엔터나 클릭을 눌렀으므로 연관 검색어 렌더링 여부를 false로 설정
         setCurrentPage(0); // 검색어가 변경되면 0페이지로 이동
     };
+
+    // 타이핑 시마다 변경(검색어 관련)
+    const handleSearchTerm = (value) => {
+        setCurrentSearchTerm(value);
+
+    }
+
 
     // 드롭다운 박스에서 정렬 옵션
     const sortMenu = (
@@ -159,17 +266,17 @@ function ProjectPage() {
         return (
             <div>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 0 0', padding: '1px', textAlign: 'left'}}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
+                    <Card key={index} style={{ margin: '0 0 0 0', padding: '1px', textAlign: 'left' }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
 
                         {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                             <Row gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px' }} justify="space-between" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={2} style={{ marginRight: '10px', marginLeft : '5px' , textAlign: 'left' }} align = "left">
+                                <Col span={2} style={{ marginRight: '10px', marginLeft: '5px', textAlign: 'left' }} align="left">
                                     <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
                                 </Col>
-                                <Col span = {16}>
+                                <Col span={16}>
                                     <Row>
                                         <Col>
                                             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
@@ -183,7 +290,7 @@ function ProjectPage() {
                                     <Divider></Divider>
                                     <Row>
                                         <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                                        {item.briefContent}
+                                            {item.briefContent}
                                         </div>
                                     </Row>
 
@@ -210,14 +317,19 @@ function ProjectPage() {
 
     return (
         <div>
-            <SearchInProjectPage setSearchTerm={handleSearch} />
-            {/* 프로젝트 페이지에서 전용으로 사용할 하위 컴포넌트인 SearchInProjectPage에서 검색어 입력받고
-                검색 완료 후 돋보기 클릭이나 엔터하는 기능을 위임.
-                만약 엔터나 돋보기 버튼 클릭하면 하위 컴포넌트의 handleSearch 동작 후에 
-                다시 상위 컴포넌트인 ProjectPage의 handleSearch도 동작하면서 백엔드에 보낼 searchTerm을 세팅하고, 
-                0페이지로 보내는 것 같음
+            {/* 
+                검색어 입력 후 엔터/클릭 , 검색어 입력을 할 때마다 바뀌는 이벤트를 별도로 보냄
+                handleSearch: 엔터/클릭 관련
+                onChange: 동적 타이핑 관련 
             */}
+            <SearchInProjectPage onSearch={handleSearch} onChange={handleSearchTerm} />
 
+            {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}
+            <div style={{ margin: '20px 0' }}>
+                {(relatedSearchTermEnable ?
+                    (renderSection('Project', searchData.projectSearchDtoList)) : null)}
+
+            </div>
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Row>
                     {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}
@@ -278,7 +390,7 @@ function ProjectPage() {
                         Study
                     </Button>
                 </Col>
-                <Col span={12} style={{ textAlign: 'right', margin: "0 0"}}>
+                <Col span={12} style={{ textAlign: 'right', margin: "0 0" }}>
                     <Dropdown overlay={sortMenu} placement="bottomRight">
                         <Button>
                             정렬
@@ -286,7 +398,7 @@ function ProjectPage() {
                     </Dropdown>
                 </Col>
             </Row>
-            <hr/>
+            <hr />
 
             {renderPosts(data)}
 

@@ -28,7 +28,7 @@ function SearchStudyListPage(onSearch) {
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline / 조회수순: byViewCount
     const [studyData, setStudyData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 스터디 목록들 세팅
-    
+
     const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 5개 단위로 하였음
 
     // 키워드를 치는 순간 순간마다 백엔드에서 데이터 받아옴
@@ -151,16 +151,16 @@ function SearchStudyListPage(onSearch) {
                         <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
                             <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="space-between" align="middle">
                                 {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={2} style={{ marginRight: '10px', marginLeft : '5px' , textAlign: 'left' }} align = "left">
+                                <Col span={2} style={{ marginRight: '10px', marginLeft: '5px', textAlign: 'left' }} align="left">
                                     <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
                                 </Col>
-                                <Col span = {16}>
+                                <Col span={16}>
                                     <Row>
                                         <Col>
                                             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                                                 <strong style={{ fontSize: '15px' }}>{item.title}</strong>
                                             </div>
-                                           
+
                                         </Col>
                                     </Row>
                                     <Row>
@@ -169,7 +169,7 @@ function SearchStudyListPage(onSearch) {
                                     <Divider></Divider>
                                     <Row>
                                         <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                                        {item.briefContent}
+                                            {item.briefContent}
                                         </div>
                                     </Row>
 
@@ -182,7 +182,7 @@ function SearchStudyListPage(onSearch) {
                                         모집 마감일: {formatDate(item.endDate)}
                                     </div>
                                     <div className="shape-outline mb-1" style={{ marginRight: '30%' }}>
-                                            조회 수: {item.viewCount}
+                                        조회 수: {item.viewCount}
                                     </div>
                                 </Col>
                             </Row>
@@ -267,11 +267,11 @@ function SearchStudyListPage(onSearch) {
 
         const handleButtonClick = (title, id, name) => {
 
-            // // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
-            // dispatch(lastVisitedEndpoint('/', '/', '/'));
-            // setLastVisitedEndpoint('/');
-            // setLastLastVisitedEndpoint('/');
-            // setLastLastLastVisitedEndpoint('/');
+
+            dispatch(lastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`, `/search/study/query/${currentSearchTerm.searchTerm}`, `/search/study/query/${currentSearchTerm.searchTerm}`));    // 전역에 상태 저장을 위한 애.
+            setLastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+            setLastLastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`);
+            setLastLastLastVisitedEndpoint(`/search/study/query/${currentSearchTerm.searchTerm}`);
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'Project') {

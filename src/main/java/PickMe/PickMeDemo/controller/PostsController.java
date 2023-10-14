@@ -559,12 +559,12 @@ public class PostsController {
 
 
     // 랜딩페이지에 인기 게시물 리턴
-    @GetMapping("/getFamousPost")
-    public ResponseEntity<List<FamousPostsListDto>> getFamousPost() {
+    @GetMapping("/getHotPost")
+    public ResponseEntity<List<HotPostsListDto>> getHotPost() {
 
-        List<FamousPostsListDto> famousPostsList = postsService.getFamousPosts();
+        List<HotPostsListDto> hotPostsList = postsService.getHotPost();
 
-        return ResponseEntity.ok(famousPostsList);
+        return ResponseEntity.ok(hotPostsList);
     }
 }
 

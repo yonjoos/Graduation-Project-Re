@@ -2734,7 +2734,7 @@ public class PostsService {
         return new PageImpl<>(scrapPostsDtosList, pageable, total); // 동적 쿼리의 결과를 반환
     }
 
-    public List<FamousPostsListDto> getFamousPosts() {
+    public List<HotPostsListDto> getHotPost() {
 
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
@@ -2758,7 +2758,7 @@ public class PostsService {
                 .limit(12)
                 .fetch();
 
-        List<FamousPostsListDto> famousPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
+        List<HotPostsListDto> hotPostsListDtosList = new ArrayList<>(); // 빈 컬렉션 생성
 
         // 동적 쿼리의 결과를 순회하며 dto로 변환
         for (Posts post : filteredPosts) {
@@ -2790,7 +2790,7 @@ public class PostsService {
                 viewCount = 0;
             }
 
-            FamousPostsListDto famousPostsListDto = FamousPostsListDto.builder()
+            HotPostsListDto hotPostsListDto = HotPostsListDto.builder()
                     .id(post.getId())
                     .postType(post.getPostType().toString())
                     .title(post.getTitle())
@@ -2804,10 +2804,10 @@ public class PostsService {
                     .viewCount(viewCount)
                     .build();
 
-            famousPostsListDtosList.add(famousPostsListDto);     // 컬렉션에 추가
+            hotPostsListDtosList.add(hotPostsListDto);     // 컬렉션에 추가
         }
 
-        return famousPostsListDtosList; // 동적쿼리의 결과를 반환
+        return hotPostsListDtosList; // 동적쿼리의 결과를 반환
     }
 }
 

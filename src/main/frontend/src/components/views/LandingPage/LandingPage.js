@@ -25,7 +25,7 @@ function LandingPage() {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
 
-    const [famousPost, setFamousPost] = useState([]);
+    const [hotPost, setHotPost] = useState([]);
     // 백엔드에서 받은 검색어 기반 결과 리스트(3개)를 정의. 처음에 이 페이지에 들어오면 빈 배열
     const [data, setData] = useState({
         projectSearchDtoList: [], // 프로젝트 제목 관련 최대 5개 가져옴
@@ -37,19 +37,19 @@ function LandingPage() {
 
     useEffect(() => {
         if ((isAuthenticated && userRole === 'ADMIN') || (isAuthenticated && userRole === 'USER')) {
-            getFamousPost();
+            getHotPost();
         }
     }, [isAuthenticated, userRole]);
 
-    const getFamousPost = async () => {
+    const getHotPost = async () => {
         try {
-            const response = await request('GET', '/getFamousPost');
+            const response = await request('GET', '/getHotPost');
 
             if (response) {
-                setFamousPost(response.data);
-                console.log("famous post : ", famousPost);
+                setHotPost(response.data);
+                console.log("hot post : ", hotPost);
             } else {
-                console.error("Error fetching data: getFamousPost response.data is undefined");
+                console.error("Error fetching data: getHotPost response.data is undefined");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -203,34 +203,8 @@ function LandingPage() {
                 // span : Col 구성 요소가 확장되어야 하는 열 수를 지정함.
                 // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
-                <Row gutter={[16, 16]}>
-                    <Col span={24}>
-                        <WelcomeContent />
-                    </Col>
-                    <Col span={8}>
-                        <PortfolioCard />
-                    </Col>
-                    <Col span={8}>
-                        <ProjectCard />
-                    </Col>
-                    <Col span={8}>
-                        <StudyCard />
-                    </Col>
-                </Row>
-            )}
-            {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
                 <div>
-                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
-                        <Row gutter={[16, 16]}>
-                            <Col span={24}>
-                                <SearchInLandingPage onSearch={handleSearch} />
-                            </Col>
-                            <br/>
-                            <br/>
-                            <br/>
-                        </Row>
-                    </div>
-                    <div style={{ backgroundColor: '#C0FFFF', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
+                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
                         <br/>
                         <Carousel autoplay className="my-background-color">
                             <Card className="my-background-color">
@@ -239,8 +213,41 @@ function LandingPage() {
                         </Carousel>
                         <br/>
                     </div>
+                    <br/>
+                    <br/>
+                    <div style={{ marginLeft: '15%', marginRight: '15%'}}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={8}>
+                                <PortfolioCard />
+                            </Col>
+                            <Col span={8}>
+                                <ProjectCard />
+                            </Col>
+                            <Col span={8}>
+                                <StudyCard />
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
+            )}
+            {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
+                <div>
+                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
+                        <br/>
+                        <Carousel autoplay className="my-background-color">
+                            <Card className="my-background-color">
+                                공지사항 또는 P!ckMe 홍보 카드
+                            </Card>
+                        </Carousel>
+                        <br/>
+                    </div>
+                    <br/>
+                    <br/>
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                <SearchInLandingPage onSearch={handleSearch} />
+                            </Col>
                             <Col span={24}>
                                 {renderSection('User', data.userSearchDtoList)}
                                 {renderSection('Project', data.projectSearchDtoList)}
@@ -252,7 +259,7 @@ function LandingPage() {
                                 <br/>
                                 <br/>
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
-                                    {famousPost.map((item) => (
+                                    {hotPost.map((item) => (
                                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
                                                 style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
@@ -305,17 +312,7 @@ function LandingPage() {
             )}
             {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
                 <div>
-                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
-                        <Row gutter={[16, 16]}>
-                            <Col span={24}>
-                                <SearchInLandingPage onSearch={handleSearch} />
-                            </Col>
-                            <br/>
-                            <br/>
-                            <br/>
-                        </Row>
-                    </div>
-                    <div style={{ backgroundColor: '#C0FFFF', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
+                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
                         <br/>
                         <Carousel autoplay className="my-background-color">
                             <Card className="my-background-color">
@@ -324,8 +321,13 @@ function LandingPage() {
                         </Carousel>
                         <br/>
                     </div>
+                    <br/>
+                    <br/>
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                <SearchInLandingPage onSearch={handleSearch} />
+                            </Col>
                             <Col span={24}>
                                 {renderSection('User', data.userSearchDtoList)}
                                 {renderSection('Project', data.projectSearchDtoList)}
@@ -337,7 +339,7 @@ function LandingPage() {
                                 <br/>
                                 <br/>
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
-                                    {famousPost.map((item) => (
+                                    {hotPost.map((item) => (
                                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
                                                 style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 

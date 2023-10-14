@@ -32,6 +32,7 @@ public class SearchService {
     private final JPAQueryFactory queryFactory;
     private final UserApplyPostsRepository userApplyPostsRepository;
 
+    // 실시간 검색어를 받아서 검색 결과 리스트를 뿌려주는 모듈
     @Transactional(readOnly = true) //읽기 전용
     public SearchResultDto getFilteredSearchLists(String searchTerm) {
 
@@ -96,16 +97,21 @@ public class SearchService {
         JPAQuery<Posts> queryForStudy = queryFactory.selectFrom(posts);
         JPAQuery<User> queryForUser = queryFactory.selectFrom(user);
 
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+        // endDate가 현재 날짜 이후인 게시물을 필터링하기 위한 조건
+        BooleanExpression notExpiredCondition = posts.endDate.goe(currentDate);
+
         // 근데 검색어 관련 조건이 null이 아니라면, 검색어 관련 조건이 해당 쿼리문에 where절로 한번 더 엮임
         if (projectTitleConditions != null) {
-            queryForProject.where(projectTitleConditions)
+            queryForProject.where(projectTitleConditions, notExpiredCondition)
                     .orderBy(posts.endDate.asc()) // 마감일자가 가까운 순으로 정렬
                     .limit(5); // 상위 5개만 가져오기
         }
 
         // 근데 검색어 관련 조건이 null이 아니라면, 검색어 관련 조건이 해당 쿼리문에 where절로 한번 더 엮임
         if (studyTitleConditions != null) {
-            queryForStudy.where(studyTitleConditions)
+            queryForStudy.where(studyTitleConditions, notExpiredCondition)
                     .orderBy(posts.endDate.asc()) // 마감일자가 가까운 순으로 정렬
                     .limit(5); // 상위 5개만 가져오기
         }
@@ -169,6 +175,7 @@ public class SearchService {
     }
 
 
+    // 포트폴리오 검색 결과 데이터 뿌려주는 함수
     @Transactional(readOnly = true) //읽기 전용
     public Page<PortfolioCardDto> getPortfolioSearchList(List<String> selectedBanners, String sortOption, String searchTerm, Pageable pageable) {
 
@@ -206,7 +213,7 @@ public class SearchService {
 
         // '데이터'를 가져오는 쿼리
         JPAQuery<Portfolio> query = queryFactory.selectFrom(portfolios) // 게시물을 추출할 건데,
-                .join(portfolios.user, users).fetchJoin() // 게시물을 카테고리와 조인한 형태로 가져올거임
+                .join(portfolios.user, users) // 게시물을 카테고리와 조인한 형태로 가져올거임
                 .where(bannerConditions, portfolios.user.nickName.eq(users.nickName));
         // (where로 조건 추가 1.) 근데 조건은 이러하고 (밑에 있음)
         // (where로 조건 추가 2.) 게시물의 TYPE이 프로젝트인 것만 가져옴
@@ -216,7 +223,14 @@ public class SearchService {
             query = query.where(titleOrContentConditions);
         }
 
-        query = query.orderBy(portfolios.lastModifiedDate.desc());
+        if ("byViewCount".equals(sortOption)) {
+            query = query
+                    .leftJoin(viewCountPortfolio).on(portfolios.id.eq(viewCountPortfolio.portfolio.id)).fetchJoin() // 위쪽에서 fetchJoin()을 써버리면, 조회수 순 정렬을 할 때 오류가 발생한다!!
+                    .groupBy(portfolios, users)
+                    .orderBy(viewCountPortfolio.count().intValue().desc());
+        } else {
+            query = query.orderBy(portfolios.lastModifiedDate.desc());
+        }
 
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Portfolio> countQuery = queryFactory.selectFrom(portfolios)
@@ -263,16 +277,13 @@ public class SearchService {
             portfolioCardDtos.add(cardDto);     // 컬렉션에 추가
         }
 
-        if ("byViewCount".equals(sortOption)) {
-            // 조회수를 기준으로 내림차순으로 정렬
-            portfolioCardDtos.sort(Comparator.comparing(PortfolioCardDto::getViewCount).reversed());
-        }
 
         return new PageImpl<>(portfolioCardDtos, pageable, total); // 동적쿼리의 결과를 반환
 
     }
 
 
+    // 포트폴리오 검색 결과 창에서 사용할 배너 상태 조건 함수
     private BooleanExpression buildBannerConditions(QPortfolio portfolio, List<String> selectedBanners) {
         BooleanExpression bannerConditions = null;
 
@@ -315,16 +326,13 @@ public class SearchService {
     }
 
 
+    // 포트폴리오 검색 결과 데이터 뿌려주는 함수
     @Transactional(readOnly = true) //읽기 전용
     public Page<PostsListDto> getProjectSearchList(List<String> selectedBanners, String sortOption, String searchTerm, Pageable pageable) {
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
         QViewCountPosts viewCountPosts = QViewCountPosts.viewCountPosts;
 
-        //System.out.println("pageable.getOffset() = " + pageable.getOffset());
-        //System.out.println("pageable.getPageSize() = " + pageable.getPageSize());
-        //System.out.println("searchTerm = " + searchTerm);
-        //System.out.println("searchTerm = " + searchTerm.getClass());
 
         // buildBannerConditionsInProjects 메서드를 사용하여 선택한 배너를 기반으로 BooleanExpression을 구성
         BooleanExpression bannerConditions = buildBannerConditionsInProjects(category, selectedBanners);
@@ -332,12 +340,6 @@ public class SearchService {
         // 검색어 기반으로 필터링할 때 쓰는 BooleanExpression 조건
         BooleanExpression titleOrContentConditions = null;
 
-//        아래 주석은 공백 기호 and조건 없이 그냥 단순하게 찾는 기법
-//        if (!searchTerm.isEmpty()) {
-//            String lowerSearchTerm = searchTerm.toLowerCase();
-//            titleOrContentConditions = posts.title.lower().contains(lowerSearchTerm )
-//                    .or(posts.content.lower().contains(lowerSearchTerm));
-//        }
 
 //      검색어 문자열을 공백 기호 기준으로 다 split해서 배열로 만들고, 각 배열 요소에 담긴 키워드 조각들을 and한 결과가 게시물에 있으면 해당 게시물이 추출됨
         if (!searchTerm.isEmpty()) { // 만약 문자열이 공백이 아니라면
@@ -399,7 +401,7 @@ public class SearchService {
         // '카운트 쿼리' 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
                 .join(posts.category, category) // Join with category
-                .where(bannerConditions,posts.postType.eq(PostType.valueOf("PROJECT")));
+                .where(bannerConditions,posts.postType.eq(PostType.valueOf("PROJECT")), notExpiredCondition);
 
 //              .orderBy(posts.lastModifiedDate.desc()); 카운트 쿼리에선 정렬 필요없음
 
@@ -528,16 +530,13 @@ public class SearchService {
         return condition.and(bannerExpression);
     }
 
+    // 스터디 검색 결과 데이터 뿌려주는 함수
     @Transactional(readOnly = true) //읽기 전용
     public Page<PostsListDto> getStudySearchList(List<String> selectedBanners, String sortOption, String searchTerm, Pageable pageable) {
         QPosts posts = QPosts.posts;
         QCategory category = QCategory.category;
         QViewCountPosts viewCountPosts = QViewCountPosts.viewCountPosts;
 
-//        System.out.println("pageable.getOffset() = " + pageable.getOffset());
-//        System.out.println("pageable.getPageSize() = " + pageable.getPageSize());
-//        System.out.println("searchTerm = " + searchTerm);
-//        System.out.println("searchTerm = " + searchTerm.getClass());
 
         // buildBannerConditionsInStudies 메서드를 사용하여 선택한 배너를 기반으로 BooleanExpression을 구성
         BooleanExpression bannerConditions = buildBannerConditionsInStudies(category, selectedBanners);
@@ -606,7 +605,7 @@ public class SearchService {
         // 카운트 쿼리 별도로 보냄 (리팩토링 필요 예정 - 성능 최적화 위해)
         JPQLQuery<Posts> countQuery = queryFactory.selectFrom(posts)
                 .join(posts.category, category) // Join with category
-                .where(bannerConditions,posts.postType.eq(PostType.valueOf("STUDY")));
+                .where(bannerConditions,posts.postType.eq(PostType.valueOf("STUDY")), notExpiredCondition);
 
         // .orderBy(posts.lastModifiedDate.desc()); 카운트 쿼리에선 정렬 필요없음
 

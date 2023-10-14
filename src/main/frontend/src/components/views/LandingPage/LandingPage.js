@@ -11,6 +11,7 @@ import SearchInLandingPage from './SearchInLandingPage';
 import { request } from '../../../hoc/request';
 import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import { lastVisitedEndpoint } from '../../../_actions/actions';
+import './LandingPage.css';
 
 function LandingPage() {
     // Use useSelector to access isAuthenticated state from Redux store
@@ -218,120 +219,174 @@ function LandingPage() {
                 </Row>
             )}
             {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
-                <Row gutter={[16, 16]}>
-                    <Col span={24}>
-                        <SearchInLandingPage onSearch={handleSearch} />
-                    </Col>
-                    <Col span={24}>
-                        {renderSection('User', data.userSearchDtoList)}
-                        {renderSection('Project', data.projectSearchDtoList)}
-                        {renderSection('Study', data.studySearchDtoList)}
-                    </Col>
-                    <Col span={24}>
-                        <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1%' }}>
-                            {famousPost.map((item) => (
-                                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
-                                        style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <div>
-                                                {truncateString(item.title, 15)}
-                                            </div>
-                                            <div>
-                                                {item.postType}
-                                            </div>
-                                        </div>
-                                        {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                        <br/>
-                                        <div className="shape-outline mb-1">
-                                            인원 | {item.counts} / {item.recruitmentCount}
-                                        </div>
-                                        <div>
-                                            마감일 | {formatDate(item.endDate)}
-                                        </div>
-                                        <div className="shape-outline mb-1">
-                                            👀 조회수 {item.viewCount}
-                                        </div>
-                                    </Card>
-                                </div>
-                            ))}
+                <div>
+                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                <SearchInLandingPage onSearch={handleSearch} />
+                            </Col>
+                            <br/>
+                            <br/>
+                            <br/>
+                        </Row>
+                    </div>
+                    <div style={{ backgroundColor: '#C0FFFF', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
+                        <br/>
+                        <Carousel autoplay className="my-background-color">
+                            <Card className="my-background-color">
+                                공지사항 또는 P!ckMe 홍보 카드
+                            </Card>
                         </Carousel>
-                    </Col>
-                    <Col xs={24} sm={8}>
-                        <PortfolioCard />
-                    </Col>
-                    <Col xs={24} sm={8}>
-                        <ProjectCard />
-                    </Col>
-                    <Col xs={24} sm={8}>
-                        <StudyCard />
-                    </Col>
-                </Row>
+                        <br/>
+                    </div>
+                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                {renderSection('User', data.userSearchDtoList)}
+                                {renderSection('Project', data.projectSearchDtoList)}
+                                {renderSection('Study', data.studySearchDtoList)}
+                            </Col>
+                            <Col span={24}>
+                                <br/>
+                                <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
+                                <br/>
+                                <br/>
+                                <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
+                                    {famousPost.map((item) => (
+                                        <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
+                                                style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
+                                                        border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div>
+                                                        {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                                    </div>
+                                                    <div>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <b>{truncateString(item.title, 15)}</b>
+                                                <br/>
+                                                <br/>
+                                                <div>
+                                                    마감일 | {formatDate(item.endDate)}
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div className="shape-outline mb-1">
+                                                        인원 | {item.counts} / {item.recruitmentCount}
+                                                    </div>
+                                                    <div className="shape-outline mb-1">
+                                                        👀 조회수 {item.viewCount}
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        </div>
+                                    ))}
+                                </Carousel>
+                                <br/>
+                                <br/>
+                            </Col>
+                            <Col span={24}>
+                                <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
+                                <br/>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                                <PortfolioCard />
+                            </Col>
+                            <Col xs={24} sm={8}>
+                                <ProjectCard />
+                            </Col>
+                            <Col xs={24} sm={8}>
+                                <StudyCard />
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
             )}
             {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
-                <Row gutter={[16, 16]}>
-                    <Col span={24}>
-                        <SearchInLandingPage onSearch={handleSearch} />
-                    </Col>
-                    <Col span={24}>
-                        {renderSection('User', data.userSearchDtoList)}
-                        {renderSection('Project', data.projectSearchDtoList)}
-                        {renderSection('Study', data.studySearchDtoList)}
-                    </Col>
-                    <Col span={24}>
+                <div>
+                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                <SearchInLandingPage onSearch={handleSearch} />
+                            </Col>
+                            <br/>
+                            <br/>
+                            <br/>
+                        </Row>
+                    </div>
+                    <div style={{ backgroundColor: '#C0FFFF', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
                         <br/>
-                        <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
-                        <br/>
-                        <br/>
-                        <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
-                            {famousPost.map((item) => (
-                                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
-                                        style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
-                                                border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <div>
-                                                {item.postType}
-                                            </div>
-                                            <div>
-                                                {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                            </div>
-                                        </div>
-                                        <b>{truncateString(item.title, 15)}</b>
-                                        <br/>
-                                        <br/>
-                                        <div>
-                                            마감일 {formatDate(item.endDate)}
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <div className="shape-outline mb-1">
-                                                인원 {item.counts} / {item.recruitmentCount}
-                                            </div>
-                                            <div className="shape-outline mb-1">
-                                                👀 조회수 {item.viewCount}
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </div>
-                            ))}
+                        <Carousel autoplay className="my-background-color">
+                            <Card className="my-background-color">
+                                공지사항 또는 P!ckMe 홍보 카드
+                            </Card>
                         </Carousel>
                         <br/>
-                        <br/>
-                    </Col>
-                    <Col span={24}>
-                        <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
-                        <br/>
-                    </Col>
-                    <Col xs={24} sm={8}>
-                        <PortfolioCard />
-                    </Col>
-                    <Col xs={24} sm={8}>
-                        <ProjectCard />
-                    </Col>
-                    <Col xs={24} sm={8}>
-                        <StudyCard />
-                    </Col>
-                </Row>
+                    </div>
+                    <div style={{ marginLeft: '15%', marginRight: '15%' }}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={24}>
+                                {renderSection('User', data.userSearchDtoList)}
+                                {renderSection('Project', data.projectSearchDtoList)}
+                                {renderSection('Study', data.studySearchDtoList)}
+                            </Col>
+                            <Col span={24}>
+                                <br/>
+                                <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
+                                <br/>
+                                <br/>
+                                <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
+                                    {famousPost.map((item) => (
+                                        <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
+                                                style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
+                                                        border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div>
+                                                        {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                                    </div>
+                                                    <div>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <b>{truncateString(item.title, 15)}</b>
+                                                <br/>
+                                                <br/>
+                                                <div>
+                                                    마감일 | {formatDate(item.endDate)}
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div className="shape-outline mb-1">
+                                                        인원 | {item.counts} / {item.recruitmentCount}
+                                                    </div>
+                                                    <div className="shape-outline mb-1">
+                                                        👀 조회수 {item.viewCount}
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        </div>
+                                    ))}
+                                </Carousel>
+                                <br/>
+                                <br/>
+                            </Col>
+                            <Col span={24}>
+                                <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
+                                <br/>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                                <PortfolioCard />
+                            </Col>
+                            <Col xs={24} sm={8}>
+                                <ProjectCard />
+                            </Col>
+                            <Col xs={24} sm={8}>
+                                <StudyCard />
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
             )}
         </div>
     );

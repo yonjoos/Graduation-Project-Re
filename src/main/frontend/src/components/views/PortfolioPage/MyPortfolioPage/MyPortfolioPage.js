@@ -13,12 +13,14 @@ function MyPortfolioPage() {
 
     const [data, setData] = useState(null);
     const [postData, setPostData] = useState([]);
+    const [loadPosts, setloadPosts] = useState("more");
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
         app: 0,
         game: 0,
         ai: 0
     });
+    
 
 
     /*
@@ -119,23 +121,38 @@ function MyPortfolioPage() {
 
     const renderPosts = (posts) => {
 
-        return(
-            
-            posts.map((post) => (
-                <Row justify="center" key={post.id}>
-                <Col span={16}>
-                    <Card title={
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ fontWeight: 'bold' }}>{post.title}</div>
-                            <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
-                      </div>
-                    }>
-                        {post.briefContent}
-                    </Card>
-                </Col>
-                </Row>
-            ))
-        )
+        if(loadPosts == "fold"){
+            return(
+
+                posts.map((post) => (
+                    <Row justify="center" key={post.id}>
+                    <Col span={16}>
+                        <Card 
+                        onClick={() => onClickPosts(post.id)}
+                        style = {{height:'150px'}}
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
+                            </div>
+                        }>
+                            <div>
+                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
+                            </div>
+                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
+                                {post.briefContent}
+                            </div>
+                        </Card>
+                    </Col>
+                    </Row>
+                ))
+            )
+        }
+        else{
+            return(
+                <div></div>
+            )
+        }
 
 
     };
@@ -147,6 +164,7 @@ function MyPortfolioPage() {
     */
     const onLoadPosts = () => {
 
+        if(loadPosts == "more"){
         
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
                 size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
@@ -156,6 +174,7 @@ function MyPortfolioPage() {
             .then((response) => {
 
                 setPostData(response.data);
+                setloadPosts("fold");
 
             })
             .catch((error) => {
@@ -163,10 +182,18 @@ function MyPortfolioPage() {
                 console.error("Error fetching posts:", error);
 
             });
-        
-        
+        }
+        else if(loadPosts == "fold"){
+            setloadPosts("more");
+        }
 
     };
+
+    const onClickPosts = (id) => {
+
+        navigate(`/project/detail/${id}`);
+
+    }
 
 
     // 포트폴리오 업로드 버튼 클릭 시 해당 엔드포인터로 이동
@@ -333,20 +360,18 @@ function MyPortfolioPage() {
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>
-                                            <strong>more</strong>
+                                            <strong>{loadPosts}</strong>
                                         </div>
                                     </Col>
-
                                 </Row>
-                                
                             </Card>
                         </Col>
                     </Row>
                     {postData && postData.length > 0 ? (
                         renderPosts(postData)
                         ) : (
-                            <div>
-                                </div>
+                            <div></div>
+
                     )}
 
 

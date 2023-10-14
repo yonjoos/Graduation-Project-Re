@@ -9,34 +9,38 @@ import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisi
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
 
 
-{/* postController - getFilteredPosts 쿼리 참고하기 */ }
-
-
 function PortfolioCardPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const [searchTerm, setSearchTerm] = useState(""); // 검색어 값 -  엔터나 클릭 시에만 변경
+    const [currentSearchTerm, setCurrentSearchTerm] = useState(""); // 추적하는 검색어 값, 타이핑 시마다 변경
+    const [relatedSearchTermEnable, setRelatedSearchTermEnable] = useState(true); // 연관 검색어 렌더링 필드 활성화 여부
 
-    const [data, setData] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
+    // 실시간 검색어 기반으로 가져온 연관 검색어 목록
+    const [searchData, setSearchData] = useState({
+        userSearchDtoList: [], //유저 이름 관련 최대 5개 가져옴
+    });
+    const [data, setData] = useState([]); // 백엔드에서 가져온 관련 포트폴리오 자료 값
     const [currentPage, setCurrentPage] = useState(0); // Java 및 Spring Boot를 포함한 페이징은 일반적으로 0부터 시작하므로 처음 이 페이지가 세팅될 떄는 0페이지(사실상 1페이지)로 삼음
     const [totalPages, setTotalPages] = useState(0); // 동적 쿼리를 날렸을 때 백엔드에서 주는 현재 상태에서의 total 페이지 수 세팅을 위함
+    const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [sortOption, setSortOption] = useState('latestPortfolio'); // 최신 등록 순 기본으로 선택
     const [reload, setReload] = useState(0);
 
-
-    // const page = 0;
     const pageSize = 9;
 
-    // USE EFFECT #########################################################################################
-    // USE EFFECT #########################################################################################
-
-
+    // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
+    useEffect(() => {
+        console.log('현재 검색된 키워드: ', currentSearchTerm);
+        setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
+        fetchFilteredSearchLists();
+    }, [currentSearchTerm]);
 
     // <Button> PortfolioCard 다시 눌렀을 때 실행
     // Handler : handleReload() 에 의해 호출됨
+
     useEffect(() => {
         setCurrentPage(0);
         setTotalPages(0);
@@ -53,19 +57,99 @@ function PortfolioCardPage() {
     // 검색 조건이 바뀔 때 실행
     // Handler : toggleBanner / handleSearch, toggleBanner, Pagination / handleSearch
     useEffect(() => {
+
         console.log('현재 선택된 배너 정보', selectedBanners);
-        console.log('현재 검색된 키워드: ', searchTerm);
+        console.log('현재 검색 완료된 키워드: ', searchTerm);
         fetchUsers();
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
 
+    // 백엔드에 연관 검색어에 기반한 닉네임 값을 받아오기 위한 요청 보내기
+    const fetchFilteredSearchLists = async () => {
+        try {
+            // 만약 검색어가 있다면,
+            if (currentSearchTerm !== "") {
+                const queryParams = new URLSearchParams({
+                    searchTerm: currentSearchTerm, // 검색어 세팅
+                });
+
+                // 백엔드에서 데이터 받아오기
+                const response = await request('GET', `/getFilteredSearchLists?${queryParams}`);
+
+                // 데이터가 있다면 세팅, 없으면 각각 빈 배열로 세팅
+                if (response.data) {
+                    setSearchData({
+                        userSearchDtoList: response.data.userSearchDtoList || [],
+                    });
+                } else {
+                    // Handle the case where response.data.content is undefined
+                    console.error("Error fetching data: response.data.content is undefined");
+                }
+            } else {
+                // 검색어가 없다면, 빈 배열로 세팅
+                setSearchData({
+                    userSearchDtoList: [],
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
+    const truncateString = (str, maxLength) => {
+        if (str.length > maxLength) {
+            return str.slice(0, maxLength) + '...';
+        }
+        return str;
+    };
+
+    // 백엔드에서 받아온 연관 검색어(닉네임) 결과를 가지고 실제 렌더링 진행.
+    // 유저를 각각 카드로 감싸고, 그 안엔 버튼으로 감쌈
+    const renderSection = (title, dataArray) => {
+
+        const handleButtonClick = (title, id, name) => {
+
+            dispatch(lastVisitedEndpoint('/portfoliocard', '/portfoliocard', '/portfoliocard'));
+            setLastVisitedEndpoint('/portfoliocard');
+            setLastLastVisitedEndpoint('/portfoliocard');
+            setLastLastLastVisitedEndpoint('/portfoliocard');
+
+            // 각각에 대해 올바르게 라우팅 걸어주기
+            if (title === 'User') {
+                navigate(`/portfolio/${name}`);
+            }
+        };
+
+        // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
+        if (dataArray && dataArray.length > 0) {
+            return (
+                <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                    <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
+                        <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                            <strong># {title}</strong>
+                        </div>
+                        <div style={{ margin: 0 }}>
+                            {dataArray.map(item => (
+                                <Button
+                                    key={item.id}
+                                    type="text"
+                                    style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0 }}
+                                    onClick={() => handleButtonClick(title, item.id, item.name)}
+                                >
+                                    {truncateString(item.name, 55)}
+                                </Button>
+                            ))}
+                        </div>
+                    </Card>
+                </Col>
+            );
+        }
+        return null;
+    };
 
 
-
-    // REQUEST ###########################################################################################
-    // REQUEST ###########################################################################################
-
-
+    // 백엔드에서 받아온 포트폴리오 정보를 카드로 만들어서 뿌려줌
     const fetchUsers = async () => {
 
         try {
@@ -86,8 +170,6 @@ function PortfolioCardPage() {
     };
 
 
-    // HANDLER FUNCTIONS ###########################################################################################################
-    // HANDLER FUNCTIONS ###########################################################################################################
 
     // 포트폴리오 카드 클릭 핸들러, 해당 유저의 포트폴리오로 이동
     const onClickHandler = (nickName) => {
@@ -104,11 +186,18 @@ function PortfolioCardPage() {
     }
 
 
-    // for Searching component
+    // 엔터나 클릭 시에만 변경됨(검색어 관련)
     const handleSearch = (value) => {
         setSearchTerm(value); // 검색어를 세팅
+        setRelatedSearchTermEnable(false); // 엔터나 클릭을 눌렀으므로 연관 검색어 렌더링 여부를 false로 설정
         setCurrentPage(0); // 검색어가 바뀌면, 강제로 1페이지로 이동시킴
     };
+
+    // 타이핑 시마다 변경(검색어 관련)
+    const handleSearchTerm = (value) => {
+        setCurrentSearchTerm(value);
+
+    }
 
 
     // <Button> Project의 핸들러, ProjectPage로 이동
@@ -161,7 +250,7 @@ function PortfolioCardPage() {
                 조회수 순
             </Menu.Item>
         </Menu>
-    );      
+    );
 
 
     // COMPONENTS ###############################################
@@ -181,11 +270,11 @@ function PortfolioCardPage() {
                             <Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
                                 {/* style = {{cursor: 'pointer'}} */}
                                 <b>Field Of Interests</b>
-                                <br/>
+                                <br />
                                 {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
                                 <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                 <b>Brief Introduction</b>
-                                <br/>
+                                <br />
                                 {item.shortIntroduce}
                                 <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                 <b>조회 수 : </b>
@@ -199,13 +288,21 @@ function PortfolioCardPage() {
     }
 
 
-
-    // RETURN ####################################################################################
-    // RETURN ####################################################################################
     return (
         <div>
+            {/* 
+                검색어 입력 후 엔터/클릭 , 검색어 입력을 할 때마다 바뀌는 이벤트를 별도로 보냄
+                handleSearch: 엔터/클릭 관련
+                onChange: 동적 타이핑 관련 
+            */}
+            <SearchInPortfolioCardPage onSearch={handleSearch} onChange={handleSearchTerm} />
 
-            <SearchInPortfolioCardPage setSearchTerm={handleSearch} />
+            {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}
+            <div style={{ margin: '20px 0' }}>
+                {(relatedSearchTermEnable ?
+                    (renderSection('User', searchData.userSearchDtoList)) : null)}
+
+            </div>
 
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Row style={{ display: 'flex', justifyContent: 'center' }}>
@@ -261,7 +358,7 @@ function PortfolioCardPage() {
                         </Dropdown>
                     </Col>
                 </Row>
-                <hr/>
+                <hr />
             </div>
             <div>
                 {renderCards(data)}

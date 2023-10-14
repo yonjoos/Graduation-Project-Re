@@ -229,11 +229,11 @@ function SearchPortfolioListPage(onSearch) {
 
         const handleButtonClick = (title, id, name) => {
 
-            // // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
-            // dispatch(lastVisitedEndpoint('/', '/', '/'));
-            // setLastVisitedEndpoint('/');
-            // setLastLastVisitedEndpoint('/');
-            // setLastLastLastVisitedEndpoint('/');
+;
+            dispatch(lastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`, `/search/portfoliocard/query/${currentSearchTerm.searchTerm}`, `/search/portfoliocard/query/${currentSearchTerm.searchTerm}`));
+            setLastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`);
+            setLastLastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`);
+            setLastLastLastVisitedEndpoint(`/search/portfoliocard/query/${currentSearchTerm.searchTerm}`);
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'Project') {

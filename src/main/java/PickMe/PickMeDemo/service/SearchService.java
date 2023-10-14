@@ -97,16 +97,21 @@ public class SearchService {
         JPAQuery<Posts> queryForStudy = queryFactory.selectFrom(posts);
         JPAQuery<User> queryForUser = queryFactory.selectFrom(user);
 
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+        // endDate가 현재 날짜 이후인 게시물을 필터링하기 위한 조건
+        BooleanExpression notExpiredCondition = posts.endDate.goe(currentDate);
+
         // 근데 검색어 관련 조건이 null이 아니라면, 검색어 관련 조건이 해당 쿼리문에 where절로 한번 더 엮임
         if (projectTitleConditions != null) {
-            queryForProject.where(projectTitleConditions)
+            queryForProject.where(projectTitleConditions, notExpiredCondition)
                     .orderBy(posts.endDate.asc()) // 마감일자가 가까운 순으로 정렬
                     .limit(5); // 상위 5개만 가져오기
         }
 
         // 근데 검색어 관련 조건이 null이 아니라면, 검색어 관련 조건이 해당 쿼리문에 where절로 한번 더 엮임
         if (studyTitleConditions != null) {
-            queryForStudy.where(studyTitleConditions)
+            queryForStudy.where(studyTitleConditions, notExpiredCondition)
                     .orderBy(posts.endDate.asc()) // 마감일자가 가까운 순으로 정렬
                     .limit(5); // 상위 5개만 가져오기
         }

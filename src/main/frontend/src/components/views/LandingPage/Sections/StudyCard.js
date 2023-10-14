@@ -21,7 +21,7 @@ function StudyCard(props) {
   }
 
   return (
-    <Card onClick={onClickHandler} style={{ width: '100%', height: '300px',  textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>
+    <Card onClick={onClickHandler} style={{ width: '100%', height: '200px',  textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>
       <h1>This is a Study Card</h1>
       <p>This is a simple landing page using Ant Design Card component.</p>
     </Card>

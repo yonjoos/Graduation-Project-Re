@@ -22,7 +22,7 @@ function PortfolioCard(props) {
   
   return (
     
-    <Card onClick={onClickHandler} style={{ width: '100%', height: '300px', textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>
+    <Card onClick={onClickHandler} style={{ width: '100%', height: '200px', textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>
       <h3 style={{
         fontSize: '35px', // Set your desired font size here
         margin: '0',

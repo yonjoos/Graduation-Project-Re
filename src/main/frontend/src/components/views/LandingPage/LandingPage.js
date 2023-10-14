@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Button, Card } from 'antd';
+import { Row, Col, Button, Card, Carousel } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import WelcomeContent from './Sections/WelcomeContent';
@@ -24,6 +24,7 @@ function LandingPage() {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
 
+    const [famousPost, setFamousPost] = useState([]);
     // 백엔드에서 받은 검색어 기반 결과 리스트(3개)를 정의. 처음에 이 페이지에 들어오면 빈 배열
     const [data, setData] = useState({
         projectSearchDtoList: [], // 프로젝트 제목 관련 최대 5개 가져옴
@@ -31,6 +32,28 @@ function LandingPage() {
         userSearchDtoList: [], // 유저 이름 관련 최대 5개 가져옴
     });
     const [searchTerm, setSearchTerm] = useState(""); //랜딩페이지 내의 검색어 키워드 입력값
+
+
+    useEffect(() => {
+        if ((isAuthenticated && userRole === 'ADMIN') || (isAuthenticated && userRole === 'USER')) {
+            getFamousPost();
+        }
+    }, [isAuthenticated, userRole]);
+
+    const getFamousPost = async () => {
+        try {
+            const response = await request('GET', '/getFamousPost');
+
+            if (response) {
+                setFamousPost(response.data);
+                console.log("famous post : ", famousPost);
+            } else {
+                console.error("Error fetching data: getFamousPost response.data is undefined");
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
 
     // 키워드를 치는 순간 순간마다 백엔드에서 데이터 받아옴
     useEffect(() => {
@@ -82,6 +105,30 @@ function LandingPage() {
         return str;
     };
 
+    // 인기 게시물 카드 클릭 시 게시물로 이동
+    const onClickHandler = (postType, id) => {
+        // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
+        dispatch(lastVisitedEndpoint('/', '/', '/'));
+        setLastVisitedEndpoint('/');
+        setLastLastVisitedEndpoint('/');
+        setLastLastLastVisitedEndpoint('/');
+
+        // 각각에 대해 올바르게 라우팅 걸어주기
+        if (postType === 'PROJECT') {
+            navigate(`/project/detail/${id}`);
+        } else if (postType === 'STUDY') {
+            navigate(`/study/detail/${id}`);
+        }
+    }
+
+    // 2023826 -> 2023년 8월 26일 형식으로 변환
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // Month is zero-based
+        const day = date.getDate();
+        return `${year}년 ${month}월 ${day}일`;
+    };
 
     // 검색어가 새로이 입력되거나 변경될때마다 여기서 감지해서 백엔드에 보낼 searchTerm을 세팅함
     const handleSearch = (value) => {
@@ -180,6 +227,36 @@ function LandingPage() {
                         {renderSection('Project', data.projectSearchDtoList)}
                         {renderSection('Study', data.studySearchDtoList)}
                     </Col>
+                    <Col span={24}>
+                        <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1%' }}>
+                            {famousPost.map((item) => (
+                                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
+                                        style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <div>
+                                                {truncateString(item.title, 15)}
+                                            </div>
+                                            <div>
+                                                {item.postType}
+                                            </div>
+                                        </div>
+                                        {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                        <br/>
+                                        <div className="shape-outline mb-1">
+                                            인원 | {item.counts} / {item.recruitmentCount}
+                                        </div>
+                                        <div>
+                                            마감일 | {formatDate(item.endDate)}
+                                        </div>
+                                        <div className="shape-outline mb-1">
+                                            👀 조회수 {item.viewCount}
+                                        </div>
+                                    </Card>
+                                </div>
+                            ))}
+                        </Carousel>
+                    </Col>
                     <Col xs={24} sm={8}>
                         <PortfolioCard />
                     </Col>
@@ -197,10 +274,53 @@ function LandingPage() {
                         <SearchInLandingPage onSearch={handleSearch} />
                     </Col>
                     <Col span={24}>
-                        
                         {renderSection('User', data.userSearchDtoList)}
                         {renderSection('Project', data.projectSearchDtoList)}
                         {renderSection('Study', data.studySearchDtoList)}
+                    </Col>
+                    <Col span={24}>
+                        <br/>
+                        <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
+                        <br/>
+                        <br/>
+                        <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
+                            {famousPost.map((item) => (
+                                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
+                                        style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
+                                                border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <div>
+                                                {item.postType}
+                                            </div>
+                                            <div>
+                                                {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                            </div>
+                                        </div>
+                                        <b>{truncateString(item.title, 15)}</b>
+                                        <br/>
+                                        <br/>
+                                        <div>
+                                            마감일 {formatDate(item.endDate)}
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <div className="shape-outline mb-1">
+                                                인원 {item.counts} / {item.recruitmentCount}
+                                            </div>
+                                            <div className="shape-outline mb-1">
+                                                👀 조회수 {item.viewCount}
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </div>
+                            ))}
+                        </Carousel>
+                        <br/>
+                        <br/>
+                    </Col>
+                    <Col span={24}>
+                        <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
+                        <br/>
                     </Col>
                     <Col xs={24} sm={8}>
                         <PortfolioCard />

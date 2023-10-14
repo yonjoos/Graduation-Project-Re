@@ -546,5 +546,15 @@ public class PostsController {
 
         return ResponseEntity.ok(scrapPostsDtos);
     }
+
+
+    // 랜딩페이지에 인기 게시물 리턴
+    @GetMapping("/getFamousPost")
+    public ResponseEntity<List<FamousPostsListDto>> getFamousPost() {
+
+        List<FamousPostsListDto> famousPostsList = postsService.getFamousPosts();
+
+        return ResponseEntity.ok(famousPostsList);
+    }
 }
 

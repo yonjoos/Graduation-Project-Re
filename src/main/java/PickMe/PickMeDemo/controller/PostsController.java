@@ -290,6 +290,8 @@ public class PostsController {
         return ResponseEntity.ok(filteredProjects);
     }
 
+    // FROM : MyPortfolioPage
+    // GET : My Posts
     @GetMapping("/getUsersPosts")
     public ResponseEntity<List<UsersPostsListDto>> getUsersPosts(Principal principal) {
         String email = principal.getName();
@@ -297,6 +299,9 @@ public class PostsController {
         List<UsersPostsListDto> usersPosts = postsService.getUsersPosts(nickName);
         return ResponseEntity.ok(usersPosts);
     }
+
+    // FROM : Portfolio
+    // Get : Other User's Posts
     @GetMapping("/getOtherUsersPosts")
     public ResponseEntity<List<UsersPostsListDto>> getOtherUsersPosts(
             @RequestParam(name = "nickName") String nickName

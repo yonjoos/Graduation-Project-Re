@@ -24,6 +24,11 @@ function PortfolioPage() {
     });
 
 
+    /*
+    UseEffect #############################################################################################################
+    UseEffect #############################################################################################################
+    */
+
     // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {
         request('GET', `/getUserPortfolio?nickName=${nickName}`, {})
@@ -51,7 +56,15 @@ function PortfolioPage() {
     }, [hasPortfolio]);
 
 
+    /*
+    COMPONENTS #############################################################################################################
+    COMPONENTS #############################################################################################################
+    */
 
+
+    // Component
+    // INPUT : PostsListsDTO
+    // RETURN : Posts Lists <Card> components
     const renderPosts = (posts) => {
 
         if(loadPosts == "fold"){
@@ -89,20 +102,10 @@ function PortfolioPage() {
 
     };
 
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={data && existingPreferences[field]} // Assuming the data structure contains the preference values
-            style={{ cursor: 'default' }}
-        >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
-        </Radio.Group>
-    );
 
-    // 선호도 그래프 관련
+    // Component
+    // INPUT : fields of interests
+    // RETURN : bar-graph to preferencies
     const renderPreferenceBar = (field) => {
         const preferenceValue = data && existingPreferences[field];
         return (
@@ -115,7 +118,9 @@ function PortfolioPage() {
         );
     };
 
-    // 선호도 그래프 관련
+    // Component (for > Component-renderPreferenceBar)
+    // INPUT : fields of interests
+    // OUTPUT : 필드에 따른 색상코드
     const getBarColor = (field) => {
         if (field === "web") {
             return '#FE708F';
@@ -160,6 +165,14 @@ function PortfolioPage() {
         return chunks;
     }
 
+
+    /*
+    HANDLER #############################################################################################################
+    HANDLER #############################################################################################################
+    */
+
+
+    // Handler
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
         if(visitedEndEndEndpoint === "/portfoliocard") {
@@ -182,10 +195,8 @@ function PortfolioPage() {
         }
     };
 
-    /*
-    ##########################################################################################
-    ##########################################################################################
-    */
+    // Handler
+    // OnClick : FETCH PostsListsDTO, switch 'loadPosts' status
     const onLoadPosts = () => {
 
         if(loadPosts == "more"){
@@ -208,6 +219,9 @@ function PortfolioPage() {
         }
 
     };
+
+    // Handler
+    // onClick : move to post's detail page
     const onClickPosts = (post) => {
 
         if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
@@ -216,6 +230,10 @@ function PortfolioPage() {
 
     }
 
+    /*
+    RETURN #####################################################################################################################
+    RETURN #####################################################################################################################
+    */
 
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
@@ -345,6 +363,7 @@ function PortfolioPage() {
                     <br />
                     <br />
         
+                    {/* >> Posts Lists << */}
                     <Row justify="center">
                         <Col span = {16}>
                             <Card >
@@ -361,6 +380,8 @@ function PortfolioPage() {
                             </Card>
                         </Col>
                     </Row>
+
+                    {/* >> Posts << */}
                     {postData && postData.length > 0 ? (
                         renderPosts(postData)
                         ) : (

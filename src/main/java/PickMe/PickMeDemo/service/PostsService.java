@@ -853,6 +853,8 @@ public class PostsService {
     }
 
 
+    // Calling Controller : getUsersPosts, getOtherUsersPosts
+    // Return : List of Users' Posts
     @Transactional(readOnly = true)
     public List<UsersPostsListDto> getUsersPosts(String nickName){
         User user = userRepository.findByNickName(nickName).get();

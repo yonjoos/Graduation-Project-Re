@@ -128,7 +128,7 @@ function MyPortfolioPage() {
                     <Row justify="center" key={post.id}>
                     <Col span={16}>
                         <Card 
-                        onClick={() => onClickPosts(post.id)}
+                        onClick={() => onClickPosts(post)}
                         style = {{height:'150px'}}
                         title={
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -189,9 +189,11 @@ function MyPortfolioPage() {
 
     };
 
-    const onClickPosts = (id) => {
+    const onClickPosts = (post) => {
 
-        navigate(`/project/detail/${id}`);
+        if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        else{navigate(`/study/detail/${post.id}`);}
+        
 
     }
 

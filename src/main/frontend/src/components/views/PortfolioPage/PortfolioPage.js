@@ -10,9 +10,11 @@ function PortfolioPage() {
     const { nickName } = useParams();
     const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
     const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
-    
 
+    const [loadPosts, setloadPosts] = useState("more");
     const [data, setData] = useState(null);
+    const [postData, setPostData] = useState([]);
+
     const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
@@ -48,6 +50,44 @@ function PortfolioPage() {
         }
     }, [hasPortfolio]);
 
+
+
+    const renderPosts = (posts) => {
+
+        if(loadPosts == "fold"){
+            return(
+
+                posts.map((post) => (
+                    <Row justify="center" key={post.id}>
+                    <Col span={16}>
+                        <Card 
+                        onClick={() => onClickPosts(post)}
+                        style = {{height:'150px'}}
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
+                            </div>
+                        }>
+                            <div>
+                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
+                            </div>
+                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
+                                {post.briefContent}
+                            </div>
+                        </Card>
+                    </Col>
+                    </Row>
+                )))
+        }
+        else{
+            return(
+                <div></div>
+            )
+        }
+
+
+    };
 
     const renderRadioGroup = (field) => (
         <Radio.Group
@@ -141,6 +181,40 @@ function PortfolioPage() {
             navigate(visitedEndpoint);
         }
     };
+
+    /*
+    ##########################################################################################
+    ##########################################################################################
+    */
+    const onLoadPosts = () => {
+
+        if(loadPosts == "more"){
+
+            request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
+            .then((response) => {
+
+                setPostData(response.data);
+                setloadPosts("fold");
+
+            })
+            .catch((error) => {
+
+                console.error("Error fetching posts:", error);
+
+            });
+        }
+        else if(loadPosts == "fold"){
+            setloadPosts("more");
+        }
+
+    };
+    const onClickPosts = (post) => {
+
+        if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        else{navigate(`/study/detail/${post.id}`);}
+        
+
+    }
 
 
     return (
@@ -270,6 +344,29 @@ function PortfolioPage() {
 
                     <br />
                     <br />
+        
+                    <Row justify="center">
+                        <Col span = {16}>
+                            <Card >
+                                <Row justify="space-between">
+                                    <Col span={8}>
+                                        Post
+                                    </Col>
+                                    <Col span={8} style={{ textAlign: 'right' }}>
+                                        <div onClick={onLoadPosts}>
+                                            <strong>{loadPosts}</strong>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                    </Row>
+                    {postData && postData.length > 0 ? (
+                        renderPosts(postData)
+                        ) : (
+                            <div></div>
+
+                    )}
                 </div>
             )}
         </div>

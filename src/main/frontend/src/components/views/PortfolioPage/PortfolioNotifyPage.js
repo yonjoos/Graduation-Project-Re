@@ -9,6 +9,9 @@ function PortfolioNotifyPage() {
     const { nickName } = useParams();
     const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
 
+    const [postData, setPostData] = useState([]);
+    const [loadPosts, setloadPosts] = useState("more");
+
     const [data, setData] = useState(null);
     const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingPreferences, setExistingPreferences] = useState({
@@ -121,6 +124,80 @@ function PortfolioNotifyPage() {
         navigate(lastVisitedEndpoint);
     };
 
+
+
+    const renderPosts = (posts) => {
+
+        if(loadPosts == "fold"){
+            return(
+
+                posts.map((post) => (
+                    <Row justify="center" key={post.id}>
+                    <Col span={16}>
+                        <Card 
+                        onClick={() => onClickPosts(post)}
+                        style = {{height:'150px'}}
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
+                            </div>
+                        }>
+                            <div>
+                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
+                            </div>
+                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
+                                {post.briefContent}
+                            </div>
+                        </Card>
+                    </Col>
+                    </Row>
+                )))
+        }
+        else{
+            return(
+                <div></div>
+            )
+        }
+
+
+    };
+
+    const onLoadPosts = () => {
+
+        if(loadPosts == "more"){
+        
+            const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+                size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+            });
+
+            request('GET', `/getUsersPosts?${queryParams}`)
+            .then((response) => {
+
+                setPostData(response.data);
+                setloadPosts("fold");
+
+            })
+            .catch((error) => {
+
+                console.error("Error fetching posts:", error);
+
+            });
+        }
+        else if(loadPosts == "fold"){
+            setloadPosts("more");
+        }
+
+    };
+
+    const onClickPosts = (post) => {
+
+        if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        else{navigate(`/study/detail/${post.id}`);}
+        
+
+    }
+
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
         <div>
@@ -228,9 +305,33 @@ function PortfolioNotifyPage() {
                             </Card>
                         </Col>
                     </Row>
+                    <br></br>
+                    <Row justify="center">
+                        <Col span = {16}>
+                            <Card >
+                                <Row justify="space-between">
+                                    <Col span={8}>
+                                        Post
+                                    </Col>
+                                    <Col span={8} style={{ textAlign: 'right' }}>
+                                        <div onClick={onLoadPosts}>
+                                            <strong>{loadPosts}</strong>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                    </Row>
+                    {postData && postData.length > 0 ? (
+                        renderPosts(postData)
+                        ) : (
+                            <div></div>
+
+                    )}
 
                     <br />
                     <br />
+
                 </div>
             )}
         </div>

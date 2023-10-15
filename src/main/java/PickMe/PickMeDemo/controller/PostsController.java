@@ -297,6 +297,13 @@ public class PostsController {
         List<UsersPostsListDto> usersPosts = postsService.getUsersPosts(nickName);
         return ResponseEntity.ok(usersPosts);
     }
+    @GetMapping("/getOtherUsersPosts")
+    public ResponseEntity<List<UsersPostsListDto>> getOtherUsersPosts(
+            @RequestParam(name = "nickName") String nickName
+    ) {
+        List<UsersPostsListDto> usersPosts = postsService.getUsersPosts(nickName);
+        return ResponseEntity.ok(usersPosts);
+    }
 
 
     // 스터디 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러

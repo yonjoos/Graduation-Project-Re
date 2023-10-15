@@ -42,8 +42,6 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @Enumerated(EnumType.STRING)
     private PostType postType; // 게시물 타입 (project/study)으로 구분
 
-    private String id;
-
     @Column(name = "title", nullable = false)
     private String title; //게시물 이름
 

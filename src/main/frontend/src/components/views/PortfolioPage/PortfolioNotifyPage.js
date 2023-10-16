@@ -48,16 +48,20 @@ function PortfolioNotifyPage() {
     }, [hasPortfolio]);
 
 
+    const renderRadioGroup = (field) => (
+        <Radio.Group
+            value={data && existingPreferences[field]} // Assuming the data structure contains the preference values
+            style={{ cursor: 'default' }}
+        >
+            <Radio value={0}>0</Radio>
+            <Radio value={1}>1</Radio>
+            <Radio value={2}>2</Radio>
+            <Radio value={3}>3</Radio>
+            <Radio value={4}>4</Radio>
+        </Radio.Group>
+    );
 
-    /*
-    COMPONENTS #############################################################################################################
-    COMPONENTS #############################################################################################################
-    */
-
-
-    // Component
-    // INPUT : fields of interests
-    // RETURN : bar-graph to preferencies
+    // 선호도 그래프 관련
     const renderPreferenceBar = (field) => {
         const preferenceValue = data && existingPreferences[field];
         return (
@@ -70,11 +74,7 @@ function PortfolioNotifyPage() {
         );
     };
 
-
-
-    // Component (for > Component-renderPreferenceBar)
-    // INPUT : fields of interests
-    // OUTPUT : 필드에 따른 색상코드
+    // 선호도 그래프 관련
     const getBarColor = (field) => {
         if (field === "web") {
             return '#FE708F';
@@ -126,9 +126,6 @@ function PortfolioNotifyPage() {
 
 
 
-    // Component
-    // INPUT : PostsListsDTO
-    // RETURN : Posts Lists <Card> components
     const renderPosts = (posts) => {
 
         if(loadPosts == "fold"){
@@ -166,21 +163,15 @@ function PortfolioNotifyPage() {
 
     };
 
-    
-
-    /*
-    HANDLER #############################################################################################################
-    HANDLER #############################################################################################################
-    */
-
-
-    // Handler
-    // OnClick : FETCH PostsListsDTO, switch 'loadPosts' status
     const onLoadPosts = () => {
 
         if(loadPosts == "more"){
+        
+            const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+                size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+            });
 
-            request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
+            request('GET', `/getUsersPosts?${queryParams}`)
             .then((response) => {
 
                 setPostData(response.data);
@@ -199,8 +190,6 @@ function PortfolioNotifyPage() {
 
     };
 
-    // Handler
-    // onClick : move to post's detail page
     const onClickPosts = (post) => {
 
         if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
@@ -208,11 +197,6 @@ function PortfolioNotifyPage() {
         
 
     }
-
-    /*
-    RETURN #####################################################################################################################
-    RETURN #####################################################################################################################
-    */
 
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.

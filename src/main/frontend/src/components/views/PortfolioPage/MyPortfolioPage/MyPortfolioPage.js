@@ -162,9 +162,6 @@ function MyPortfolioPage() {
     Handler ################################################################################################################
     HAndler ################################################################################################################
     */
-
-    // Handler
-    // OnClick : FETCH PostsListsDTO, switch 'loadPosts' status
     const onLoadPosts = () => {
 
         if(loadPosts == "more"){
@@ -192,9 +189,6 @@ function MyPortfolioPage() {
 
     };
 
-
-    // Handler
-    // onClick : move to post's detail page
     const onClickPosts = (post) => {
 
         if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}

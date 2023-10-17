@@ -853,6 +853,44 @@ public class PostsService {
     }
 
 
+    // Calling Controller : getUsersPosts, getOtherUsersPosts
+    // Return : List of Users' Posts
+    @Transactional(readOnly = true)
+    public List<UsersPostsListDto> getUsersPosts(String nickName){
+        User user = userRepository.findByNickName(nickName).get();
+        QPosts posts = QPosts.posts;
+        JPAQuery<Posts> query = queryFactory.selectFrom(posts) // 게시물을 추출할 건데,
+                .where(posts.user.eq(user));
+
+        List<Posts> usersPosts = query
+                .fetch();
+
+        List<UsersPostsListDto> usersPostsDto = new ArrayList<>();
+        for(Posts post : usersPosts){
+            Category category = post.getCategory();
+            PostType postType = post.getPostType();
+
+            UsersPostsListDto usersPostsListDto = UsersPostsListDto.builder()
+                    .id(post.getId())
+                    .nickName(user.getNickName())   // user = posts.getUser()
+                    .title(post.getTitle())
+                    .web(category.getWeb())     // category = posts.getCategory()
+                    .app(category.getApp())
+                    .game(category.getGame())
+                    .ai(category.getAi())
+                    //.counts(post.getCounts())
+                    .recruitmentCount(post.getRecruitmentCount())
+                    .endDate(post.getEndDate())
+                    .briefContent(post.getContent())
+                    .postType(postType)
+                    .build();
+
+            usersPostsDto.add(usersPostsListDto);
+
+        }
+        return usersPostsDto;
+
+    }
 
     //게시물 조회 동적쿼리 + 페이징 in 프로젝트 게시물
     @Transactional(readOnly = true) //읽기 전용

@@ -11,10 +11,10 @@ function PortfolioPage() {
     const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
     const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
-    const [loadPosts, setloadPosts] = useState("more");
-    const [data, setData] = useState(null);
     const [postData, setPostData] = useState([]);
+    const [loadPosts, setloadPosts] = useState("more");   
 
+    const [data, setData] = useState(null);
     const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
@@ -67,7 +67,7 @@ function PortfolioPage() {
     // RETURN : Posts Lists <Card> components
     const renderPosts = (posts) => {
 
-        if(loadPosts == "fold"){
+        if(loadPosts === "fold"){
             return(
 
                 posts.map((post) => (
@@ -199,7 +199,7 @@ function PortfolioPage() {
     // OnClick : FETCH PostsListsDTO, switch 'loadPosts' status
     const onLoadPosts = () => {
 
-        if(loadPosts == "more"){
+        if(loadPosts === "more"){
 
             request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
             .then((response) => {
@@ -214,7 +214,7 @@ function PortfolioPage() {
 
             });
         }
-        else if(loadPosts == "fold"){
+        else if(loadPosts === "fold"){
             setloadPosts("more");
         }
 
@@ -224,7 +224,7 @@ function PortfolioPage() {
     // onClick : move to post's detail page
     const onClickPosts = (post) => {
 
-        if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
         else{navigate(`/study/detail/${post.id}`);}
         
 

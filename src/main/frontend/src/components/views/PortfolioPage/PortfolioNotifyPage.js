@@ -48,7 +48,6 @@ function PortfolioNotifyPage() {
     }, [hasPortfolio]);
 
 
-
     // 선호도 그래프 관련
     const renderPreferenceBar = (field) => {
         const preferenceValue = data && existingPreferences[field];
@@ -154,6 +153,7 @@ function PortfolioNotifyPage() {
     const onLoadPosts = () => {
 
         if(loadPosts === "more"){
+
 
             request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
             .then((response) => {

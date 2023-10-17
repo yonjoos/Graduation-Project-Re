@@ -11,9 +11,10 @@ function MyPortfolioPage() {
     const navigate = useNavigate();
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);    // 모달이 보이는지 안보이는지 설정하기 위한 애
 
-    const [data, setData] = useState(null);
     const [postData, setPostData] = useState([]);
     const [loadPosts, setloadPosts] = useState("more");
+
+    const [data, setData] = useState(null);
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
         app: 0,
@@ -121,7 +122,7 @@ function MyPortfolioPage() {
 
     const renderPosts = (posts) => {
 
-        if(loadPosts == "fold"){
+        if(loadPosts === "fold"){
             return(
 
                 posts.map((post) => (
@@ -164,7 +165,7 @@ function MyPortfolioPage() {
     */
     const onLoadPosts = () => {
 
-        if(loadPosts == "more"){
+        if(loadPosts === "more"){
         
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
                 size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
@@ -183,7 +184,7 @@ function MyPortfolioPage() {
 
             });
         }
-        else if(loadPosts == "fold"){
+        else if(loadPosts === "fold"){
             setloadPosts("more");
         }
 
@@ -191,7 +192,7 @@ function MyPortfolioPage() {
 
     const onClickPosts = (post) => {
 
-        if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
         else{navigate(`/study/detail/${post.id}`);}
         
 

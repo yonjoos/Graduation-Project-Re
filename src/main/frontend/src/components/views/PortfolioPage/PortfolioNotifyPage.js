@@ -115,7 +115,7 @@ function PortfolioNotifyPage() {
 
     const renderPosts = (posts) => {
 
-        if(loadPosts == "fold"){
+        if(loadPosts === "fold"){
             return(
 
                 posts.map((post) => (
@@ -152,7 +152,8 @@ function PortfolioNotifyPage() {
 
     const onLoadPosts = () => {
 
-        if(loadPosts == "more"){
+        if(loadPosts === "more"){
+
 
             request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
             .then((response) => {
@@ -167,7 +168,7 @@ function PortfolioNotifyPage() {
 
             });
         }
-        else if(loadPosts == "fold"){
+        else if(loadPosts === "fold"){
             setloadPosts("more");
         }
 
@@ -175,7 +176,7 @@ function PortfolioNotifyPage() {
 
     const onClickPosts = (post) => {
 
-        if(post.postType == "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
         else{navigate(`/study/detail/${post.id}`);}
         
 

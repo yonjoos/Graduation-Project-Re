@@ -48,19 +48,6 @@ function PortfolioNotifyPage() {
     }, [hasPortfolio]);
 
 
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={data && existingPreferences[field]} // Assuming the data structure contains the preference values
-            style={{ cursor: 'default' }}
-        >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
-        </Radio.Group>
-    );
-
     // 선호도 그래프 관련
     const renderPreferenceBar = (field) => {
         const preferenceValue = data && existingPreferences[field];
@@ -166,12 +153,8 @@ function PortfolioNotifyPage() {
     const onLoadPosts = () => {
 
         if(loadPosts == "more"){
-        
-            const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
-                size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-            });
 
-            request('GET', `/getUsersPosts?${queryParams}`)
+            request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
             .then((response) => {
 
                 setPostData(response.data);

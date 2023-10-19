@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "focal-cipher-402404",
+  "private_key_id": "669125967bfe08f16dfcb41b628fbc0836919ef4",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDPooNM0twUeUVz\nrSPLcY9KphTsxkFMfe+827HWNHVAapGrmv8/3xpCnG1Yd2k/ya4GkJhAsbVv7Iyz\nxhBfESbC8pwsQpUh47R/g1xe8YCsZP0+02akZWhcVo92JLMInEixqcUotqluTnIR\nLLBs0K7RTtF5AmCY9fNp3k9r8FIllJ/Wky3lfXFgCZ/wx0WN5w4rUBeHZ1vVJVV5\nDxIlaO0etZ07JyhXRm98NmAl5HvGK4xESqZnFrUJjZdrkM5KtOyqgzhsH42xhG16\nfjx/Glij6of4IM0s9ss3ecVRyffn2yfyuzakjxHUv/0bj7HXFyhpRRLYgf2Cx8hP\nBJNuEFWHAgMBAAECggEAAREOp521r7fnxBkG7rad9n41QU92FRSDNMR+0guMRqZw\nKneDXtVLPJMHz2/dmeGerpNI6kbUwxxt+fEciGsoIybn58+iaygmTI66MhVU2eMy\n7IMIK0lcveIGnqQVn10I1Tt6syOCafn72rFmE/OxJ4twxrRdFqwSHLXIUVT3Ybtd\nWsxjjOd6NBxRJPX7Z4xwCqDyILErNyfW8p6IqzYW6DmukXPQ5QfUSEVk1PR7fz2j\nvC+cv0Qo34OxRv/68avTruMyXsx7yXDbNV2TqocgqH9G4yNva6TwEBuvcC4YjKAv\nzE2o/ZwrU6+tbrnZ6GF944SmHtrvTG5GwOgAB7rnkQKBgQDt/pv5trxbkdT5o2gJ\nCtJAHyTScZQ5wzF2Z25wj81VY4Kzus3nTBgFZKG0hB+BA2ToBcdZ+y4NdpmwNrwf\n6pYdX8DucTXjGKXbtq/cMlWLWBJqJly48ZL/GdvACUFKnAV6Gj4mAsiX2QeRyDrP\nYV1Ahtv8VGqeVldrwkdJZs+IIwKBgQDfV+g81MC/8Mm/Lx0OvP3MOQrCEMiO0ENh\ngg2n3IIn95UpBN9Tqc6evJRWtY3jJUUjnc4fJMGD1Gx1IJx0V+4g3yCiskeCm2wE\nKZvpmTf8ueXDxuAKyxXz3/aST/w1nmlhbvO3dc3f/Ho63D2XQfgNpKm+Lh/fZw8k\n5ugsUxbBTQKBgBEMt3HZRH8u4FoN+csECnHriUDGQD8vG6EG4eOQeb5PRbLIhC24\nxtPEFM2Q1YzxiE4S8+gfVXpDb9ku4qVKsfxiuriaRakCQAeQe+LDfFtiMNeH7gaV\nz9kUqiiEwTeuG7pWnPMuKd6u/prUBFqM+BhCUQovpf+34cVngqHgiqePAoGBAL+h\nJmNjTEqj6AZA/1aQ89ZRLxjZ26slqFq2gs7/VTHDrVi3lIKtVNpABarsNeSqKstn\nb96q49sf3TsWEweEFo5fxBm0i8TVY/WiWeMxkqcmPa0gK0U3gQtxo5dgR48d718p\nGrXTvyQq9hkgtTvd316dZQMHglNlksnf0V+OnxyVAoGBANZoVguOX1hqjcA7vzHp\nF/ez03a59taz7dHHyfAUfCXh5bqLvCHft4sIFz8ehC+L3k9MAeJreCAEi7THi3gN\nHKwuUZMUdTjiQTdSG5rM5w/8uGoAkBSm8Q4lHB3B8jI/6dnKISLMm0CdBLvZNJrj\nWQyKVgj38EopocqLyPrxOrdY\n-----END PRIVATE KEY-----\n",
+  "client_email": "springboot-storage-access@focal-cipher-402404.iam.gserviceaccount.com",
+  "client_id": "109990992963097420350",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/springboot-storage-access%40focal-cipher-402404.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

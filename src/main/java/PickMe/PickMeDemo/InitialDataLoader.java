@@ -141,7 +141,7 @@ public class InitialDataLoader implements CommandLineRunner {
         
         portfolioRepository.save(user2Portfolio);
 
-        String initialEndDate1 = "2023-09-30"; // 원하는 종료 날짜를 스트링으로 받음
+        String initialEndDate1 = "2023-11-30"; // 원하는 종료 날짜를 스트링으로 받음
         DateTimeFormatter dateFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");   // 날짜 포맷터를 사용하여 날짜 문자열을 'LocalDate' 개체로 변환
         LocalDate endDate1 = LocalDate.parse(initialEndDate1, dateFormatter1);
 

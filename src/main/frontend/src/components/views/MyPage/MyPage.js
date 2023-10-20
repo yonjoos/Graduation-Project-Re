@@ -355,10 +355,10 @@ function MyPage() {
                             <Modal
                                 title="회원 탈퇴 확인"
                                 open={isWithdrawModalVisible}
-                                onOk={handleWithdrawCancel}
-                                onCancel={handleWithdrawConfirm}
-                                okText="아니오"
-                                cancelText="네"
+                                onOk={handleWithdrawConfirm}
+                                onCancel={handleWithdrawCancel}
+                                okText="예"
+                                cancelText="아니오"
                             >
                                 <p>정말로 탈퇴하시겠습니까?</p>
                             </Modal>

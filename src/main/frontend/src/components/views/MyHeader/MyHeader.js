@@ -307,20 +307,20 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                                 <Modal
                                     title="읽은 알림 삭제"
                                     open={deleteReadModalVisible}
-                                    onOk={hideDeleteReadModal}
-                                    onCancel={confirmDeleteRead}
-                                    okText="아니오"
-                                    cancelText="예"
+                                    onOk={confirmDeleteRead}
+                                    onCancel={hideDeleteReadModal}
+                                    okText="예"
+                                    cancelText="아니오"
                                 >
                                     읽은 알림을 모두 삭제하시겠습니까?
                                 </Modal>
                                 <Modal
                                     title="전체 알림 삭제"
                                     open={deleteAllModalVisible}
-                                    onOk={hideDeleteAllModal}
-                                    onCancel={confirmDeleteAll}
-                                    okText="아니오"
-                                    cancelText="예"
+                                    onOk={confirmDeleteAll}
+                                    onCancel={hideDeleteAllModal}
+                                    okText="예"
+                                    cancelText="아니오"
                                 >
                                     전체 알림을 모두 삭제하시겠습니까?
                                 </Modal>

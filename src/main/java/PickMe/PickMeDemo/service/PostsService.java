@@ -849,12 +849,16 @@ public class PostsService {
         // 프로젝트 게시물과 연관된 카테고리 찾기
         Category category = posts.getCategory();
 
-        if (category != null) { // 카테고리 먼저 지워야
-            // Delete the category
+        if (category != null) { // 카테고리 먼저 지워야 함
             categoryRepository.delete(category);
         }
 
-        // 프로젝트도 삭제 가능
+        // 조회수가 있다면, 조회수를 지워야 게시물 삭제 가능
+        if (!posts.getViewCountPosts().isEmpty()) {
+            viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
+        }
+
+        // 그제서야 프로젝트도 삭제 가능
         postsRepository.delete(posts);
     }
 
@@ -868,12 +872,16 @@ public class PostsService {
         // 스터디 게시물과 연관된 카테고리 찾기
         Category category = posts.getCategory();
 
-        // 카테고리 먼저 지워야
-        if (category != null) { // 카테고리 먼저 지워야
-            // Delete the category
+        if (category != null) { // 카테고리 먼저 지워야 함
             categoryRepository.delete(category);
         }
-        // 스터디도 삭제 가능
+
+        // 조회수가 있다면, 조회수를 지워야 게시물 삭제 가능
+        if (!posts.getViewCountPosts().isEmpty()) {
+            viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
+        }
+
+        // 그제서야 스터디도 삭제 가능
         postsRepository.delete(posts);
     }
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Row, Col, Input, Button, Checkbox, InputNumber, /*Upload,*/ DatePicker, message, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { request, getAuthToken } from '../../../../hoc/request';
+import { getAuthToken } from '../../../../hoc/request';
 import axios from 'axios';
 import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 

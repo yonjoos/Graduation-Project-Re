@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Button, Card, Carousel } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector/*, useDispatch*/ } from 'react-redux';
 import { useState, useEffect } from "react";
 import WelcomeContent from './Sections/WelcomeContent';
 import PortfolioCard from './Sections/PortfolioCard';
@@ -9,8 +9,8 @@ import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
 import SearchInLandingPage from './SearchInLandingPage';
 import { request } from '../../../hoc/request';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
-import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
 import './LandingPage.css';
 
 function LandingPage() {
@@ -20,7 +20,7 @@ function LandingPage() {
     //useSelector을 redux로부터 import한 후 갖고 오고 싶은 state를 갖고 올 수 있는듯 하다)
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
 
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
@@ -36,7 +36,8 @@ function LandingPage() {
 
 
     useEffect(() => {
-        if ((isAuthenticated && userRole === 'ADMIN') || (isAuthenticated && userRole === 'USER')) {
+        // 모든 유저에게 랜딩페이지 허용
+        if ((isAuthenticated && userRole === 'ADMIN') || (isAuthenticated && userRole === 'USER' || !isAuthenticated)) {
             getHotPost();
         }
     }, [isAuthenticated, userRole]);
@@ -44,7 +45,8 @@ function LandingPage() {
     const getHotPost = async () => {
         try {
             const response = await request('GET', '/getHotPost');
-
+            //const response = await axios.get('/getHotPost'); // request가 아닌 axios를 통해 GET 요청을 보냄. 로그인 하지 않은 유저도 볼 수 있어야 하기 때문.
+    
             if (response) {
                 setHotPost(response.data);
                 console.log("hot post : ", hotPost);
@@ -109,10 +111,10 @@ function LandingPage() {
     // 인기 게시물 카드 클릭 시 게시물로 이동
     const onClickHandler = (postType, id) => {
         // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
-        dispatch(lastVisitedEndpoint('/', '/', '/'));
-        setLastVisitedEndpoint('/');
-        setLastLastVisitedEndpoint('/');
-        setLastLastLastVisitedEndpoint('/');
+        // dispatch(lastVisitedEndpoint('/', '/', '/'));
+        // setLastVisitedEndpoint('/');
+        // setLastLastVisitedEndpoint('/');
+        // setLastLastLastVisitedEndpoint('/');
 
         // 각각에 대해 올바르게 라우팅 걸어주기
         if (postType === 'PROJECT') {
@@ -144,10 +146,10 @@ function LandingPage() {
         const handleButtonClick = (title, id, name) => {
 
             // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
-            dispatch(lastVisitedEndpoint('/', '/', '/'));
-            setLastVisitedEndpoint('/');
-            setLastLastVisitedEndpoint('/');
-            setLastLastLastVisitedEndpoint('/');
+            // dispatch(lastVisitedEndpoint('/', '/', '/'));
+            // setLastVisitedEndpoint('/');
+            // setLastLastVisitedEndpoint('/');
+            // setLastLastLastVisitedEndpoint('/');
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'Project') {
@@ -192,7 +194,7 @@ function LandingPage() {
     return (
         <div>
             {/* Conditional rendering based on authentication status */}
-            {!isAuthenticated && ( //인증이 안된 아무나 볼 수 있는 컴포넌트
+            {(!isAuthenticated || isAuthenticated && userRole === 'USER') && ( //비회원과 회원이 볼 수 있는 화면
                 // Row, Col : 그리드(창의 크기에 맞춘 반응형)를 위해 사용되는 애.
 
                 //  gutter : Row의 열 사이의 간격을 지정함.
@@ -203,34 +205,6 @@ function LandingPage() {
                 // span : Col 구성 요소가 확장되어야 하는 열 수를 지정함.
                 // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
-                <div>
-                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
-                        <br/>
-                        <Carousel autoplay className="my-background-color">
-                            <Card className="my-background-color">
-                                공지사항 또는 P!ckMe 홍보 카드
-                            </Card>
-                        </Carousel>
-                        <br/>
-                    </div>
-                    <br/>
-                    <br/>
-                    <div style={{ marginLeft: '15%', marginRight: '15%'}}>
-                        <Row gutter={[16, 16]}>
-                            <Col span={8}>
-                                <PortfolioCard />
-                            </Col>
-                            <Col span={8}>
-                                <ProjectCard />
-                            </Col>
-                            <Col span={8}>
-                                <StudyCard />
-                            </Col>
-                        </Row>
-                    </div>
-                </div>
-            )}
-            {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
                 <div>
                     <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
                         <br/>
@@ -310,7 +284,17 @@ function LandingPage() {
                     </div>
                 </div>
             )}
-            {isAuthenticated && userRole === 'USER' && ( //인증되었고 유저만 볼 수 있는 화면
+            {isAuthenticated && userRole === 'ADMIN' && ( //인증되었고, 관리자만 볼 수 있는 화면
+                // Row, Col : 그리드(창의 크기에 맞춘 반응형)를 위해 사용되는 애.
+
+                //  gutter : Row의 열 사이의 간격을 지정함.
+                // [가로, 세로]라는 두 개의 값을 갖는 배열임.
+                // gutter={[16, 16]}는 열 사이의 가로 및 세로 간격을 각각 16픽셀로 설정
+                // 즉, 세로로 따지면 <br/>을 사용하지 않고도, Col 간의 간격이 알아서 16px로 설정됨.
+
+                // span : Col 구성 요소가 확장되어야 하는 열 수를 지정함.
+                // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
+                // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <div>
                     <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
                         <br/>

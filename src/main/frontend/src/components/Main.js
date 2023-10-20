@@ -158,11 +158,11 @@ function Main() {
                         />
                         <Route
                             path="/portfoliocard"
-                            element={Auth(PortfolioCardPage, true)}
+                            element={Auth(PortfolioCardPage, null)}
                         />
                         <Route
                             path="/project"
-                            element={Auth(ProjectPage, true)}
+                            element={Auth(ProjectPage, null)}
                         />
                         {/* <Route
                             path="/project/detail/:projectId"
@@ -178,7 +178,7 @@ function Main() {
                         />
                         <Route
                             path="/study"
-                            element={Auth(StudyPage, true)}
+                            element={Auth(StudyPage, null)}
                         />
                         {/* <Route
                             path="/study/detail/:studyId"

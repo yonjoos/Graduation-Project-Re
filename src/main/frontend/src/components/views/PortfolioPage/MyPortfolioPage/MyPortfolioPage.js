@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { /*useSelector,*/ useDispatch } from 'react-redux';
 import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../../_actions/actions';
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button, Radio, Progress, Modal, message } from 'antd';
@@ -172,17 +171,17 @@ function MyPortfolioPage() {
             });
 
             request('GET', `/getUsersPosts?${queryParams}`)
-            .then((response) => {
+                .then((response) => {
 
-                setPostData(response.data);
-                setloadPosts("fold");
+                    setPostData(response.data);
+                    setloadPosts("fold");
 
-            })
-            .catch((error) => {
+                })
+                .catch((error) => {
 
-                console.error("Error fetching posts:", error);
+                    console.error("Error fetching posts:", error);
 
-            });
+                });
         }
         else if(loadPosts === "fold"){
             setloadPosts("more");
@@ -192,9 +191,12 @@ function MyPortfolioPage() {
 
     const onClickPosts = (post) => {
 
-        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
-        else{navigate(`/study/detail/${post.id}`);}
-        
+        if(post.postType === "PROJECT") {
+            navigate(`/project/detail/${post.id}`);
+        }
+        else {
+            navigate(`/study/detail/${post.id}`);
+        }
 
     }
 
@@ -363,7 +365,7 @@ function MyPortfolioPage() {
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>
-                                            <strong>{loadPosts}</strong>
+                                            <strong style={{ cursor: 'pointer' }}>{loadPosts}</strong>
                                         </div>
                                     </Col>
                                 </Row>
@@ -397,10 +399,10 @@ function MyPortfolioPage() {
                     <Modal
                         title="포트폴리오 삭제"
                         open={isDeleteModalVisible}
-                        onCancel={handleDelete}
-                        onOk={hideDeleteModal}
-                        okText="아니오"
-                        cancelText="예"
+                        onCancel={hideDeleteModal}
+                        onOk={handleDelete}
+                        okText="예"
+                        cancelText="아니오"
                     >
                         <p>정말로 포트폴리오를 삭제하시겠습니까?</p>
                     </Modal>

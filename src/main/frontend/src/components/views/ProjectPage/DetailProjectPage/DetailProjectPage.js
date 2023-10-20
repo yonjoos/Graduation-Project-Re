@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
+//import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { lastVisitedEndpoint } from "../../../../_actions/actions";
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
+//import { lastVisitedEndpoint } from "../../../../_actions/actions";
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
 import '../ProjectPage.css';
 import './DetailProjectPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
@@ -13,11 +13,11 @@ const { TextArea } = Input;
 
 function DetailProjectPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     const { projectId } = useParams(); // URL로부터 projectId 가져오기
-    const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
-    const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
-    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
+    // const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    // const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
+    // const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isModalVisible, setIsModalVisible] = useState(false);    // 모달이 보이는지 여부 설정
@@ -60,8 +60,8 @@ function DetailProjectPage() {
             .then((response) => {
                 //console.log("Fetched project data:", response.data); // Log the fetched data
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-                console.log("visitedEndpoint : ", visitedEndpoint);
-                console.log("visitedEndEndpoint : ", visitedEndEndpoint);
+                // console.log("visitedEndpoint : ", visitedEndpoint);
+                // console.log("visitedEndEndpoint : ", visitedEndEndpoint);
 
                 // 게시물의 작성자라면, 지원자를 얻어오는 추가적인 쿼리를 날림
                 if (response.data.writer) {
@@ -149,17 +149,17 @@ function DetailProjectPage() {
 
 
     // 목록으로 돌아가기 버튼 클릭
-    const handleGoBackClick = () => {
-        // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
-        // 포트폴리오를 누르지 않아, 유효한 전 페이지와 유효한 전 전 페이지가 동일한 상황 -> 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
-        if (visitedEndpoint === visitedEndEndpoint) {
-            navigate(visitedEndpoint);
-        }
-        // 포트폴리오를 눌러서, 유효한 전 페이지와 유효한 전 전 페이지가 동일하지 않은 상황 -> 전 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
-        else {
-            navigate(visitedEndEndpoint);
-        }
-    };
+    // const handleGoBackClick = () => {
+    //     // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
+    //     // 포트폴리오를 누르지 않아, 유효한 전 페이지와 유효한 전 전 페이지가 동일한 상황 -> 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
+    //     if (visitedEndpoint === visitedEndEndpoint) {
+    //         navigate(visitedEndpoint);
+    //     }
+    //     // 포트폴리오를 눌러서, 유효한 전 페이지와 유효한 전 전 페이지가 동일하지 않은 상황 -> 전 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
+    //     else {
+    //         navigate(visitedEndEndpoint);
+    //     }
+    // };
 
     const showModal = (action) => {
         setIsModalVisible(true);
@@ -309,10 +309,10 @@ function DetailProjectPage() {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /project/detail/${projectId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project/detail/${projectId}로 설정
         // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint ));    // 전역에 상태 저장을 위한 애.
-        setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(visitedEndEndpoint);
-        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+        // dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint ));    // 전역에 상태 저장을 위한 애.
+        // setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        // setLastLastVisitedEndpoint(visitedEndEndpoint);
+        // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
         navigate(`/portfolio/notify/${nickName}`);
     };
 
@@ -320,10 +320,10 @@ function DetailProjectPage() {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /project/detail/${projectId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project/detail/${projectId}로 설정
         // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
-        setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(visitedEndEndpoint);
-        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+        // dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
+        // setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        // setLastLastVisitedEndpoint(visitedEndEndpoint);
+        // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
         navigate(`/portfolio/notify/${nickName}`);
     };
 
@@ -808,20 +808,20 @@ function DetailProjectPage() {
                 <Modal
                     title="유저 승인"
                     open={approveModalVisible}
-                    onOk={() => setApproveModalVisible(false)}
-                    onCancel={() => handleApproveUser(applyUserNickName, projectId)}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={() => handleApproveUser(applyUserNickName, projectId)}
+                    onCancel={() => setApproveModalVisible(false)}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>{applyUserNickName} 님을 승인하시겠습니까?</p>
                 </Modal>
                 <Modal
                     title="유저 승인 취소"
                     open={cancelModalVisible} // visible로 모달 열림 여부 설정
-                    onOk={() => setCancelModalVisible(false)} // 취소 버튼을 누르면 모달 닫기
-                    onCancel={() => handleCancelApproval(applyUserNickName, projectId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={() => handleCancelApproval(applyUserNickName, projectId)}
+                    onCancel={() => setCancelModalVisible(false)}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>{applyUserNickName} 님을 승인 취소하시겠습니까?</p>
                 </Modal>
@@ -845,9 +845,9 @@ function DetailProjectPage() {
             <Row>
                 <Col span={12}>
                     {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
-                    <Button onClick={handleGoBackClick}>
+                    {/* <Button onClick={handleGoBackClick}>
                         목록으로 돌아가기
-                    </Button>
+                    </Button> */}
                 </Col>
                 <Col span={12} style={{ textAlign: 'right' }}>
                     {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
@@ -1140,11 +1140,10 @@ function DetailProjectPage() {
                 <Modal
                     title="Confirm Action"
                     open={isModalVisible}
-                    // 모순적이지만, 익숙한 위치에 두기 위해 함수 이름을 Cross해서 사용
-                    onOk={handleModalCancel}
-                    onCancel={handleModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleModalConfirm}
+                    onCancel={handleModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {modalAction === 'delete' && (
                         <p>게시물을 삭제하시겠습니까?</p>
@@ -1156,20 +1155,20 @@ function DetailProjectPage() {
                 <Modal
                     title="Confirm Action"
                     open={isCancelModalVisible}
-                    onOk={handleCancelModalCancel}
-                    onCancel={handleCancelModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleCancelModalConfirm}
+                    onCancel={handleCancelModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>지원을 취소하시겠습니까?</p>
                 </Modal>
                 <Modal
                     title="Confirm Action"
                     open={isScrapModalVisible}
-                    onOk={handleScrapModalCancel}
-                    onCancel={handleScrapModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleScrapModalConfirm}
+                    onCancel={handleScrapModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {scrapAction === 'scrap' && (
                         <p>게시물을 스크랩하시겠습니까?</p>
@@ -1181,20 +1180,20 @@ function DetailProjectPage() {
                 <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
                     title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
                     open={commentEditConfirmModalVisible}
-                    onOk={handleCommentEditModalCancel}
-                    onCancel={handleCommentEditModalOk}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleCommentEditModalOk}
+                    onCancel={handleCommentEditModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
                 </Modal>
                 <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
                     title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
                     open={commentDeleteConfirmModalVisible}
-                    onOk={handleCommentDeleteModalCancel}
-                    onCancel={handleCommentDeleteModalOk}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleCommentDeleteModalOk}
+                    onCancel={handleCommentDeleteModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
                 </Modal>

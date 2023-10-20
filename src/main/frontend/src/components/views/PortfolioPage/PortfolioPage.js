@@ -1,15 +1,15 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
-import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
 
 function PortfolioPage() {
     const navigate = useNavigate();
     const { nickName } = useParams();
-    const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
-    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
+    //const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    //const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [postData, setPostData] = useState([]);
     const [loadPosts, setloadPosts] = useState("more");   
@@ -51,7 +51,7 @@ function PortfolioPage() {
     useEffect(() => {
         if (hasPortfolio === null) {
 
-            navigate(visitedEndpoint);
+            navigate(-1);
         }
     }, [hasPortfolio]);
 
@@ -174,26 +174,26 @@ function PortfolioPage() {
 
     // Handler
     // 목록으로 돌아가기 버튼 클릭
-    const handleGoBackClick = () => {
-        if(visitedEndEndEndpoint === "/portfoliocard") {
-            navigate(visitedEndEndEndpoint);
-        }
-        else if(visitedEndEndEndpoint === '/group') {
-            navigate(visitedEndEndEndpoint);
-        }
-        else if(visitedEndEndEndpoint === '/scrap') {
-            navigate(visitedEndEndEndpoint);
-        }
-        else if(visitedEndEndEndpoint === '/') {
-            navigate(visitedEndEndEndpoint);
-        }
-        else if(visitedEndEndEndpoint.includes('search/portfoliocard/query')) {
-            navigate(visitedEndEndEndpoint);
-        }
-        else {
-            navigate(visitedEndpoint);
-        }
-    };
+    // const handleGoBackClick = () => {
+    //     if(visitedEndEndEndpoint === "/portfoliocard") {
+    //         navigate(visitedEndEndEndpoint);
+    //     }
+    //     else if(visitedEndEndEndpoint === '/group') {
+    //         navigate(visitedEndEndEndpoint);
+    //     }
+    //     else if(visitedEndEndEndpoint === '/scrap') {
+    //         navigate(visitedEndEndEndpoint);
+    //     }
+    //     else if(visitedEndEndEndpoint === '/') {
+    //         navigate(visitedEndEndEndpoint);
+    //     }
+    //     else if(visitedEndEndEndpoint.includes('search/portfoliocard/query')) {
+    //         navigate(visitedEndEndEndpoint);
+    //     }
+    //     else {
+    //         navigate(visitedEndpoint);
+    //     }
+    // };
 
     // Handler
     // OnClick : FETCH PostsListsDTO, switch 'loadPosts' status
@@ -202,17 +202,17 @@ function PortfolioPage() {
         if(loadPosts === "more"){
 
             request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
-            .then((response) => {
+                .then((response) => {
 
-                setPostData(response.data);
-                setloadPosts("fold");
+                    setPostData(response.data);
+                    setloadPosts("fold");
 
-            })
-            .catch((error) => {
+                })
+                .catch((error) => {
 
-                console.error("Error fetching posts:", error);
+                    console.error("Error fetching posts:", error);
 
-            });
+                });
         }
         else if(loadPosts === "fold"){
             setloadPosts("more");
@@ -224,9 +224,12 @@ function PortfolioPage() {
     // onClick : move to post's detail page
     const onClickPosts = (post) => {
 
-        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
-        else{navigate(`/study/detail/${post.id}`);}
-        
+        if(post.postType === "PROJECT") {
+            navigate(`/project/detail/${post.id}`);
+        }
+        else {
+            navigate(`/study/detail/${post.id}`);
+        }
 
     }
 
@@ -240,9 +243,9 @@ function PortfolioPage() {
         <div>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                 {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
-                <Button type="primary" onClick={handleGoBackClick}>
+                {/* <Button type="primary" onClick={handleGoBackClick}>
                     목록으로 돌아가기
-                </Button>
+                </Button> */}
 
             </div>
 
@@ -373,7 +376,7 @@ function PortfolioPage() {
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>
-                                            <strong>{loadPosts}</strong>
+                                            <strong style={{ cursor: 'pointer' }}>{loadPosts}</strong>
                                         </div>
                                     </Col>
                                 </Row>

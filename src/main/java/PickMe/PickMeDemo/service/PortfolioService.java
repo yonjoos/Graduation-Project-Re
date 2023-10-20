@@ -93,14 +93,14 @@ public class PortfolioService {
         // User를 통해 User가 갖고 있는 포트폴리오 찾기
         Optional<Portfolio> findPortfolio = portfolioRepository.findByUser(user);
 
-        Optional<Integer> viewCountOptional = viewCountPortfolioRepository.countByPortfolio_Id(findPortfolio.get().getId());
-
-        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
-
         // PortfolioReturnDtoDto를 빌더를 통해 생성
         PortfolioReturnDto portfolioReturnDto;
 
         if (findPortfolio.isPresent()) {
+            Optional<Integer> viewCountOptional = viewCountPortfolioRepository.countByPortfolio_Id(findPortfolio.get().getId());
+
+            Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
             // portfolioReturnDto를 빌더를 통해 생성
             portfolioReturnDto = PortfolioReturnDto.builder()
                     .isCreated(true)
@@ -227,6 +227,11 @@ public class PortfolioService {
         // User를 통해 User가 갖고 있는 포트폴리오 찾기
         Portfolio portfolio = portfolioRepository.findByUser(user)
                 .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        // 조회수가 있다면, 조회수를 지워야 포트폴리오 삭제 가능
+        if (!portfolio.getViewCountPortfolios().isEmpty()) {
+            viewCountPortfolioRepository.deleteAll(portfolio.getViewCountPortfolios());
+        }
 
         portfolioRepository.delete(portfolio);
     }

@@ -171,17 +171,17 @@ function MyPortfolioPage() {
             });
 
             request('GET', `/getUsersPosts?${queryParams}`)
-            .then((response) => {
+                .then((response) => {
 
-                setPostData(response.data);
-                setloadPosts("fold");
+                    setPostData(response.data);
+                    setloadPosts("fold");
 
-            })
-            .catch((error) => {
+                })
+                .catch((error) => {
 
-                console.error("Error fetching posts:", error);
+                    console.error("Error fetching posts:", error);
 
-            });
+                });
         }
         else if(loadPosts === "fold"){
             setloadPosts("more");
@@ -191,9 +191,12 @@ function MyPortfolioPage() {
 
     const onClickPosts = (post) => {
 
-        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
-        else{navigate(`/study/detail/${post.id}`);}
-        
+        if(post.postType === "PROJECT") {
+            navigate(`/project/detail/${post.id}`);
+        }
+        else {
+            navigate(`/study/detail/${post.id}`);
+        }
 
     }
 
@@ -362,7 +365,7 @@ function MyPortfolioPage() {
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>
-                                            <strong>{loadPosts}</strong>
+                                            <strong style={{ cursor: 'pointer' }}>{loadPosts}</strong>
                                         </div>
                                     </Col>
                                 </Row>

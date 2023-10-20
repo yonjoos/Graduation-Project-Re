@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector/*, useDispatch*/ } from "react-redux";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { getAuthToken } from "../../hoc/request";
 import { notification } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { message } from "antd";
-import { request, setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../hoc/request";
-import { lastVisitedEndpoint } from "../../_actions/actions";
+import { request/*, setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint*/ } from "../../hoc/request";
+//import { lastVisitedEndpoint } from "../../_actions/actions";
 
 function Notifications() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     const location = useLocation();
     const currentEndpoint = location.pathname;
     const nickName = useSelector(state => state.auth.userNickName);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastVisitedEndEndEndpoint);
+    //const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastVisitedEndEndEndpoint);
     const [messages, setMessages] = useState([]);
 
 
@@ -112,10 +112,10 @@ function Notifications() {
 
                             if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
                             {
-                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, '/portfoliocard'));    // 전역에 상태 저장을 위한 
-                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-                                setLastLastVisitedEndpoint(currentEndpoint);
-                                setLastLastLastVisitedEndpoint('/portfoliocard');
+                                //dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, '/portfoliocard'));    // 전역에 상태 저장을 위한 
+                                //setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                                //setLastLastVisitedEndpoint(currentEndpoint);
+                                //setLastLastLastVisitedEndpoint('/portfoliocard');
                             }
                             
                             console.log('last2', currentEndpoint);
@@ -137,10 +137,10 @@ function Notifications() {
 
                             if(!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/"))
                             {
-                                dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, '/portfoliocard'));    // 전역에 상태 저장을 위한 
-                                setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-                                setLastLastVisitedEndpoint(currentEndpoint);
-                                setLastLastLastVisitedEndpoint('/portfoliocard');
+                                //dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, '/portfoliocard'));    // 전역에 상태 저장을 위한 
+                                //setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+                                //setLastLastVisitedEndpoint(currentEndpoint);
+                                //setLastLastLastVisitedEndpoint('/portfoliocard');
                             }
                             console.log('last2', currentEndpoint);
                             console.log('last-last2',currentEndpoint);

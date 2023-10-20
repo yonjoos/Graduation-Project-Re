@@ -1,13 +1,13 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+//import { useSelector } from 'react-redux';
 import { Button, Card, Row, Col, Radio, Progress } from 'antd';
 import { request } from '../../../hoc/request';
 
 function PortfolioNotifyPage() {
     const navigate = useNavigate();
     const { nickName } = useParams();
-    const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    //const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
 
     const [postData, setPostData] = useState([]);
     const [loadPosts, setloadPosts] = useState("more");
@@ -107,9 +107,9 @@ function PortfolioNotifyPage() {
     }
 
     // 목록으로 돌아가기 버튼 클릭
-    const handleGoBackClick = () => {
-        navigate(lastVisitedEndpoint);
-    };
+    // const handleGoBackClick = () => {
+    //     navigate(lastVisitedEndpoint);
+    // };
 
 
 
@@ -187,9 +187,9 @@ function PortfolioNotifyPage() {
         <div>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                 {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
-                <Button type="primary" onClick={() => navigate(-1)}>
+                {/* <Button type="primary" onClick={() => navigate(-1)}>
                     이전 페이지
-                </Button>
+                </Button> */}
 
             </div>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Button, Card, Carousel } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector/*, useDispatch*/ } from 'react-redux';
 import { useState, useEffect } from "react";
 import WelcomeContent from './Sections/WelcomeContent';
 import PortfolioCard from './Sections/PortfolioCard';
@@ -9,8 +9,8 @@ import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
 import SearchInLandingPage from './SearchInLandingPage';
 import { request } from '../../../hoc/request';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
-import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
 import './LandingPage.css';
 
 function LandingPage() {
@@ -20,7 +20,7 @@ function LandingPage() {
     //useSelector을 redux로부터 import한 후 갖고 오고 싶은 state를 갖고 올 수 있는듯 하다)
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
 
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
@@ -109,10 +109,10 @@ function LandingPage() {
     // 인기 게시물 카드 클릭 시 게시물로 이동
     const onClickHandler = (postType, id) => {
         // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
-        dispatch(lastVisitedEndpoint('/', '/', '/'));
-        setLastVisitedEndpoint('/');
-        setLastLastVisitedEndpoint('/');
-        setLastLastLastVisitedEndpoint('/');
+        // dispatch(lastVisitedEndpoint('/', '/', '/'));
+        // setLastVisitedEndpoint('/');
+        // setLastLastVisitedEndpoint('/');
+        // setLastLastLastVisitedEndpoint('/');
 
         // 각각에 대해 올바르게 라우팅 걸어주기
         if (postType === 'PROJECT') {
@@ -144,10 +144,10 @@ function LandingPage() {
         const handleButtonClick = (title, id, name) => {
 
             // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
-            dispatch(lastVisitedEndpoint('/', '/', '/'));
-            setLastVisitedEndpoint('/');
-            setLastLastVisitedEndpoint('/');
-            setLastLastLastVisitedEndpoint('/');
+            // dispatch(lastVisitedEndpoint('/', '/', '/'));
+            // setLastVisitedEndpoint('/');
+            // setLastLastVisitedEndpoint('/');
+            // setLastLastLastVisitedEndpoint('/');
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'Project') {

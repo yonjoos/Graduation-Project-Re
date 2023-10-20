@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+//import { useSelector, useDispatch } from 'react-redux';
 import { Row, Col, Button, Card, Pagination, Divider, Menu, Dropdown } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInLandingPage from '../LandingPage/SearchInLandingPage';
-import { lastVisitedEndpoint } from '../../../_actions/actions';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 
 
 function SearchProjectListPage(onSearch) {
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
     const [searchTerm, setSearchTerm] = useState(useParams());
@@ -72,10 +72,10 @@ function SearchProjectListPage(onSearch) {
 
         // /project/detail/${projectId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /search/project/query/${currentSearchTerm.searchTerm}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /search/project/query/${currentSearchTerm.searchTerm}로 설정
-        dispatch(lastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`));    // 전역에 상태 저장을 위한 애.
-        setLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
-        setLastLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
+        // dispatch(lastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`));    // 전역에 상태 저장을 위한 애.
+        // setLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        // setLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
+        // setLastLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
         navigate(`/project/detail/${projectId}`);
     }
 
@@ -268,10 +268,10 @@ function SearchProjectListPage(onSearch) {
         const handleButtonClick = (title, id, name) => {
 
 
-            dispatch(lastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`));    // 전역에 상태 저장을 위한 애.
-            setLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-            setLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
-            setLastLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
+            // dispatch(lastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`, `/search/project/query/${currentSearchTerm.searchTerm}`));    // 전역에 상태 저장을 위한 애.
+            // setLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+            // setLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
+            // setLastLastLastVisitedEndpoint(`/search/project/query/${currentSearchTerm.searchTerm}`);
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'Project') {

@@ -2,14 +2,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
-import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
 
 function PortfolioPage() {
     const navigate = useNavigate();
     const { nickName } = useParams();
-    const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
-    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
+    //const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    //const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [postData, setPostData] = useState([]);
     const [loadPosts, setloadPosts] = useState("more");   
@@ -240,9 +240,9 @@ function PortfolioPage() {
         <div>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                 {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
-                <Button type="primary" onClick={handleGoBackClick}>
+                {/* <Button type="primary" onClick={handleGoBackClick}>
                     목록으로 돌아가기
-                </Button>
+                </Button> */}
 
             </div>
 

@@ -1,18 +1,18 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+//import { useDispatch } from 'react-redux';
 import { Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
 import { request } from '../../../hoc/request';
-import { lastVisitedEndpoint } from '../../../_actions/actions';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
 
 
 function PortfolioCardPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
 
     const [searchTerm, setSearchTerm] = useState(""); // 검색어 값 -  엔터나 클릭 시에만 변경
     const [currentSearchTerm, setCurrentSearchTerm] = useState(""); // 추적하는 검색어 값, 타이핑 시마다 변경
@@ -110,10 +110,10 @@ function PortfolioCardPage() {
 
         const handleButtonClick = (title, id, name) => {
 
-            dispatch(lastVisitedEndpoint('/portfoliocard', '/portfoliocard', '/portfoliocard'));
-            setLastVisitedEndpoint('/portfoliocard');
-            setLastLastVisitedEndpoint('/portfoliocard');
-            setLastLastLastVisitedEndpoint('/portfoliocard');
+            // dispatch(lastVisitedEndpoint('/portfoliocard', '/portfoliocard', '/portfoliocard'));
+            // setLastVisitedEndpoint('/portfoliocard');
+            // setLastLastVisitedEndpoint('/portfoliocard');
+            // setLastLastLastVisitedEndpoint('/portfoliocard');
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'User') {
@@ -175,10 +175,10 @@ function PortfolioCardPage() {
     const onClickHandler = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /portfoliocard로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /portfoliocard로 설정
-        dispatch(lastVisitedEndpoint('/portfoliocard', '/portfoliocard', '/portfoliocard'));
-        setLastVisitedEndpoint('/portfoliocard');
-        setLastLastVisitedEndpoint('/portfoliocard');
-        setLastLastLastVisitedEndpoint('/portfoliocard');
+        // dispatch(lastVisitedEndpoint('/portfoliocard', '/portfoliocard', '/portfoliocard'));
+        // setLastVisitedEndpoint('/portfoliocard');
+        // setLastLastVisitedEndpoint('/portfoliocard');
+        // setLastLastLastVisitedEndpoint('/portfoliocard');
 
         // Error name : Actions must be plain objects. Instead, the actual type was: 'undefined'.
         // Solution : SetLastVisitedEndpoint is not a typical Redux action creator, cannot be stated in dispatch().

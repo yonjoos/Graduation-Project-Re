@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+//import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, Modal, message } from 'antd';
-import { request, setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
-import { lastVisitedEndpoint } from '../../../_actions/actions'
+import { request/*, setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint*/ } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions'
 import './GroupPage.css';
 
 function GroupPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
 
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
     const [postsOption, setPostsOption] = useState("writer"); // 내가 쓴 글이면 postsOption === writer / 내가 지원한 글이면 postsOption === applicant
@@ -57,10 +57,10 @@ function GroupPage() {
         // /project/detail/${postsId} 또는 /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
         // 인자 1 : 유효한 전 페이지 / 인자 2 : 유효한 전 전 페이지 / 인자 3: 유효한 전 전 전 페이지
-        dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
-        setLastVisitedEndpoint('/group');
-        setLastLastVisitedEndpoint('/group');
-        setLastLastLastVisitedEndpoint('/group');
+        //dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
+        //setLastVisitedEndpoint('/group');
+        //setLastLastVisitedEndpoint('/group');
+        //setLastLastLastVisitedEndpoint('/group');
         
 
         if (postType === "PROJECT") {
@@ -98,10 +98,10 @@ function GroupPage() {
     const handleNickNameClick = (nickName) => {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
-        dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
-        setLastVisitedEndpoint('/group');
-        setLastLastVisitedEndpoint('/group');
-        setLastLastLastVisitedEndpoint('/group');
+        //dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
+        //setLastVisitedEndpoint('/group');
+        //setLastLastVisitedEndpoint('/group');
+        //setLastLastLastVisitedEndpoint('/group');
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
     }

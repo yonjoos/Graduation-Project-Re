@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+//import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, Dropdown, Menu } from 'antd';
 import { request } from '../../../hoc/request';
 import SearchInStudyPage from './SearchInStudyPage';
-import { lastVisitedEndpoint } from '../../../_actions/actions'
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions'
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import './StudyPage.css';
 
 
 function StudyPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     const location = useLocation(); //현재 내가 들어와있는 경로를 확인하기 위한 함수
 
     const [searchTerm, setSearchTerm] = useState(""); //스터디 페이지 내의 검색어 키워드
@@ -96,10 +96,10 @@ function StudyPage() {
 
         const handleButtonClick = (title, id, name) => {
 
-            dispatch(lastVisitedEndpoint('/study', '/study', '/study'));
-            setLastVisitedEndpoint('/study');
-            setLastLastVisitedEndpoint('/study');
-            setLastLastLastVisitedEndpoint('/study');
+            // dispatch(lastVisitedEndpoint('/study', '/study', '/study'));
+            // setLastVisitedEndpoint('/study');
+            // setLastLastVisitedEndpoint('/study');
+            // setLastLastLastVisitedEndpoint('/study');
 
             // 각각에 대해 올바르게 라우팅 걸어주기
             if (title === 'Study') {
@@ -160,10 +160,10 @@ function StudyPage() {
     const handleRowClick = (studyId) => {
         // /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /study로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study로 설정
-        dispatch(lastVisitedEndpoint('/study', '/study', '/study'));    // 전역에 상태 저장을 위한 애.
-        setLastVisitedEndpoint('/study');   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint('/study');
-        setLastLastLastVisitedEndpoint('/study');
+        // dispatch(lastVisitedEndpoint('/study', '/study', '/study'));    // 전역에 상태 저장을 위한 애.
+        // setLastVisitedEndpoint('/study');   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        // setLastLastVisitedEndpoint('/study');
+        // setLastLastLastVisitedEndpoint('/study');
         navigate(`/study/detail/${studyId}`);
     }
 

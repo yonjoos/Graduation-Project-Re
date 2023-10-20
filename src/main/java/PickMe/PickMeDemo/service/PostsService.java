@@ -4,12 +4,16 @@ import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.*;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,12 +41,18 @@ public class PostsService {
     private final ViewCountPostsRepository viewCountPostsRepository;
     private final NotificationService notificationService;
     private final JPAQueryFactory queryFactory;
+    private final Storage storage;
 
-    public void uploadProjectPost(PostsFormDto postsFormDto, String userEmail) {
+
+
+    @Value("${spring.cloud.gcp.storage.bucket}") // application.yml에 써둔 bucket 이름
+    private String bucketName;
+
+    public void uploadProjectPost(PostsFormDto postsFormDto, String userEmail) throws IOException {
         uploadPost(postsFormDto, userEmail, PostType.PROJECT);
     }
 
-    public void uploadStudyPost(PostsFormDto postsFormDto, String userEmail) {
+    public void uploadStudyPost(PostsFormDto postsFormDto, String userEmail) throws IOException {
         uploadPost(postsFormDto, userEmail, PostType.STUDY);
     }
 
@@ -49,9 +60,23 @@ public class PostsService {
     // uploadProjectPost 함수와 uploadStudyPost 함수는 구조가 거의 동일하다.
     // 디비에 저장할 때 다른 부분은 오직 PostType이다.
     // 따라서 두 함수의 저장 로직 중 겹치는 부분을 따로 함수로 떼어냈다.
-    public void uploadPost(PostsFormDto postsFormDto, String userEmail, PostType postType) {
+    public void uploadPost(PostsFormDto postsFormDto, String userEmail, PostType postType) throws IOException {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+
+        //이미지 업로드 관련 부분
+        String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+        System.out.println("uuid = " + uuid);
+        String ext = postsFormDto.getPromoteImageUrl().getContentType(); // 파일의 형식 ex) JPG
+        System.out.println("ext = " + ext);
+
+        // Cloud에 이미지 업로드
+        BlobInfo blobInfo = storage.create(
+                BlobInfo.newBuilder(bucketName, uuid)
+                        .setContentType(ext)
+                        .build(),
+                postsFormDto.getPromoteImageUrl().getInputStream()
+        );
 
         Posts posts = Posts.builder()
                 .user(user)
@@ -60,7 +85,7 @@ public class PostsService {
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
                 //.counts(1)      // 맨 처음 지원자 수는 1명 (본인 포함)
                 .content(postsFormDto.getContent().replace("<br>", "\n"))
-                .promoteImageUrl(postsFormDto.getPromoteImageUrl())
+                .promoteImageUrl(uuid) // 겹치지 않는 이름으로 db에는 이미지 파일의 uuid값만 저장
                 .fileUrl(postsFormDto.getFileUrl())
                 .endDate(postsFormDto.getEndDate())
                 .build();
@@ -767,7 +792,7 @@ public class PostsService {
         project.setTitle(postsFormDto.getTitle());
         project.setRecruitmentCount(postsFormDto.getRecruitmentCount());
         project.setContent(postsFormDto.getContent().replace("<br>", "\n"));
-        project.setPromoteImageUrl(postsFormDto.getPromoteImageUrl());
+        //project.setPromoteImageUrl(postsFormDto.getPromoteImageUrl()); // 사진 파일이 바뀌었다면, 새로 구글 클라우드에 저장하고, 바뀐 uuid값으로 db에 저장해야함
         project.setFileUrl(postsFormDto.getFileUrl());
         project.setEndDate(postsFormDto.getEndDate());
 
@@ -797,7 +822,7 @@ public class PostsService {
         study.setTitle(postsFormDto.getTitle());
         study.setRecruitmentCount(postsFormDto.getRecruitmentCount());
         study.setContent(postsFormDto.getContent().replace("<br>", "\n"));
-        study.setPromoteImageUrl(postsFormDto.getPromoteImageUrl());
+        //study.setPromoteImageUrl(postsFormDto.getPromoteImageUrl()); // 사진 파일이 바뀌었다면, 새로 구글 클라우드에 저장하고, 바뀐 uuid값으로 db에 저장해야함
         study.setFileUrl(postsFormDto.getFileUrl());
         study.setEndDate(postsFormDto.getEndDate());
 

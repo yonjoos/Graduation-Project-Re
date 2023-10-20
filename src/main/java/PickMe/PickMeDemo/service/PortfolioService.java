@@ -228,6 +228,11 @@ public class PortfolioService {
         Portfolio portfolio = portfolioRepository.findByUser(user)
                 .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
+        // 조회수가 있다면, 조회수를 지워야 포트폴리오 삭제 가능
+        if (!portfolio.getViewCountPortfolios().isEmpty()) {
+            viewCountPortfolioRepository.deleteAll(portfolio.getViewCountPortfolios());
+        }
+
         portfolioRepository.delete(portfolio);
     }
 

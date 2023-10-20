@@ -11,6 +11,9 @@ function MyPortfolioPage() {
     const navigate = useNavigate();
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);    // 모달이 보이는지 안보이는지 설정하기 위한 애
 
+    const [postData, setPostData] = useState([]);
+    const [loadPosts, setloadPosts] = useState("more");
+
     const [data, setData] = useState(null);
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
@@ -18,8 +21,13 @@ function MyPortfolioPage() {
         game: 0,
         ai: 0
     });
+    
 
 
+    /*
+    useEffect ################################################################################################################
+    useEffect ################################################################################################################
+    */
     // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {
         request('GET', '/getPortfolio', {})
@@ -48,21 +56,12 @@ function MyPortfolioPage() {
 
     
 
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={data && existingPreferences[field]} // Assuming the data structure contains the preference values
-            style={{ cursor: 'default' }}
-        >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
-        </Radio.Group>
-    );
 
-    
 
+    /*
+    Components ################################################################################################################
+    Components ################################################################################################################
+    */
     // 선호도 그래프 관련
     const renderPreferenceBar = (field) => {
         const preferenceValue = data && existingPreferences[field];
@@ -121,6 +120,84 @@ function MyPortfolioPage() {
         return chunks;
     }
 
+    const renderPosts = (posts) => {
+
+        if(loadPosts === "fold"){
+            return(
+
+                posts.map((post) => (
+                    <Row justify="center" key={post.id}>
+                    <Col span={16}>
+                        <Card 
+                        onClick={() => onClickPosts(post)}
+                        style = {{height:'150px'}}
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
+                            </div>
+                        }>
+                            <div>
+                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
+                            </div>
+                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
+                                {post.briefContent}
+                            </div>
+                        </Card>
+                    </Col>
+                    </Row>
+                ))
+            )
+        }
+        else{
+            return(
+                <div></div>
+            )
+        }
+
+
+    };
+
+
+    /*
+    Handler ################################################################################################################
+    HAndler ################################################################################################################
+    */
+    const onLoadPosts = () => {
+
+        if(loadPosts === "more"){
+        
+            const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+                size: 3, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+            });
+
+            request('GET', `/getUsersPosts?${queryParams}`)
+            .then((response) => {
+
+                setPostData(response.data);
+                setloadPosts("fold");
+
+            })
+            .catch((error) => {
+
+                console.error("Error fetching posts:", error);
+
+            });
+        }
+        else if(loadPosts === "fold"){
+            setloadPosts("more");
+        }
+
+    };
+
+    const onClickPosts = (post) => {
+
+        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        else{navigate(`/study/detail/${post.id}`);}
+        
+
+    }
+
 
     // 포트폴리오 업로드 버튼 클릭 시 해당 엔드포인터로 이동
     const onClickUploadHandler = () => {
@@ -156,6 +233,12 @@ function MyPortfolioPage() {
         hideDeleteModal();
     };
 
+
+
+    /*
+    RETURN ################################################################################################################
+    RETURN ################################################################################################################
+    */
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
         <div>
@@ -270,6 +353,31 @@ function MyPortfolioPage() {
                             </Card>
                         </Col>
                     </Row>
+                    <br></br>
+                    <Row justify="center">
+                        <Col span = {16}>
+                            <Card >
+                                <Row justify="space-between">
+                                    <Col span={8}>
+                                        Post
+                                    </Col>
+                                    <Col span={8} style={{ textAlign: 'right' }}>
+                                        <div onClick={onLoadPosts}>
+                                            <strong>{loadPosts}</strong>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                    </Row>
+                    {postData && postData.length > 0 ? (
+                        renderPosts(postData)
+                        ) : (
+                            <div></div>
+
+                    )}
+
+
 
                     <br />
                     <br />

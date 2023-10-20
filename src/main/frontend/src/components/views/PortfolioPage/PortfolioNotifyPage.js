@@ -9,6 +9,9 @@ function PortfolioNotifyPage() {
     const { nickName } = useParams();
     const lastVisitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
 
+    const [postData, setPostData] = useState([]);
+    const [loadPosts, setloadPosts] = useState("more");
+
     const [data, setData] = useState(null);
     const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingPreferences, setExistingPreferences] = useState({
@@ -44,19 +47,6 @@ function PortfolioNotifyPage() {
         }
     }, [hasPortfolio]);
 
-
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={data && existingPreferences[field]} // Assuming the data structure contains the preference values
-            style={{ cursor: 'default' }}
-        >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
-        </Radio.Group>
-    );
 
     // 선호도 그래프 관련
     const renderPreferenceBar = (field) => {
@@ -120,6 +110,77 @@ function PortfolioNotifyPage() {
     const handleGoBackClick = () => {
         navigate(lastVisitedEndpoint);
     };
+
+
+
+    const renderPosts = (posts) => {
+
+        if(loadPosts === "fold"){
+            return(
+
+                posts.map((post) => (
+                    <Row justify="center" key={post.id}>
+                    <Col span={16}>
+                        <Card 
+                        onClick={() => onClickPosts(post)}
+                        style = {{height:'150px'}}
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
+                            </div>
+                        }>
+                            <div>
+                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
+                            </div>
+                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
+                                {post.briefContent}
+                            </div>
+                        </Card>
+                    </Col>
+                    </Row>
+                )))
+        }
+        else{
+            return(
+                <div></div>
+            )
+        }
+
+
+    };
+
+    const onLoadPosts = () => {
+
+        if(loadPosts === "more"){
+
+
+            request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
+            .then((response) => {
+
+                setPostData(response.data);
+                setloadPosts("fold");
+
+            })
+            .catch((error) => {
+
+                console.error("Error fetching posts:", error);
+
+            });
+        }
+        else if(loadPosts === "fold"){
+            setloadPosts("more");
+        }
+
+    };
+
+    const onClickPosts = (post) => {
+
+        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        else{navigate(`/study/detail/${post.id}`);}
+        
+
+    }
 
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
@@ -228,9 +289,33 @@ function PortfolioNotifyPage() {
                             </Card>
                         </Col>
                     </Row>
+                    <br></br>
+                    <Row justify="center">
+                        <Col span = {16}>
+                            <Card >
+                                <Row justify="space-between">
+                                    <Col span={8}>
+                                        Post
+                                    </Col>
+                                    <Col span={8} style={{ textAlign: 'right' }}>
+                                        <div onClick={onLoadPosts}>
+                                            <strong>{loadPosts}</strong>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                    </Row>
+                    {postData && postData.length > 0 ? (
+                        renderPosts(postData)
+                        ) : (
+                            <div></div>
+
+                    )}
 
                     <br />
                     <br />
+
                 </div>
             )}
         </div>

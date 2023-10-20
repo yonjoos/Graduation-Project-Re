@@ -10,7 +10,9 @@ function PortfolioPage() {
     const { nickName } = useParams();
     const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
     const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
-    
+
+    const [postData, setPostData] = useState([]);
+    const [loadPosts, setloadPosts] = useState("more");   
 
     const [data, setData] = useState(null);
     const [hasPortfolio, setHasPortfolio] = useState('');
@@ -21,6 +23,11 @@ function PortfolioPage() {
         ai: 0
     });
 
+
+    /*
+    UseEffect #############################################################################################################
+    UseEffect #############################################################################################################
+    */
 
     // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {
@@ -49,20 +56,56 @@ function PortfolioPage() {
     }, [hasPortfolio]);
 
 
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={data && existingPreferences[field]} // Assuming the data structure contains the preference values
-            style={{ cursor: 'default' }}
-        >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
-        </Radio.Group>
-    );
+    /*
+    COMPONENTS #############################################################################################################
+    COMPONENTS #############################################################################################################
+    */
 
-    // 선호도 그래프 관련
+
+    // Component
+    // INPUT : PostsListsDTO
+    // RETURN : Posts Lists <Card> components
+    const renderPosts = (posts) => {
+
+        if(loadPosts === "fold"){
+            return(
+
+                posts.map((post) => (
+                    <Row justify="center" key={post.id}>
+                    <Col span={16}>
+                        <Card 
+                        onClick={() => onClickPosts(post)}
+                        style = {{height:'150px'}}
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
+                            </div>
+                        }>
+                            <div>
+                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
+                            </div>
+                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
+                                {post.briefContent}
+                            </div>
+                        </Card>
+                    </Col>
+                    </Row>
+                )))
+        }
+        else{
+            return(
+                <div></div>
+            )
+        }
+
+
+    };
+
+
+    // Component
+    // INPUT : fields of interests
+    // RETURN : bar-graph to preferencies
     const renderPreferenceBar = (field) => {
         const preferenceValue = data && existingPreferences[field];
         return (
@@ -75,7 +118,9 @@ function PortfolioPage() {
         );
     };
 
-    // 선호도 그래프 관련
+    // Component (for > Component-renderPreferenceBar)
+    // INPUT : fields of interests
+    // OUTPUT : 필드에 따른 색상코드
     const getBarColor = (field) => {
         if (field === "web") {
             return '#FE708F';
@@ -120,6 +165,14 @@ function PortfolioPage() {
         return chunks;
     }
 
+
+    /*
+    HANDLER #############################################################################################################
+    HANDLER #############################################################################################################
+    */
+
+
+    // Handler
     // 목록으로 돌아가기 버튼 클릭
     const handleGoBackClick = () => {
         if(visitedEndEndEndpoint === "/portfoliocard") {
@@ -142,6 +195,45 @@ function PortfolioPage() {
         }
     };
 
+    // Handler
+    // OnClick : FETCH PostsListsDTO, switch 'loadPosts' status
+    const onLoadPosts = () => {
+
+        if(loadPosts === "more"){
+
+            request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
+            .then((response) => {
+
+                setPostData(response.data);
+                setloadPosts("fold");
+
+            })
+            .catch((error) => {
+
+                console.error("Error fetching posts:", error);
+
+            });
+        }
+        else if(loadPosts === "fold"){
+            setloadPosts("more");
+        }
+
+    };
+
+    // Handler
+    // onClick : move to post's detail page
+    const onClickPosts = (post) => {
+
+        if(post.postType === "PROJECT"){navigate(`/project/detail/${post.id}`);}
+        else{navigate(`/study/detail/${post.id}`);}
+        
+
+    }
+
+    /*
+    RETURN #####################################################################################################################
+    RETURN #####################################################################################################################
+    */
 
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
@@ -270,6 +362,32 @@ function PortfolioPage() {
 
                     <br />
                     <br />
+        
+                    {/* >> Posts Lists << */}
+                    <Row justify="center">
+                        <Col span = {16}>
+                            <Card >
+                                <Row justify="space-between">
+                                    <Col span={8}>
+                                        Post
+                                    </Col>
+                                    <Col span={8} style={{ textAlign: 'right' }}>
+                                        <div onClick={onLoadPosts}>
+                                            <strong>{loadPosts}</strong>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </Col>
+                    </Row>
+
+                    {/* >> Posts << */}
+                    {postData && postData.length > 0 ? (
+                        renderPosts(postData)
+                        ) : (
+                            <div></div>
+
+                    )}
                 </div>
             )}
         </div>

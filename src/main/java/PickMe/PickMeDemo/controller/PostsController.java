@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +33,17 @@ public class PostsController {
     */
 
     // uploadProjectPost
+    // 이미지나 파일같은 거 전송받을 땐 @RequestBody 빼야함
     @PostMapping("/uploadProjectPost")
-    public ResponseEntity<String> uploadProjectPost(@RequestBody @Valid PostsFormDto postsFormDto, Principal principal) {
+    public ResponseEntity<String> uploadProjectPost(@Valid PostsFormDto postsFormDto, Principal principal) {
         return uploadPost(postsFormDto, principal, PostType.PROJECT);
     }
 
 
     // uploadStudyPost
+    // 이미지나 파일같은 거 전송받을 땐 @RequestBody 빼야함
     @PostMapping("/uploadStudyPost")
-    public ResponseEntity<String> uploadStudyPost(@RequestBody @Valid PostsFormDto postsFormDto, Principal principal) {
+    public ResponseEntity<String> uploadStudyPost(@Valid PostsFormDto postsFormDto, Principal principal) {
         return uploadPost(postsFormDto, principal, PostType.STUDY);
     }
 
@@ -63,6 +66,8 @@ public class PostsController {
             return ResponseEntity.ok("Post has been successfully uploaded.");
         } catch (AppException ex) {
             return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -290,6 +295,27 @@ public class PostsController {
         return ResponseEntity.ok(filteredProjects);
     }
 
+    // FROM : MyPortfolioPage
+    // GET : My Posts
+    @GetMapping("/getUsersPosts")
+    public ResponseEntity<List<UsersPostsListDto>> getUsersPosts(Principal principal) {
+        String email = principal.getName();
+        String nickName = userService.findByEmail(email).getNickName();
+        List<UsersPostsListDto> usersPosts = postsService.getUsersPosts(nickName);
+        return ResponseEntity.ok(usersPosts);
+    }
+
+    // FROM : Portfolio
+    // Get : Other User's Posts
+    @GetMapping("/getOtherUsersPosts")
+    public ResponseEntity<List<UsersPostsListDto>> getOtherUsersPosts(
+            @RequestParam(name = "nickName") String nickName
+    ) {
+        List<UsersPostsListDto> usersPosts = postsService.getUsersPosts(nickName);
+        return ResponseEntity.ok(usersPosts);
+    }
+
+
     // 스터디 페이지에서, 동적 쿼리를 활용해 선택된 배너와 선택한 페이지, 정렬 옵션, 검색어에 따라 게시물을 페이징해서 프런트에 반환하는 컨트롤러
     @GetMapping("/getFilteredStudies")
     public ResponseEntity<Page<PostsListDto>> getFilteredStudies(
@@ -308,6 +334,7 @@ public class PostsController {
 
         return ResponseEntity.ok(filteredStudies);
     }
+
 
 
 

@@ -1073,7 +1073,7 @@ function DetailProjectPage() {
 
                 {/* 드라이브에서 image가져와 렌더링 */}
                 <div style={{ marginLeft: '5px' }}>
-                    홍보 사진: <img src={`https://storage.googleapis.com/pickme-hongik-bucket/${data.promoteImageUrl}`} alt="홍보 사진" />
+                    홍보 사진: <img src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.promoteImageUrl}`} alt="홍보 사진" />
                 </div>
 
                 <Divider className="bold-divider" />

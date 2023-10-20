@@ -15,9 +15,9 @@ public class StorageConfig {
     @Bean
     public Storage storage() throws IOException {
 
-        ClassPathResource resource = new ClassPathResource("focal-cipher-402404-669125967bfe.json");
+        ClassPathResource resource = new ClassPathResource("tidy-tine-402602-c0ba898dfa95.json");
         GoogleCredentials credentials = GoogleCredentials.fromStream(resource.getInputStream());
-        String projectId = "focal-cipher-402404";
+        String projectId = "tidy-tine-402602";
         return StorageOptions.newBuilder()
                 .setProjectId(projectId)
                 .setCredentials(credentials)

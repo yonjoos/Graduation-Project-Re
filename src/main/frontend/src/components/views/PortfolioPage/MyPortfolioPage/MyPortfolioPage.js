@@ -399,10 +399,10 @@ function MyPortfolioPage() {
                     <Modal
                         title="포트폴리오 삭제"
                         open={isDeleteModalVisible}
-                        onCancel={handleDelete}
-                        onOk={hideDeleteModal}
-                        okText="아니오"
-                        cancelText="예"
+                        onCancel={hideDeleteModal}
+                        onOk={handleDelete}
+                        okText="예"
+                        cancelText="아니오"
                     >
                         <p>정말로 포트폴리오를 삭제하시겠습니까?</p>
                     </Modal>

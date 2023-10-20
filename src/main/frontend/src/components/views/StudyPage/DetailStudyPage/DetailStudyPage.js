@@ -808,20 +808,20 @@ function DetailStudyPage() {
                 <Modal
                     title="유저 승인"
                     open={approveModalVisible}
-                    onOk={() => setApproveModalVisible(false)}
-                    onCancel={() => handleApproveUser(applyUserNickName, studyId)}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={() => handleApproveUser(applyUserNickName, studyId)}
+                    onCancel={() => setApproveModalVisible(false)}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>{applyUserNickName} 님을 승인하시겠습니까?</p>
                 </Modal>
                 <Modal
                     title="유저 승인 취소"
                     open={cancelModalVisible} // visible로 모달 열림 여부 설정
-                    onOk={() => setCancelModalVisible(false)} // 취소 버튼을 누르면 모달 닫기
-                    onCancel={() => handleCancelApproval(applyUserNickName, studyId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={() => handleCancelApproval(applyUserNickName, studyId)} // 취소 버튼을 누르면 모달 닫기
+                    onCancel={() => setCancelModalVisible(false)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>{applyUserNickName} 님을 승인 취소하시겠습니까?</p>
                 </Modal>
@@ -1140,10 +1140,10 @@ function DetailStudyPage() {
                     title="Confirm Action"
                     open={isModalVisible}
                     // 모순적이지만, 익숙한 위치에 두기 위해 함수 이름을 Cross해서 사용
-                    onOk={handleModalCancel}
-                    onCancel={handleModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleModalConfirm}
+                    onCancel={handleModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {modalAction === 'delete' && (
                         <p>게시물을 삭제하시겠습니까?</p>
@@ -1155,20 +1155,20 @@ function DetailStudyPage() {
                 <Modal
                     title="Confirm Action"
                     open={isCancelModalVisible}
-                    onOk={handleCancelModalCancel}
-                    onCancel={handleCancelModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleCancelModalConfirm}
+                    onCancel={handleCancelModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>지원을 취소하시겠습니까?</p>
                 </Modal>
                 <Modal
                     title="Confirm Action"
                     open={isScrapModalVisible}
-                    onOk={handleScrapModalCancel}
-                    onCancel={handleScrapModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleScrapModalConfirm}
+                    onCancel={handleScrapModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {scrapAction === 'scrap' && (
                         <p>게시물을 스크랩하시겠습니까?</p>
@@ -1180,20 +1180,20 @@ function DetailStudyPage() {
                 <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
                     title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
                     open={commentEditConfirmModalVisible}
-                    onOk={handleCommentEditModalCancel}
-                    onCancel={handleCommentEditModalOk}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleCommentEditModalOk}
+                    onCancel={handleCommentEditModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
                 </Modal>
                 <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
                     title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
                     open={commentDeleteConfirmModalVisible}
-                    onOk={handleCommentDeleteModalCancel}
-                    onCancel={handleCommentDeleteModalOk}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={handleCommentDeleteModalOk}
+                    onCancel={handleCommentDeleteModalCancel}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
                 </Modal>

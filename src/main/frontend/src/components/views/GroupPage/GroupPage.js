@@ -334,20 +334,20 @@ function GroupPage() {
             <Modal
                 title="유저 승인"
                 open={isModalVisible}
-                onOk={() => setIsModalVisible(false)}
-                onCancel={() => handleApproveUser(nickName, postsId)}
-                okText="아니오"
-                cancelText="예"
+                onOk={() => handleApproveUser(nickName, postsId)}
+                onCancel={() => setIsModalVisible(false)}
+                okText="예"
+                cancelText="아니오"
             >
                 <p>{nickName} 님을 승인하시겠습니까?</p>
             </Modal>
             <Modal
                 title="유저 승인 취소"
                 open={cancelModalVisible} // visible로 모달 열림 여부 설정
-                onOk={() => setCancelModalVisible(false)} // 취소 버튼을 누르면 모달 닫기
-                onCancel={() => handleCancelApproval(nickName, postsId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
-                okText="아니오"
-                cancelText="예"
+                onOk={() => handleCancelApproval(nickName, postsId)} // 취소 버튼을 누르면 모달 닫기
+                onCancel={() => setCancelModalVisible(false)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
+                okText="예"
+                cancelText="아니오"
             >
                 <p>{nickName} 님을 승인 취소하시겠습니까?</p>
             </Modal>

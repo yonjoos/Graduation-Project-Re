@@ -1,9 +1,11 @@
 package PickMe.PickMeDemo.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +23,6 @@ public class PostsFormDto {
     private Integer recruitmentCount;
     private LocalDate endDate;
     private String content;
-    private String promoteImageUrl;
+    private MultipartFile promoteImageUrl; // 이미지 파일 자체를 받음
     private String fileUrl;
 }

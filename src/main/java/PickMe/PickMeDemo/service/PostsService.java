@@ -846,20 +846,86 @@ public class PostsService {
         Posts posts = postsRepository.findById(projectId)
                 .orElseThrow(() -> new AppException("Project not found", HttpStatus.NOT_FOUND));
 
-        // 프로젝트 게시물과 연관된 카테고리 찾기
-        Category category = posts.getCategory();
+        // confirm 값이 true인 UserApplyPosts가 있는지 확인
+        // confirm 값이 true인 UserApplyPosts 엔티티만 선택하여 컬렉트
+        List<UserApplyPosts> confirmedUserApplyPosts = posts.getUserApplyPosts().stream()
+                .filter(userApplyPosts -> userApplyPosts.getConfirm())
+                .collect(Collectors.toList());
 
-        if (category != null) { // 카테고리 먼저 지워야 함
-            categoryRepository.delete(category);
-        }
+        // 수집된 리스트(confirmedUserApplyPosts)에는 confirm 값이 true인 UserApplyPosts 엔티티만 포함
+        if (confirmedUserApplyPosts.isEmpty()) {    // confirmedUserApplyPosts가 비었다는 것은, 모두 false라는 것.
 
-        // 조회수가 있다면, 조회수를 지워야 게시물 삭제 가능
-        if (!posts.getViewCountPosts().isEmpty()) {
+            // 게시물 삭제 시, 게시물 지원자에게 알림.
+            String findWriterNickname = posts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = posts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            notificationMessage = new NotificationMessageDto("project/detail/" + posts.getId() + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다.";
+
+            // 게시물 삭제를 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+
+            // posts.getUserApplyPosts()에서 User 목록을 추출
+            List<User> users = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (User user : users) {
+                // 실제 jpa를 통해 notification을 만들어 저장한다.
+                Notifications deleteNotification = Notifications.builder()
+                        .user(user)
+                        .postId(posts.getId())
+                        .notificationMessage(notifyMessage)
+                        .postType(posts.getPostType())
+                        .checked(false)
+                        .build();
+
+                Notifications savedNotification = notificationsRepository.save(deleteNotification);
+
+                // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+                notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+            }
+
+            // 게시물에 지원했던 모든 유저에게 notify 발송
+
+            // posts.getUserApplyPosts()에서 User ID 목록을 추출
+            List<Long> userIds = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser().getId())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (Long userId : userIds) {
+                notificationService.notify(userId, notificationMessage);
+            }
+
+
+
+            // 카테고리 삭제
+            Category category = posts.getCategory();
+
+            if (category != null) {
+                categoryRepository.delete(category);
+            }
+
+            // userApplyPosts 삭제
+            userApplyPostsRepository.deleteAll(posts.getUserApplyPosts());
+
+            // viewCountPosts 삭제
             viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
-        }
 
-        // 그제서야 프로젝트도 삭제 가능
-        postsRepository.delete(posts);
+            // Posts 엔티티 삭제
+            postsRepository.delete(posts);
+        } else {
+            // 확인되지 않은 UserApplyPosts가 있으면 삭제를 허용하지 않습니다.
+            // 예외를 throw하거나 메시지를 반환하거나 필요한 대로 처리할 수 있습니다.
+            throw new AppException("삭제할 수 없습니다. 확인되지 않은 UserApplyPosts가 있습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 스터디 삭제
@@ -869,20 +935,86 @@ public class PostsService {
         Posts posts = postsRepository.findById(studyId)
                 .orElseThrow(() -> new AppException("Study not found", HttpStatus.NOT_FOUND));
 
-        // 스터디 게시물과 연관된 카테고리 찾기
-        Category category = posts.getCategory();
+        // confirm 값이 true인 UserApplyPosts가 있는지 확인
+        // confirm 값이 true인 UserApplyPosts 엔티티만 선택하여 컬렉트
+        List<UserApplyPosts> confirmedUserApplyPosts = posts.getUserApplyPosts().stream()
+                .filter(userApplyPosts -> userApplyPosts.getConfirm())
+                .collect(Collectors.toList());
 
-        if (category != null) { // 카테고리 먼저 지워야 함
-            categoryRepository.delete(category);
-        }
+        // 수집된 리스트(confirmedUserApplyPosts)에는 confirm 값이 true인 UserApplyPosts 엔티티만 포함
+        if (confirmedUserApplyPosts.isEmpty()) {    // confirmedUserApplyPosts가 비었다는 것은, 모두 false라는 것.
 
-        // 조회수가 있다면, 조회수를 지워야 게시물 삭제 가능
-        if (!posts.getViewCountPosts().isEmpty()) {
+            // 게시물 삭제 시, 게시물 지원자에게 알림.
+            String findWriterNickname = posts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = posts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            notificationMessage = new NotificationMessageDto("study/detail/" + posts.getId() + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다.";
+
+            // 게시물 삭제를 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+
+            // posts.getUserApplyPosts()에서 User 목록을 추출
+            List<User> users = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (User user : users) {
+                // 실제 jpa를 통해 notification을 만들어 저장한다.
+                Notifications deleteNotification = Notifications.builder()
+                        .user(user)
+                        .postId(posts.getId())
+                        .notificationMessage(notifyMessage)
+                        .postType(posts.getPostType())
+                        .checked(false)
+                        .build();
+
+                Notifications savedNotification = notificationsRepository.save(deleteNotification);
+
+                // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+                notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+            }
+
+            // 게시물에 지원했던 모든 유저에게 notify 발송
+
+            // posts.getUserApplyPosts()에서 User ID 목록을 추출
+            List<Long> userIds = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser().getId())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (Long userId : userIds) {
+                notificationService.notify(userId, notificationMessage);
+            }
+
+
+
+            // 카테고리 삭제
+            Category category = posts.getCategory();
+
+            if (category != null) {
+                categoryRepository.delete(category);
+            }
+
+            // userApplyPosts 삭제
+            userApplyPostsRepository.deleteAll(posts.getUserApplyPosts());
+
+            // viewCountPosts 삭제
             viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
-        }
 
-        // 그제서야 스터디도 삭제 가능
-        postsRepository.delete(posts);
+            // Posts 엔티티 삭제
+            postsRepository.delete(posts);
+        } else {
+            // 확인되지 않은 UserApplyPosts가 있으면 삭제를 허용하지 않습니다.
+            // 예외를 throw하거나 메시지를 반환하거나 필요한 대로 처리할 수 있습니다.
+            throw new AppException("삭제할 수 없습니다. 확인되지 않은 UserApplyPosts가 있습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
 

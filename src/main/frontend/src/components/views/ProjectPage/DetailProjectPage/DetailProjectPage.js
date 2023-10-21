@@ -1004,204 +1004,214 @@ function DetailProjectPage() {
 
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
-            <div style={{ flex: 1 }}>
-                {/** 좌측 여백을 위해 만든 더미 div */}
-            </div>
-            
-            <div style={{ flex: 2.5 }}>
-                {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
-                {data.writer && renderButtons()}
-                {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
-                {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
-                {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
-                {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
-                {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
-                {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
-                {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
+        <div>
+            {data.writer !== null ? (
+                // data.writer가 null이 아닌 경우 (게시물이 존재하는 경우)
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
+                    <div style={{ flex: 1 }}>
+                        {/** 좌측 여백을 위해 만든 더미 div */}
+                    </div>
+                    
+                    <div style={{ flex: 2.5 }}>
+                        {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
+                        {data.writer && renderButtons()}
+                        {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
+                        {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
+                        {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
+                        {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
 
-                {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                <Divider className="bold-divider" />
-
-                <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                    <Col span={16}>
-                        <div style={{ marginLeft: '5%' }}>
-                            제목: {data.title}
-                        </div>
-                    </Col>
-                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                    <Col span={8} className="vertical-line">
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ marginLeft: '3px' }}>
-                                {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
-                            </div>
-                            <div style={{ marginRight: '15px' }}>
-                                조회 수: {data.viewCount}
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-
-                <Divider className="simple-divider" />
-
-                <Row gutter={[16, 16]} justify="center" align="middle">
-                    <Col span={16}>
-                        <div style={{ marginLeft: '5%', borderRight: '1px', cursor: 'pointer' }} onClick={() => handleNickNameClick(data.nickName)}>
-                            닉네임: {data.nickName}
-                        </div>
-                    </Col>
-                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                    <Col span={8} className="vertical-line">
-                        <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                            인원: {data.counts} / {data.recruitmentCount}
-                        </div>
-                        <div style={{ marginLeft: '3px' }}>
-                            모집 마감일: {formatDate(data.endDate)}
-                        </div>
-                    </Col>
-                </Row>
-
-                <Divider className="bold-divider" />
-
-                <div style={{ marginLeft: '5px' }}>
-                    첨부 파일: {data.fileUrl}
-                </div>
-
-                <Divider className="bold-divider" />
-
-                {/* 드라이브에서 image가져와 렌더링 */}
-                <div style={{ marginLeft: '5px' }}>
-                    홍보 사진: <img src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.promoteImageUrl}`} alt="홍보 사진" />
-                </div>
-
-                <Divider className="bold-divider" />
-
-                {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
-                <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
-                    내용: {insertLineBreaks(data.content, 45)}
-                </div>
-
-                <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                    <Button size="small" onClick={toggleCommentsVisibility}>
-                        {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
-                    </Button>
-                </div>
-
-
-
-                {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
-                {areCommentsVisible && (
-                    <div>
+                        {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <Divider className="bold-divider" />
 
-                        <h5>댓글</h5>
-                        {renderComments(commentData.content)}
-                        <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                            {moreCommentsAvailable && (
-                                <Button size="small" onClick={loadMoreComments}>
-                                    댓글 더보기
-                                </Button>
+                        <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                            <Col span={16}>
+                                <div style={{ marginLeft: '5%' }}>
+                                    제목: {data.title}
+                                </div>
+                            </Col>
+                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                            <Col span={8} className="vertical-line">
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <div style={{ marginLeft: '3px' }}>
+                                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                                        분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
+                                    </div>
+                                    <div style={{ marginRight: '15px' }}>
+                                        조회 수: {data.viewCount}
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Divider className="simple-divider" />
+
+                        <Row gutter={[16, 16]} justify="center" align="middle">
+                            <Col span={16}>
+                                <div style={{ marginLeft: '5%', borderRight: '1px', cursor: 'pointer' }} onClick={() => handleNickNameClick(data.nickName)}>
+                                    닉네임: {data.nickName}
+                                </div>
+                            </Col>
+                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                            <Col span={8} className="vertical-line">
+                                <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
+                                    인원: {data.counts} / {data.recruitmentCount}
+                                </div>
+                                <div style={{ marginLeft: '3px' }}>
+                                    모집 마감일: {formatDate(data.endDate)}
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Divider className="bold-divider" />
+
+                        <div style={{ marginLeft: '5px' }}>
+                            첨부 파일: {data.fileUrl}
+                        </div>
+
+                        <Divider className="bold-divider" />
+
+                        {/* 드라이브에서 image가져와 렌더링 */}
+                        <div style={{ marginLeft: '5px' }}>
+                            홍보 사진: <img src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.promoteImageUrl}`} alt="홍보 사진" />
+                        </div>
+
+                        <Divider className="bold-divider" />
+
+                        {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
+                        <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
+                            내용: {insertLineBreaks(data.content, 45)}
+                        </div>
+
+                        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                            <Button size="small" onClick={toggleCommentsVisibility}>
+                                {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                            </Button>
+                        </div>
+
+
+
+                        {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
+                        {areCommentsVisible && (
+                            <div>
+                                <Divider className="bold-divider" />
+
+                                <h5>댓글</h5>
+                                {renderComments(commentData.content)}
+                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                    {moreCommentsAvailable && (
+                                        <Button size="small" onClick={loadMoreComments}>
+                                            댓글 더보기
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <Card>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                            <UserOutlined style={{ marginRight: '5px' }} />
+                                            <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
+                                        </div>
+                                        <TextArea
+                                            autoSize={{ minRows: 4 }}
+                                            value={commentText}
+                                            onChange={(e) => setCommentText(e.target.value)}
+                                            placeholder="Write a comment"
+                                        />
+                                        <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                            <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
+                                        </div>
+                                    </Card>
+                                </div>
+                                {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                    <Pagination
+                                        current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                                        total={totalPages * pageSize}
+                                        pageSize={pageSize}
+                                        onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                                    />
+
+                                </div> */}
+                            </div>
+
+                        )}
+
+                        {/* Modal */}
+                        <Modal
+                            title="Confirm Action"
+                            open={isModalVisible}
+                            onOk={handleModalConfirm}
+                            onCancel={handleModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {modalAction === 'delete' && (
+                                <p>게시물을 삭제하시겠습니까?</p>
                             )}
-                        </div>
-
-                        <div>
-                            <Card>
-                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                    <UserOutlined style={{ marginRight: '5px' }} />
-                                    <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
-                                </div>
-                                <TextArea
-                                    autoSize={{ minRows: 4 }}
-                                    value={commentText}
-                                    onChange={(e) => setCommentText(e.target.value)}
-                                    placeholder="Write a comment"
-                                />
-                                <div style={{ textAlign: 'right', marginTop: '16px' }}>
-                                    <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
-                                </div>
-                            </Card>
-                        </div>
-                        {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                            <Pagination
-                                current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
-                                total={totalPages * pageSize}
-                                pageSize={pageSize}
-                                onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
-                            />
-
-                        </div> */}
+                            {modalAction === 'apply' && (
+                                <p>게시물에 지원하시겠습니까?</p>
+                            )}
+                        </Modal>
+                        <Modal
+                            title="Confirm Action"
+                            open={isCancelModalVisible}
+                            onOk={handleCancelModalConfirm}
+                            onCancel={handleCancelModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            <p>지원을 취소하시겠습니까?</p>
+                        </Modal>
+                        <Modal
+                            title="Confirm Action"
+                            open={isScrapModalVisible}
+                            onOk={handleScrapModalConfirm}
+                            onCancel={handleScrapModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {scrapAction === 'scrap' && (
+                                <p>게시물을 스크랩하시겠습니까?</p>
+                            )}
+                            {scrapAction === 'cancelScrap' && (
+                                <p>스크랩을 취소하시겠습니까?</p>
+                            )}
+                        </Modal>
+                        <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
+                            title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
+                            open={commentEditConfirmModalVisible}
+                            onOk={handleCommentEditModalOk}
+                            onCancel={handleCommentEditModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
+                        </Modal>
+                        <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
+                            title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
+                            open={commentDeleteConfirmModalVisible}
+                            onOk={handleCommentDeleteModalOk}
+                            onCancel={handleCommentDeleteModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
+                        </Modal>
                     </div>
 
-                )}
-
-                {/* Modal */}
-                <Modal
-                    title="Confirm Action"
-                    open={isModalVisible}
-                    onOk={handleModalConfirm}
-                    onCancel={handleModalCancel}
-                    okText="예"
-                    cancelText="아니오"
-                >
-                    {modalAction === 'delete' && (
-                        <p>게시물을 삭제하시겠습니까?</p>
-                    )}
-                    {modalAction === 'apply' && (
-                        <p>게시물에 지원하시겠습니까?</p>
-                    )}
-                </Modal>
-                <Modal
-                    title="Confirm Action"
-                    open={isCancelModalVisible}
-                    onOk={handleCancelModalConfirm}
-                    onCancel={handleCancelModalCancel}
-                    okText="예"
-                    cancelText="아니오"
-                >
-                    <p>지원을 취소하시겠습니까?</p>
-                </Modal>
-                <Modal
-                    title="Confirm Action"
-                    open={isScrapModalVisible}
-                    onOk={handleScrapModalConfirm}
-                    onCancel={handleScrapModalCancel}
-                    okText="예"
-                    cancelText="아니오"
-                >
-                    {scrapAction === 'scrap' && (
-                        <p>게시물을 스크랩하시겠습니까?</p>
-                    )}
-                    {scrapAction === 'cancelScrap' && (
-                        <p>스크랩을 취소하시겠습니까?</p>
-                    )}
-                </Modal>
-                <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
-                    title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
-                    open={commentEditConfirmModalVisible}
-                    onOk={handleCommentEditModalOk}
-                    onCancel={handleCommentEditModalCancel}
-                    okText="예"
-                    cancelText="아니오"
-                >
-                    {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
-                </Modal>
-                <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
-                    title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
-                    open={commentDeleteConfirmModalVisible}
-                    onOk={handleCommentDeleteModalOk}
-                    onCancel={handleCommentDeleteModalCancel}
-                    okText="예"
-                    cancelText="아니오"
-                >
-                    {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
-                </Modal>
-            </div>
-
-            <div style={{ flex: 1 }}>
-                {data.writer && renderApplicantButton()}
-            </div>
+                    <div style={{ flex: 1 }}>
+                        {data.writer && renderApplicantButton()}
+                    </div>
+                </div>
+            ) : (
+                // data.writer가 null인 경우 (게시물이 없는 경우)
+                <div style={{ marginLeft: '15%', marginRight: '15%' }}>
+                    <h2>해당하는 프로젝트 게시물이 없습니다!</h2>
+                </div>
+            )}
         </div>
     )
 }

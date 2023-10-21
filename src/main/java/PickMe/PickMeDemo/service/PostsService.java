@@ -173,232 +173,257 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        Posts posts = postsRepository.findByIdAndPostType(projectId, PostType.PROJECT)
-                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+        Optional<Posts> optionalPosts = postsRepository.findByIdAndPostType(projectId, PostType.PROJECT);
 
         PostsDto postsDto;
 
-        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
-        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
-        Integer applyCount;
+        // 게시물 ID가 있는 페이지에 접근 시
+        if (optionalPosts.isPresent()) {
+            Posts posts = optionalPosts.get();
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
+            Integer applyCount;
 
-        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
-        // null이라면, 인원 = 1(본인)
-        if (applyCountOptional.isPresent()) {
-            applyCount = applyCountOptional.get() + 1;
-        } else {
-            applyCount = 1;
-        }
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
 
-        // 프로젝트 게시물 작성자라면, viewCount를 저장하지 않고
-        // 프로젝트 게시물 작성자가 아니라면 viewCount 저장
-        if (!userEmail.equals(posts.getUser().getEmail())) {
-            // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
-            if (viewCountPostsRepository.findByPosts_IdAndUser_Id(projectId, user.getId()).isEmpty()) {
-                ViewCountPosts viewCountPosts = ViewCountPosts.builder()
-                        .posts(posts)
-                        .user(user)
+            // 프로젝트 게시물 작성자라면, viewCount를 저장하지 않고
+            // 프로젝트 게시물 작성자가 아니라면 viewCount 저장
+            if (!userEmail.equals(posts.getUser().getEmail())) {
+                // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
+                if (viewCountPostsRepository.findByPosts_IdAndUser_Id(projectId, user.getId()).isEmpty()) {
+                    ViewCountPosts viewCountPosts = ViewCountPosts.builder()
+                            .posts(posts)
+                            .user(user)
+                            .build();
+
+                    viewCountPostsRepository.save(viewCountPosts);
+                }
+            }
+
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(projectId);
+
+            Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면 (게시물 작성자라면)
+            if (posts.getUser().getEmail().equals(userEmail)) {
+                postsDto = PostsDto.builder()
+                        .writer(true)       // writer에 true를 리턴
+                        .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .fileUrl(posts.getFileUrl())
+                        //.counts(posts.getCounts())
+                        .counts(applyCount)
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .viewCount(viewCount)
                         .build();
-
-                viewCountPostsRepository.save(viewCountPosts);
             }
-        }
-
-        Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(projectId);
-
-        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
-
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면 (게시물 작성자라면)
-        if (posts.getUser().getEmail().equals(userEmail)) {
-             postsDto = PostsDto.builder()
-                    .writer(true)       // writer에 true를 리턴
-                    .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
-                    .nickName(posts.getUser().getNickName())
-                    .title(posts.getTitle())
-                    .web(posts.getCategory().getWeb())
-                    .app(posts.getCategory().getApp())
-                    .game(posts.getCategory().getGame())
-                    .ai(posts.getCategory().getAi())
-                    .content(posts.getContent())
-                    .promoteImageUrl(posts.getPromoteImageUrl())
-                    .fileUrl(posts.getFileUrl())
-                    //.counts(posts.getCounts())
-                    .counts(applyCount)
-                    .recruitmentCount(posts.getRecruitmentCount())
-                    .endDate(posts.getEndDate())
-                    .viewCount(viewCount)
-                    .build();
-        }
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
-        else {
-            boolean isScrapped = false;     // 스크랩 여부
-            boolean hasApplied = false;     // 지원 여부
-            boolean isConfirmed = false;    // 승인 여부
-
-            for (ScrapPosts scrap : posts.getScrapPosts()) {
-                // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
-                if (scrap.getUser().getEmail().equals(userEmail)) {
-                    isScrapped = true;      // 스크랩 여부는 true
-                    break;
-                }
-            }
-
-            for (UserApplyPosts apply : posts.getUserApplyPosts()) {
-                // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
-                if (apply.getUser().getEmail().equals(userEmail)) {
-                    hasApplied = true;      // 지원 여부는 true
-                    isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
-                    break; // Exit the loop since we found a matching entry
-                }
-            }
-
-            // 게시물에 지원 안한 사람
-            if (!hasApplied) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)        // 스크랩 안한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // 게시물에 지원했으나, 승인이 안난 사람
-            else if (!isConfirmed) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // writer로부터 승인이 난 사람
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
             else {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                boolean isScrapped = false;     // 스크랩 여부
+                boolean hasApplied = false;     // 지원 여부
+                boolean isConfirmed = false;    // 승인 여부
+
+                for (ScrapPosts scrap : posts.getScrapPosts()) {
+                    // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
+                    if (scrap.getUser().getEmail().equals(userEmail)) {
+                        isScrapped = true;      // 스크랩 여부는 true
+                        break;
+                    }
                 }
-                // 스크랩 안한 사람
+
+                for (UserApplyPosts apply : posts.getUserApplyPosts()) {
+                    // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
+                    if (apply.getUser().getEmail().equals(userEmail)) {
+                        hasApplied = true;      // 지원 여부는 true
+                        isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
+                        break; // Exit the loop since we found a matching entry
+                    }
+                }
+
+                // 게시물에 지원 안한 사람
+                if (!hasApplied) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)        // 스크랩 안한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // 게시물에 지원했으나, 승인이 안난 사람
+                else if (!isConfirmed) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // writer로부터 승인이 난 사람
                 else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
                 }
             }
+        }
+        // 게시물 ID가 없는 페이지 접근 시
+        else {
+            postsDto = PostsDto.builder()
+                    .writer(null)      // writer에 false를 리턴
+                    .scrap(null)       // 스크랩 안한 사람
+                    .applying(null)     // 지원 중은 아니고,
+                    .applied(null)     // 지원이 승인되었음.
+                    .nickName(null)
+                    .title(null)
+                    .web(null)
+                    .app(null)
+                    .game(null)
+                    .ai(null)
+                    .content(null)
+                    .promoteImageUrl(null)
+                    .fileUrl(null)
+                    .counts(null)
+                    .recruitmentCount(null)
+                    .endDate(null)
+                    .viewCount(null)
+                    .build();
         }
 
         return postsDto;
@@ -413,232 +438,257 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        Posts posts = postsRepository.findByIdAndPostType(studyId, PostType.STUDY)
-                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+        Optional<Posts> optionalPosts = postsRepository.findByIdAndPostType(studyId, PostType.STUDY);
 
         PostsDto postsDto;
 
-        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
-        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
-        Integer applyCount;
+        // 게시물 ID가 있는 페이지에 접근 시
+        if (optionalPosts.isPresent()) {
+            Posts posts = optionalPosts.get();
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
+            Integer applyCount;
 
-        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
-        // null이라면, 인원 = 1(본인)
-        if (applyCountOptional.isPresent()) {
-            applyCount = applyCountOptional.get() + 1;
-        } else {
-            applyCount = 1;
-        }
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
 
-        // 스터디 게시물 작성자라면, viewCount를 저장하지 않고
-        // 스터디 게시물 작성자가 아니라면 viewCount 저장
-        if (!userEmail.equals(posts.getUser().getEmail())) {
-            // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
-            if (viewCountPostsRepository.findByPosts_IdAndUser_Id(studyId, user.getId()).isEmpty()) {
-                ViewCountPosts viewCountPosts = ViewCountPosts.builder()
-                        .posts(posts)
-                        .user(user)
+            // 스터디 게시물 작성자라면, viewCount를 저장하지 않고
+            // 스터디 게시물 작성자가 아니라면 viewCount 저장
+            if (!userEmail.equals(posts.getUser().getEmail())) {
+                // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
+                if (viewCountPostsRepository.findByPosts_IdAndUser_Id(studyId, user.getId()).isEmpty()) {
+                    ViewCountPosts viewCountPosts = ViewCountPosts.builder()
+                            .posts(posts)
+                            .user(user)
+                            .build();
+
+                    viewCountPostsRepository.save(viewCountPosts);
+                }
+            }
+
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(studyId);
+
+            Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
+            if (posts.getUser().getEmail().equals(userEmail)) {
+                postsDto = PostsDto.builder()
+                        .writer(true)      // writer에 true를 리턴
+                        .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .fileUrl(posts.getFileUrl())
+                        //.counts(posts.getCounts())
+                        .counts(applyCount)
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .viewCount(viewCount)
                         .build();
-
-                viewCountPostsRepository.save(viewCountPosts);
             }
-        }
-
-        Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(studyId);
-
-        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
-
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
-        if (posts.getUser().getEmail().equals(userEmail)) {
-            postsDto = PostsDto.builder()
-                    .writer(true)      // writer에 true를 리턴
-                    .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
-                    .nickName(posts.getUser().getNickName())
-                    .title(posts.getTitle())
-                    .web(posts.getCategory().getWeb())
-                    .app(posts.getCategory().getApp())
-                    .game(posts.getCategory().getGame())
-                    .ai(posts.getCategory().getAi())
-                    .content(posts.getContent())
-                    .promoteImageUrl(posts.getPromoteImageUrl())
-                    .fileUrl(posts.getFileUrl())
-                    //.counts(posts.getCounts())
-                    .counts(applyCount)
-                    .recruitmentCount(posts.getRecruitmentCount())
-                    .endDate(posts.getEndDate())
-                    .viewCount(viewCount)
-                    .build();
-        }
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
-        else {
-            boolean isScrapped = false;     // 스크랩 여부
-            boolean hasApplied = false;     // 지원 여부
-            boolean isConfirmed = false;    // 승인 여부
-
-            for (ScrapPosts scrap : posts.getScrapPosts()) {
-                // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
-                if (scrap.getUser().getEmail().equals(userEmail)) {
-                    isScrapped = true;      // 스크랩 여부는 true
-                    break;
-                }
-            }
-
-            for (UserApplyPosts apply : posts.getUserApplyPosts()) {
-                // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
-                if (apply.getUser().getEmail().equals(userEmail)) {
-                    hasApplied = true;      // 지원 여부는 true
-                    isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
-                    break; // Exit the loop since we found a matching entry
-                }
-            }
-
-            // 게시물에 지원 안한 사람
-            if (!hasApplied) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)        // 스크랩 안한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // 게시물에 지원했으나, 승인이 안난 사람
-            else if (!isConfirmed) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // writer로부터 승인이 난 사람
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
             else {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                boolean isScrapped = false;     // 스크랩 여부
+                boolean hasApplied = false;     // 지원 여부
+                boolean isConfirmed = false;    // 승인 여부
+
+                for (ScrapPosts scrap : posts.getScrapPosts()) {
+                    // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
+                    if (scrap.getUser().getEmail().equals(userEmail)) {
+                        isScrapped = true;      // 스크랩 여부는 true
+                        break;
+                    }
                 }
-                // 스크랩 안한 사람
+
+                for (UserApplyPosts apply : posts.getUserApplyPosts()) {
+                    // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
+                    if (apply.getUser().getEmail().equals(userEmail)) {
+                        hasApplied = true;      // 지원 여부는 true
+                        isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
+                        break; // Exit the loop since we found a matching entry
+                    }
+                }
+
+                // 게시물에 지원 안한 사람
+                if (!hasApplied) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)        // 스크랩 안한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // 게시물에 지원했으나, 승인이 안난 사람
+                else if (!isConfirmed) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // writer로부터 승인이 난 사람
                 else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .fileUrl(posts.getFileUrl())
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
                 }
             }
+        }
+        // 게시물 ID가 없는 페이지 접근 시
+        else {
+            postsDto = PostsDto.builder()
+                    .writer(null)      // writer에 false를 리턴
+                    .scrap(null)       // 스크랩 안한 사람
+                    .applying(null)     // 지원 중은 아니고,
+                    .applied(null)     // 지원이 승인되었음.
+                    .nickName(null)
+                    .title(null)
+                    .web(null)
+                    .app(null)
+                    .game(null)
+                    .ai(null)
+                    .content(null)
+                    .promoteImageUrl(null)
+                    .fileUrl(null)
+                    .counts(null)
+                    .recruitmentCount(null)
+                    .endDate(null)
+                    .viewCount(null)
+                    .build();
         }
 
         return postsDto;
@@ -846,20 +896,86 @@ public class PostsService {
         Posts posts = postsRepository.findById(projectId)
                 .orElseThrow(() -> new AppException("Project not found", HttpStatus.NOT_FOUND));
 
-        // 프로젝트 게시물과 연관된 카테고리 찾기
-        Category category = posts.getCategory();
+        // confirm 값이 true인 UserApplyPosts가 있는지 확인
+        // confirm 값이 true인 UserApplyPosts 엔티티만 선택하여 컬렉트
+        List<UserApplyPosts> confirmedUserApplyPosts = posts.getUserApplyPosts().stream()
+                .filter(userApplyPosts -> userApplyPosts.getConfirm())
+                .collect(Collectors.toList());
 
-        if (category != null) { // 카테고리 먼저 지워야 함
-            categoryRepository.delete(category);
-        }
+        // 수집된 리스트(confirmedUserApplyPosts)에는 confirm 값이 true인 UserApplyPosts 엔티티만 포함
+        if (confirmedUserApplyPosts.isEmpty()) {    // confirmedUserApplyPosts가 비었다는 것은, 모두 false라는 것.
 
-        // 조회수가 있다면, 조회수를 지워야 게시물 삭제 가능
-        if (!posts.getViewCountPosts().isEmpty()) {
+            // 게시물 삭제 시, 게시물 지원자에게 알림.
+            String findWriterNickname = posts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = posts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            notificationMessage = new NotificationMessageDto("project/detail/" + posts.getId() + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다.";
+
+            // 게시물 삭제를 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+
+            // posts.getUserApplyPosts()에서 User 목록을 추출
+            List<User> users = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (User user : users) {
+                // 실제 jpa를 통해 notification을 만들어 저장한다.
+                Notifications deleteNotification = Notifications.builder()
+                        .user(user)
+                        .postId(posts.getId())
+                        .notificationMessage(notifyMessage)
+                        .postType(posts.getPostType())
+                        .checked(false)
+                        .build();
+
+                Notifications savedNotification = notificationsRepository.save(deleteNotification);
+
+                // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+                notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+            }
+
+            // 게시물에 지원했던 모든 유저에게 notify 발송
+
+            // posts.getUserApplyPosts()에서 User ID 목록을 추출
+            List<Long> userIds = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser().getId())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (Long userId : userIds) {
+                notificationService.notify(userId, notificationMessage);
+            }
+
+
+
+            // 카테고리 삭제
+            Category category = posts.getCategory();
+
+            if (category != null) {
+                categoryRepository.delete(category);
+            }
+
+            // userApplyPosts 삭제
+            userApplyPostsRepository.deleteAll(posts.getUserApplyPosts());
+
+            // viewCountPosts 삭제
             viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
-        }
 
-        // 그제서야 프로젝트도 삭제 가능
-        postsRepository.delete(posts);
+            // Posts 엔티티 삭제
+            postsRepository.delete(posts);
+        } else {
+            // 확인되지 않은 UserApplyPosts가 있으면 삭제를 허용하지 않습니다.
+            // 예외를 throw하거나 메시지를 반환하거나 필요한 대로 처리할 수 있습니다.
+            throw new AppException("삭제할 수 없습니다. 확인되지 않은 UserApplyPosts가 있습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 스터디 삭제
@@ -869,20 +985,86 @@ public class PostsService {
         Posts posts = postsRepository.findById(studyId)
                 .orElseThrow(() -> new AppException("Study not found", HttpStatus.NOT_FOUND));
 
-        // 스터디 게시물과 연관된 카테고리 찾기
-        Category category = posts.getCategory();
+        // confirm 값이 true인 UserApplyPosts가 있는지 확인
+        // confirm 값이 true인 UserApplyPosts 엔티티만 선택하여 컬렉트
+        List<UserApplyPosts> confirmedUserApplyPosts = posts.getUserApplyPosts().stream()
+                .filter(userApplyPosts -> userApplyPosts.getConfirm())
+                .collect(Collectors.toList());
 
-        if (category != null) { // 카테고리 먼저 지워야 함
-            categoryRepository.delete(category);
-        }
+        // 수집된 리스트(confirmedUserApplyPosts)에는 confirm 값이 true인 UserApplyPosts 엔티티만 포함
+        if (confirmedUserApplyPosts.isEmpty()) {    // confirmedUserApplyPosts가 비었다는 것은, 모두 false라는 것.
 
-        // 조회수가 있다면, 조회수를 지워야 게시물 삭제 가능
-        if (!posts.getViewCountPosts().isEmpty()) {
+            // 게시물 삭제 시, 게시물 지원자에게 알림.
+            String findWriterNickname = posts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = posts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            notificationMessage = new NotificationMessageDto("study/detail/" + posts.getId() + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다.";
+
+            // 게시물 삭제를 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+
+            // posts.getUserApplyPosts()에서 User 목록을 추출
+            List<User> users = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (User user : users) {
+                // 실제 jpa를 통해 notification을 만들어 저장한다.
+                Notifications deleteNotification = Notifications.builder()
+                        .user(user)
+                        .postId(posts.getId())
+                        .notificationMessage(notifyMessage)
+                        .postType(posts.getPostType())
+                        .checked(false)
+                        .build();
+
+                Notifications savedNotification = notificationsRepository.save(deleteNotification);
+
+                // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+                notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+            }
+
+            // 게시물에 지원했던 모든 유저에게 notify 발송
+
+            // posts.getUserApplyPosts()에서 User ID 목록을 추출
+            List<Long> userIds = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser().getId())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (Long userId : userIds) {
+                notificationService.notify(userId, notificationMessage);
+            }
+
+
+
+            // 카테고리 삭제
+            Category category = posts.getCategory();
+
+            if (category != null) {
+                categoryRepository.delete(category);
+            }
+
+            // userApplyPosts 삭제
+            userApplyPostsRepository.deleteAll(posts.getUserApplyPosts());
+
+            // viewCountPosts 삭제
             viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
-        }
 
-        // 그제서야 스터디도 삭제 가능
-        postsRepository.delete(posts);
+            // Posts 엔티티 삭제
+            postsRepository.delete(posts);
+        } else {
+            // 확인되지 않은 UserApplyPosts가 있으면 삭제를 허용하지 않습니다.
+            // 예외를 throw하거나 메시지를 반환하거나 필요한 대로 처리할 수 있습니다.
+            throw new AppException("삭제할 수 없습니다. 확인되지 않은 UserApplyPosts가 있습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
 

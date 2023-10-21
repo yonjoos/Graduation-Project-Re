@@ -263,7 +263,7 @@ function LoginPage() {
                                 <Input
                                     type="text"
                                     name="email"
-                                    placeholder="Email"
+                                    placeholder="홍익대학교 이메일 계정을 입력해주세요!"
                                     onChange={onChangeHandler}
                                 />
                             </div>
@@ -271,7 +271,7 @@ function LoginPage() {
                                 <Input
                                     type="password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder="패스워드를 입력해주세요!"
                                     onChange={onChangeHandler}
                                 />
                             </div>
@@ -284,7 +284,7 @@ function LoginPage() {
                                 <Input
                                     type="text"
                                     name="userName" // 회원 이름
-                                    placeholder="User Name"
+                                    placeholder="실명을 입력해주세요!"
                                     onChange={onChangeHandler}
 
                                 />
@@ -294,7 +294,7 @@ function LoginPage() {
                                     <Input
                                         type="text"
                                         name="nickName" // 회원 닉네임
-                                        placeholder="Nick Name"
+                                        placeholder="사용하실 닉네임을 입력해주세요!"
                                         onChange={onChangeHandler}
                                     />
                                     <Button onClick={handleDuplicateCheck}>닉네임 중복 확인</Button>
@@ -326,18 +326,26 @@ function LoginPage() {
                                     <Input
                                         type="text"
                                         name="email"
-                                        placeholder="Email"
+                                        placeholder="홍익대학교 이메일 계정을 입력해주세요!"
                                         onChange={onChangeHandler}
                                         disabled={(verificationSuccess === 1) || mailSented} // 인증 번호 발송이 된 경우 || 인증이 완료된 경우 이메일 못바꾸게 하기 위함
+                                        style={{ flex: 1}}
                                     />
                                     <Input
                                         type="text"
                                         name="emailDomain"
                                         value="@g.hongik.ac.kr"
-                                        style={{ pointerEvents: 'none' }} // @g.hongik.ac.kr은 고정되게 세팅하되, 회색 배경이 아닌 형태로 만들기 위함
+                                        style={{ 
+                                                fontWeight: 'strong',
+                                                pointerEvents: 'none', 
+                                                width: '9em', // Adjust the width as needed
+                                                textAlign: 'center' }} // @g.hongik.ac.kr은 고정되게 세팅하되, 회색 배경이 아닌 형태로 만들기 위함
                                     />
 
                                     <Button onClick={handleSendVerificationCode}>인증코드 발송</Button>
+                                </div>
+                                <div style={{color: "#3399FF"}}>
+                                    * 인증코드를 받지 못하셨을 경우 새로고침으로 재시도해주세요 *
                                 </div>
                             </div>
                             <div className="form-outline mb-4">
@@ -345,7 +353,7 @@ function LoginPage() {
                                     <Input disabled={verificationSuccess === 1} // 확인 버튼 눌렀을 때 이메일 인증번호가 맞으면 폼 자체가 disable됨
                                         type="text"
                                         name="userInputCode"
-                                        placeholder="Put Verification Code in 10 minutes"
+                                        placeholder="이메일 계정으로 발송된 인증 코드를 10분 내에 입력해주세요!"
                                         onChange={onChangeHandler}
                                     />
                                     <Button onClick={handleVerifyCode} disabled={!mailSented || (verificationSuccess === 1)}>확인</Button> {/* 메일 인증을 하지 않은 상태 || 인증 완료된 상태일 때 확인 버튼은 비활성화됨*/}
@@ -367,7 +375,7 @@ function LoginPage() {
                                 <Input
                                     type="password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder="사용하실 비밀번호를 입력해주세요!"
                                     onChange={onChangeHandler}
                                 />
                             </div>

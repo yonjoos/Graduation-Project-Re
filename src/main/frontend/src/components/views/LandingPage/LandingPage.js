@@ -46,7 +46,7 @@ function LandingPage() {
         try {
             const response = await request('GET', '/getHotPost');
             //const response = await axios.get('/getHotPost'); // request가 아닌 axios를 통해 GET 요청을 보냄. 로그인 하지 않은 유저도 볼 수 있어야 하기 때문.
-    
+
             if (response) {
                 setHotPost(response.data);
                 console.log("hot post : ", hotPost);
@@ -164,25 +164,27 @@ function LandingPage() {
         // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
         if (dataArray && dataArray.length > 0) {
             return (
-                <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                    <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
-                        <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
-                            <strong># {title}</strong>
-                        </div>
-                        <div style={{ margin: 0 }}>
-                            {dataArray.map(item => (
-                                <Button
-                                    key={item.id}
-                                    type="text"
-                                    style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0 }}
-                                    onClick={() => handleButtonClick(title, item.id, item.name)}
-                                >
-                                    {truncateString(item.name, 55)}
-                                </Button>
-                            ))}
-                        </div>
-                    </Card>
-                </Col>
+
+
+                <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
+                    <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                        <strong># {title}</strong>
+                    </div>
+                    <div style={{ margin: 0 }}>
+                        {dataArray.map(item => (
+                            <Button
+                                key={item.id}
+                                type="text"
+                                style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0 }}
+                                onClick={() => handleButtonClick(title, item.id, item.name)}
+                            >
+                                {truncateString(item.name, 55)}
+                            </Button>
+                        ))}
+                    </div>
+                </Card>
+
+
             );
         }
         return null;
@@ -207,48 +209,56 @@ function LandingPage() {
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <div>
                     <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
-                        <br/>
+                        <br />
                         <Carousel autoplay className="my-background-color">
                             <Card className="my-background-color">
                                 공지사항 또는 P!ckMe 홍보 카드
                             </Card>
                         </Carousel>
-                        <br/>
+                        <br />
                     </div>
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
                             <Col span={24}>
                                 <SearchInLandingPage onSearch={handleSearch} />
                             </Col>
-                            <Col span={24}>
-                                {renderSection('User', data.userSearchDtoList)}
-                                {renderSection('Project', data.projectSearchDtoList)}
-                                {renderSection('Study', data.studySearchDtoList)}
+                            <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+
+                                <div style={{ position: 'absolute', zIndex: 2 }}>
+
+                                    {renderSection('User', data.userSearchDtoList)}
+                                    {renderSection('Project', data.projectSearchDtoList)}
+                                    {renderSection('Study', data.studySearchDtoList)}
+
+                                </div>
+
                             </Col>
                             <Col span={24}>
-                                <br/>
+                                <br />
                                 <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
-                                <br/>
-                                <br/>
+                                <br />
+                                <br />
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
                                     {hotPost.map((item) => (
                                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
-                                                style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
-                                                        border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
+                                                style={{
+                                                    cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%',
+                                                    border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'
+                                                }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                     <div>
                                                         {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
                                                     </div>
                                                     <div>
-                                                        
+
                                                     </div>
                                                 </div>
                                                 <b>{truncateString(item.title, 15)}</b>
-                                                <br/>
-                                                <br/>
+                                                <br />
+                                                <br />
                                                 <div>
                                                     마감일 | {formatDate(item.endDate)}
                                                 </div>
@@ -264,12 +274,12 @@ function LandingPage() {
                                         </div>
                                     ))}
                                 </Carousel>
-                                <br/>
-                                <br/>
+                                <br />
+                                <br />
                             </Col>
                             <Col span={24}>
                                 <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
-                                <br/>
+                                <br />
                             </Col>
                             <Col xs={24} sm={8}>
                                 <PortfolioCard />
@@ -297,48 +307,56 @@ function LandingPage() {
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <div>
                     <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
-                        <br/>
+                        <br />
                         <Carousel autoplay className="my-background-color">
                             <Card className="my-background-color">
                                 공지사항 또는 P!ckMe 홍보 카드
                             </Card>
                         </Carousel>
-                        <br/>
+                        <br />
                     </div>
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
                             <Col span={24}>
                                 <SearchInLandingPage onSearch={handleSearch} />
                             </Col>
-                            <Col span={24}>
-                                {renderSection('User', data.userSearchDtoList)}
-                                {renderSection('Project', data.projectSearchDtoList)}
-                                {renderSection('Study', data.studySearchDtoList)}
+                            <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+
+                                <div style={{ position: 'absolute', zIndex: 2 }}>
+
+                                    {renderSection('User', data.userSearchDtoList)}
+                                    {renderSection('Project', data.projectSearchDtoList)}
+                                    {renderSection('Study', data.studySearchDtoList)}
+
+                                </div>
+
                             </Col>
                             <Col span={24}>
-                                <br/>
+                                <br />
                                 <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
-                                <br/>
-                                <br/>
+                                <br />
+                                <br />
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
                                     {hotPost.map((item) => (
                                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
-                                                style={{ cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%', 
-                                                        border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
+                                                style={{
+                                                    cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%',
+                                                    border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'
+                                                }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                     <div>
                                                         {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
                                                     </div>
                                                     <div>
-                                                        
+
                                                     </div>
                                                 </div>
                                                 <b>{truncateString(item.title, 15)}</b>
-                                                <br/>
-                                                <br/>
+                                                <br />
+                                                <br />
                                                 <div>
                                                     마감일 | {formatDate(item.endDate)}
                                                 </div>
@@ -354,12 +372,12 @@ function LandingPage() {
                                         </div>
                                     ))}
                                 </Carousel>
-                                <br/>
-                                <br/>
+                                <br />
+                                <br />
                             </Col>
                             <Col span={24}>
                                 <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
-                                <br/>
+                                <br />
                             </Col>
                             <Col xs={24} sm={8}>
                                 <PortfolioCard />

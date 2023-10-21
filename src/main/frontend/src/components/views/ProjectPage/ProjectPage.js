@@ -110,25 +110,25 @@ function ProjectPage() {
         // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
         if (dataArray && dataArray.length > 0) {
             return (
-                <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                    <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
-                        <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
-                            <strong># {title}</strong>
-                        </div>
-                        <div style={{ margin: 0 }}>
-                            {dataArray.map(item => (
-                                <Button
-                                    key={item.id}
-                                    type="text"
-                                    style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0 }}
-                                    onClick={() => handleButtonClick(title, item.id, item.name)}
-                                >
-                                    {truncateString(item.name, 55)}
-                                </Button>
-                            ))}
-                        </div>
-                    </Card>
-                </Col>
+
+                <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
+                    <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                        <strong># {title}</strong>
+                    </div>
+                    <div style={{ margin: 0 }}>
+                        {dataArray.map(item => (
+                            <Button
+                                key={item.id}
+                                type="text"
+                                style={{ width: '100%', textAlign: 'left', padding: 0, margin: 0 }}
+                                onClick={() => handleButtonClick(title, item.id, item.name)}
+                            >
+                                {truncateString(item.name, 55)}
+                            </Button>
+                        ))}
+                    </div>
+                </Card>
+
             );
         }
         return null;
@@ -325,9 +325,11 @@ function ProjectPage() {
             <SearchInProjectPage onSearch={handleSearch} onChange={handleSearchTerm} />
 
             {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}
-            <div style={{ margin: '20px 0' }}>
-                {(relatedSearchTermEnable ?
-                    (renderSection('Project', searchData.projectSearchDtoList)) : null)}
+            <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', margin: '20px 0' }}>
+                <div style={{ position: 'absolute', zIndex: 2 }}>
+                    {(relatedSearchTermEnable ?
+                        (renderSection('Project', searchData.projectSearchDtoList)) : null)}
+                </div>
 
             </div>
             <div style={{ textAlign: 'center', margin: '20px 0' }}>

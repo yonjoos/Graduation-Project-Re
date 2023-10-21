@@ -92,7 +92,7 @@ function UploadProjectPage() {
     const submitProject = (title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl) => {
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('postType', JSON.stringify(postType));
+        formData.append('postType', postType);
         formData.append('recruitmentCount', recruitmentCount);
         formData.append('endDate', endDate);
         formData.append('content', content);

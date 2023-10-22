@@ -1752,60 +1752,64 @@ public class PostsService {
         Posts findPosts = postsRepository.findById(postsId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        // 해당 유저가 이 게시물에 스크랩 했는지의 여부를 알기 위해 사용
-        Optional<ScrapPosts> scrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
+        Optional<UserApplyPosts> byUserIdAndPostsId = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
-        // UserApplyPosts 테이블에 들어갈 내용 채우기
-        UserApplyPosts userApplyPosts = UserApplyPosts.builder()
-                .user(findUser)
-                .posts(findPosts)
-                .confirm(false)     // 초기에는 승인되지 않았으므로, false
-                .build();
+        // 지원할 때, 지원 버튼을 클릭해서 알림이 갔는데, 지원자의 UI가 바뀌지 않아 지원 취소 버튼이 아닌, 지원 버튼이 그대로 남아있어서 한 번 더 지원할 때 발생하는 오류를 막기 위한 코드
 
-        UserApplyPosts savedUserApplyPosts = userApplyPostsRepository.save(userApplyPosts);
+        // 지원한 적이 있는지 여부를 찾고, 지원한 적이 없다면 지원 DB에 저장 + 알림 발송
+        if (byUserIdAndPostsId.isEmpty()) {
+            // UserApplyPosts 테이블에 들어갈 내용 채우기
+            UserApplyPosts userApplyPosts = UserApplyPosts.builder()
+                    .user(findUser)
+                    .posts(findPosts)
+                    .confirm(false)     // 초기에는 승인되지 않았으므로, false
+                    .build();
 
-        System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 새로운 지원자가 있습니다.\"); ======");
-        System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
+            UserApplyPosts savedUserApplyPosts = userApplyPostsRepository.save(userApplyPosts);
 
-        String findUserNickname= findUser.getNickName(); // 지원자 닉네임
-        String findPostsTitle = findPosts.getTitle(); // 게시물 제목
-        User findPostUser = findPosts.getUser(); // 게시물 작성자
 
-        NotificationMessageDto notificationMessage;
-        String notifyMessage;
 
-        if (PostType.PROJECT.equals(findPosts.getPostType())) {
-            // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
-            // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+            String findUserNickname= findUser.getNickName(); // 지원자 닉네임
+            String findPostsTitle = findPosts.getTitle(); // 게시물 제목
+            User findPostUser = findPosts.getUser(); // 게시물 작성자
 
-            // notificationMessage : 실시간 알림 카드에 들어갈 내용
-            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
-            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
+                // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+
+                // notificationMessage : 실시간 알림 카드에 들어갈 내용
+                // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+                notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+            }
+
+
+            // 지원을 하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+            // 실제 jpa를 통해 notification을 만들어 저장한다.
+            Notifications applyNotification = Notifications.builder()
+                    .user(findPostUser)
+                    .postId(postsId)
+                    .notificationMessage(notifyMessage)
+                    .postType(findPosts.getPostType())
+                    .checked(false)
+                    .build();
+
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 실시간 알림 전송
         }
-        else  {
-            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
-        }
 
-
-        // 지원을 하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
-        // 실제 jpa를 통해 notification을 만들어 저장한다.
-        Notifications applyNotification = Notifications.builder()
-                .user(findPostUser)
-                .postId(postsId)
-                .notificationMessage(notifyMessage)
-                .postType(findPosts.getPostType())
-                .checked(false)
-                .build();
-
-        Notifications savedNotification = notificationsRepository.save(applyNotification);
-
-        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
-        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
-
-        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 실시간 알림 전송
-        System.out.println("==========================================================");
+        // 지원한 적이 있다면, 지원 DB에 저장하면 안됨
 
 
 
@@ -1822,6 +1826,9 @@ public class PostsService {
         } else {
             applyCount = 1;
         }
+
+        // 해당 유저가 이 게시물에 스크랩 했는지의 여부를 알기 위해 사용
+        Optional<ScrapPosts> scrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
         // 해당 게시물을 스크랩했다면
         if (scrapPosts.isPresent()) {
@@ -2195,72 +2202,63 @@ public class PostsService {
         User findUser = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        // 유저 ID와 project ID로 지원한 게시물 찾기
-        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
-                .orElseThrow(() -> new AppException("지원한 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
-
         // 프로젝트 ID로 해당 프로젝트 찾기
         Posts findPosts = postsRepository.findById(postsId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
+        // 유저 ID와 project ID로 지원한 게시물 찾기
+        Optional<UserApplyPosts> byUserIdAndPostsId = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
+
         // 해당 유저가 이 게시물에 스크랩 했는지의 여부를 알기 위해 사용
         Optional<ScrapPosts> scrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
-        // 승인한 사람이 지원 취소를 했다면, 인원 -= 1을 해야 함.
-//        if ("approved".equals(action)) {
-//            // 현재 counts 값이 2 이상일 때, counts -= 1을 진행함.
-//            // 게시물에 최소 1명(본인)은 지원했으므로, counts의 최소 값은 1이고, 2 이상일 때 1을 빼줄 수 있다.
-//            findPosts.cancel();
-//            postsRepository.save(findPosts);    // 1 뺀 값을 디비에 저장해주기.
-//        }
 
-        // 지원한 게시물 삭제
-        userApplyPostsRepository.delete(findUserApplyPosts);
+        // 알 수 없는 버그로 인해 유저가 게시물에 지원한 적이 없는데, 지원 취소 버튼이 뜬다면, 아무 것도 실행되어서는 안됨.
+        // 해당 유저가 해당 게시물에 지원한 적이 있어야 지원 DB에서 삭제 로직 진행 + 게시물 작성자에게 알림
+        if (byUserIdAndPostsId.isPresent()) {
+            // 지원한 게시물 삭제
+            userApplyPostsRepository.delete(byUserIdAndPostsId.get());
 
+            // 게시물 지원 취소 시, 게시물 작성자에게 알림.
 
-        // 게시물 지원 취소 시, 게시물 작성자에게 알림.
-        System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 지원을 취소한 사용자가 있습니다.\"); ======");
-        System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
+            String findUserNickname= findUser.getNickName(); // 지원 취소를 하고자 하는 사람 닉네임
+            String findPostsTitle = findPosts.getTitle(); // 지원 취소를 할 게시물 제목
+            User findPostUser = findPosts.getUser(); // 게시물 작성자
 
-        String findUserNickname= findUser.getNickName(); // 지원 취소를 하고자 하는 사람 닉네임
-        String findPostsTitle = findPosts.getTitle(); // 지원 취소를 할 게시물 제목
-        User findPostUser = findPosts.getUser(); // 게시물 작성자
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
 
-        NotificationMessageDto notificationMessage;
-        String notifyMessage;
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
 
-        // notificationMessage : 실시간 알림 카드에 들어갈 내용
-        // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
+                // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+                notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+            }
 
-        if (PostType.PROJECT.equals(findPosts.getPostType())) {
-            // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
-            // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
-            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+            // 지원을 취소하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+            // 실제 jpa를 통해 notification을 만들어 저장한다.
+            Notifications applyNotification = Notifications.builder()
+                    .user(findPostUser)
+                    .postId(postsId)
+                    .notificationMessage(notifyMessage)
+                    .postType(findPosts.getPostType())
+                    .checked(false)
+                    .build();
+
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
         }
-        else  {
-            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
-        }
-
-        // 지원을 취소하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
-        // 실제 jpa를 통해 notification을 만들어 저장한다.
-        Notifications applyNotification = Notifications.builder()
-                .user(findPostUser)
-                .postId(postsId)
-                .notificationMessage(notifyMessage)
-                .postType(findPosts.getPostType())
-                .checked(false)
-                .build();
-
-        Notifications savedNotification = notificationsRepository.save(applyNotification);
-
-        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
-        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
-
-        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
-        System.out.println("==========================================================");
-
 
         PostsDto postsDto;
 
@@ -2322,7 +2320,6 @@ public class PostsService {
                     .endDate(findPosts.getEndDate())
                     .build();
         }
-
 
         return postsDto;
     }

@@ -20,7 +20,8 @@ function LoginPage() {
     const [userInputCode, setUserInputCode] = useState(''); // 유저가 입력한 이메일 인증번호
     const [verificationSuccess, setVerificationSuccess] = useState(null); // 인증번호 확인 성공 여부
     const fixedEmailDomain = "@g.hongik.ac.kr"; // 회원가입할 때, 유저는 @g.hongik.ac.kr까지 입력하지 않는다. 따라서 이메일 인증 시 또는 회원가입 폼 전체를 제출할 때, 명시적으로 입력받은 email변수에 @g.hongik.ac.kr를 달아줘서 백엔드에 보낸다
-
+    const [isPasswordResetFormVisible, setIsPasswordResetFormVisible] = useState(false); // 비밀번호 찾기 토글 버튼
+    const [resetPasswordMailSented, setResetPasswordMailSented] = useState(false);   // 비밀번호 찾기 인증 메일 발송 여부
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러 (로그인, 회원가입 공통으로 관리하고, 입력시마다 변수에 입력값을 세팅함)
     const onChangeHandler = (event) => {
@@ -249,8 +250,42 @@ function LoginPage() {
             });
     };
 
+    // 비밀번호 찾기 버튼 토글
+    const togglePasswordResetForm = () => {
+        setIsPasswordResetFormVisible(!isPasswordResetFormVisible);
+    };
 
+    // 비밀번호 찾기 버튼 클릭 핸들러
+    const handleResetEmail = () => {
+        
+        // 만약 email 입력하는 창에 아무것도 적지 않고 인증번호 발송 버튼 누르면 백엔드에 요청 안보냄
+        if (!email) {
+            message.warning('이메일을 입력해주세요.');
+            return;
+        }
 
+        // 비밀번호 찾기에서 email창에 입력받은 변수 ex) qkrtlghd97을 백엔드에 보낼 땐 @g.hongik.ac.kr를 달아줘서 보내야함
+        const convertedToEmail = email + fixedEmailDomain;
+
+        // 백엔드에 보낼 email관련 RequestParam 작성
+        const emailParams = new URLSearchParams({ email: convertedToEmail });
+        console.log('email', convertedToEmail);
+
+        // 백엔드에 이메일 발송 관련 요청 보냄
+        request('POST', `/resetPassword?${emailParams}`)
+            .then((response) => {
+                if (response.data.sented === true) { // 메일 보내는 데에 성공한 경우
+                    message.success('해당 이메일로 새로운 비밀번호가 발송되었습니다.');
+                    setResetPasswordMailSented(true); // 메일 전송 상태변수를 true로 세팅
+                    
+                } else if (response.data.sented === false) { // 메일 보내는 데에 실패한 경우
+                    message.error('등록되지 않은 이메일 주소입니다. 먼저 회원가입을 해주세요.');
+                }
+            })
+            .catch((error) => {
+                alert("잠시 후 다시 시도하세요.");
+            });
+    }
 
     return (
         <Row justify="center">
@@ -277,6 +312,44 @@ function LoginPage() {
                             </div>
                             <Button type="primary" block htmlType="submit">Log In</Button>
                         </form>
+                        <br/>
+                        <div style={{ textAlign: 'end', cursor: 'pointer' }}>
+                            <p onClick={togglePasswordResetForm}>
+                                {isPasswordResetFormVisible ? "숨기기" : "비밀번호 찾기"}
+                            </p>
+                        </div>
+                        {/* 비밀번호 찾기를 눌렀을 때, 추가적으로 보이는 창 */}
+                        {isPasswordResetFormVisible && (
+                            <div>
+                                <div className="form-outline mb-4">
+                                    <div style={{ display: "flex" }}>
+                                        <Input
+                                            type="text"
+                                            name="email"
+                                            placeholder="비밀번호 재설정을 위한 홍익대학교 이메일 계정을 입력해주세요!"
+                                            onChange={onChangeHandler}
+                                            disabled={resetPasswordMailSented} // 비밀번호 찾기 버튼을 누른 경우, 이메일 못바꾸게 하기 위함
+                                            style={{ flex: 1 }}
+                                        />
+                                        <Input
+                                            type="text"
+                                            name="emailDomain"
+                                            value="@g.hongik.ac.kr"
+                                            style={{ 
+                                                    fontWeight: 'strong',
+                                                    pointerEvents: 'none', 
+                                                    width: '9em', // Adjust the width as needed
+                                                    textAlign: 'center' }} // @g.hongik.ac.kr은 고정되게 세팅하되, 회색 배경이 아닌 형태로 만들기 위함
+                                        />
+
+                                        <Button onClick={handleResetEmail}>비밀번호 재설정 메일 발송</Button>
+                                    </div>
+                                    <div style={{ marginTop: '5px', color: "#3399FF" }}>
+                                        * 이메일을 잘못 입력했거나 인증코드를 받지 못하셨을 경우 새로고침으로 재시도해주세요 *
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </Tabs>
                     <Tabs tab="Register" key="register">
                         <form onSubmit={onSubmitRegister}>
@@ -329,7 +402,7 @@ function LoginPage() {
                                         placeholder="홍익대학교 이메일 계정을 입력해주세요!"
                                         onChange={onChangeHandler}
                                         disabled={(verificationSuccess === 1) || mailSented} // 인증 번호 발송이 된 경우 || 인증이 완료된 경우 이메일 못바꾸게 하기 위함
-                                        style={{ flex: 1}}
+                                        style={{ flex: 1 }}
                                     />
                                     <Input
                                         type="text"
@@ -344,8 +417,8 @@ function LoginPage() {
 
                                     <Button onClick={handleSendVerificationCode}>인증코드 발송</Button>
                                 </div>
-                                <div style={{color: "#3399FF"}}>
-                                    * 인증코드를 받지 못하셨을 경우 새로고침으로 재시도해주세요 *
+                                <div style={{ marginTop: '5px', color: "#3399FF" }}>
+                                    * 이메일을 잘못 입력했거나 인증코드를 받지 못하셨을 경우 새로고침으로 재시도해주세요 *
                                 </div>
                             </div>
                             <div className="form-outline mb-4">

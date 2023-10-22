@@ -41,7 +41,6 @@ public class MailController {
 
         // 그 외의 경우는 존재할 수 없는데, 혹시 몰라서 server error처리하기
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
     }
 
     @PostMapping("/verifyCode") // 프런트엔드에서 유저가 인증코드를 입력하면, 그걸 검증하는 컨트롤러
@@ -75,8 +74,29 @@ public class MailController {
             System.out.println("인증 실패 - 코드 불일치");
             return ResponseEntity.ok(new VerifyEmailAuthDto(2));
         }
-
-
     }
 
+
+    @PostMapping("/resetPassword") // 프런트엔드에서 전달받은 이메일로 새로운 비밀번호를 발송하는 컨트롤러
+    public ResponseEntity<AuthEmailRequestDto> resetPassword(@RequestParam(name = "email") String email) throws Exception {
+
+        System.out.println("email = " + email);
+
+        try {
+            UserDto existingUser = userService.findByEmail(email);
+
+            if (existingUser != null) { // 이미 존재하는 회원 email이라면
+                AuthEmailRequestDto authEmailRequestDto = mailService.sendResetPasswordMessage(email); // 전달받은 email로 메일 발송
+                return ResponseEntity.ok(authEmailRequestDto); // authEmailRequestDto엔 true가 담겨있을 것
+            }
+        } catch (AppException ex) {
+            // 존재하지 않는 회원 email이라면(userService.findByEmail 메서드 보면, 회원이 없으면 예외를 반환함)
+            // 예외가 왔다는 건, 해당 email을 가진 회원이 없다는 것이므로 비밀번호 재설정 메일을 발송하면 안됨
+
+            return ResponseEntity.ok(new AuthEmailRequestDto(false)); // 이메일 발송하지 않고, 프런트에 false를 반환
+        }
+
+        // 그 외의 경우는 존재할 수 없는데, 혹시 몰라서 server error처리하기
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
 }

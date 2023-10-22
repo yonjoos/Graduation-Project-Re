@@ -21,6 +21,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ public class PostsService {
     private final NotificationsRepository notificationsRepository;
     private final ViewCountPostsRepository viewCountPostsRepository;
     private final NotificationService notificationService;
+    private final PostsFilesRepository postsFilesRepository;
     private final JPAQueryFactory queryFactory;
     private final Storage storage;
 
@@ -64,20 +66,7 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        //이미지 업로드 관련 부분
-        String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
-        System.out.println("uuid = " + uuid);
-        String ext = postsFormDto.getPromoteImageUrl().getContentType(); // 파일의 형식 ex) JPG
-        System.out.println("ext = " + ext);
-
-        // Cloud에 이미지 업로드
-        BlobInfo blobInfo = storage.create(
-                BlobInfo.newBuilder(bucketName, uuid)
-                        .setContentType(ext)
-                        .build(),
-                postsFormDto.getPromoteImageUrl().getInputStream()
-        );
-
+        // 게시물 먼저 생성(이미지, 파일 밑 카테고리는 제외)
         Posts posts = Posts.builder()
                 .user(user)
                 .postType(postType)
@@ -85,13 +74,46 @@ public class PostsService {
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
                 //.counts(1)      // 맨 처음 지원자 수는 1명 (본인 포함)
                 .content(postsFormDto.getContent().replace("<br>", "\n"))
-                .promoteImageUrl(uuid) // 겹치지 않는 이름으로 db에는 이미지 파일의 uuid값만 저장
+                //.promoteImageUrl(uuid) // 겹치지 않는 이름으로 db에는 이미지 파일의 uuid값만 저장
                 .fileUrl(postsFormDto.getFileUrl())
                 .endDate(postsFormDto.getEndDate())
                 .build();
 
+        // 게시물을 db에 저장
         Posts savedPosts = postsRepository.save(posts);
 
+        // 프론트에서 넘어온 이미지 리스트를 클라우드에 저장하고, 생성된 post를 외래키로 하는 tuple을 posts_files 테이블에 생성해서 저장
+        List<PostsFiles> postsFilesList = new ArrayList<>(); // 이미지를 저장할 리스트
+
+        for (MultipartFile image : postsFormDto.getPromoteImageUrl()) {
+            // 각 이미지를 저장
+            String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+            System.out.println("uuid = " + uuid);
+            String ext = image.getContentType(); // 파일의 형식 ex) JPG
+            System.out.println("ext = " + ext);
+
+            // Cloud에 이미지 업로드
+            BlobInfo blobInfo = storage.create(
+                    BlobInfo.newBuilder(bucketName, uuid)
+                            .setContentType(ext)
+                            .build(),
+                    image.getInputStream()
+            );
+
+            // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+            PostsFiles postsFiles = PostsFiles.builder()
+                    .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                    .isImage(true) // 이미지 여부
+                    .fileUrl(uuid) // 이미지 파일의 UUID
+                    .build();
+
+            postsFilesList.add(postsFiles);
+        }
+
+        // 이미지 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.saveAll(postsFilesList);
+
+        // 카테고리 저장
         Category category = Category.builder()
                 .posts(savedPosts)
                 .web(postsFormDto.getPostType().contains("Web"))
@@ -173,6 +195,7 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
+        // 게시물의 db에의 존재 여부 확인
         Optional<Posts> optionalPosts = postsRepository.findByIdAndPostType(projectId, PostType.PROJECT);
 
         PostsDto postsDto;
@@ -210,6 +233,12 @@ public class PostsService {
 
             Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
 
+            // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+            List<String> fileUrls = posts.getPostsFiles().stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+
             // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면 (게시물 작성자라면)
             if (posts.getUser().getEmail().equals(userEmail)) {
                 postsDto = PostsDto.builder()
@@ -222,7 +251,7 @@ public class PostsService {
                         .game(posts.getCategory().getGame())
                         .ai(posts.getCategory().getAi())
                         .content(posts.getContent())
-                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .promoteImageUrl(fileUrls)
                         .fileUrl(posts.getFileUrl())
                         //.counts(posts.getCounts())
                         .counts(applyCount)
@@ -270,7 +299,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -293,7 +322,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -319,7 +348,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -342,7 +371,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -368,7 +397,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -391,7 +420,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -475,6 +504,11 @@ public class PostsService {
 
             Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
 
+            // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+            List<String> fileUrls = posts.getPostsFiles().stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
             // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
             if (posts.getUser().getEmail().equals(userEmail)) {
                 postsDto = PostsDto.builder()
@@ -487,7 +521,7 @@ public class PostsService {
                         .game(posts.getCategory().getGame())
                         .ai(posts.getCategory().getAi())
                         .content(posts.getContent())
-                        .promoteImageUrl(posts.getPromoteImageUrl())
+                        .promoteImageUrl(fileUrls)
                         .fileUrl(posts.getFileUrl())
                         //.counts(posts.getCounts())
                         .counts(applyCount)
@@ -535,7 +569,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -558,7 +592,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -584,7 +618,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -607,7 +641,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -633,7 +667,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -656,7 +690,7 @@ public class PostsService {
                                 .game(posts.getCategory().getGame())
                                 .ai(posts.getCategory().getAi())
                                 .content(posts.getContent())
-                                .promoteImageUrl(posts.getPromoteImageUrl())
+                                .promoteImageUrl(fileUrls)
                                 .fileUrl(posts.getFileUrl())
                                 //.counts(posts.getCounts())
                                 .counts(applyCount)
@@ -774,7 +808,7 @@ public class PostsService {
                 .recruitmentCount(findProject.getRecruitmentCount())
                 .endDate(findProject.getEndDate())
                 .content(findProject.getContent())
-                .promoteImageUrl(findProject.getPromoteImageUrl())
+                //.promoteImageUrl(findProject.getPromoteImageUrl())
                 .fileUrl(findProject.getFileUrl())
                 .build();
 
@@ -820,7 +854,7 @@ public class PostsService {
                 .recruitmentCount(findStudy.getRecruitmentCount())
                 .endDate(findStudy.getEndDate())
                 .content(findStudy.getContent())
-                .promoteImageUrl(findStudy.getPromoteImageUrl())
+                //.promoteImageUrl(findStudy.getPromoteImageUrl())
                 .fileUrl(findStudy.getFileUrl())
                 .build();
 
@@ -1803,7 +1837,7 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
+                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
@@ -1825,7 +1859,7 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
+                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
@@ -2258,7 +2292,7 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
+                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
@@ -2280,7 +2314,7 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
+                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
@@ -2617,7 +2651,7 @@ public class PostsService {
                     .game(savedScrapPosts.getPosts().getCategory().getGame())
                     .ai(savedScrapPosts.getPosts().getCategory().getAi())
                     .content(savedScrapPosts.getPosts().getContent())
-                    .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
+                    //.promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
                     .fileUrl(savedScrapPosts.getPosts().getFileUrl())
                     //.counts(savedScrapPosts.getPosts().getCounts())
                     .counts(applyCount)
@@ -2641,7 +2675,7 @@ public class PostsService {
                         .game(savedScrapPosts.getPosts().getCategory().getGame())
                         .ai(savedScrapPosts.getPosts().getCategory().getAi())
                         .content(savedScrapPosts.getPosts().getContent())
-                        .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
+                        //.promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
                         .fileUrl(savedScrapPosts.getPosts().getFileUrl())
                         //.counts(savedScrapPosts.getPosts().getCounts())
                         .counts(applyCount)
@@ -2663,7 +2697,7 @@ public class PostsService {
                         .game(savedScrapPosts.getPosts().getCategory().getGame())
                         .ai(savedScrapPosts.getPosts().getCategory().getAi())
                         .content(savedScrapPosts.getPosts().getContent())
-                        .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
+                        //.promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
                         .fileUrl(savedScrapPosts.getPosts().getFileUrl())
                         //.counts(savedScrapPosts.getPosts().getCounts())
                         .counts(applyCount)
@@ -2734,7 +2768,7 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
+                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
                     .fileUrl(findPosts.getFileUrl())
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
@@ -2758,7 +2792,7 @@ public class PostsService {
                         .game(findPosts.getCategory().getGame())
                         .ai(findPosts.getCategory().getAi())
                         .content(findPosts.getContent())
-                        .promoteImageUrl(findPosts.getPromoteImageUrl())
+                        //.promoteImageUrl(findPosts.getPromoteImageUrl())
                         .fileUrl(findPosts.getFileUrl())
                         //.counts(findPosts.getCounts())
                         .counts(applyCount)
@@ -2780,7 +2814,7 @@ public class PostsService {
                         .game(findPosts.getCategory().getGame())
                         .ai(findPosts.getCategory().getAi())
                         .content(findPosts.getContent())
-                        .promoteImageUrl(findPosts.getPromoteImageUrl())
+                        //.promoteImageUrl(findPosts.getPromoteImageUrl())
                         .fileUrl(findPosts.getFileUrl())
                         //.counts(findPosts.getCounts())
                         .counts(applyCount)

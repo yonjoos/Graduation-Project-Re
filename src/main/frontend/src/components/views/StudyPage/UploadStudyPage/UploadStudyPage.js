@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Row, Col, Input, Button, Checkbox, InputNumber, /*Upload,*/ DatePicker, message } from 'antd';
-//import { UploadOutlined } from '@ant-design/icons';
-import { request } from '../../../../hoc/request';
+import { Row, Col, Input, Button, Checkbox, InputNumber, DatePicker, message, Upload, Modal } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { getAuthToken } from '../../../../hoc/request';
+import axios from 'axios';
 import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
 const { TextArea } = Input;
@@ -16,8 +17,10 @@ function UploadStudyPage() {
     const [recruitmentCount, setRecruitmentCount] = useState(2);
     const [endDate, setEndDate] = useState(null);
     const [content, setContent] = useState('');
-    const [promoteImageUrl, setPromoteImageUrl] = useState(null);
+    const [promoteImageUrl, setPromoteImageUrl] = useState([]);
     const [fileUrl, setFileUrl] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
+    const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
 
     const options = ['Web', 'App', 'Game', 'AI'];   // 체크박스에서 선택 가능한 옵션들
     const MAX_SELECTED_CHECKBOXES = 2;  // 선택 가능한 모집 분야 개수 제한
@@ -87,32 +90,60 @@ function UploadStudyPage() {
         submitStudy(title, postType, recruitmentCount, formattedEndDate, content, promoteImageUrl, fileUrl);
         navigate('/study');
     };
-    
+
     const submitStudy = (title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl) => {
-        request('POST', '/uploadStudyPost', {
-            title: title,
-            postType: postType,
-            recruitmentCount: recruitmentCount,
-            endDate: endDate,
-            content: content,
-            promoteImageUrl: promoteImageUrl,
-            fileUrl: fileUrl
-        })
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('postType', postType);
+        formData.append('recruitmentCount', recruitmentCount);
+        formData.append('endDate', endDate);
+        formData.append('content', content);
+        promoteImageUrl.forEach((image, index) => {
+            formData.append(`promoteImageUrl[${index}]`, image);
+        });
+        formData.append('fileUrl',fileUrl);
+
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+            },
+        };
+    
+        axios
+            .post('/uploadStudyPost', formData, config)
             .then((response) => {
-                //console.log('Post uploaded successfully:', response.data);
+                // Handle the response
                 alert('게시물이 성공적으로 업로드되었습니다.');
+                navigate('/project');
             })
             .catch((error) => {
+                // Handle errors
                 console.error('Failed to upload post:', error);
                 alert('게시물 업로드에 실패하였습니다.');
             });
     };
-    
+
+    const removePromoteImage = (index) => {
+        const updatedPromoteImageUrl = [...promoteImageUrl];
+        updatedPromoteImageUrl.splice(index, 1);
+        setPromoteImageUrl(updatedPromoteImageUrl);
+    };
+
+    // Open the modal to preview the clicked image
+    const handlePreview = (image) => {
+        setPreviewImage(image);
+        setPreviewVisible(true);
+    };
+
+    const handleClosePreview = () => {
+        setPreviewVisible(false);
+    };   
 
     return (
         <Row justify="center">
             <Col span={12}>
-                <form onSubmit={onSubmitStudy}>
+                <form onSubmit={onSubmitStudy} encType="multipart/form-data">
                     <div className="form-outline mb-1">스터디 이름</div>
                     <div className="form-outline mb-4">
                         <Input
@@ -167,13 +198,69 @@ function UploadStudyPage() {
 
                     <div className="form-outline mb-1">홍보 사진</div>
                     <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            placeholder="홍보 사진"
-                            value={promoteImageUrl}
-                            onChange={(e) => setPromoteImageUrl(e.target.value)}
-                        />
+                        {/* <Upload
+                            accept="image/*"
+                            showUploadList={false} // 이미지 업로드 목록 표시하지 않음
+                            beforeUpload={(file) => {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    setPromoteImageUrl(e.target.result); // 이미지 미리보기를 위한 데이터 URL 설정
+                                };
+                                reader.readAsDataURL(file); // 이미지 데이터 URL 생성
+                                return false; // 업로드 동작을 중단
+                            }}
+                        >
+                            {promoteImageUrl ? (
+                                <img src={promoteImageUrl} alt="홍보 사진" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+                            ) : (
+                                <Button icon={<UploadOutlined />}>Upload Photo</Button>
+
+                            )}
+                        </Upload> */}
+                        {/* <Upload
+                            accept="image/*"
+                            fileList={promoteImageUrl ? [promoteImageUrl] : []}
+                            beforeUpload={() => false}
+                            onChange={(info) => {
+                                if (info.fileList.length > 0) {
+                                    setPromoteImageUrl(info.fileList[0]);
+                                } else {
+                                    setPromoteImageUrl(null);
+                                }
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />}>Upload Photos</Button>
+                        </Upload>                      */}
+                        <Upload
+                            accept="image/*"
+                            showUploadList={false}
+                            beforeUpload={(image) => {
+                                setPromoteImageUrl([...promoteImageUrl, image]);
+                                return false; // Stops the upload action
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{marginBottom: '10px'}}>Upload Photo</Button>
+                            </Upload>   
+                            {promoteImageUrl.map((image, index) => (
+                                <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
+                                    <img
+                                        src={URL.createObjectURL(image)}
+                                        alt="홍보 사진"
+                                        style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                        onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                    />
+                                    <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                                </div>
+                            ))}
+                            
+                                
+                            
+                        
                     </div>
+                    {/* Preview Modal */}
+                    <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
+                        <img alt="프로젝트 이미지" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
 
                     <div className="form-outline mb-1">첨부 파일</div>
                     <div className="form-outline mb-4">

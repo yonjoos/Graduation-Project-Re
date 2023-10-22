@@ -218,7 +218,7 @@ function DetailProjectPage() {
             try {
                 const response = await request('POST', `/project/delete/${projectId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-    
+
                 navigate('/project');
             } catch (error) {
                 // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
@@ -226,22 +226,22 @@ function DetailProjectPage() {
                 message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
             }
         }
-    
+
         // writer가 아닌 사람이 지원하기 버튼을 누른 경우
         else if (modalAction === 'apply') {
             try {
                 const response = await request('POST', `/project/apply/${projectId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-    
+
                 navigate(`/project/detail/${projectId}`);
             } catch (error) {
                 console.error("Error fetching project data:", error);
             }
         }
-    
+
         setIsModalVisible(false);   // 모달 안보이게 숨김
     };
-    
+
 
     const handleCancelModalConfirm = async () => {
         try {
@@ -340,7 +340,7 @@ function DetailProjectPage() {
 
             // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
             const newData = { ...data };
-            
+
             // count 값을 response.data[0].count로 업데이트
             newData.counts = response.data[0].count;
 
@@ -365,10 +365,10 @@ function DetailProjectPage() {
 
             // 승인 상태를 '수정'하는 것이므로, put request 
             const response = await request('PUT', `/posts/detail/cancelApprove?${queryParams}`);
-            
+
             // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
             const newData = { ...data };
-            
+
             // count 값을 response.data[0].count로 업데이트
             newData.counts = response.data[0].count;
             console.log("response.data[0].count : ", response.data[0].count);
@@ -1012,7 +1012,7 @@ function DetailProjectPage() {
                     <div style={{ flex: 1 }}>
                         {/** 좌측 여백을 위해 만든 더미 div */}
                     </div>
-                    
+
                     <div style={{ flex: 2.5 }}>
                         {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
                         {data.writer && renderButtons()}
@@ -1074,9 +1074,22 @@ function DetailProjectPage() {
 
                         <Divider className="bold-divider" />
 
-                        {/* 드라이브에서 image가져와 렌더링 */}
                         <div style={{ marginLeft: '5px' }}>
-                            홍보 사진: <img src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.promoteImageUrl}`} alt="홍보 사진" />
+                            홍보 사진:
+                            {data.promoteImageUrl ? (
+                                data.promoteImageUrl.map((imageUrl, index) => (
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <img
+                                        key={index}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                        alt={`홍보 사진 ${index + 1}`}
+                                        style={{ margin: '10px' }}
+                                    />
+                                </div>
+                            ))
+                        ): (
+                            <p>이미지가 없습니다</p>
+                        )}
                         </div>
 
                         <Divider className="bold-divider" />

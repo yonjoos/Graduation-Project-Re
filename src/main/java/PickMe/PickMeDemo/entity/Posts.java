@@ -39,6 +39,9 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @OneToMany(mappedBy = "posts")
     private List<ViewCountPosts> viewCountPosts = new ArrayList<>(); // 연관관계의 거울로 작용, 게시물 조회 수 table과 엮임(db필드에 안들어감)
 
+    @OneToMany(mappedBy = "posts")
+    private List<PostsFiles> postsFiles = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private PostType postType; // 게시물 타입 (project/study)으로 구분
 
@@ -55,8 +58,8 @@ public class Posts extends BaseTimeEntity { //생성일, 수정일 다루는 클
     @Column(name = "content", nullable = false, columnDefinition = "TEXT") // @Lob 대신 Text로 변경 -> 1gb까지 저장 가능
     private String content; //내용
 
-    @Column(name = "promoteImageUrl")
-    private String promoteImageUrl; //홍보 사진 url주소
+//    @Column(name = "promoteImageUrl")
+//    private String promoteImageUrl; //홍보 사진 url주소
 
     @Column(name = "fileUrl")
     private String fileUrl; //첨부 파일 경로

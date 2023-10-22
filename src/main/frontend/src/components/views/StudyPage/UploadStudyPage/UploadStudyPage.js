@@ -88,7 +88,7 @@ function UploadStudyPage() {
         // 백엔드와 싱크를 맞추기 위해, 날짜 형식 변환
         const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD');
         submitStudy(title, postType, recruitmentCount, formattedEndDate, content, promoteImageUrl, fileUrl);
-        navigate('/study');
+
     };
 
     const submitStudy = (title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl) => {
@@ -115,7 +115,7 @@ function UploadStudyPage() {
             .then((response) => {
                 // Handle the response
                 alert('게시물이 성공적으로 업로드되었습니다.');
-                navigate('/project');
+                navigate('/study');
             })
             .catch((error) => {
                 // Handle errors

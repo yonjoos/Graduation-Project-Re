@@ -1075,7 +1075,21 @@ function DetailStudyPage() {
                         <Divider className="bold-divider" />
         
                         <div style={{ marginLeft: '5px' }}>
-                            홍보 사진: {data.promoteImageUrl}
+                            홍보 사진:
+                                {data.promoteImageUrl ? (
+                                    data.promoteImageUrl.map((imageUrl, index) => (
+                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <img
+                                            key={index}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                            alt={`홍보 사진 ${index + 1}`}
+                                            style={{ margin: '10px' }}
+                                        />
+                                    </div>
+                                ))
+                            ): (
+                                <p>이미지가 없습니다</p>
+                            )}
                         </div>
         
                         <Divider className="bold-divider" />

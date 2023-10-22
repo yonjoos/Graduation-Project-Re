@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Row, Col, Input, Button, Checkbox, InputNumber, /*Upload,*/ DatePicker, message, Upload } from 'antd';
+import { Row, Col, Input, Button, Checkbox, InputNumber, DatePicker, message, Upload, Modal } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { getAuthToken } from '../../../../hoc/request';
 import axios from 'axios';
@@ -17,8 +17,10 @@ function UploadProjectPage() {
     const [recruitmentCount, setRecruitmentCount] = useState(2);
     const [endDate, setEndDate] = useState(null);
     const [content, setContent] = useState('');
-    const [promoteImageUrl, setPromoteImageUrl] = useState(null);
+    const [promoteImageUrl, setPromoteImageUrl] = useState([]);
     const [fileUrl, setFileUrl] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
+    const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
 
     const options = ['Web', 'App', 'Game', 'AI'];   // 체크박스에서 선택 가능한 옵션들
     const MAX_SELECTED_CHECKBOXES = 2;  // 선택 가능한 모집 분야 개수 제한
@@ -96,7 +98,9 @@ function UploadProjectPage() {
         formData.append('recruitmentCount', recruitmentCount);
         formData.append('endDate', endDate);
         formData.append('content', content);
-        formData.append('promoteImageUrl', promoteImageUrl);
+        promoteImageUrl.forEach((image, index) => {
+            formData.append(`promoteImageUrl[${index}]`, image);
+        });
         formData.append('fileUrl',fileUrl);
 
         const config = {
@@ -118,17 +122,23 @@ function UploadProjectPage() {
                 console.error('Failed to upload post:', error);
                 alert('게시물 업로드에 실패하였습니다.');
             });
-        // request('POST', '/uploadProjectPost', formData)
-        //     .then((response) => {
-        //         //console.log('Post uploaded successfully:', response.data);
-        //         alert('게시물이 성공적으로 업로드되었습니다.');
-        //     })
-        //     .catch((error) => {
-        //         console.error('Failed to upload post:', error);
-        //         alert('게시물 업로드에 실패하였습니다.');
-        //     });
     };
 
+    const removePromoteImage = (index) => {
+        const updatedPromoteImageUrl = [...promoteImageUrl];
+        updatedPromoteImageUrl.splice(index, 1);
+        setPromoteImageUrl(updatedPromoteImageUrl);
+    };
+
+    // Open the modal to preview the clicked image
+    const handlePreview = (image) => {
+        setPreviewImage(image);
+        setPreviewVisible(true);
+    };
+
+    const handleClosePreview = () => {
+        setPreviewVisible(false);
+    };   
 
     return (
         <Row justify="center">
@@ -224,22 +234,33 @@ function UploadProjectPage() {
                         <Upload
                             accept="image/*"
                             showUploadList={false}
-                            beforeUpload={(file) => {
-                                setPromoteImageUrl(file); // Set the image file in state
+                            beforeUpload={(image) => {
+                                setPromoteImageUrl([...promoteImageUrl, image]);
                                 return false; // Stops the upload action
                             }}
                         >
-                            {promoteImageUrl ? (
-                                <img
-                                    src={URL.createObjectURL(promoteImageUrl)}
-                                    alt="홍보 사진"
-                                    style={{ maxWidth: '100%', maxHeight: '300px' }}
-                                />
-                            ) : (
-                                <Button icon={<UploadOutlined/>}>Upload Photo</Button>
-                            )}
-                        </Upload>
+                            <Button icon={<UploadOutlined />} style={{marginBottom: '10px'}}>Upload Photo</Button>
+                            </Upload>   
+                            {promoteImageUrl.map((image, index) => (
+                                <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
+                                    <img
+                                        src={URL.createObjectURL(image)}
+                                        alt="홍보 사진"
+                                        style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                        onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                    />
+                                    <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                                </div>
+                            ))}
+                            
+                                
+                            
+                        
                     </div>
+                    {/* Preview Modal */}
+                    <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
+                        <img alt="프로젝트 이미지" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
 
                     <div className="form-outline mb-1">첨부 파일</div>
                     <div className="form-outline mb-4">

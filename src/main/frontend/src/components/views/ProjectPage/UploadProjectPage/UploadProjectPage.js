@@ -88,7 +88,7 @@ function UploadProjectPage() {
         // 백엔드와 싱크를 맞추기 위해, 날짜 형식 변환
         const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD');
         submitProject(title, postType, recruitmentCount, formattedEndDate, content, promoteImageUrl, fileUrl);
-        
+
     };
 
     const submitProject = (title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl) => {
@@ -101,7 +101,7 @@ function UploadProjectPage() {
         promoteImageUrl.forEach((image, index) => {
             formData.append(`promoteImageUrl[${index}]`, image);
         });
-        formData.append('fileUrl',fileUrl);
+        formData.append('fileUrl', fileUrl);
 
         const config = {
             headers: {
@@ -109,7 +109,7 @@ function UploadProjectPage() {
                 'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
             },
         };
-    
+
         axios
             .post('/uploadProjectPost', formData, config)
             .then((response) => {
@@ -138,7 +138,7 @@ function UploadProjectPage() {
 
     const handleClosePreview = () => {
         setPreviewVisible(false);
-    };   
+    };
 
     return (
         <Row justify="center">
@@ -198,39 +198,6 @@ function UploadProjectPage() {
 
                     <div className="form-outline mb-1">홍보 사진</div>
                     <div className="form-outline mb-4">
-                        {/* <Upload
-                            accept="image/*"
-                            showUploadList={false} // 이미지 업로드 목록 표시하지 않음
-                            beforeUpload={(file) => {
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    setPromoteImageUrl(e.target.result); // 이미지 미리보기를 위한 데이터 URL 설정
-                                };
-                                reader.readAsDataURL(file); // 이미지 데이터 URL 생성
-                                return false; // 업로드 동작을 중단
-                            }}
-                        >
-                            {promoteImageUrl ? (
-                                <img src={promoteImageUrl} alt="홍보 사진" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-                            ) : (
-                                <Button icon={<UploadOutlined />}>Upload Photo</Button>
-
-                            )}
-                        </Upload> */}
-                        {/* <Upload
-                            accept="image/*"
-                            fileList={promoteImageUrl ? [promoteImageUrl] : []}
-                            beforeUpload={() => false}
-                            onChange={(info) => {
-                                if (info.fileList.length > 0) {
-                                    setPromoteImageUrl(info.fileList[0]);
-                                } else {
-                                    setPromoteImageUrl(null);
-                                }
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />}>Upload Photos</Button>
-                        </Upload>                         */}
                         <Upload
                             accept="image/*"
                             showUploadList={false}
@@ -239,23 +206,19 @@ function UploadProjectPage() {
                                 return false; // Stops the upload action
                             }}
                         >
-                            <Button icon={<UploadOutlined />} style={{marginBottom: '10px'}}>Upload Photo</Button>
-                            </Upload>   
-                            {promoteImageUrl.map((image, index) => (
-                                <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
-                                    <img
-                                        src={URL.createObjectURL(image)}
-                                        alt="홍보 사진"
-                                        style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
-                                        onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
-                                    />
-                                    <Button onClick={() => removePromoteImage(index)}>Remove</Button>
-                                </div>
-                            ))}
-                            
-                                
-                            
-                        
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
+                        </Upload>
+                        {promoteImageUrl.map((image, index) => (
+                            <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
+                                <img
+                                    src={URL.createObjectURL(image)}
+                                    alt="홍보 사진"
+                                    style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                    onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                />
+                                <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                            </div>
+                        ))}
                     </div>
                     {/* Preview Modal */}
                     <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>

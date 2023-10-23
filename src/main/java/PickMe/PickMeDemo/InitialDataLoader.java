@@ -1,10 +1,7 @@
 package PickMe.PickMeDemo;
 
 import PickMe.PickMeDemo.entity.*;
-import PickMe.PickMeDemo.repository.CategoryRepository;
-import PickMe.PickMeDemo.repository.PortfolioRepository;
-import PickMe.PickMeDemo.repository.PostsRepository;
-import PickMe.PickMeDemo.repository.UserRepository;
+import PickMe.PickMeDemo.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +9,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -22,8 +22,9 @@ public class InitialDataLoader implements CommandLineRunner {
     private final PortfolioRepository portfolioRepository;
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
+    private final RecommendationsRepository recommendationsRepository;
 
-    private void createUserAndPortfolio(
+    private void createUserAndPortfolio (
             String userName,
             String nickName,
             String email,
@@ -58,6 +59,80 @@ public class InitialDataLoader implements CommandLineRunner {
                 .build();
 
         portfolioRepository.save(portfolio);
+    }
+
+    private void createRecommendationsTable (
+            String myInterest,
+            String otherInterest,
+            Double cosineSimilarity
+    ) {
+        Recommendations recommendations = Recommendations.builder()
+                .myInterest(myInterest)
+                .otherInterest(otherInterest)
+                .cosineSimilarity(cosineSimilarity)
+                .build();
+
+        recommendationsRepository.save(recommendations);
+    }
+
+    // 여기서 createRecommendationsTable 함수는 Recommendations 테이블에 데이터를 저장하도록 되어 있다.
+
+    public static List<List<Integer>> getPermutations(List<Integer> numbers) {
+        Collections.sort(numbers);
+        List<List<Integer>> permutations = new ArrayList<>();
+        do {
+            permutations.add(new ArrayList<>(numbers));
+        } while (nextPermutation(numbers));
+        return permutations;
+    }
+
+    public static boolean nextPermutation(List<Integer> arr) {
+        int n = arr.size();
+        int i = n - 2;
+        while (i >= 0 && arr.get(i) >= arr.get(i + 1)) {
+            i--;
+        }
+        if (i < 0) {
+            return false;
+        }
+        int j = n - 1;
+        while (arr.get(j) <= arr.get(i)) {
+            j--;
+        }
+        Collections.swap(arr, i, j);
+        Collections.reverse(arr.subList(i + 1, n));
+        return true;
+    }
+
+    public static String listToString(List<Integer> list) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i));
+        }
+        return sb.toString();
+    }
+
+    public static double getCosineSimilarity(List<Integer> vec1, List<Integer> vec2) {
+        if (vec1.size() != vec2.size()) {
+            return 0.0;
+        }
+
+        double dotProduct = 0;
+        double magnitude1 = 0;
+        double magnitude2 = 0;
+        for (int i = 0; i < vec1.size(); i++) {
+            dotProduct += vec1.get(i) * vec2.get(i);
+            magnitude1 += vec1.get(i) * vec1.get(i);
+            magnitude2 += vec2.get(i) * vec2.get(i);
+        }
+        magnitude1 = Math.sqrt(magnitude1);
+        magnitude2 = Math.sqrt(magnitude2);
+
+        if (magnitude1 == 0.0 || magnitude2 == 0.0) {
+            return 0.0;
+        }
+
+        return dotProduct / (magnitude1 * magnitude2);
     }
 
     @Override
@@ -1558,5 +1633,67 @@ public class InitialDataLoader implements CommandLineRunner {
 //        createUserAndPortfolio("4320", "4320", "4320", "4320", 4, 3, 2, 0, "4320", "4320", "");
 ////        4321
 //        createUserAndPortfolio("4321", "4321", "4321", "4321", 4, 3, 2, 1, "4321", "4321", "");
+
+
+
+
+        // 추천 테이블 생성
+
+//        List<List<Integer>> standardPermutations = new ArrayList<>();
+//        standardPermutations.add(List.of(0, 0, 0, 0));
+//        standardPermutations.add(List.of(1, 0, 0, 0));
+//        standardPermutations.add(List.of(2, 0, 0, 0));
+//        standardPermutations.add(List.of(3, 0, 0, 0));
+//        standardPermutations.add(List.of(4, 0, 0, 0));
+//        standardPermutations.add(List.of(2, 1, 0, 0));
+//        standardPermutations.add(List.of(3, 1, 0, 0));
+//        standardPermutations.add(List.of(3, 2, 0, 0));
+//        standardPermutations.add(List.of(4, 1, 0, 0));
+//        standardPermutations.add(List.of(4, 2, 0, 0));
+//        standardPermutations.add(List.of(4, 3, 0, 0));
+//        standardPermutations.add(List.of(3, 2, 1, 0));
+//        standardPermutations.add(List.of(4, 2, 1, 0));
+//        standardPermutations.add(List.of(4, 3, 1, 0));
+//        standardPermutations.add(List.of(4, 3, 2, 0));
+//        standardPermutations.add(List.of(4, 3, 2, 1));
+//
+//        List<List<Integer>> standardPermutationsList = new ArrayList<>();
+//        for (List<Integer> standardPermutation : standardPermutations) {
+//            standardPermutationsList.addAll(getPermutations(new ArrayList<>(standardPermutation)));
+//        }
+//
+//        List<List<Integer>> numbers = new ArrayList<>();
+//        numbers.add(List.of(0, 0, 0, 0));
+//        numbers.add(List.of(1, 0, 0, 0));
+//        numbers.add(List.of(2, 0, 0, 0));
+//        numbers.add(List.of(3, 0, 0, 0));
+//        numbers.add(List.of(4, 0, 0, 0));
+//        numbers.add(List.of(2, 1, 0, 0));
+//        numbers.add(List.of(3, 1, 0, 0));
+//        numbers.add(List.of(3, 2, 0, 0));
+//        numbers.add(List.of(4, 1, 0, 0));
+//        numbers.add(List.of(4, 2, 0, 0));
+//        numbers.add(List.of(4, 3, 0, 0));
+//        numbers.add(List.of(3, 2, 1, 0));
+//        numbers.add(List.of(4, 2, 1, 0));
+//        numbers.add(List.of(4, 3, 1, 0));
+//        numbers.add(List.of(4, 3, 2, 0));
+//        numbers.add(List.of(4, 3, 2, 1));
+//
+//        for (List<Integer> standard : standardPermutationsList) {
+//
+//            List<List<Integer>> permutations = new ArrayList<>();
+//
+//            for (List<Integer> number : numbers) {
+//                permutations.addAll(getPermutations(new ArrayList<>(number)));
+//            }
+//
+//            for (List<Integer> permutation : permutations) {
+//                double similarity = getCosineSimilarity(permutation, standard);
+//                createRecommendationsTable(listToString(standard), listToString(permutation), similarity);
+//            }
+//        }
+
+
     }
 }

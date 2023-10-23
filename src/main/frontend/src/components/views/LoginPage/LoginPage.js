@@ -21,6 +21,7 @@ function LoginPage() {
     const [verificationSuccess, setVerificationSuccess] = useState(null); // 인증번호 확인 성공 여부
     const fixedEmailDomain = "@g.hongik.ac.kr"; // 회원가입할 때, 유저는 @g.hongik.ac.kr까지 입력하지 않는다. 따라서 이메일 인증 시 또는 회원가입 폼 전체를 제출할 때, 명시적으로 입력받은 email변수에 @g.hongik.ac.kr를 달아줘서 백엔드에 보낸다
     const [isPasswordResetFormVisible, setIsPasswordResetFormVisible] = useState(false); // 비밀번호 찾기 토글 버튼
+    const [findPasswordEmail, setFindPasswordEmail] = useState(''); // 비밀번호 찾기에 입력하는 사용자 이메일
     const [resetPasswordMailSented, setResetPasswordMailSented] = useState(false);   // 비밀번호 찾기 인증 메일 발송 여부
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러 (로그인, 회원가입 공통으로 관리하고, 입력시마다 변수에 입력값을 세팅함)
@@ -40,6 +41,7 @@ function LoginPage() {
             setUserInputCode(value); //현재 사용자가 입력하는 인증번호 값을 인증번호 변수에 세팅
             setVerificationSuccess(null); // 새로운 인증번호를 입력할 떄는 인증 여부를 null로 초기화
         }
+        else if (name === 'findPasswordEmail') setFindPasswordEmail(value);
     };
 
     // 회원 가입 관련 - 중복 확인 버튼을 누르면 호출되는 이벤트 핸들러
@@ -259,17 +261,17 @@ function LoginPage() {
     const handleResetEmail = () => {
         
         // 만약 email 입력하는 창에 아무것도 적지 않고 인증번호 발송 버튼 누르면 백엔드에 요청 안보냄
-        if (!email) {
+        if (!findPasswordEmail) {
             message.warning('이메일을 입력해주세요.');
             return;
         }
 
         // 비밀번호 찾기에서 email창에 입력받은 변수 ex) qkrtlghd97을 백엔드에 보낼 땐 @g.hongik.ac.kr를 달아줘서 보내야함
-        const convertedToEmail = email + fixedEmailDomain;
+        const convertedToEmail = findPasswordEmail + fixedEmailDomain;
 
         // 백엔드에 보낼 email관련 RequestParam 작성
         const emailParams = new URLSearchParams({ email: convertedToEmail });
-        console.log('email', convertedToEmail);
+        console.log('findPasswordEmail', convertedToEmail);
 
         // 백엔드에 이메일 발송 관련 요청 보냄
         request('POST', `/resetPassword?${emailParams}`)
@@ -325,7 +327,7 @@ function LoginPage() {
                                     <div style={{ display: "flex" }}>
                                         <Input
                                             type="text"
-                                            name="email"
+                                            name="findPasswordEmail"
                                             placeholder="비밀번호 재설정을 위한 홍익대학교 이메일 계정을 입력해주세요!"
                                             onChange={onChangeHandler}
                                             disabled={resetPasswordMailSented} // 비밀번호 찾기 버튼을 누른 경우, 이메일 못바꾸게 하기 위함

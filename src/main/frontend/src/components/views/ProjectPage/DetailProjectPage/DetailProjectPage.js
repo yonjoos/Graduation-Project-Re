@@ -218,7 +218,7 @@ function DetailProjectPage() {
             try {
                 const response = await request('POST', `/project/delete/${projectId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-
+                message.success('프로젝트가 성공적으로 삭제되었습니다');
                 navigate('/project');
             } catch (error) {
                 // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
@@ -1078,18 +1078,18 @@ function DetailProjectPage() {
                             홍보 사진:
                             {data.promoteImageUrl ? (
                                 data.promoteImageUrl.map((imageUrl, index) => (
-                                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <img
-                                        key={index}
-                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                        alt={`홍보 사진 ${index + 1}`}
-                                        style={{ margin: '10px' }}
-                                    />
-                                </div>
-                            ))
-                        ): (
-                            <p>이미지가 없습니다</p>
-                        )}
+                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                        <img
+                                            key={index}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                            alt={`홍보 사진 ${index + 1}`}
+                                            style={{ margin: '10px', width: 600 }}
+                                        />
+                                    </div>
+                                ))
+                            ) : (
+                                <p>이미지가 없습니다</p>
+                            )}
                         </div>
 
                         <Divider className="bold-divider" />

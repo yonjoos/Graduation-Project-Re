@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Row, Col, Input, Button, Checkbox, DatePicker, message, InputNumber } from 'antd';
+import { Row, Col, Input, Button, Checkbox, DatePicker, message, InputNumber, Upload, Modal } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { getAuthToken } from '../../../../hoc/request';
+import axios from 'axios';
 import { request } from '../../../../hoc/request';
 import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
@@ -16,9 +19,13 @@ function UpdateProjectPage() {
         recruitmentCount: 0,
         endDate: '',
         content: '',
-        promoteImageUrl: '',
+        promoteImageUrl: [],
         fileUrl: '',
     });
+
+    const [newPromoteImageUrl, setNewPromoteImageUrl] = useState([]);
+    const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
+    const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
 
     useEffect(() => {
         fetchExistingProjectData();
@@ -28,10 +35,10 @@ function UpdateProjectPage() {
         try {
             const response = await request('GET', `/getProjectForm/${projectId}`);
             const existingData = response.data;
-    
+
             // Boolean 배열을 Checkbox.Group 값에 대한 문자열 배열로 변환
             const postTypeStrings = options.filter((_, index) => existingData.postType[index]);
-            
+
             setData({
                 ...existingData,    // 기존 데이터 가져오기
                 postType: postTypeStrings,      // 문자열 배열로 변환된 애들로 다시 postType 세팅
@@ -42,7 +49,7 @@ function UpdateProjectPage() {
             navigate(`/project/detail/${projectId}`);   // 수정할 데이터 폼을 가져오는 것이므로, navigate를 try catch문 아래에 적어주면 안된다.
         }
     };
-    
+
 
     const options = ['Web', 'App', 'Game', 'AI'];
     const MAX_SELECTED_CHECKBOXES = 2;
@@ -75,7 +82,7 @@ function UpdateProjectPage() {
             }));
         }
     };
-    
+
     // data의 형식에 맞게 변환하여 값을 저장
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
@@ -129,35 +136,84 @@ function UpdateProjectPage() {
                 data.recruitmentCount,
                 formattedEndDate,
                 data.content,
-                data.promoteImageUrl,
-                data.fileUrl
+                data.promoteImageUrl, // 기존의 이미지 변경사항
+                data.fileUrl,
+                newPromoteImageUrl // 새로 업로드할 이미지 
             );
-            navigate(`/project/detail/${projectId}`);
+            
         } catch (error) {
             console.error('Error submitting project:', error);
         }
     };
 
-    const submitProject = async (event, title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl ) => {
+    const submitProject = async (event, title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl, newPromoteImageUrl) => {
         event.preventDefault();
-        
-        try {
-            await request('PUT', `/project/update/${projectId}`, {
-                title: title,
-                postType: postType,
-                recruitmentCount: recruitmentCount,
-                endDate: endDate,
-                content: content,
-                promoteImageUrl: promoteImageUrl,
-                fileUrl: fileUrl
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('postType', postType);
+        formData.append('recruitmentCount', recruitmentCount);
+        formData.append('endDate', endDate);
+        formData.append('content', content);
+        formData.append('promoteImageUrl', promoteImageUrl);
+        newPromoteImageUrl.forEach((image, index) => {
+            formData.append(`newPromoteImageUrl[${index}]`, image);
+        });
+        formData.append('fileUrl', fileUrl);
+
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+            },
+        };
+
+        axios
+            .put(`/project/update/${projectId}`, formData, config)
+            .then((response) => {
+                // Handle the response
+                alert('프로젝트 게시물이 성공적으로 업데이트 되었습니다.');
+                navigate(`/project/detail/${projectId}`);
+            })
+            .catch((error) => {
+                // Handle errors
+                console.error('Failed to upload post:', error);
+                alert('프로젝트 게시물 업데이트에 실패하였습니다.');
             });
-            alert('프로젝트 게시물이 성공적으로 업데이트 되었습니다.');
-            // navigate(`/project/detail/${projectId}`)
-        } catch (error) {
-            alert('프로젝트 게시물 업데이트에 실패하였습니다.');
-        }
+        
     };
-    
+
+    // 새로 올려진 이미지 remove 클릭 시 목록에서 제거
+    const removeNewPromoteImage = (index) => {
+        const updatedNewPromoteImageUrl = [...newPromoteImageUrl];
+        updatedNewPromoteImageUrl.splice(index, 1);
+
+
+        setNewPromoteImageUrl(updatedNewPromoteImageUrl);
+        console.log(newPromoteImageUrl);
+    };
+
+    // 기존에 있던 이미지 remove 클릭 시 목록에서 제거
+    const removePromoteImage = (index) => {
+        const updatedPromoteImageUrl = [...data.promoteImageUrl];
+        updatedPromoteImageUrl.splice(index, 1);
+
+        setData((prevData) => ({
+            ...prevData,
+            promoteImageUrl: updatedPromoteImageUrl,
+        }));
+        console.log(updatedPromoteImageUrl);
+    };
+
+    // Open the modal to preview the clicked image
+    const handlePreview = (image) => {
+        setPreviewImage(image);
+        setPreviewVisible(true);
+    };
+
+    const handleClosePreview = () => {
+        setPreviewVisible(false);
+    };
 
     return (
         <Row justify="center">
@@ -180,9 +236,9 @@ function UpdateProjectPage() {
                         {renderCheckboxGroup()}
                     </div>
 
-                    <div style = {{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
-                        <div className="form-outline mb-1">모집 인원</div>
+                            <div className="form-outline mb-1">모집 인원</div>
                             <div className="form-outline mb-4">
                                 <InputNumber
                                     type="number"
@@ -194,7 +250,7 @@ function UpdateProjectPage() {
                                 />
                             </div>
                         </div>
-                        <div style = {{ marginRight : '40%' }}>
+                        <div style={{ marginRight: '40%' }}>
                             <div className="form-outline mb-1">모집 마감일</div>
                             <div className="form-outline mb-4">
                                 <DatePicker
@@ -222,14 +278,59 @@ function UpdateProjectPage() {
 
                     <div className="form-outline mb-1">홍보 사진</div>
                     <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            name="promoteImageUrl"
-                            placeholder="홍보 사진 변경"
-                            value={data.promoteImageUrl}
-                            onChange={onChangeHandler}
-                        />
+                        <div>
+                            <Upload
+                                accept="image/*"
+                                showUploadList={false}
+                                beforeUpload={(image) => {
+                                    setNewPromoteImageUrl([...newPromoteImageUrl, image]);
+                                    return false; // Stops the upload action
+                                }}
+                            >
+                                <Button icon={<UploadOutlined />}>Upload Photo</Button>
+                            </Upload>
+
+                            {/* 기존에 올려놨던 이미지 세팅 */}
+                            {data.promoteImageUrl ? (
+                                data.promoteImageUrl.map((imageUrl, index) => (
+                                    <div key={index} >
+                                        <img
+                                            key={index}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                            alt={`홍보 사진 ${index + 1}`}
+                                            style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
+                                            onClick={() => handlePreview(`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`)
+                                        }
+                                        />
+                                        <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                                    </div>
+
+                                ))
+                            ) : (
+                                <p>이미지가 없습니다</p>
+                            )}
+
+                            {/* 새로 올릴 이미지 세팅 */}
+                            {newPromoteImageUrl ?
+                                (newPromoteImageUrl.map((image, index) => (
+                                    <div key={index} >
+                                        <img
+                                            src={URL.createObjectURL(image)}
+                                            alt="홍보 사진"
+                                            style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
+                                            onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                        />
+                                        <Button onClick={() => removeNewPromoteImage(index)}>Remove</Button>
+                                    </div>
+                                )))
+                                : (
+                                    null
+                                )}
+                        </div>
                     </div>
+                    <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
+                        <img alt="프로젝트 이미지" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
 
                     <div className="form-outline mb-1">첨부 파일</div>
                     <div className="form-outline mb-4">

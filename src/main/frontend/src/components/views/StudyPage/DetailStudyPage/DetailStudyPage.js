@@ -1083,7 +1083,7 @@ function DetailStudyPage() {
                                             key={index}
                                             src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
                                             alt={`홍보 사진 ${index + 1}`}
-                                            style={{ margin: '10px' }}
+                                            style={{ margin: '10px', width: 600 }}
                                         />
                                     </div>
                                 ))

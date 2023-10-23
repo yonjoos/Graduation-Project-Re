@@ -285,7 +285,7 @@ function StudyPage() {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                        {item.web ? "#Web " : ""}{item.app ? "#App " : ""}{item.game ? "#Game " : ""}{item.ai ? "#AI " : ""}
                                     </Row>
                                     <Divider></Divider>
                                     <Row>

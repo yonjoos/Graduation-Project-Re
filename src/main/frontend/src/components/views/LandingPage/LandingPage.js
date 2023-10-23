@@ -248,16 +248,15 @@ function LandingPage() {
                                                     cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%',
                                                     border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'
                                                 }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <b>{truncateString(item.title, 15)}</b>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                                                     <div>
-                                                        {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                                        {item.web ? "#Web " : ""}{item.app ? "#App " : ""}{item.game ? "#Game " : ""}{item.ai ? "#AI " : ""}
                                                     </div>
                                                     <div>
 
                                                     </div>
                                                 </div>
-                                                <b>{truncateString(item.title, 15)}</b>
-                                                <br />
                                                 <br />
                                                 <div>
                                                     마감일 | {formatDate(item.endDate)}

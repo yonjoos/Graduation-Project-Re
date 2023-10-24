@@ -390,10 +390,7 @@ function LoginPage() {
                                                 return "사용 가능한 닉네임입니다!"
                                             }
                                         })()}
-
                                     </div>
-
-
                                 )}
                             </div>
                             <div className="form-outline mb-4">

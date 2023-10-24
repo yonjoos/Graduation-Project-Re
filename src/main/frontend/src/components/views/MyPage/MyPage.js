@@ -13,14 +13,13 @@ function MyPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [isInputClicked, setIsInputClicked] = useState(false);
-
     //드롭다운 관련
     const [selectedOption, setSelectedOption] = useState('info'); //드롭다운(정보수정, 비번 변경, 탈퇴)에서 해당 배너를 클릭할떄마다 selectOption값은 바뀜
 
     //회원 정보 수정 관련
-    const [isUpdateButtonEnabled, setIsUpdateButtonEnabled] = useState(false); //정보 수정 시, 모든 필드가 입력되어야만 버튼이 활성화됨
-    const [userBaseInfo, setUserBaseInfo] = useState(null); // 회원의 email, 닉네임, 이름, 포폴 유무 정보를 받아옴. 
+    const [isUpdateButtonEnabled, setIsUpdateButtonEnabled] = useState(false); // 정보 수정 시, 모든 필드가 입력되어야만 버튼이 활성화됨
+    const [userBaseInfo, setUserBaseInfo] = useState(null); // 회원의 email, 닉네임, 이름, 포폴 유무 정보를 받아옴.
+    const [nicknameAvailability, setNicknameAvailability] = useState(null); // 닉네임 중복 여부
     // 회원 정보 업데이트랑 기존 정보 받아올 때 둘 다 사용, 업데이트 할 때는 에 비밀번호까지 실어서 보내고, 
     // 다시 useEffect로 GET- /userInfo할때는 userDto로 받음(비밀번호 필드 누락된 dto만 받음)
 
@@ -43,7 +42,6 @@ function MyPage() {
                 setUserBaseInfo(response.data);
             })
             .catch((error) => {
-
                 console.error("Error fetching data:", error);
             });
     }, []);
@@ -219,6 +217,17 @@ function MyPage() {
         setIsWithdrawModalVisible(false); // Close the modal
     };
     
+    // 닉네임 중복 체크
+    const handleDuplicateCheck = () => {
+        request('GET', `/nicknameDuplicate?nickname=${userBaseInfo.nickName}`) //백엔드에 현재 입력받은 nickname을 가진 회원이 있는 지 찾고, 백엔드는 해당 닉네임으로 유저 생성 가능하면 available:true /불가능하면 available:false 반환
+            .then((response) => {
+                const isAvailable = response.data.available;
+                setNicknameAvailability(isAvailable); //닉네임 사용 가능 여부 값을 상태변수에 저장
+            })
+            .catch((error) => {
+                alert("잠시 후 다시 시도해보세요.");
+            });
+    };
 
     return (
         <div>
@@ -236,7 +245,7 @@ function MyPage() {
                             {userBaseInfo && (
                                 <Form>
                                     <div>
-                                        <Item label="등록된 이메일 주소">
+                                        <Item label="이메일">
                                             <Input
                                                 type="email"
                                                 value={userBaseInfo.email}
@@ -245,16 +254,38 @@ function MyPage() {
                                                 style={{ backgroundColor: '#f0f0f0' }} />
                                         </Item>
                                     </div>
-                                    <div>
-                                        <Item label="닉네임">
+                                    <div style={{ display: "flex" }}>
+                                        <Item label="닉네임" style={{ flex: 6 }}>
                                             <Input
                                                 type="text"
                                                 value={userBaseInfo.nickName}
                                                 placeholder = "닉네임을 입력해주세요"
-                                                onChange={(e) => handleInputChange('nickName', e.target.value)} 
-                                                />
+                                                onChange={(e) => handleInputChange('nickName', e.target.value)}
+                                            />
                                         </Item>
+                                        <Button onClick={handleDuplicateCheck} style={{ flex: 1 }}>닉네임 중복 확인</Button>
                                     </div>
+                                    {nicknameAvailability !== null && ( // 중복 확인 버튼 눌러서 중복 확인 여부를 알아왔을 때,
+                                        // 사용 가능한 닉네임인 경우 초록색으로 아래에 사용 가능하단 문구를 렌더링
+                                        // 사용 불가능한 닉네임인 경우 빨간색으로 아래에 사용 불가능하단 문구를 렌더링
+                                        // 빈 문자열로 중복확인 한 경우 빨간색으로 다시 입력하라는 문구를 렌더링
+                                        <div className={nicknameAvailability ? "verification-success" : "verification-failure"} style={{ marginLeft: '60px' ,marginBottom: '20px', marginTop: '-20px', color: (userBaseInfo.nickName === "" || !nicknameAvailability) ? "#ff4d4f" : "#00cc00" }}>
+                                            {(() => {
+                                                if (userBaseInfo.nickName === "") {
+                                                    return "빈 문자열로는 닉네임을 생성할 수 없습니다. 다시 입력하세요"
+                                                }
+                                                else if (!nicknameAvailability) {
+                                                    return "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요."
+                                                }
+                                                else if (userBaseInfo.nickName.length > 10) {
+                                                    return "닉네임은 최대 10자까지 입력 가능합니다."
+                                                }
+                                                else {
+                                                    return "사용 가능한 닉네임입니다!"
+                                                }
+                                            })()}
+                                        </div>
+                                    )}
                                     <div>
                                         <Item label="이름">
                                             <Input
@@ -286,7 +317,7 @@ function MyPage() {
                         <Card title="비밀번호 변경" style={{ width: '100%' }}>
                             <Form>
                                 <div>
-                                    <Item label="등록된 이메일 주소">
+                                    <Item label="이메일">
                                         <Input
                                             type="email"
                                             value={userBaseInfo.email} //이메일은 화면에 보여주되, 변경 불가능하게 disable설정

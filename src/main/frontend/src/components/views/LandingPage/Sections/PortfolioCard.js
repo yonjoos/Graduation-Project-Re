@@ -21,17 +21,19 @@ function PortfolioCard(props) {
   }
   
   return (
-    
-    <Card onClick={onClickHandler} style={{ width: '100%', height: '200px', textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>
-      <h3 style={{
-        fontSize: '35px', // Set your desired font size here
-        margin: '0',
-        wordWrap: 'break-word',
-      }}>This is a Portfolio Card</h3>
-      <p >This is a simple landing page using Ant Design Card component.
-      </p>
-    </Card>
-   
+    <div>
+      <Card onClick={onClickHandler} style={{ width: '100%', height: '200px', textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <img
+              src={'https://storage.googleapis.com/hongik-pickme-bucket/PortfolioIcon.png'}
+              style={{ width: '50%', height: '50%' }}
+          />
+        </div>
+      </Card>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <p style={{ fontSize: '30px' }}> PORTFOLIO </p>
+      </div>
+    </div>
   );
 }
 

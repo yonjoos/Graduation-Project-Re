@@ -27,23 +27,23 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     const [notificationData, setNotificationData] = useState([]);
     const [deleteReadModalVisible, setDeleteReadModalVisible] = useState(false);    // 읽은 알림 삭제 관련 모달
     const [deleteAllModalVisible, setDeleteAllModalVisible] = useState(false);      // 모든 알림 삭제 관련 모달
-    const [notReadCount, setNotReadCount] = useState(0);        // 읽지 않은 알림 개수
+    //const [notReadCount, setNotReadCount] = useState(0);        // 읽지 않은 알림 개수
 
-    useEffect(() => {
-        getNotReadCount();  // 읽지 않은 알림 수 가져오기
-    }, []);
+    // useEffect(() => {
+    //     getNotReadCount();  // 읽지 않은 알림 수 가져오기
+    // }, []);
 
-    // 읽지 않은 알림 수 가져오기
-    const getNotReadCount = () => {
-        request('GET', 'sse/getNotReadCount', {})
-            .then((response) => {
-                setNotReadCount(response.data);     // async await하면 데이터를 못가져오더라
-                console.log('알림', response.data);
-            })
-            .catch((error) => {
-                console.log("Error fetching data:", error);
-            })
-    }
+    // // 읽지 않은 알림 수 가져오기
+    // const getNotReadCount = () => {
+    //     request('GET', 'sse/getNotReadCount', {})
+    //         .then((response) => {
+    //             setNotReadCount(response.data);     // async await하면 데이터를 못가져오더라
+    //             console.log('알림', response.data);
+    //         })
+    //         .catch((error) => {
+    //             console.log("Error fetching data:", error);
+    //         })
+    // }
 
     // Notification 배너가 열리면 해당 회원의 모든 알림을 가져와서 렌더링
     const showDrawer = () => {
@@ -101,8 +101,8 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                 message.error('알림 삭제에 실패했습니다.');
             });
 
-        // 읽지 않은 알림 수 가져오기
-        getNotReadCount();
+        // // 읽지 않은 알림 수 가져오기
+        // getNotReadCount();
 
         hideDeleteReadModal();
     };
@@ -129,8 +129,8 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                 message.error('알림 삭제에 실패했습니다.');
             });
 
-        // 읽지 않은 알림 수 가져오기
-        getNotReadCount();
+        // // 읽지 않은 알림 수 가져오기
+        // getNotReadCount();
         
         hideDeleteAllModal();
     };
@@ -270,7 +270,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                         {isAuthenticated ? (
                             <div>
                                 <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={showDrawer}>
-                                    Notification {notReadCount.notReadCount === 0 ? "" : "(" + notReadCount.notReadCount + ")"}
+                                    Notification {/*notReadCount.notReadCount === 0 ? "" : "(" + notReadCount.notReadCount + ")"*/}
                                 </Button>
                                 <Drawer title={<CustomTitle />} width={520} closable={false} onClose={onClose} open={open}>
                                     <div>

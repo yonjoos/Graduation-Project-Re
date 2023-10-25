@@ -25,6 +25,13 @@ function LandingPage() {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
 
+    // Carousel에 들어갈 배너 이미지
+    const images = [
+        'https://storage.googleapis.com/hongik-pickme-bucket/Pickme.png',
+        'https://storage.googleapis.com/hongik-pickme-bucket/Portfolio.png',
+        'https://storage.googleapis.com/hongik-pickme-bucket/Project.png',
+        'https://storage.googleapis.com/hongik-pickme-bucket/Study.png'
+    ];
     const [hotPost, setHotPost] = useState([]);
     // 백엔드에서 받은 검색어 기반 결과 리스트(3개)를 정의. 처음에 이 페이지에 들어오면 빈 배열
     const [data, setData] = useState({
@@ -208,15 +215,18 @@ function LandingPage() {
                 // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <div>
-                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
-                        <br />
-                        <Carousel autoplay className="my-background-color">
-                            <Card className="my-background-color">
-                                공지사항 또는 P!ckMe 홍보 카드
-                            </Card>
-                        </Carousel>
-                        <br />
-                    </div>
+                    <br />
+                    <Carousel autoplay style={{ marginTop: '-2.5%', marginLeft: '-2.0%', marginRight: '-2.0%' }}>
+                        {images.map((imageUrl, index) => (
+                            <div key={index} style={{ display: 'flex', justifyContent: 'center' }}>
+                                <img
+                                    src={imageUrl}
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                            </div>
+                        ))}
+                    </Carousel>
+                    <br />
                     <br />
                     <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
@@ -305,15 +315,18 @@ function LandingPage() {
                 // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <div>
-                    <div style={{ backgroundColor: '#C0FFFF', marginTop: '-1.5%', marginLeft: '-1.5%', marginRight: '-1.5%' }}>
-                        <br />
-                        <Carousel autoplay className="my-background-color">
-                            <Card className="my-background-color">
-                                공지사항 또는 P!ckMe 홍보 카드
-                            </Card>
-                        </Carousel>
-                        <br />
-                    </div>
+                    <br />
+                    <Carousel autoplay style={{ marginTop: '-2.5%', marginLeft: '-2.0%', marginRight: '-2.0%' }}>
+                        {images.map((imageUrl, index) => (
+                            <div key={index} style={{ display: 'flex', justifyContent: 'center' }}>
+                                <img
+                                    src={imageUrl}
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                            </div>
+                        ))}
+                    </Carousel>
+                    <br />
                     <br />
                     <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>

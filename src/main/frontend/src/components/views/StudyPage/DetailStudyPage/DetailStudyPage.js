@@ -1078,7 +1078,7 @@ function DetailStudyPage() {
                             홍보 사진:
                                 {data.promoteImageUrl ? (
                                     data.promoteImageUrl.map((imageUrl, index) => (
-                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
                                         <img
                                             key={index}
                                             src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}

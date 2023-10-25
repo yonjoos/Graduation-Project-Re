@@ -207,7 +207,7 @@ public class PostsController {
     // ** 중요 **
     // postType을 String 리스트로 받아오는 PostsFormDto 사용!
     @PutMapping("/project/update/{projectId}")
-    public ResponseEntity<String> updateProject(@PathVariable Long projectId, PostsUpdateRequestFormDto postsUpdateRequestFormDto) {
+    public ResponseEntity<String> updateProject(@PathVariable Long projectId, @Valid PostsUpdateRequestFormDto postsUpdateRequestFormDto) {
 
         try {
             postsService.updateProject(projectId, postsUpdateRequestFormDto);

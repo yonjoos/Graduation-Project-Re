@@ -229,7 +229,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("졸업 프로젝트 팀원을 모집합니다.\n현재 저는 풀스택 개발 가능하고, Spring Boot 가능한 백엔드 개발자 한 분과, React 및 Redux 사용 가능한 프론트 개발자 두 분을 모십니다.\n언제든지 연락 주세요!")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate1)
                 .build();
 
@@ -258,7 +258,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("토이 프로젝트 팀원을 모집합니다.\n주제는 아직 정해지지 않았습니다.\n현재 저는 백엔드 개발 가능하고, React 및 Redux 사용 가능한 프론트 개발자 두 분을 모십니다.")
                 //.promoteImageUrl("사진 없음")
-                .fileUrl("파일 없음")
+                //.fileUrl("파일 없음")
                 .endDate(endDate2)
                 .build();
 
@@ -287,7 +287,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("배자구 스터디 구합니다.\n감자도 환영합니다.\n저도 자구알못이에요..ㅠㅠ\n같이 자구 공부해요!!")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate3)
                 .build();
 
@@ -341,7 +341,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("권건우 교수님과 함께할 졸업 프로젝트 팀원을 모집합니다.\n주제는 먹거리 관련 입니다.\n현재 저는 풀스택 개발 가능하고, Spring Boot 가능한 백엔드 개발자 한 분과, React 및 Redux 사용 가능한 프론트 개발자 한 분을 모십니다.")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate4)
                 .build();
 
@@ -370,7 +370,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("알고리즘 스터디 구함.\n란골 배골 곤골 모두 환영.\n백준 플래티넘이 목표.\n알고리즘 마스터가 되어봅시다..")
                 //.promoteImageUrl("사진 없음")
-                .fileUrl("파일 없음")
+                //.fileUrl("파일 없음")
                 .endDate(endDate5)
                 .build();
 
@@ -400,7 +400,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("송프언 프롤로그, 렉스, 야크, 리스프 과제 같이 고민해요!\n열심히 하시는 분들 환영!")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate6)
                 .build();
 
@@ -481,7 +481,7 @@ public class InitialDataLoader implements CommandLineRunner {
                         "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
                         "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까...")
                 //.promoteImageUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 사진은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
-                .fileUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 파일은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
+                //.fileUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 파일은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
                 .endDate(endDate7)
                 .build();
 
@@ -526,7 +526,7 @@ public class InitialDataLoader implements CommandLineRunner {
                         "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까..." +
                         "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.내용도길게쓴다.왜냐면난악성유저니까...")
                 //.promoteImageUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 사진은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
-                .fileUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 파일은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
+                //.fileUrl("나는 악성유저지만 여기서는 착하게 굴겠다. 파일은 경로이므로 띄어쓰기나 개행이 들어가면 안될 것 같다.")
                 .endDate(endDate8)
                 .build();
 
@@ -556,7 +556,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("웬일이래? 내가 정상적인 게시물도 달고 말이야. 고마워해라.")
                 //.promoteImageUrl("")
-                .fileUrl("")
+                //.fileUrl("")
                 .endDate(endDate9)
                 .build();
 
@@ -610,7 +610,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("유니티, 언리얼 사용할 줄 아는 사람 환영.\nC# 잘 쓰고 C++ 잘하는 사람도 환영.")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate10)
                 .build();
 
@@ -639,7 +639,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("인공지능 잘 활용하시는 분과 함께 프로젝트 하고 싶어요.\n저와 함께 인공지능 마스터가 되어보아요!")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate11)
                 .build();
 
@@ -669,7 +669,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("같이 열심히 공부해서, 플젝도 만들어봐요!!\n포트폴리오 열심히 채웁시다..")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate12)
                 .build();
 
@@ -724,7 +724,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("프로젝트만 모집할거임.\n스터디 모집 안함.\n내 맘임.")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate13)
                 .build();
 
@@ -753,7 +753,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("자바 스프링 잘 쓰시는 분 구해요.\n인공지능 잘 활용하시는 분과 함께 프로젝트 하고 싶어요.\n저와 함께 웹 및 인공지능 마스터가 되어보아요!")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate14)
                 .build();
 
@@ -783,7 +783,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("그냥 웹 플젝 할거야..\n포트폴리오 채워보자..")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate15)
                 .build();
 
@@ -838,7 +838,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("유니티 잘 쓸 줄 아시는 분 두 분 구해봐용..\nC#도 잘하면 좋아요..")
                 //.promoteImageUrl("사진 뭐하지")
-                .fileUrl("나도 몰라")
+                //.fileUrl("나도 몰라")
                 .endDate(endDate19)
                 .build();
 
@@ -867,7 +867,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("알고리즘 스터디 구해여.\n매일 백준 한 문제씩 푸는 것이 목표에여.")
                 //.promoteImageUrl("사진 없음")
-                .fileUrl("파일 없음")
+                //.fileUrl("파일 없음")
                 .endDate(endDate20)
                 .build();
 
@@ -897,7 +897,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("두 길이 주어지면, 가운데 길을 예측해서 이어 보아요..\n지리에 관심있는 분 환영.\nAI에 관심있는 분 대 환영")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate21)
                 .build();
 
@@ -926,7 +926,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("홍대 주변 맛집 사이트.\n미식에 관심있는 분 좋아요.\n코딩 잘하시는 분 좋아요.")
                 //.promoteImageUrl("")
-                .fileUrl("")
+                //.fileUrl("")
                 .endDate(endDate22)
                 .build();
 
@@ -981,7 +981,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("스터디만 모집할거임.\n프로젝트 모집 안함.\n내 맘임.")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate16)
                 .build();
 
@@ -1010,7 +1010,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("Kotlin 같이 공부해요.\n앱 처음 하시는 분들 저와 함께해요.\n열심히 해서 플젝도 같이 만들어봐요.")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate17)
                 .build();
 
@@ -1040,7 +1040,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("안드로이드에 관심있는 사람?\nIOS에 관심있는 사람?\n기초부터 차근차근 같이 공부해보자.\n자세한건 옵챗으로 얘기해요")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate18)
                 .build();
 
@@ -1095,7 +1095,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("유니티 스터디.\nbox collider 2D를 아세요?\n모른다면 같이 스터디 ㄱㄱ.")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate23)
                 .build();
 
@@ -1124,7 +1124,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("언리얼 기초부터 같이 공부하실분 구해요.\n저도 언리얼은 아무것도 몰라요.")
                 //.promoteImageUrl(null)
-                .fileUrl(null)
+                //.fileUrl(null)
                 .endDate(endDate24)
                 .build();
 
@@ -1154,7 +1154,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("유니티로 프로젝트 같이할 사람?\n기획, 사운드, 디자인까지 모두 모였음.\n잘하는 분만 모심.\n포트폴리오 볼거임\n너만 오면 바로 시작.")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate25)
                 .build();
 
@@ -1184,7 +1184,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 //.counts(1)
                 .content("언리얼로 프로젝트 같이할 사람?\n기획, 사운드, 디자인까지 모두 모였음.\n잘하는 분만 모심.\n포트폴리오 볼거임\n너만 오면 바로 시작 예정.")
                 //.promoteImageUrl("사진")
-                .fileUrl("파일")
+                //.fileUrl("파일")
                 .endDate(endDate26)
                 .build();
 

@@ -26,7 +26,7 @@ public class PostsDto {
     private Boolean ai;
     private String content;
     private List<String> promoteImageUrl;
-    private String fileUrl;
+    private List<FileUrlNameMapperDto> fileUrl;
     private Integer counts;
     private Integer recruitmentCount;
     private LocalDate endDate;

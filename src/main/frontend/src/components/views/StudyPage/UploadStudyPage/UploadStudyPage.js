@@ -7,6 +7,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
 const { TextArea } = Input;
+// const { Dragger } = Upload;
 
 function UploadStudyPage() {
     const navigate = useNavigate();
@@ -18,9 +19,32 @@ function UploadStudyPage() {
     const [endDate, setEndDate] = useState(null);
     const [content, setContent] = useState('');
     const [promoteImageUrl, setPromoteImageUrl] = useState([]);
-    const [fileUrl, setFileUrl] = useState(null);
+    const [fileUrl, setFileUrl] = useState([]);
     const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
     const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
+
+    // // 드래그 & 드롭 방식의 파일 업로드 antd 모듈
+    // const fileUploadProps = {
+    //     name: 'file',
+    //     multiple: true,
+    //     action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
+    //     onChange(info) {
+    //         const { status } = info.file;
+    //         if (status !== 'uploading') {
+    //             console.log(info.file, info.fileList);
+    //         }
+    //         if (status === 'done') {
+    //             message.success(`${info.file.name} file uploaded successfully.`);
+    //         } else if (status === 'error') {
+    //             message.error(`${info.file.name} file upload failed.`);
+    //         }
+    //     },
+    //     onDrop(e) {
+    //         console.log('Dropped files', e.dataTransfer.files);
+    //     },
+
+    // };
+
 
     const options = ['Web', 'App', 'Game', 'AI'];   // 체크박스에서 선택 가능한 옵션들
     const MAX_SELECTED_CHECKBOXES = 2;  // 선택 가능한 모집 분야 개수 제한
@@ -101,7 +125,10 @@ function UploadStudyPage() {
         promoteImageUrl.forEach((image, index) => {
             formData.append(`promoteImageUrl[${index}]`, image);
         });
-        formData.append('fileUrl',fileUrl);
+        fileUrl.forEach((file, index) => {
+            formData.append(`fileUrl[${index}]`, file);
+        });
+        console.log(formData);
 
         const config = {
             headers: {
@@ -130,6 +157,13 @@ function UploadStudyPage() {
         setPromoteImageUrl(updatedPromoteImageUrl);
     };
 
+    const removeFile = (index) => {
+        const updatedFileList = [...fileUrl];
+        updatedFileList.splice(index, 1);
+        setFileUrl(updatedFileList);
+    };
+
+
     // Open the modal to preview the clicked image
     const handlePreview = (image) => {
         setPreviewImage(image);
@@ -138,7 +172,12 @@ function UploadStudyPage() {
 
     const handleClosePreview = () => {
         setPreviewVisible(false);
-    };   
+    };
+    
+    // const handleFileClick = (file) => {
+    //     // Open the file in a new tab or window
+    //     window.open(file.url, '_blank');
+    // };
 
     return (
         <Row justify="center">
@@ -198,39 +237,6 @@ function UploadStudyPage() {
 
                     <div className="form-outline mb-1">홍보 사진</div>
                     <div className="form-outline mb-4">
-                        {/* <Upload
-                            accept="image/*"
-                            showUploadList={false} // 이미지 업로드 목록 표시하지 않음
-                            beforeUpload={(file) => {
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    setPromoteImageUrl(e.target.result); // 이미지 미리보기를 위한 데이터 URL 설정
-                                };
-                                reader.readAsDataURL(file); // 이미지 데이터 URL 생성
-                                return false; // 업로드 동작을 중단
-                            }}
-                        >
-                            {promoteImageUrl ? (
-                                <img src={promoteImageUrl} alt="홍보 사진" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-                            ) : (
-                                <Button icon={<UploadOutlined />}>Upload Photo</Button>
-
-                            )}
-                        </Upload> */}
-                        {/* <Upload
-                            accept="image/*"
-                            fileList={promoteImageUrl ? [promoteImageUrl] : []}
-                            beforeUpload={() => false}
-                            onChange={(info) => {
-                                if (info.fileList.length > 0) {
-                                    setPromoteImageUrl(info.fileList[0]);
-                                } else {
-                                    setPromoteImageUrl(null);
-                                }
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />}>Upload Photos</Button>
-                        </Upload>                      */}
                         <Upload
                             accept="image/*"
                             showUploadList={false}
@@ -239,7 +245,7 @@ function UploadStudyPage() {
                                 return false; // Stops the upload action
                             }}
                         >
-                            <Button icon={<UploadOutlined />} style={{marginBottom: '10px'}}>Upload Photo</Button>
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
                             </Upload>   
                             {promoteImageUrl.map((image, index) => (
                                 <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
@@ -252,24 +258,80 @@ function UploadStudyPage() {
                                     <Button onClick={() => removePromoteImage(index)}>Remove</Button>
                                 </div>
                             ))}
-                            
-                                
-                            
-                        
                     </div>
                     {/* Preview Modal */}
                     <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
-                        <img alt="프로젝트 이미지" style={{ width: '100%' }} src={previewImage} />
+                        <img alt="스터디 이미지" style={{ width: '100%' }} src={previewImage} />
                     </Modal>
 
                     <div className="form-outline mb-1">첨부 파일</div>
                     <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            placeholder="첨부 파일"
-                            value={fileUrl}
-                            onChange={(e) => setFileUrl(e.target.value)}
-                        />
+                    <Upload
+                            accept=".pdf,.doc,.docx"
+                            showUploadList={false}
+                            beforeUpload={(file) => {
+                                setFileUrl([...fileUrl, file]);
+                                return false;
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
+                        </Upload>
+                        {fileUrl.map((file, index) => (
+                            <div key={index} style={{ display: 'flex', marginBottom: '8px', alignItems: 'center', marginBottom: '8px' }}>
+
+                                <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
+                                    {file.name}
+                                </Button>
+
+                                <Button onClick={() => removeFile(index)}>Remove</Button>
+                            </div>
+                        ))}
+
+                        {/*  드래그앤 드롭 
+                        <Dragger style={{ cursor: 'pointer' }}
+                            {...fileUploadProps}
+                            multiple
+                            accept=".pdf,.doc,.docx"
+                            showUploadList={true}
+                            className="custom-upload-dragger"
+                            beforeUpload={(file) => {
+                                setFileUrl([...fileUrl, file]);
+                                return false;
+                            }}
+                            onRemove={(file) => {
+                                const index = fileUrl.indexOf(file);
+                                if (index !== -1) {
+                                    removeFile(index);
+                                }
+                            }}
+                            onPreview={(file) => {
+                                const url = URL.createObjectURL(file.originFileObj);
+                                window.open(url, '_blank');
+                            }}
+
+
+                        >
+                            <p className="ant-upload-drag-icon">
+                                <UploadOutlined />
+                            </p>
+                            <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                            <p className="ant-upload-hint">
+                                Support for a single or bulk upload. Strictly prohibited from uploading company data or other banned files.
+                            </p>
+                           
+                            <style>{`
+                                    .custom-upload-dragger .ant-upload-list-item-info {
+                                        cursor: pointer; // 파일 이름 부분에 포인터 커서 스타일을 설정
+                                    }
+                                    .custom-upload-dragger .ant-upload-list-item-name {
+                                        cursor: pointer; // "@" 부분에 포인터 커서 스타일을 설정
+                                    }
+                                `}</style>
+
+                        </Dragger>
+                         드래그앤 드롭  */}
+                         
+
                     </div>
 
                     {/* 실제로 사진 및 파일 업로드 시 사용해야할 코드.

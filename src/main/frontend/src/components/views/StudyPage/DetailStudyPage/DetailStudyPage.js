@@ -218,7 +218,7 @@ function DetailStudyPage() {
             try {
                 const response = await request('POST', `/study/delete/${studyId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-    
+                message.success('스터디가 성공적으로 삭제되었습니다');    
                 navigate('/study');
             } catch (error) {
                 // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
@@ -853,7 +853,7 @@ function DetailStudyPage() {
                     {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
                     {isWriter && (
                         <div>
-                            <Button type="primary" onClick={() => navigate(`/study/update/${studyId}`)}>
+                            <Button type="primary" onClick={() => navigate(`/study/update/${studyId}`)} style={{ marginRight: '5px' }}>
                                 게시물 수정
                             </Button>
                             <Button onClick={() => showModal('delete')}>
@@ -1069,7 +1069,20 @@ function DetailStudyPage() {
                         <Divider className="bold-divider" />
         
                         <div style={{ marginLeft: '5px' }}>
-                            첨부 파일: {data.fileUrl}
+                            첨부 파일: {
+                                data.fileUrl ? (
+                                    data.fileUrl.map((file, index) => (
+                                        <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                            <Button
+                                                onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                            >
+                                                {file.fileName} {/* 파일 이름 표시 */}
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>이미지가 없습니다</p>
+                                )}
                         </div>
         
                         <Divider className="bold-divider" />
@@ -1156,7 +1169,6 @@ function DetailStudyPage() {
                         <Modal
                             title="Confirm Action"
                             open={isModalVisible}
-                            // 모순적이지만, 익숙한 위치에 두기 위해 함수 이름을 Cross해서 사용
                             onOk={handleModalConfirm}
                             onCancel={handleModalCancel}
                             okText="예"

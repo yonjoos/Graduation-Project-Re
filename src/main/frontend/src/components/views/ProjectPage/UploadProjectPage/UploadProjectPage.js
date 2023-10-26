@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Row, Col, Input, Button, Checkbox, InputNumber, DatePicker, message, Upload, Modal, Card } from 'antd';
+import { Row, Col, Input, Button, Checkbox, InputNumber, DatePicker, message, Upload, Modal } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { getAuthToken } from '../../../../hoc/request';
 import axios from 'axios';
 import dayjs from 'dayjs';  // moment대신 dayjs를 사용해야 blue background 버그가 발생하지 않음!!
 
 const { TextArea } = Input;
-const { Dragger } = Upload;
+// const { Dragger } = Upload;
 
 function UploadProjectPage() {
     const navigate = useNavigate();

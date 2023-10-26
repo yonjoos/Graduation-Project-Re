@@ -221,10 +221,10 @@ public class PostsController {
 
     // 스터디 수정
     @PutMapping("/study/update/{studyId}")
-    public ResponseEntity<String> updateStudy(@PathVariable Long studyId, @RequestBody PostsFormDto postsFormDto) {
+    public ResponseEntity<String> updateStudy(@PathVariable Long studyId, @Valid PostsUpdateRequestFormDto postsUpdateRequestFormDto ) {
 
         try {
-            postsService.updateStudy(studyId, postsFormDto);
+            postsService.updateStudy(studyId, postsUpdateRequestFormDto);
             return ResponseEntity.ok("스터디가 성공적으로 업데이트 되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();

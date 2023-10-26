@@ -138,9 +138,9 @@ function UpdateProjectPage() {
                 formattedEndDate,
                 data.content,
                 data.promoteImageUrl, // 기존의 이미지 변경사항
-                data.fileUrl,
+                data.fileUrl, // 기존의 첨부파일 목록 변경사항
                 newPromoteImageUrl, // 새로 업로드할 이미지 
-                newFileUrl
+                newFileUrl // 새로 업로드할 파일 목록
             );
 
         } catch (error) {
@@ -151,7 +151,7 @@ function UpdateProjectPage() {
     const submitProject = async (event, title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl, newPromoteImageUrl, newFileUrl) => {
         event.preventDefault();
 
-        console.log(fileUrl);
+        // console.log(fileUrl);
 
         const formData = new FormData();
         formData.append('title', title);

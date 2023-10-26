@@ -556,8 +556,9 @@ public class PostsService {
 
             // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
             List<String> imageUrls = posts.getPostsFiles().stream()
+                    .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
                     .map(PostsFiles::getFileUrl)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList());;
 
             // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
             List<FileUrlNameMapperDto> fileUrls = posts.getPostsFiles().stream()
@@ -1212,30 +1213,266 @@ public class PostsService {
     // ** 중요 **
     // postType을 String 리스트로 받아오는 PostsFormDto 사용!
     @EntityGraph(attributePaths = {"category"})
-    public void updateStudy(Long studyId, PostsFormDto postsFormDto) {
+    public void updateStudy(Long studyId, PostsUpdateRequestFormDto postsUpdateRequestFormDto) throws IOException {
 
-        // projectId로 Project 찾기
+        // studyId로 Study 찾기
         Posts study = postsRepository.findById(studyId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         // 변경 감지를 통한 업데이트
-        study.setTitle(postsFormDto.getTitle());
-        study.setRecruitmentCount(postsFormDto.getRecruitmentCount());
-        study.setContent(postsFormDto.getContent().replace("<br>", "\n"));
+        study.setTitle(postsUpdateRequestFormDto.getTitle());
+        study.setRecruitmentCount(postsUpdateRequestFormDto.getRecruitmentCount());
+        study.setContent(postsUpdateRequestFormDto.getContent().replace("<br>", "\n"));
         //study.setPromoteImageUrl(postsFormDto.getPromoteImageUrl()); // 사진 파일이 바뀌었다면, 새로 구글 클라우드에 저장하고, 바뀐 uuid값으로 db에 저장해야함
         //study.setFileUrl(postsFormDto.getFileUrl());
-        study.setEndDate(postsFormDto.getEndDate());
+        study.setEndDate(postsUpdateRequestFormDto.getEndDate());
 
-        study.getCategory().setWeb(postsFormDto.getPostType().contains("Web"));
-        study.getCategory().setApp(postsFormDto.getPostType().contains("App"));
-        study.getCategory().setGame(postsFormDto.getPostType().contains("Game"));
-        study.getCategory().setAi(postsFormDto.getPostType().contains("AI"));
+        study.getCategory().setWeb(postsUpdateRequestFormDto.getPostType().contains("Web"));
+        study.getCategory().setApp(postsUpdateRequestFormDto.getPostType().contains("App"));
+        study.getCategory().setGame(postsUpdateRequestFormDto.getPostType().contains("Game"));
+        study.getCategory().setAi(postsUpdateRequestFormDto.getPostType().contains("AI"));
 
         // 카운트 검증 (recruitmentCount의 개수가 2개 이하인가?를 검증)
         study.getCategory().validateFieldCount();
 
-        // 저장
-        postsRepository.save(study);
+        // 게시물의 텍스트 필드 저장
+        Posts savedPosts = postsRepository.save(study);
+
+        // 현재 게시물에 연관된 게시물 이미지 파일 엔티티를 찾아옴
+        List<PostsFiles> existingImageFiles = postsFilesRepository.findByPostsAndIsImageTrue(savedPosts);
+        // 현재 게시물에 연관된 게시물 첨부파일 엔티티를 찾아옴
+        List<PostsFiles> existingOtherFiles = postsFilesRepository.findByPostsAndIsImageFalse(savedPosts);
+
+        // 현재 게시물에 연관된 게시물 이미지를 db에서 지움
+        postsFilesRepository.deleteAll(existingImageFiles);
+        // 현재 게시물에 연관된 게시물 첨부파일을 db에서 지움
+        postsFilesRepository.deleteAll(existingOtherFiles);
+
+        // 새로 바뀐 기존의 이미지들을 세팅해서 db에 다시 저장하는 로직
+        List<String> promoteImageUrl = postsUpdateRequestFormDto.getPromoteImageUrl();
+        List<PostsFiles> updateImageFiles = new ArrayList<>();
+
+        if(postsUpdateRequestFormDto.getPromoteImageUrl()!=null && !postsUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            for(String imageUrl: promoteImageUrl)
+            {
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(imageUrl) // 이미지 파일의 UUID
+                        .build();
+
+                updateImageFiles.add(postsFiles);
+
+            }
+
+            postsFilesRepository.saveAll(updateImageFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 사진을 구하고, 지우기
+        // existingImageFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // postsUpdateRequestFormDto.getPromoteImageUrl()가 비어있지 않으면, 지워질 이미지를 구한 후 클라우드에서 삭제,
+        // postsUpdateRequestFormDto.getPromoteImageUrl()가 비어있으면 구해놓은 existingImageFiles에 해당하는 이미지을 클라우드에서 삭제하면 된다
+        if(postsUpdateRequestFormDto.getPromoteImageUrl()!=null && !postsUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            // existingImageFiles에 존재하는 PostFiles의 fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingImageFileUrls 중에,  postsUpdateRequestFormDto.getPromoteImageUrl에 없는 url을 모아서 리스트로 만듦 -> 삭제 대상이 되는 url값
+            List<String> imageUrlsToDelete = existingImageFileUrls.stream()
+                    .filter(existingImageFileUrl -> !postsUpdateRequestFormDto.getPromoteImageUrl().contains(existingImageFileUrl))
+                    .collect(Collectors.toList());
+
+            // 삭제 대상이 되는 url을 클라우드에서 삭제 진행(이미지)
+            for (String fileUrl : imageUrlsToDelete) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+        }
+        else { // postsUpdateRequestFormDto.getPromoteImageUrl가 null이라면 existingImageFileUrls에 있는 모든 url에 해당하는 이미지 파일을 클라우드에서 삭제해야함
+
+            List<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String fileUrl : existingImageFileUrls) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+
+        }
+
+
+
+        // 새로 추가된 사진 구글 클라우드에 저장하고, post_file 레포지토리에 추가.
+        // 즉, 클라이언트가 기존에 없던 이미지를 새로 추가해서 올렸다면, 이 사진들은 db와 클라우드에 모두 저장되어야함
+        if(postsUpdateRequestFormDto.getNewPromoteImageUrl() != null && !postsUpdateRequestFormDto.getNewPromoteImageUrl().isEmpty())
+        {
+            List<PostsFiles> newImageFiles = new ArrayList<>(); // 이미지를 저장할 리스트
+
+            for (MultipartFile image : postsUpdateRequestFormDto.getNewPromoteImageUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = image.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        image.getInputStream()
+                );
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(uuid) // 이미지 파일의 UUID
+                        .build();
+
+                newImageFiles.add(postsFiles);
+            }
+
+            // 이미지 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(newImageFiles);
+        }
+
+        // 새로 바뀐 기존의 첨부파일들을 세팅해서 db에 다시 저장하는 로직
+        List<FileUrlNameMapperDto> fileUrl = postsUpdateRequestFormDto.getFileUrl();
+        List<PostsFiles> updateOtherFiles = new ArrayList<>();
+
+        if(postsUpdateRequestFormDto.getFileUrl()!=null && !postsUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            for(FileUrlNameMapperDto fileUrlAndName: fileUrl)
+            {
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(fileUrlAndName.getFileUrl()) // 첨부 파일의 UUID
+                        .fileName(fileUrlAndName.getFileName()) // 첨부 파일의 원본 이름
+                        .build();
+
+                updateOtherFiles.add(postsFiles);
+
+            }
+
+            postsFilesRepository.saveAll(updateOtherFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 첨부파일을 구하고, 지우기
+        // existingOtherFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // postsUpdateRequestFormDto.getFileUrl()가 비어있지 않으면, 지워질 첨부파일을 구한 후 클라우드에서 삭제,
+        // postsUpdateRequestFormDto.getFileUrl()가 비어있으면 구해놓은 existingOtherFiles 해당하는 첨부파일을 클라우드에서 삭제하면 된다
+        if(postsUpdateRequestFormDto.getFileUrl()!=null && !postsUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            // existingOtherFiles 존재하는 PostFiles의 fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingOtherFileUrls 중에, postsUpdateRequestFormDto.getFileUrl안에 있는 FileUrlNameMapperDto의 fileUrl들의 집합에 포함되지 않는 url을 모아서 리스트로 만듦
+            // -> 삭제 대상이 되는 url값
+            List<String> otherFileUrlsToDelete = existingOtherFileUrls.stream()
+                    .filter(existingFileUrl -> postsUpdateRequestFormDto.getFileUrl().stream()
+                            .noneMatch(requestedFileUrl -> requestedFileUrl.getFileUrl().equals(existingFileUrl)))
+                    .collect(Collectors.toList());
+
+            // 클라우드에서 otherFileUrlsToDelete과 관련된 첨부파일 삭제
+            for (String otherFileUrl : otherFileUrlsToDelete) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+        }
+        else // postsUpdateRequestFormDto.getFileUrl null이라면 existingOtherFiles 있는 모든 url에 해당하는 첨부 파일을 클라우드에서 삭제해야함
+        {
+            List<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String otherFileUrl : existingOtherFileUrls) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+
+
+        }
+
+
+
+        // 새로 추가된 첨부파일 구글 클라우드에 저장하고, post_file 레포지토리에 추가
+        // 즉, 클라이언트가 기존에 없던 첨부파일을 새로 추가해서 올렸다면, 이 첨부파일들은 db와 클라우드에 모두 저장되어야함
+        if(postsUpdateRequestFormDto.getNewFileUrl() != null && !postsUpdateRequestFormDto.getNewFileUrl().isEmpty())
+        {
+            List<PostsFiles> newOtherFiles = new ArrayList<>(); // 첨부파일을 저장할 리스트
+
+            for (MultipartFile file : postsUpdateRequestFormDto.getNewFileUrl()) {
+                // 각 첨부파일을 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = file.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        file.getInputStream()
+                );
+
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(uuid) // 첨부 파일의 UUID
+                        .fileName(file.getOriginalFilename())
+                        .build();
+
+                newOtherFiles.add(postsFiles);
+            }
+
+            // 이미지 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(newOtherFiles);
+        }
+
+
     }
 
 
@@ -1437,6 +1674,35 @@ public class PostsService {
 
             // viewCountPosts 삭제
             viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
+
+            // scarapPosts 삭제
+            scrapPostsRepository.deleteAll(posts.getScrapPosts());
+
+            // 댓글 삭제
+            commentsRepository.deleteAll(posts.getComments());
+
+            // postFiles의 파일들 전부 삭제
+            List<PostsFiles> findImages = postsFilesRepository.findByPosts(posts);
+
+            // 삭제 대상 파일 URL 리스트
+            List<String> fileUrlsToDelete = findImages.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            // 구글 클라우드에서 게시물의 파일들 삭제
+            for (String fileUrl : fileUrlsToDelete) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+            // db에서 관련 이미지 uuid값들 삭제
+            postsFilesRepository.deleteAll(findImages);
 
             // Posts 엔티티 삭제
             postsRepository.delete(posts);
@@ -2157,6 +2423,17 @@ public class PostsService {
 
         // 지원한 적이 있다면, 지원 DB에 저장하면 안됨
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
 
 
         PostsDto postsDto;
@@ -2190,8 +2467,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
-                    //.fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -2212,8 +2489,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
-                    //.fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -2606,6 +2883,18 @@ public class PostsService {
             notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
         }
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
+
         PostsDto postsDto;
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
@@ -2636,8 +2925,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
-                    //.fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -2658,8 +2947,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
-                    //.fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -2966,6 +3255,18 @@ public class PostsService {
             }
         }
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
+
         PostsDto postsDto;
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
@@ -2994,8 +3295,8 @@ public class PostsService {
                     .game(savedScrapPosts.getPosts().getCategory().getGame())
                     .ai(savedScrapPosts.getPosts().getCategory().getAi())
                     .content(savedScrapPosts.getPosts().getContent())
-                    //.promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
-                    //.fileUrl(savedScrapPosts.getPosts().getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(savedScrapPosts.getPosts().getCounts())
                     .counts(applyCount)
                     .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
@@ -3018,8 +3319,8 @@ public class PostsService {
                         .game(savedScrapPosts.getPosts().getCategory().getGame())
                         .ai(savedScrapPosts.getPosts().getCategory().getAi())
                         .content(savedScrapPosts.getPosts().getContent())
-                        //.promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
-                        //.fileUrl(savedScrapPosts.getPosts().getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(savedScrapPosts.getPosts().getCounts())
                         .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
@@ -3040,8 +3341,8 @@ public class PostsService {
                         .game(savedScrapPosts.getPosts().getCategory().getGame())
                         .ai(savedScrapPosts.getPosts().getCategory().getAi())
                         .content(savedScrapPosts.getPosts().getContent())
-                        //.promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
-                        //.fileUrl(savedScrapPosts.getPosts().getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(savedScrapPosts.getPosts().getCounts())
                         .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
@@ -3082,6 +3383,18 @@ public class PostsService {
             }
         }
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
+
         PostsDto postsDto;
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
@@ -3111,8 +3424,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    //.promoteImageUrl(findPosts.getPromoteImageUrl())
-                    //.fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -3135,8 +3448,8 @@ public class PostsService {
                         .game(findPosts.getCategory().getGame())
                         .ai(findPosts.getCategory().getAi())
                         .content(findPosts.getContent())
-                        //.promoteImageUrl(findPosts.getPromoteImageUrl())
-                        //.fileUrl(findPosts.getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(findPosts.getCounts())
                         .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())
@@ -3157,8 +3470,8 @@ public class PostsService {
                         .game(findPosts.getCategory().getGame())
                         .ai(findPosts.getCategory().getAi())
                         .content(findPosts.getContent())
-                        //.promoteImageUrl(findPosts.getPromoteImageUrl())
-                        //.fileUrl(findPosts.getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(findPosts.getCounts())
                         .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())

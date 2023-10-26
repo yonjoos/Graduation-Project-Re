@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+//import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, message } from 'antd';
 import { request } from '../../../hoc/request';
-import { lastVisitedEndpoint } from '../../../_actions/actions';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import './ScrapPage.css';
 
 function ScrapPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
 
     const [data, setData] = useState([]); // 백엔드에서 동적 쿼리를 바탕으로 현재 페이지에서 보여질 게시물 목록들 세팅
     const [postsOption, setPostsOption] = useState("project"); // 프로젝트 게시물이면 postsOption === project / 스터디 게시물이면 postsOption === study
@@ -53,10 +53,10 @@ function ScrapPage() {
     const handleRowClick = (postsId, postType) => {
         // /project/detail/${postsId} 또는 /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /scrap으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /scrap으로 설정
-        dispatch(lastVisitedEndpoint('/scrap', '/scrap', '/scrap'));
-        setLastVisitedEndpoint('/scrap');
-        setLastLastVisitedEndpoint('/scrap');
-        setLastLastLastVisitedEndpoint('/scrap');
+        // dispatch(lastVisitedEndpoint('/scrap', '/scrap', '/scrap'));
+        // setLastVisitedEndpoint('/scrap');
+        // setLastLastVisitedEndpoint('/scrap');
+        // setLastLastLastVisitedEndpoint('/scrap');
 
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);
@@ -89,10 +89,10 @@ function ScrapPage() {
 
     // 지원자 또는 글쓴이 닉네임 클릭 핸들러
     const handleNickNameClick = (nickName) => {
-        dispatch(lastVisitedEndpoint('/scrap', '/scrap', '/scrap'));
-        setLastVisitedEndpoint('/scrap');
-        setLastLastVisitedEndpoint('/scrap');
-        setLastLastLastVisitedEndpoint('/scrap');
+        // dispatch(lastVisitedEndpoint('/scrap', '/scrap', '/scrap'));
+        // setLastVisitedEndpoint('/scrap');
+        // setLastLastVisitedEndpoint('/scrap');
+        // setLastLastLastVisitedEndpoint('/scrap');
         // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
         navigate(`/portfolio/${nickName}`);
     }

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
+//import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { lastVisitedEndpoint } from "../../../../_actions/actions";
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
+//import { lastVisitedEndpoint } from "../../../../_actions/actions";
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
 import '../ProjectPage.css';
 import './DetailProjectPage.css'; // 댓글의 계층에 따른 왼쪽 여백 css
 
@@ -13,11 +13,11 @@ const { TextArea } = Input;
 
 function DetailProjectPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     const { projectId } = useParams(); // URL로부터 projectId 가져오기
-    const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
-    const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
-    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
+    // const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
+    // const visitedEndEndpoint = useSelector(state => state.endpoint.lastLastVisitedEndpoint);
+    // const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [data, setData] = useState({}); // 백엔드에서 가져온 데이터를 세팅
     const [isModalVisible, setIsModalVisible] = useState(false);    // 모달이 보이는지 여부 설정
@@ -60,8 +60,8 @@ function DetailProjectPage() {
             .then((response) => {
                 //console.log("Fetched project data:", response.data); // Log the fetched data
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-                console.log("visitedEndpoint : ", visitedEndpoint);
-                console.log("visitedEndEndpoint : ", visitedEndEndpoint);
+                // console.log("visitedEndpoint : ", visitedEndpoint);
+                // console.log("visitedEndEndpoint : ", visitedEndEndpoint);
 
                 // 게시물의 작성자라면, 지원자를 얻어오는 추가적인 쿼리를 날림
                 if (response.data.writer) {
@@ -149,17 +149,17 @@ function DetailProjectPage() {
 
 
     // 목록으로 돌아가기 버튼 클릭
-    const handleGoBackClick = () => {
-        // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
-        // 포트폴리오를 누르지 않아, 유효한 전 페이지와 유효한 전 전 페이지가 동일한 상황 -> 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
-        if (visitedEndpoint === visitedEndEndpoint) {
-            navigate(visitedEndpoint);
-        }
-        // 포트폴리오를 눌러서, 유효한 전 페이지와 유효한 전 전 페이지가 동일하지 않은 상황 -> 전 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
-        else {
-            navigate(visitedEndEndpoint);
-        }
-    };
+    // const handleGoBackClick = () => {
+    //     // 가장 마지막에 저장한 엔드포인트에 맞추어 해당 엔드포인트로 이동
+    //     // 포트폴리오를 누르지 않아, 유효한 전 페이지와 유효한 전 전 페이지가 동일한 상황 -> 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
+    //     if (visitedEndpoint === visitedEndEndpoint) {
+    //         navigate(visitedEndpoint);
+    //     }
+    //     // 포트폴리오를 눌러서, 유효한 전 페이지와 유효한 전 전 페이지가 동일하지 않은 상황 -> 전 전 페이지로 이동하여 목록으로 돌아가기 버튼 정상 작동
+    //     else {
+    //         navigate(visitedEndEndpoint);
+    //     }
+    // };
 
     const showModal = (action) => {
         setIsModalVisible(true);
@@ -218,7 +218,7 @@ function DetailProjectPage() {
             try {
                 const response = await request('POST', `/project/delete/${projectId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-    
+                message.success('프로젝트가 성공적으로 삭제되었습니다');
                 navigate('/project');
             } catch (error) {
                 // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
@@ -226,22 +226,22 @@ function DetailProjectPage() {
                 message.warning('프로젝트를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
             }
         }
-    
+
         // writer가 아닌 사람이 지원하기 버튼을 누른 경우
         else if (modalAction === 'apply') {
             try {
                 const response = await request('POST', `/project/apply/${projectId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-    
+
                 navigate(`/project/detail/${projectId}`);
             } catch (error) {
                 console.error("Error fetching project data:", error);
             }
         }
-    
+
         setIsModalVisible(false);   // 모달 안보이게 숨김
     };
-    
+
 
     const handleCancelModalConfirm = async () => {
         try {
@@ -309,10 +309,10 @@ function DetailProjectPage() {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /project/detail/${projectId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project/detail/${projectId}로 설정
         // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint ));    // 전역에 상태 저장을 위한 애.
-        setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(visitedEndEndpoint);
-        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+        // dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint ));    // 전역에 상태 저장을 위한 애.
+        // setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        // setLastLastVisitedEndpoint(visitedEndEndpoint);
+        // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
         navigate(`/portfolio/notify/${nickName}`);
     };
 
@@ -320,10 +320,10 @@ function DetailProjectPage() {
         // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
         // 가장 마지막에 저장한 엔드포인트인 /project/detail/${projectId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /project/detail/${projectId}로 설정
         // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
-        setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        setLastLastVisitedEndpoint(visitedEndEndpoint);
-        setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+        // dispatch(lastVisitedEndpoint(`/project/detail/${projectId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
+        // setLastVisitedEndpoint(`/project/detail/${projectId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+        // setLastLastVisitedEndpoint(visitedEndEndpoint);
+        // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
         navigate(`/portfolio/notify/${nickName}`);
     };
 
@@ -340,7 +340,7 @@ function DetailProjectPage() {
 
             // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
             const newData = { ...data };
-            
+
             // count 값을 response.data[0].count로 업데이트
             newData.counts = response.data[0].count;
 
@@ -365,10 +365,10 @@ function DetailProjectPage() {
 
             // 승인 상태를 '수정'하는 것이므로, put request 
             const response = await request('PUT', `/posts/detail/cancelApprove?${queryParams}`);
-            
+
             // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
             const newData = { ...data };
-            
+
             // count 값을 response.data[0].count로 업데이트
             newData.counts = response.data[0].count;
             console.log("response.data[0].count : ", response.data[0].count);
@@ -808,20 +808,20 @@ function DetailProjectPage() {
                 <Modal
                     title="유저 승인"
                     open={approveModalVisible}
-                    onOk={() => setApproveModalVisible(false)}
-                    onCancel={() => handleApproveUser(applyUserNickName, projectId)}
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={() => handleApproveUser(applyUserNickName, projectId)}
+                    onCancel={() => setApproveModalVisible(false)}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>{applyUserNickName} 님을 승인하시겠습니까?</p>
                 </Modal>
                 <Modal
                     title="유저 승인 취소"
                     open={cancelModalVisible} // visible로 모달 열림 여부 설정
-                    onOk={() => setCancelModalVisible(false)} // 취소 버튼을 누르면 모달 닫기
-                    onCancel={() => handleCancelApproval(applyUserNickName, projectId)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
-                    okText="아니오"
-                    cancelText="예"
+                    onOk={() => handleCancelApproval(applyUserNickName, projectId)}
+                    onCancel={() => setCancelModalVisible(false)}
+                    okText="예"
+                    cancelText="아니오"
                 >
                     <p>{applyUserNickName} 님을 승인 취소하시겠습니까?</p>
                 </Modal>
@@ -845,9 +845,9 @@ function DetailProjectPage() {
             <Row>
                 <Col span={12}>
                     {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
-                    <Button onClick={handleGoBackClick}>
+                    {/* <Button onClick={handleGoBackClick}>
                         목록으로 돌아가기
-                    </Button>
+                    </Button> */}
                 </Col>
                 <Col span={12} style={{ textAlign: 'right' }}>
                     {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
@@ -1004,205 +1004,240 @@ function DetailProjectPage() {
 
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
-            <div style={{ flex: 1 }}>
-                {/** 좌측 여백을 위해 만든 더미 div */}
-            </div>
-            
-            <div style={{ flex: 2.5 }}>
-                {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
-                {data.writer && renderButtons()}
-                {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
-                {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
-                {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
-                {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
-                {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
-                {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
-                {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
+        <div>
+            {data.writer !== null ? (
+                // data.writer가 null이 아닌 경우 (게시물이 존재하는 경우)
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
+                    <div style={{ flex: 1 }}>
+                        {/** 좌측 여백을 위해 만든 더미 div */}
+                    </div>
 
-                {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                <Divider className="bold-divider" />
+                    <div style={{ flex: 2.5 }}>
+                        {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
+                        {data.writer && renderButtons()}
+                        {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
+                        {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
+                        {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
+                        {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
 
-                <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                    <Col span={16}>
-                        <div style={{ marginLeft: '5%' }}>
-                            제목: {data.title}
-                        </div>
-                    </Col>
-                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                    <Col span={8} className="vertical-line">
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ marginLeft: '3px' }}>
-                                {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
-                            </div>
-                            <div style={{ marginRight: '15px' }}>
-                                조회 수: {data.viewCount}
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-
-                <Divider className="simple-divider" />
-
-                <Row gutter={[16, 16]} justify="center" align="middle">
-                    <Col span={16}>
-                        <div style={{ marginLeft: '5%', borderRight: '1px', cursor: 'pointer' }} onClick={() => handleNickNameClick(data.nickName)}>
-                            닉네임: {data.nickName}
-                        </div>
-                    </Col>
-                    {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                    <Col span={8} className="vertical-line">
-                        <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                            인원: {data.counts} / {data.recruitmentCount}
-                        </div>
-                        <div style={{ marginLeft: '3px' }}>
-                            모집 마감일: {formatDate(data.endDate)}
-                        </div>
-                    </Col>
-                </Row>
-
-                <Divider className="bold-divider" />
-
-                <div style={{ marginLeft: '5px' }}>
-                    첨부 파일: {data.fileUrl}
-                </div>
-
-                <Divider className="bold-divider" />
-
-                {/* 드라이브에서 image가져와 렌더링 */}
-                <div style={{ marginLeft: '5px' }}>
-                    홍보 사진: <img src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.promoteImageUrl}`} alt="홍보 사진" />
-                </div>
-
-                <Divider className="bold-divider" />
-
-                {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
-                <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
-                    내용: {insertLineBreaks(data.content, 45)}
-                </div>
-
-                <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                    <Button size="small" onClick={toggleCommentsVisibility}>
-                        {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
-                    </Button>
-                </div>
-
-
-
-                {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
-                {areCommentsVisible && (
-                    <div>
+                        {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
                         <Divider className="bold-divider" />
 
-                        <h5>댓글</h5>
-                        {renderComments(commentData.content)}
-                        <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                            {moreCommentsAvailable && (
-                                <Button size="small" onClick={loadMoreComments}>
-                                    댓글 더보기
-                                </Button>
+                        <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+                            <Col span={16}>
+                                <div style={{ marginLeft: '5%' }}>
+                                    제목: {data.title}
+                                </div>
+                            </Col>
+                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                            <Col span={8} className="vertical-line">
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <div style={{ marginLeft: '3px' }}>
+                                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
+                                        분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
+                                    </div>
+                                    <div style={{ marginRight: '15px' }}>
+                                        조회 수: {data.viewCount}
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Divider className="simple-divider" />
+
+                        <Row gutter={[16, 16]} justify="center" align="middle">
+                            <Col span={16}>
+                                <div style={{ marginLeft: '5%', borderRight: '1px', cursor: 'pointer' }} onClick={() => handleNickNameClick(data.nickName)}>
+                                    닉네임: {data.nickName}
+                                </div>
+                            </Col>
+                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
+                            <Col span={8} className="vertical-line">
+                                <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
+                                    인원: {data.counts} / {data.recruitmentCount}
+                                </div>
+                                <div style={{ marginLeft: '3px' }}>
+                                    모집 마감일: {formatDate(data.endDate)}
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Divider className="bold-divider" />
+
+                        <div style={{ marginLeft: '5px' }}>
+                            첨부 파일: {
+                                data.fileUrl ? (
+                                    data.fileUrl.map((file, index) => (
+                                        <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                            <Button
+                                                onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                            >
+                                                {file.fileName} {/* 파일 이름 표시 */}
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>이미지가 없습니다</p>
+                                )}
+                        </div>
+
+                        <Divider className="bold-divider" />
+
+                        <div style={{ marginLeft: '5px' }}>
+                            홍보 사진:
+                            {data.promoteImageUrl ? (
+                                data.promoteImageUrl.map((imageUrl, index) => (
+                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                        <img
+                                            key={index}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                            alt={`홍보 사진 ${index + 1}`}
+                                            style={{ margin: '10px', width: 600 }}
+                                        />
+                                    </div>
+                                ))
+                            ) : (
+                                <p>이미지가 없습니다</p>
                             )}
                         </div>
 
-                        <div>
-                            <Card>
-                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                    <UserOutlined style={{ marginRight: '5px' }} />
-                                    <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
-                                </div>
-                                <TextArea
-                                    autoSize={{ minRows: 4 }}
-                                    value={commentText}
-                                    onChange={(e) => setCommentText(e.target.value)}
-                                    placeholder="Write a comment"
-                                />
-                                <div style={{ textAlign: 'right', marginTop: '16px' }}>
-                                    <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
-                                </div>
-                            </Card>
-                        </div>
-                        {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                            <Pagination
-                                current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
-                                total={totalPages * pageSize}
-                                pageSize={pageSize}
-                                onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
-                            />
+                        <Divider className="bold-divider" />
 
-                        </div> */}
+                        {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
+                        <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
+                            내용: {insertLineBreaks(data.content, 45)}
+                        </div>
+
+                        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                            <Button size="small" onClick={toggleCommentsVisibility}>
+                                {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                            </Button>
+                        </div>
+
+
+
+                        {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
+                        {areCommentsVisible && (
+                            <div>
+                                <Divider className="bold-divider" />
+
+                                <h5>댓글</h5>
+                                {renderComments(commentData.content)}
+                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                    {moreCommentsAvailable && (
+                                        <Button size="small" onClick={loadMoreComments}>
+                                            댓글 더보기
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <Card>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                            <UserOutlined style={{ marginRight: '5px' }} />
+                                            <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
+                                        </div>
+                                        <TextArea
+                                            autoSize={{ minRows: 4 }}
+                                            value={commentText}
+                                            onChange={(e) => setCommentText(e.target.value)}
+                                            placeholder="Write a comment"
+                                        />
+                                        <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                            <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
+                                        </div>
+                                    </Card>
+                                </div>
+                                {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                    <Pagination
+                                        current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                                        total={totalPages * pageSize}
+                                        pageSize={pageSize}
+                                        onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                                    />
+
+                                </div> */}
+                            </div>
+
+                        )}
+
+                        {/* Modal */}
+                        <Modal
+                            title="Confirm Action"
+                            open={isModalVisible}
+                            onOk={handleModalConfirm}
+                            onCancel={handleModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {modalAction === 'delete' && (
+                                <p>게시물을 삭제하시겠습니까?</p>
+                            )}
+                            {modalAction === 'apply' && (
+                                <p>게시물에 지원하시겠습니까?</p>
+                            )}
+                        </Modal>
+                        <Modal
+                            title="Confirm Action"
+                            open={isCancelModalVisible}
+                            onOk={handleCancelModalConfirm}
+                            onCancel={handleCancelModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            <p>지원을 취소하시겠습니까?</p>
+                        </Modal>
+                        <Modal
+                            title="Confirm Action"
+                            open={isScrapModalVisible}
+                            onOk={handleScrapModalConfirm}
+                            onCancel={handleScrapModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {scrapAction === 'scrap' && (
+                                <p>게시물을 스크랩하시겠습니까?</p>
+                            )}
+                            {scrapAction === 'cancelScrap' && (
+                                <p>스크랩을 취소하시겠습니까?</p>
+                            )}
+                        </Modal>
+                        <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
+                            title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
+                            open={commentEditConfirmModalVisible}
+                            onOk={handleCommentEditModalOk}
+                            onCancel={handleCommentEditModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
+                        </Modal>
+                        <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
+                            title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
+                            open={commentDeleteConfirmModalVisible}
+                            onOk={handleCommentDeleteModalOk}
+                            onCancel={handleCommentDeleteModalCancel}
+                            okText="예"
+                            cancelText="아니오"
+                        >
+                            {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
+                        </Modal>
                     </div>
 
-                )}
-
-                {/* Modal */}
-                <Modal
-                    title="Confirm Action"
-                    open={isModalVisible}
-                    // 모순적이지만, 익숙한 위치에 두기 위해 함수 이름을 Cross해서 사용
-                    onOk={handleModalCancel}
-                    onCancel={handleModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
-                >
-                    {modalAction === 'delete' && (
-                        <p>게시물을 삭제하시겠습니까?</p>
-                    )}
-                    {modalAction === 'apply' && (
-                        <p>게시물에 지원하시겠습니까?</p>
-                    )}
-                </Modal>
-                <Modal
-                    title="Confirm Action"
-                    open={isCancelModalVisible}
-                    onOk={handleCancelModalCancel}
-                    onCancel={handleCancelModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
-                >
-                    <p>지원을 취소하시겠습니까?</p>
-                </Modal>
-                <Modal
-                    title="Confirm Action"
-                    open={isScrapModalVisible}
-                    onOk={handleScrapModalCancel}
-                    onCancel={handleScrapModalConfirm}
-                    okText="아니오"
-                    cancelText="예"
-                >
-                    {scrapAction === 'scrap' && (
-                        <p>게시물을 스크랩하시겠습니까?</p>
-                    )}
-                    {scrapAction === 'cancelScrap' && (
-                        <p>스크랩을 취소하시겠습니까?</p>
-                    )}
-                </Modal>
-                <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
-                    title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
-                    open={commentEditConfirmModalVisible}
-                    onOk={handleCommentEditModalCancel}
-                    onCancel={handleCommentEditModalOk}
-                    okText="아니오"
-                    cancelText="예"
-                >
-                    {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
-                </Modal>
-                <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
-                    title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
-                    open={commentDeleteConfirmModalVisible}
-                    onOk={handleCommentDeleteModalCancel}
-                    onCancel={handleCommentDeleteModalOk}
-                    okText="아니오"
-                    cancelText="예"
-                >
-                    {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
-                </Modal>
-            </div>
-
-            <div style={{ flex: 1 }}>
-                {data.writer && renderApplicantButton()}
-            </div>
+                    <div style={{ flex: 1 }}>
+                        {data.writer && renderApplicantButton()}
+                    </div>
+                </div>
+            ) : (
+                // data.writer가 null인 경우 (게시물이 없는 경우)
+                <div style={{ marginLeft: '15%', marginRight: '15%' }}>
+                    <h2>해당하는 프로젝트 게시물이 없습니다!</h2>
+                </div>
+            )}
         </div>
     )
 }

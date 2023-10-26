@@ -23,6 +23,6 @@ public class PostsFormDto {
     private Integer recruitmentCount;
     private LocalDate endDate;
     private String content;
-    private MultipartFile promoteImageUrl; // 이미지 파일 자체를 받음
-    private String fileUrl;
+    private List<MultipartFile> promoteImageUrl; // 이미지 파일 자체를 리스트로 받음
+    private List<MultipartFile> fileUrl; // 첨부파일 자체를 리스트로 받음
 }

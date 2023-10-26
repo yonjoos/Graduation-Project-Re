@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,8 +25,8 @@ public class PostsDto {
     private Boolean game;
     private Boolean ai;
     private String content;
-    private String promoteImageUrl;
-    private String fileUrl;
+    private List<String> promoteImageUrl;
+    private List<FileUrlNameMapperDto> fileUrl;
     private Integer counts;
     private Integer recruitmentCount;
     private LocalDate endDate;

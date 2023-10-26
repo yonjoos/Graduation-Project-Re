@@ -4,9 +4,9 @@ import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.*;
+import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
@@ -21,6 +21,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -39,7 +40,9 @@ public class PostsService {
     private final ScrapPostsRepository scrapPostsRepository;
     private final NotificationsRepository notificationsRepository;
     private final ViewCountPostsRepository viewCountPostsRepository;
+    private final CommentsRepository commentsRepository;
     private final NotificationService notificationService;
+    private final PostsFilesRepository postsFilesRepository;
     private final JPAQueryFactory queryFactory;
     private final Storage storage;
 
@@ -64,20 +67,7 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        //이미지 업로드 관련 부분
-        String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
-        System.out.println("uuid = " + uuid);
-        String ext = postsFormDto.getPromoteImageUrl().getContentType(); // 파일의 형식 ex) JPG
-        System.out.println("ext = " + ext);
-
-        // Cloud에 이미지 업로드
-        BlobInfo blobInfo = storage.create(
-                BlobInfo.newBuilder(bucketName, uuid)
-                        .setContentType(ext)
-                        .build(),
-                postsFormDto.getPromoteImageUrl().getInputStream()
-        );
-
+        // 게시물 먼저 생성(이미지, 파일 밑 카테고리는 제외)
         Posts posts = Posts.builder()
                 .user(user)
                 .postType(postType)
@@ -85,13 +75,88 @@ public class PostsService {
                 .recruitmentCount(postsFormDto.getRecruitmentCount())
                 //.counts(1)      // 맨 처음 지원자 수는 1명 (본인 포함)
                 .content(postsFormDto.getContent().replace("<br>", "\n"))
-                .promoteImageUrl(uuid) // 겹치지 않는 이름으로 db에는 이미지 파일의 uuid값만 저장
-                .fileUrl(postsFormDto.getFileUrl())
+                //.promoteImageUrl(uuid) // postfiles엔티티에서 관리
+                //.fileUrl(postsFormDto.getFileUrl()) // postfiles엔티티에서 관리
                 .endDate(postsFormDto.getEndDate())
                 .build();
 
+        // 게시물을 db에 저장(텍스트 형태로 들어가는 값들)
         Posts savedPosts = postsRepository.save(posts);
 
+        // 이미지 파일 정보는 db에 저장, 실제 파일은 클라우드에 저장
+        if(postsFormDto.getPromoteImageUrl() != null && !postsFormDto.getPromoteImageUrl().isEmpty()) // 클라이언트가 이미지를 첨부했다면
+        {
+            // 프론트에서 넘어온 이미지 리스트를 클라우드에 저장하고, 생성된 post를 외래키로 하는 tuple을 posts_files 테이블에 생성해서 저장
+            List<PostsFiles> postsFilesList = new ArrayList<>(); // 이미지를 저장할 리스트
+
+            for (MultipartFile image : postsFormDto.getPromoteImageUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = image.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        image.getInputStream()
+                );
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(uuid) // 이미지 파일의 UUID
+                        .build();
+
+                postsFilesList.add(postsFiles);
+            }
+
+            // 이미지 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(postsFilesList);
+
+        }
+
+        // 첨부 파일 정보는 db에 저장, 파일은 클라우드에도 저장
+        if(postsFormDto.getFileUrl() != null && !postsFormDto.getFileUrl().isEmpty()) // 클라이언트가 첨부파일을 첨부했다면
+        {
+            // 프론트에서 넘어온 첨부파일 리스트를 클라우드에 저장하고, 생성된 post를 외래키로 하는 tuple을 posts_files 테이블에 생성해서 저장
+            List<PostsFiles> postsFilesList = new ArrayList<>(); // 첨부파일을 저장할 리스트
+
+            for (MultipartFile file : postsFormDto.getFileUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = file.getContentType(); // 파일의 형식
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        file.getInputStream()
+                );
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(uuid) // 첨부 파일의 UUID
+                        .fileName(file.getOriginalFilename()) // 첨부파일의 원본 이름
+                        .build();
+
+                postsFilesList.add(postsFiles);
+            }
+
+            // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(postsFilesList);
+
+        }
+
+        // 카테고리 저장
         Category category = Category.builder()
                 .posts(savedPosts)
                 .web(postsFormDto.getPostType().contains("Web"))
@@ -173,232 +238,271 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        Posts posts = postsRepository.findByIdAndPostType(projectId, PostType.PROJECT)
-                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+        // 게시물의 db에의 존재 여부 확인
+        Optional<Posts> optionalPosts = postsRepository.findByIdAndPostType(projectId, PostType.PROJECT);
 
         PostsDto postsDto;
 
-        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
-        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
-        Integer applyCount;
+        // 게시물 ID가 있는 페이지에 접근 시
+        if (optionalPosts.isPresent()) {
+            Posts posts = optionalPosts.get();
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
+            Integer applyCount;
 
-        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
-        // null이라면, 인원 = 1(본인)
-        if (applyCountOptional.isPresent()) {
-            applyCount = applyCountOptional.get() + 1;
-        } else {
-            applyCount = 1;
-        }
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
 
-        // 프로젝트 게시물 작성자라면, viewCount를 저장하지 않고
-        // 프로젝트 게시물 작성자가 아니라면 viewCount 저장
-        if (!userEmail.equals(posts.getUser().getEmail())) {
-            // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
-            if (viewCountPostsRepository.findByPosts_IdAndUser_Id(projectId, user.getId()).isEmpty()) {
-                ViewCountPosts viewCountPosts = ViewCountPosts.builder()
-                        .posts(posts)
-                        .user(user)
+            // 프로젝트 게시물 작성자라면, viewCount를 저장하지 않고
+            // 프로젝트 게시물 작성자가 아니라면 viewCount 저장
+            if (!userEmail.equals(posts.getUser().getEmail())) {
+                // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
+                if (viewCountPostsRepository.findByPosts_IdAndUser_Id(projectId, user.getId()).isEmpty()) {
+                    ViewCountPosts viewCountPosts = ViewCountPosts.builder()
+                            .posts(posts)
+                            .user(user)
+                            .build();
+
+                    viewCountPostsRepository.save(viewCountPosts);
+                }
+            }
+
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(projectId);
+
+            Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
+            // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+            List<String> imageUrls = posts.getPostsFiles().stream()
+                    .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+            List<FileUrlNameMapperDto> fileUrls = posts.getPostsFiles().stream()
+                    .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                    .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                    .collect(Collectors.toList());
+
+
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면 (게시물 작성자라면)
+            if (posts.getUser().getEmail().equals(userEmail)) {
+                postsDto = PostsDto.builder()
+                        .writer(true)       // writer에 true를 리턴
+                        .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
+                        //.counts(posts.getCounts())
+                        .counts(applyCount)
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .viewCount(viewCount)
                         .build();
-
-                viewCountPostsRepository.save(viewCountPosts);
             }
-        }
-
-        Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(projectId);
-
-        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
-
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면 (게시물 작성자라면)
-        if (posts.getUser().getEmail().equals(userEmail)) {
-             postsDto = PostsDto.builder()
-                    .writer(true)       // writer에 true를 리턴
-                    .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
-                    .nickName(posts.getUser().getNickName())
-                    .title(posts.getTitle())
-                    .web(posts.getCategory().getWeb())
-                    .app(posts.getCategory().getApp())
-                    .game(posts.getCategory().getGame())
-                    .ai(posts.getCategory().getAi())
-                    .content(posts.getContent())
-                    .promoteImageUrl(posts.getPromoteImageUrl())
-                    .fileUrl(posts.getFileUrl())
-                    //.counts(posts.getCounts())
-                    .counts(applyCount)
-                    .recruitmentCount(posts.getRecruitmentCount())
-                    .endDate(posts.getEndDate())
-                    .viewCount(viewCount)
-                    .build();
-        }
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
-        else {
-            boolean isScrapped = false;     // 스크랩 여부
-            boolean hasApplied = false;     // 지원 여부
-            boolean isConfirmed = false;    // 승인 여부
-
-            for (ScrapPosts scrap : posts.getScrapPosts()) {
-                // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
-                if (scrap.getUser().getEmail().equals(userEmail)) {
-                    isScrapped = true;      // 스크랩 여부는 true
-                    break;
-                }
-            }
-
-            for (UserApplyPosts apply : posts.getUserApplyPosts()) {
-                // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
-                if (apply.getUser().getEmail().equals(userEmail)) {
-                    hasApplied = true;      // 지원 여부는 true
-                    isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
-                    break; // Exit the loop since we found a matching entry
-                }
-            }
-
-            // 게시물에 지원 안한 사람
-            if (!hasApplied) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)        // 스크랩 안한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // 게시물에 지원했으나, 승인이 안난 사람
-            else if (!isConfirmed) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // writer로부터 승인이 난 사람
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
             else {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                boolean isScrapped = false;     // 스크랩 여부
+                boolean hasApplied = false;     // 지원 여부
+                boolean isConfirmed = false;    // 승인 여부
+
+                for (ScrapPosts scrap : posts.getScrapPosts()) {
+                    // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
+                    if (scrap.getUser().getEmail().equals(userEmail)) {
+                        isScrapped = true;      // 스크랩 여부는 true
+                        break;
+                    }
                 }
-                // 스크랩 안한 사람
+
+                for (UserApplyPosts apply : posts.getUserApplyPosts()) {
+                    // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
+                    if (apply.getUser().getEmail().equals(userEmail)) {
+                        hasApplied = true;      // 지원 여부는 true
+                        isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
+                        break; // Exit the loop since we found a matching entry
+                    }
+                }
+
+                // 게시물에 지원 안한 사람
+                if (!hasApplied) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)        // 스크랩 안한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // 게시물에 지원했으나, 승인이 안난 사람
+                else if (!isConfirmed) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // writer로부터 승인이 난 사람
                 else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
                 }
             }
+        }
+        // 게시물 ID가 없는 페이지 접근 시
+        else {
+            postsDto = PostsDto.builder()
+                    .writer(null)      // writer에 false를 리턴
+                    .scrap(null)       // 스크랩 안한 사람
+                    .applying(null)     // 지원 중은 아니고,
+                    .applied(null)     // 지원이 승인되었음.
+                    .nickName(null)
+                    .title(null)
+                    .web(null)
+                    .app(null)
+                    .game(null)
+                    .ai(null)
+                    .content(null)
+                    .promoteImageUrl(null)
+                    .fileUrl(null)
+                    .counts(null)
+                    .recruitmentCount(null)
+                    .endDate(null)
+                    .viewCount(null)
+                    .build();
         }
 
         return postsDto;
@@ -413,232 +517,269 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        Posts posts = postsRepository.findByIdAndPostType(studyId, PostType.STUDY)
-                .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+        Optional<Posts> optionalPosts = postsRepository.findByIdAndPostType(studyId, PostType.STUDY);
 
         PostsDto postsDto;
 
-        // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
-        Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
-        Integer applyCount;
+        // 게시물 ID가 있는 페이지에 접근 시
+        if (optionalPosts.isPresent()) {
+            Posts posts = optionalPosts.get();
+            // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
+            Integer applyCount;
 
-        // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
-        // null이라면, 인원 = 1(본인)
-        if (applyCountOptional.isPresent()) {
-            applyCount = applyCountOptional.get() + 1;
-        } else {
-            applyCount = 1;
-        }
+            // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
+            // null이라면, 인원 = 1(본인)
+            if (applyCountOptional.isPresent()) {
+                applyCount = applyCountOptional.get() + 1;
+            } else {
+                applyCount = 1;
+            }
 
-        // 스터디 게시물 작성자라면, viewCount를 저장하지 않고
-        // 스터디 게시물 작성자가 아니라면 viewCount 저장
-        if (!userEmail.equals(posts.getUser().getEmail())) {
-            // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
-            if (viewCountPostsRepository.findByPosts_IdAndUser_Id(studyId, user.getId()).isEmpty()) {
-                ViewCountPosts viewCountPosts = ViewCountPosts.builder()
-                        .posts(posts)
-                        .user(user)
+            // 스터디 게시물 작성자라면, viewCount를 저장하지 않고
+            // 스터디 게시물 작성자가 아니라면 viewCount 저장
+            if (!userEmail.equals(posts.getUser().getEmail())) {
+                // 단, 해당 유저가 해당 게시물을 방문한 적 없을 때에만 viewCount를 새로 만들어 저장.
+                if (viewCountPostsRepository.findByPosts_IdAndUser_Id(studyId, user.getId()).isEmpty()) {
+                    ViewCountPosts viewCountPosts = ViewCountPosts.builder()
+                            .posts(posts)
+                            .user(user)
+                            .build();
+
+                    viewCountPostsRepository.save(viewCountPosts);
+                }
+            }
+
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(studyId);
+
+            Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
+            // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+            List<String> imageUrls = posts.getPostsFiles().stream()
+                    .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());;
+
+            // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+            List<FileUrlNameMapperDto> fileUrls = posts.getPostsFiles().stream()
+                    .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                    .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                    .collect(Collectors.toList());
+
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
+            if (posts.getUser().getEmail().equals(userEmail)) {
+                postsDto = PostsDto.builder()
+                        .writer(true)      // writer에 true를 리턴
+                        .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
+                        .nickName(posts.getUser().getNickName())
+                        .title(posts.getTitle())
+                        .web(posts.getCategory().getWeb())
+                        .app(posts.getCategory().getApp())
+                        .game(posts.getCategory().getGame())
+                        .ai(posts.getCategory().getAi())
+                        .content(posts.getContent())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
+                        //.counts(posts.getCounts())
+                        .counts(applyCount)
+                        .recruitmentCount(posts.getRecruitmentCount())
+                        .endDate(posts.getEndDate())
+                        .viewCount(viewCount)
                         .build();
-
-                viewCountPostsRepository.save(viewCountPosts);
             }
-        }
-
-        Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(studyId);
-
-        Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
-
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())와 동일하다면
-        if (posts.getUser().getEmail().equals(userEmail)) {
-            postsDto = PostsDto.builder()
-                    .writer(true)      // writer에 true를 리턴
-                    .scrap(false)       // 작성자는 자신의 게시물에 스크랩 X
-                    .nickName(posts.getUser().getNickName())
-                    .title(posts.getTitle())
-                    .web(posts.getCategory().getWeb())
-                    .app(posts.getCategory().getApp())
-                    .game(posts.getCategory().getGame())
-                    .ai(posts.getCategory().getAi())
-                    .content(posts.getContent())
-                    .promoteImageUrl(posts.getPromoteImageUrl())
-                    .fileUrl(posts.getFileUrl())
-                    //.counts(posts.getCounts())
-                    .counts(applyCount)
-                    .recruitmentCount(posts.getRecruitmentCount())
-                    .endDate(posts.getEndDate())
-                    .viewCount(viewCount)
-                    .build();
-        }
-        // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
-        else {
-            boolean isScrapped = false;     // 스크랩 여부
-            boolean hasApplied = false;     // 지원 여부
-            boolean isConfirmed = false;    // 승인 여부
-
-            for (ScrapPosts scrap : posts.getScrapPosts()) {
-                // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
-                if (scrap.getUser().getEmail().equals(userEmail)) {
-                    isScrapped = true;      // 스크랩 여부는 true
-                    break;
-                }
-            }
-
-            for (UserApplyPosts apply : posts.getUserApplyPosts()) {
-                // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
-                if (apply.getUser().getEmail().equals(userEmail)) {
-                    hasApplied = true;      // 지원 여부는 true
-                    isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
-                    break; // Exit the loop since we found a matching entry
-                }
-            }
-
-            // 게시물에 지원 안한 사람
-            if (!hasApplied) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)        // 스크랩 안한 사람
-                            .applying(false)    // 지원중이지도 않고
-                            .applied(false)     // 지원 승인되지도 않았음
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // 게시물에 지원했으나, 승인이 안난 사람
-            else if (!isConfirmed) {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-                // 스크랩 안한 사람
-                else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(true)     // 지원은 했으나 (지원 중이지만),
-                            .applied(false)     // 지원이 승인된 것은 아님.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
-                }
-            }
-            // writer로부터 승인이 난 사람
+            // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
             else {
-                // 스크랩 한 사람
-                if (isScrapped) {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(true)        // 스크랩 한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                boolean isScrapped = false;     // 스크랩 여부
+                boolean hasApplied = false;     // 지원 여부
+                boolean isConfirmed = false;    // 승인 여부
+
+                for (ScrapPosts scrap : posts.getScrapPosts()) {
+                    // userEmail을 가진 사람이 스크랩한 사람 중 한 명이라면,
+                    if (scrap.getUser().getEmail().equals(userEmail)) {
+                        isScrapped = true;      // 스크랩 여부는 true
+                        break;
+                    }
                 }
-                // 스크랩 안한 사람
+
+                for (UserApplyPosts apply : posts.getUserApplyPosts()) {
+                    // userEmail을 가진 사람이 지원한 사람 중 한 명이라면,
+                    if (apply.getUser().getEmail().equals(userEmail)) {
+                        hasApplied = true;      // 지원 여부는 true
+                        isConfirmed = apply.getConfirm();   // 승인 여부는 직접 가져오기
+                        break; // Exit the loop since we found a matching entry
+                    }
+                }
+
+                // 게시물에 지원 안한 사람
+                if (!hasApplied) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)        // 스크랩 안한 사람
+                                .applying(false)    // 지원중이지도 않고
+                                .applied(false)     // 지원 승인되지도 않았음
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // 게시물에 지원했으나, 승인이 안난 사람
+                else if (!isConfirmed) {
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(true)     // 지원은 했으나 (지원 중이지만),
+                                .applied(false)     // 지원이 승인된 것은 아님.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                }
+                // writer로부터 승인이 난 사람
                 else {
-                    postsDto = PostsDto.builder()
-                            .writer(false)      // writer에 false를 리턴
-                            .scrap(false)       // 스크랩 안한 사람
-                            .applying(false)     // 지원 중은 아니고,
-                            .applied(true)     // 지원이 승인되었음.
-                            .nickName(posts.getUser().getNickName())
-                            .title(posts.getTitle())
-                            .web(posts.getCategory().getWeb())
-                            .app(posts.getCategory().getApp())
-                            .game(posts.getCategory().getGame())
-                            .ai(posts.getCategory().getAi())
-                            .content(posts.getContent())
-                            .promoteImageUrl(posts.getPromoteImageUrl())
-                            .fileUrl(posts.getFileUrl())
-                            //.counts(posts.getCounts())
-                            .counts(applyCount)
-                            .recruitmentCount(posts.getRecruitmentCount())
-                            .endDate(posts.getEndDate())
-                            .viewCount(viewCount)
-                            .build();
+                    // 스크랩 한 사람
+                    if (isScrapped) {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(true)        // 스크랩 한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
+                    // 스크랩 안한 사람
+                    else {
+                        postsDto = PostsDto.builder()
+                                .writer(false)      // writer에 false를 리턴
+                                .scrap(false)       // 스크랩 안한 사람
+                                .applying(false)     // 지원 중은 아니고,
+                                .applied(true)     // 지원이 승인되었음.
+                                .nickName(posts.getUser().getNickName())
+                                .title(posts.getTitle())
+                                .web(posts.getCategory().getWeb())
+                                .app(posts.getCategory().getApp())
+                                .game(posts.getCategory().getGame())
+                                .ai(posts.getCategory().getAi())
+                                .content(posts.getContent())
+                                .promoteImageUrl(imageUrls)
+                                .fileUrl(fileUrls)
+                                //.counts(posts.getCounts())
+                                .counts(applyCount)
+                                .recruitmentCount(posts.getRecruitmentCount())
+                                .endDate(posts.getEndDate())
+                                .viewCount(viewCount)
+                                .build();
+                    }
                 }
             }
+        }
+        // 게시물 ID가 없는 페이지 접근 시
+        else {
+            postsDto = PostsDto.builder()
+                    .writer(null)      // writer에 false를 리턴
+                    .scrap(null)       // 스크랩 안한 사람
+                    .applying(null)     // 지원 중은 아니고,
+                    .applied(null)     // 지원이 승인되었음.
+                    .nickName(null)
+                    .title(null)
+                    .web(null)
+                    .app(null)
+                    .game(null)
+                    .ai(null)
+                    .content(null)
+                    .promoteImageUrl(null)
+                    .fileUrl(null)
+                    .counts(null)
+                    .recruitmentCount(null)
+                    .endDate(null)
+                    .viewCount(null)
+                    .build();
         }
 
         return postsDto;
@@ -715,6 +856,18 @@ public class PostsService {
                 findProject.getCategory().getAi()
         );
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findProject.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findProject.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
+
         // Create and populate PostsFormDto from project
         PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
                 .title(findProject.getTitle())
@@ -724,8 +877,8 @@ public class PostsService {
                 .recruitmentCount(findProject.getRecruitmentCount())
                 .endDate(findProject.getEndDate())
                 .content(findProject.getContent())
-                .promoteImageUrl(findProject.getPromoteImageUrl())
-                .fileUrl(findProject.getFileUrl())
+                .promoteImageUrl(imageUrls)
+                .fileUrl(fileUrls)
                 .build();
 
         return formDto;
@@ -761,6 +914,18 @@ public class PostsService {
                 findStudy.getCategory().getAi()
         );
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findStudy.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findStudy.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
+
         // Create and populate PostsFormDto from study
         PostsUpdateFormDto formDto = PostsUpdateFormDto.builder()
                 .title(findStudy.getTitle())
@@ -770,8 +935,8 @@ public class PostsService {
                 .recruitmentCount(findStudy.getRecruitmentCount())
                 .endDate(findStudy.getEndDate())
                 .content(findStudy.getContent())
-                .promoteImageUrl(findStudy.getPromoteImageUrl())
-                .fileUrl(findStudy.getFileUrl())
+                .promoteImageUrl(imageUrls)
+                .fileUrl(fileUrls)
                 .build();
 
         return formDto;
@@ -782,60 +947,532 @@ public class PostsService {
     // ** 중요 **
     // postType을 String 리스트로 받아오는 PostsFormDto 사용!
     @EntityGraph(attributePaths = {"category"})
-    public void updateProject(Long projectId, PostsFormDto postsFormDto) {
+    public void updateProject(Long projectId, PostsUpdateRequestFormDto postsUpdateRequestFormDto) throws IOException {
 
         // projectId로 Project 찾기
         Posts project = postsRepository.findById(projectId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         // 변경 감지를 통한 업데이트
-        project.setTitle(postsFormDto.getTitle());
-        project.setRecruitmentCount(postsFormDto.getRecruitmentCount());
-        project.setContent(postsFormDto.getContent().replace("<br>", "\n"));
-        //project.setPromoteImageUrl(postsFormDto.getPromoteImageUrl()); // 사진 파일이 바뀌었다면, 새로 구글 클라우드에 저장하고, 바뀐 uuid값으로 db에 저장해야함
-        project.setFileUrl(postsFormDto.getFileUrl());
-        project.setEndDate(postsFormDto.getEndDate());
+        project.setTitle(postsUpdateRequestFormDto.getTitle());
+        project.setRecruitmentCount(postsUpdateRequestFormDto.getRecruitmentCount());
+        project.setContent(postsUpdateRequestFormDto.getContent().replace("<br>", "\n"));
+        //project.setPromoteImageUrl(postsUpdateRequestFormDto.getPromoteImageUrl()); // 사진 파일이 바뀌었다면, 새로 구글 클라우드에 저장하고, 바뀐 uuid값으로 db에 저장해야함
+        //project.setFileUrl(postsUpdateRequestFormDto.getFileUrl());
+        project.setEndDate(postsUpdateRequestFormDto.getEndDate());
 
-        project.getCategory().setWeb(postsFormDto.getPostType().contains("Web"));
-        project.getCategory().setApp(postsFormDto.getPostType().contains("App"));
-        project.getCategory().setGame(postsFormDto.getPostType().contains("Game"));
-        project.getCategory().setAi(postsFormDto.getPostType().contains("AI"));
+        project.getCategory().setWeb(postsUpdateRequestFormDto.getPostType().contains("Web"));
+        project.getCategory().setApp(postsUpdateRequestFormDto.getPostType().contains("App"));
+        project.getCategory().setGame(postsUpdateRequestFormDto.getPostType().contains("Game"));
+        project.getCategory().setAi(postsUpdateRequestFormDto.getPostType().contains("AI"));
 
         // 카운트 검증 (recruitmentCount의 개수가 2개 이하인가?를 검증)
         project.getCategory().validateFieldCount();
 
-        // 저장
-        postsRepository.save(project);
+        // 게시물의 텍스트 필드 저장
+        Posts savedPosts = postsRepository.save(project);
+
+        // 현재 게시물에 연관된 게시물 이미지 파일 엔티티를 찾아옴
+        List<PostsFiles> existingImageFiles = postsFilesRepository.findByPostsAndIsImageTrue(savedPosts);
+        // 현재 게시물에 연관된 게시물 첨부파일 엔티티를 찾아옴
+        List<PostsFiles> existingOtherFiles = postsFilesRepository.findByPostsAndIsImageFalse(savedPosts);
+
+        // 현재 게시물에 연관된 게시물 이미지를 db에서 지움
+        postsFilesRepository.deleteAll(existingImageFiles);
+        // 현재 게시물에 연관된 게시물 첨부파일을 db에서 지움
+        postsFilesRepository.deleteAll(existingOtherFiles);
+
+        // 새로 바뀐 기존의 이미지들을 세팅해서 db에 다시 저장하는 로직
+        List<String> promoteImageUrl = postsUpdateRequestFormDto.getPromoteImageUrl();
+        List<PostsFiles> updateImageFiles = new ArrayList<>();
+
+        if(postsUpdateRequestFormDto.getPromoteImageUrl()!=null && !postsUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            for(String imageUrl: promoteImageUrl)
+            {
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(imageUrl) // 이미지 파일의 UUID
+                        .build();
+
+                updateImageFiles.add(postsFiles);
+
+            }
+
+            postsFilesRepository.saveAll(updateImageFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 사진을 구하고, 지우기
+        // existingImageFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // postsUpdateRequestFormDto.getPromoteImageUrl()가 비어있지 않으면, 지워질 이미지를 구한 후 클라우드에서 삭제,
+        // postsUpdateRequestFormDto.getPromoteImageUrl()가 비어있으면 구해놓은 existingImageFiles에 해당하는 이미지을 클라우드에서 삭제하면 된다
+        if(postsUpdateRequestFormDto.getPromoteImageUrl()!=null && !postsUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            // existingImageFiles에 존재하는 PostFiles의 fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingImageFileUrls 중에,  postsUpdateRequestFormDto.getPromoteImageUrl에 없는 url을 모아서 리스트로 만듦 -> 삭제 대상이 되는 url값
+            List<String> imageUrlsToDelete = existingImageFileUrls.stream()
+                    .filter(existingImageFileUrl -> !postsUpdateRequestFormDto.getPromoteImageUrl().contains(existingImageFileUrl))
+                    .collect(Collectors.toList());
+
+            // 삭제 대상이 되는 url을 클라우드에서 삭제 진행(이미지)
+            for (String fileUrl : imageUrlsToDelete) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+        }
+        else { // postsUpdateRequestFormDto.getPromoteImageUrl가 null이라면 existingImageFileUrls에 있는 모든 url에 해당하는 이미지 파일을 클라우드에서 삭제해야함
+
+            List<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String fileUrl : existingImageFileUrls) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+
+        }
+
+
+
+        // 새로 추가된 사진 구글 클라우드에 저장하고, post_file 레포지토리에 추가.
+        // 즉, 클라이언트가 기존에 없던 이미지를 새로 추가해서 올렸다면, 이 사진들은 db와 클라우드에 모두 저장되어야함
+        if(postsUpdateRequestFormDto.getNewPromoteImageUrl() != null && !postsUpdateRequestFormDto.getNewPromoteImageUrl().isEmpty())
+        {
+            List<PostsFiles> newImageFiles = new ArrayList<>(); // 이미지를 저장할 리스트
+
+            for (MultipartFile image : postsUpdateRequestFormDto.getNewPromoteImageUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = image.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        image.getInputStream()
+                );
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(uuid) // 이미지 파일의 UUID
+                        .build();
+
+                newImageFiles.add(postsFiles);
+            }
+
+            // 이미지 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(newImageFiles);
+        }
+
+        // 새로 바뀐 기존의 첨부파일들을 세팅해서 db에 다시 저장하는 로직
+        List<FileUrlNameMapperDto> fileUrl = postsUpdateRequestFormDto.getFileUrl();
+        List<PostsFiles> updateOtherFiles = new ArrayList<>();
+
+        if(postsUpdateRequestFormDto.getFileUrl()!=null && !postsUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            for(FileUrlNameMapperDto fileUrlAndName: fileUrl)
+            {
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(fileUrlAndName.getFileUrl()) // 첨부 파일의 UUID
+                        .fileName(fileUrlAndName.getFileName()) // 첨부 파일의 원본 이름
+                        .build();
+
+                updateOtherFiles.add(postsFiles);
+
+            }
+
+            postsFilesRepository.saveAll(updateOtherFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 첨부파일을 구하고, 지우기
+        // existingOtherFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // postsUpdateRequestFormDto.getFileUrl()가 비어있지 않으면, 지워질 첨부파일을 구한 후 클라우드에서 삭제,
+        // postsUpdateRequestFormDto.getFileUrl()가 비어있으면 구해놓은 existingOtherFiles 해당하는 첨부파일을 클라우드에서 삭제하면 된다
+        if(postsUpdateRequestFormDto.getFileUrl()!=null && !postsUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            // existingOtherFiles 존재하는 PostFiles의 fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingOtherFileUrls 중에, postsUpdateRequestFormDto.getFileUrl안에 있는 FileUrlNameMapperDto의 fileUrl들의 집합에 포함되지 않는 url을 모아서 리스트로 만듦
+            // -> 삭제 대상이 되는 url값
+            List<String> otherFileUrlsToDelete = existingOtherFileUrls.stream()
+                    .filter(existingFileUrl -> postsUpdateRequestFormDto.getFileUrl().stream()
+                            .noneMatch(requestedFileUrl -> requestedFileUrl.getFileUrl().equals(existingFileUrl)))
+                    .collect(Collectors.toList());
+
+            // 클라우드에서 otherFileUrlsToDelete과 관련된 첨부파일 삭제
+            for (String otherFileUrl : otherFileUrlsToDelete) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+        }
+        else // postsUpdateRequestFormDto.getFileUrl null이라면 existingOtherFiles 있는 모든 url에 해당하는 첨부 파일을 클라우드에서 삭제해야함
+        {
+            List<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String otherFileUrl : existingOtherFileUrls) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+
+
+        }
+
+
+
+        // 새로 추가된 첨부파일 구글 클라우드에 저장하고, post_file 레포지토리에 추가
+        // 즉, 클라이언트가 기존에 없던 첨부파일을 새로 추가해서 올렸다면, 이 첨부파일들은 db와 클라우드에 모두 저장되어야함
+        if(postsUpdateRequestFormDto.getNewFileUrl() != null && !postsUpdateRequestFormDto.getNewFileUrl().isEmpty())
+        {
+            List<PostsFiles> newOtherFiles = new ArrayList<>(); // 첨부파일을 저장할 리스트
+
+            for (MultipartFile file : postsUpdateRequestFormDto.getNewFileUrl()) {
+                // 각 첨부파일을 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = file.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        file.getInputStream()
+                );
+
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(uuid) // 첨부 파일의 UUID
+                        .fileName(file.getOriginalFilename())
+                        .build();
+
+                newOtherFiles.add(postsFiles);
+            }
+
+            // 이미지 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(newOtherFiles);
+        }
+
+
     }
 
 
     // ** 중요 **
     // postType을 String 리스트로 받아오는 PostsFormDto 사용!
     @EntityGraph(attributePaths = {"category"})
-    public void updateStudy(Long studyId, PostsFormDto postsFormDto) {
+    public void updateStudy(Long studyId, PostsUpdateRequestFormDto postsUpdateRequestFormDto) throws IOException {
 
-        // projectId로 Project 찾기
+        // studyId로 Study 찾기
         Posts study = postsRepository.findById(studyId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         // 변경 감지를 통한 업데이트
-        study.setTitle(postsFormDto.getTitle());
-        study.setRecruitmentCount(postsFormDto.getRecruitmentCount());
-        study.setContent(postsFormDto.getContent().replace("<br>", "\n"));
+        study.setTitle(postsUpdateRequestFormDto.getTitle());
+        study.setRecruitmentCount(postsUpdateRequestFormDto.getRecruitmentCount());
+        study.setContent(postsUpdateRequestFormDto.getContent().replace("<br>", "\n"));
         //study.setPromoteImageUrl(postsFormDto.getPromoteImageUrl()); // 사진 파일이 바뀌었다면, 새로 구글 클라우드에 저장하고, 바뀐 uuid값으로 db에 저장해야함
-        study.setFileUrl(postsFormDto.getFileUrl());
-        study.setEndDate(postsFormDto.getEndDate());
+        //study.setFileUrl(postsFormDto.getFileUrl());
+        study.setEndDate(postsUpdateRequestFormDto.getEndDate());
 
-        study.getCategory().setWeb(postsFormDto.getPostType().contains("Web"));
-        study.getCategory().setApp(postsFormDto.getPostType().contains("App"));
-        study.getCategory().setGame(postsFormDto.getPostType().contains("Game"));
-        study.getCategory().setAi(postsFormDto.getPostType().contains("AI"));
+        study.getCategory().setWeb(postsUpdateRequestFormDto.getPostType().contains("Web"));
+        study.getCategory().setApp(postsUpdateRequestFormDto.getPostType().contains("App"));
+        study.getCategory().setGame(postsUpdateRequestFormDto.getPostType().contains("Game"));
+        study.getCategory().setAi(postsUpdateRequestFormDto.getPostType().contains("AI"));
 
         // 카운트 검증 (recruitmentCount의 개수가 2개 이하인가?를 검증)
         study.getCategory().validateFieldCount();
 
-        // 저장
-        postsRepository.save(study);
+        // 게시물의 텍스트 필드 저장
+        Posts savedPosts = postsRepository.save(study);
+
+        // 현재 게시물에 연관된 게시물 이미지 파일 엔티티를 찾아옴
+        List<PostsFiles> existingImageFiles = postsFilesRepository.findByPostsAndIsImageTrue(savedPosts);
+        // 현재 게시물에 연관된 게시물 첨부파일 엔티티를 찾아옴
+        List<PostsFiles> existingOtherFiles = postsFilesRepository.findByPostsAndIsImageFalse(savedPosts);
+
+        // 현재 게시물에 연관된 게시물 이미지를 db에서 지움
+        postsFilesRepository.deleteAll(existingImageFiles);
+        // 현재 게시물에 연관된 게시물 첨부파일을 db에서 지움
+        postsFilesRepository.deleteAll(existingOtherFiles);
+
+        // 새로 바뀐 기존의 이미지들을 세팅해서 db에 다시 저장하는 로직
+        List<String> promoteImageUrl = postsUpdateRequestFormDto.getPromoteImageUrl();
+        List<PostsFiles> updateImageFiles = new ArrayList<>();
+
+        if(postsUpdateRequestFormDto.getPromoteImageUrl()!=null && !postsUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            for(String imageUrl: promoteImageUrl)
+            {
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(imageUrl) // 이미지 파일의 UUID
+                        .build();
+
+                updateImageFiles.add(postsFiles);
+
+            }
+
+            postsFilesRepository.saveAll(updateImageFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 사진을 구하고, 지우기
+        // existingImageFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // postsUpdateRequestFormDto.getPromoteImageUrl()가 비어있지 않으면, 지워질 이미지를 구한 후 클라우드에서 삭제,
+        // postsUpdateRequestFormDto.getPromoteImageUrl()가 비어있으면 구해놓은 existingImageFiles에 해당하는 이미지을 클라우드에서 삭제하면 된다
+        if(postsUpdateRequestFormDto.getPromoteImageUrl()!=null && !postsUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            // existingImageFiles에 존재하는 PostFiles의 fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingImageFileUrls 중에,  postsUpdateRequestFormDto.getPromoteImageUrl에 없는 url을 모아서 리스트로 만듦 -> 삭제 대상이 되는 url값
+            List<String> imageUrlsToDelete = existingImageFileUrls.stream()
+                    .filter(existingImageFileUrl -> !postsUpdateRequestFormDto.getPromoteImageUrl().contains(existingImageFileUrl))
+                    .collect(Collectors.toList());
+
+            // 삭제 대상이 되는 url을 클라우드에서 삭제 진행(이미지)
+            for (String fileUrl : imageUrlsToDelete) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+        }
+        else { // postsUpdateRequestFormDto.getPromoteImageUrl가 null이라면 existingImageFileUrls에 있는 모든 url에 해당하는 이미지 파일을 클라우드에서 삭제해야함
+
+            List<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String fileUrl : existingImageFileUrls) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+
+        }
+
+
+
+        // 새로 추가된 사진 구글 클라우드에 저장하고, post_file 레포지토리에 추가.
+        // 즉, 클라이언트가 기존에 없던 이미지를 새로 추가해서 올렸다면, 이 사진들은 db와 클라우드에 모두 저장되어야함
+        if(postsUpdateRequestFormDto.getNewPromoteImageUrl() != null && !postsUpdateRequestFormDto.getNewPromoteImageUrl().isEmpty())
+        {
+            List<PostsFiles> newImageFiles = new ArrayList<>(); // 이미지를 저장할 리스트
+
+            for (MultipartFile image : postsUpdateRequestFormDto.getNewPromoteImageUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = image.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        image.getInputStream()
+                );
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(uuid) // 이미지 파일의 UUID
+                        .build();
+
+                newImageFiles.add(postsFiles);
+            }
+
+            // 이미지 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(newImageFiles);
+        }
+
+        // 새로 바뀐 기존의 첨부파일들을 세팅해서 db에 다시 저장하는 로직
+        List<FileUrlNameMapperDto> fileUrl = postsUpdateRequestFormDto.getFileUrl();
+        List<PostsFiles> updateOtherFiles = new ArrayList<>();
+
+        if(postsUpdateRequestFormDto.getFileUrl()!=null && !postsUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            for(FileUrlNameMapperDto fileUrlAndName: fileUrl)
+            {
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(fileUrlAndName.getFileUrl()) // 첨부 파일의 UUID
+                        .fileName(fileUrlAndName.getFileName()) // 첨부 파일의 원본 이름
+                        .build();
+
+                updateOtherFiles.add(postsFiles);
+
+            }
+
+            postsFilesRepository.saveAll(updateOtherFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 첨부파일을 구하고, 지우기
+        // existingOtherFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // postsUpdateRequestFormDto.getFileUrl()가 비어있지 않으면, 지워질 첨부파일을 구한 후 클라우드에서 삭제,
+        // postsUpdateRequestFormDto.getFileUrl()가 비어있으면 구해놓은 existingOtherFiles 해당하는 첨부파일을 클라우드에서 삭제하면 된다
+        if(postsUpdateRequestFormDto.getFileUrl()!=null && !postsUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            // existingOtherFiles 존재하는 PostFiles의 fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingOtherFileUrls 중에, postsUpdateRequestFormDto.getFileUrl안에 있는 FileUrlNameMapperDto의 fileUrl들의 집합에 포함되지 않는 url을 모아서 리스트로 만듦
+            // -> 삭제 대상이 되는 url값
+            List<String> otherFileUrlsToDelete = existingOtherFileUrls.stream()
+                    .filter(existingFileUrl -> postsUpdateRequestFormDto.getFileUrl().stream()
+                            .noneMatch(requestedFileUrl -> requestedFileUrl.getFileUrl().equals(existingFileUrl)))
+                    .collect(Collectors.toList());
+
+            // 클라우드에서 otherFileUrlsToDelete과 관련된 첨부파일 삭제
+            for (String otherFileUrl : otherFileUrlsToDelete) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+        }
+        else // postsUpdateRequestFormDto.getFileUrl null이라면 existingOtherFiles 있는 모든 url에 해당하는 첨부 파일을 클라우드에서 삭제해야함
+        {
+            List<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String otherFileUrl : existingOtherFileUrls) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+
+
+        }
+
+
+
+        // 새로 추가된 첨부파일 구글 클라우드에 저장하고, post_file 레포지토리에 추가
+        // 즉, 클라이언트가 기존에 없던 첨부파일을 새로 추가해서 올렸다면, 이 첨부파일들은 db와 클라우드에 모두 저장되어야함
+        if(postsUpdateRequestFormDto.getNewFileUrl() != null && !postsUpdateRequestFormDto.getNewFileUrl().isEmpty())
+        {
+            List<PostsFiles> newOtherFiles = new ArrayList<>(); // 첨부파일을 저장할 리스트
+
+            for (MultipartFile file : postsUpdateRequestFormDto.getNewFileUrl()) {
+                // 각 첨부파일을 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = file.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        file.getInputStream()
+                );
+
+
+                // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+                PostsFiles postsFiles = PostsFiles.builder()
+                        .posts(savedPosts) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(uuid) // 첨부 파일의 UUID
+                        .fileName(file.getOriginalFilename())
+                        .build();
+
+                newOtherFiles.add(postsFiles);
+            }
+
+            // 이미지 리스트를 한번에 posts_files 테이블에 저장
+            postsFilesRepository.saveAll(newOtherFiles);
+        }
+
+
     }
 
 
@@ -846,16 +1483,116 @@ public class PostsService {
         Posts posts = postsRepository.findById(projectId)
                 .orElseThrow(() -> new AppException("Project not found", HttpStatus.NOT_FOUND));
 
-        // 프로젝트 게시물과 연관된 카테고리 찾기
-        Category category = posts.getCategory();
+        // confirm 값이 true인 UserApplyPosts가 있는지 확인
+        // confirm 값이 true인 UserApplyPosts 엔티티만 선택하여 컬렉트
+        List<UserApplyPosts> confirmedUserApplyPosts = posts.getUserApplyPosts().stream()
+                .filter(userApplyPosts -> userApplyPosts.getConfirm())
+                .collect(Collectors.toList());
 
-        if (category != null) { // 카테고리 먼저 지워야
-            // Delete the category
-            categoryRepository.delete(category);
+        // 수집된 리스트(confirmedUserApplyPosts)에는 confirm 값이 true인 UserApplyPosts 엔티티만 포함
+        if (confirmedUserApplyPosts.isEmpty()) {    // confirmedUserApplyPosts가 비었다는 것은, 모두 false라는 것.
+
+            // 게시물 삭제 시, 게시물 지원자에게 알림.
+            String findWriterNickname = posts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = posts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            notificationMessage = new NotificationMessageDto("project/detail/" + posts.getId() + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다.";
+
+            // 게시물 삭제를 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+
+            // posts.getUserApplyPosts()에서 User 목록을 추출
+            List<User> users = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (User user : users) {
+                // 실제 jpa를 통해 notification을 만들어 저장한다.
+                Notifications deleteNotification = Notifications.builder()
+                        .user(user)
+                        .postId(posts.getId())
+                        .notificationMessage(notifyMessage)
+                        .postType(posts.getPostType())
+                        .checked(false)
+                        .build();
+
+                Notifications savedNotification = notificationsRepository.save(deleteNotification);
+
+                // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+                notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+            }
+
+            // 게시물에 지원했던 모든 유저에게 notify 발송
+
+            // posts.getUserApplyPosts()에서 User ID 목록을 추출
+            List<Long> userIds = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser().getId())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (Long userId : userIds) {
+                notificationService.notify(userId, notificationMessage);
+            }
+
+
+
+            // 카테고리 삭제
+            Category category = posts.getCategory();
+
+            if (category != null) {
+                categoryRepository.delete(category);
+            }
+
+            // userApplyPosts 삭제
+            userApplyPostsRepository.deleteAll(posts.getUserApplyPosts());
+
+            // viewCountPosts 삭제
+            viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
+
+            // scarapPosts 삭제
+            scrapPostsRepository.deleteAll(posts.getScrapPosts());
+
+            // 댓글 삭제
+            commentsRepository.deleteAll(posts.getComments());
+
+            // postFiles의 파일들 전부 삭제
+            List<PostsFiles> findImages = postsFilesRepository.findByPosts(posts);
+
+            // 삭제 대상 파일 URL 리스트
+            List<String> fileUrlsToDelete = findImages.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            // 구글 클라우드에서 게시물의 파일들 삭제
+            for (String fileUrl : fileUrlsToDelete) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+            // db에서 관련 이미지 uuid값들 삭제
+            postsFilesRepository.deleteAll(findImages);
+
+
+            // Posts 엔티티 삭제
+            postsRepository.delete(posts);
+        } else {
+            // 확인되지 않은 UserApplyPosts가 있으면 삭제를 허용하지 않습니다.
+            // 예외를 throw하거나 메시지를 반환하거나 필요한 대로 처리할 수 있습니다.
+            throw new AppException("삭제할 수 없습니다. 확인되지 않은 UserApplyPosts가 있습니다.", HttpStatus.BAD_REQUEST);
         }
-
-        // 프로젝트도 삭제 가능
-        postsRepository.delete(posts);
     }
 
     // 스터디 삭제
@@ -865,16 +1602,115 @@ public class PostsService {
         Posts posts = postsRepository.findById(studyId)
                 .orElseThrow(() -> new AppException("Study not found", HttpStatus.NOT_FOUND));
 
-        // 스터디 게시물과 연관된 카테고리 찾기
-        Category category = posts.getCategory();
+        // confirm 값이 true인 UserApplyPosts가 있는지 확인
+        // confirm 값이 true인 UserApplyPosts 엔티티만 선택하여 컬렉트
+        List<UserApplyPosts> confirmedUserApplyPosts = posts.getUserApplyPosts().stream()
+                .filter(userApplyPosts -> userApplyPosts.getConfirm())
+                .collect(Collectors.toList());
 
-        // 카테고리 먼저 지워야
-        if (category != null) { // 카테고리 먼저 지워야
-            // Delete the category
-            categoryRepository.delete(category);
+        // 수집된 리스트(confirmedUserApplyPosts)에는 confirm 값이 true인 UserApplyPosts 엔티티만 포함
+        if (confirmedUserApplyPosts.isEmpty()) {    // confirmedUserApplyPosts가 비었다는 것은, 모두 false라는 것.
+
+            // 게시물 삭제 시, 게시물 지원자에게 알림.
+            String findWriterNickname = posts.getUser().getNickName(); // 게시물 작성자 닉네임
+            String findPostTitle = posts.getTitle(); // 게시물 제목
+
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+
+            notificationMessage = new NotificationMessageDto("study/detail/" + posts.getId() + ": \"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+            notifyMessage = "\"" + findWriterNickname + "\"님이 작성한 프로젝트 게시물 : \"" + findPostTitle + "\"이 삭제되었습니다.";
+
+            // 게시물 삭제를 하면, 게시물 지원자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+
+            // posts.getUserApplyPosts()에서 User 목록을 추출
+            List<User> users = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (User user : users) {
+                // 실제 jpa를 통해 notification을 만들어 저장한다.
+                Notifications deleteNotification = Notifications.builder()
+                        .user(user)
+                        .postId(posts.getId())
+                        .notificationMessage(notifyMessage)
+                        .postType(posts.getPostType())
+                        .checked(false)
+                        .build();
+
+                Notifications savedNotification = notificationsRepository.save(deleteNotification);
+
+                // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+                notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+            }
+
+            // 게시물에 지원했던 모든 유저에게 notify 발송
+
+            // posts.getUserApplyPosts()에서 User ID 목록을 추출
+            List<Long> userIds = posts.getUserApplyPosts().stream()
+                    .map(userApplyPosts -> userApplyPosts.getUser().getId())
+                    .collect(Collectors.toList());
+
+            // userIds를 이용하여 알림을 보내기
+            for (Long userId : userIds) {
+                notificationService.notify(userId, notificationMessage);
+            }
+
+
+
+            // 카테고리 삭제
+            Category category = posts.getCategory();
+
+            if (category != null) {
+                categoryRepository.delete(category);
+            }
+
+            // userApplyPosts 삭제
+            userApplyPostsRepository.deleteAll(posts.getUserApplyPosts());
+
+            // viewCountPosts 삭제
+            viewCountPostsRepository.deleteAll(posts.getViewCountPosts());
+
+            // scarapPosts 삭제
+            scrapPostsRepository.deleteAll(posts.getScrapPosts());
+
+            // 댓글 삭제
+            commentsRepository.deleteAll(posts.getComments());
+
+            // postFiles의 파일들 전부 삭제
+            List<PostsFiles> findImages = postsFilesRepository.findByPosts(posts);
+
+            // 삭제 대상 파일 URL 리스트
+            List<String> fileUrlsToDelete = findImages.stream()
+                    .map(PostsFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            // 구글 클라우드에서 게시물의 파일들 삭제
+            for (String fileUrl : fileUrlsToDelete) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+            // db에서 관련 이미지 uuid값들 삭제
+            postsFilesRepository.deleteAll(findImages);
+
+            // Posts 엔티티 삭제
+            postsRepository.delete(posts);
+        } else {
+            // 확인되지 않은 UserApplyPosts가 있으면 삭제를 허용하지 않습니다.
+            // 예외를 throw하거나 메시지를 반환하거나 필요한 대로 처리할 수 있습니다.
+            throw new AppException("삭제할 수 없습니다. 확인되지 않은 UserApplyPosts가 있습니다.", HttpStatus.BAD_REQUEST);
         }
-        // 스터디도 삭제 가능
-        postsRepository.delete(posts);
     }
 
 
@@ -1528,61 +2364,76 @@ public class PostsService {
         Posts findPosts = postsRepository.findById(postsId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        // 해당 유저가 이 게시물에 스크랩 했는지의 여부를 알기 위해 사용
-        Optional<ScrapPosts> scrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
+        Optional<UserApplyPosts> byUserIdAndPostsId = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
-        // UserApplyPosts 테이블에 들어갈 내용 채우기
-        UserApplyPosts userApplyPosts = UserApplyPosts.builder()
-                .user(findUser)
-                .posts(findPosts)
-                .confirm(false)     // 초기에는 승인되지 않았으므로, false
-                .build();
+        // 지원할 때, 지원 버튼을 클릭해서 알림이 갔는데, 지원자의 UI가 바뀌지 않아 지원 취소 버튼이 아닌, 지원 버튼이 그대로 남아있어서 한 번 더 지원할 때 발생하는 오류를 막기 위한 코드
 
-        UserApplyPosts savedUserApplyPosts = userApplyPostsRepository.save(userApplyPosts);
+        // 지원한 적이 있는지 여부를 찾고, 지원한 적이 없다면 지원 DB에 저장 + 알림 발송
+        if (byUserIdAndPostsId.isEmpty()) {
+            // UserApplyPosts 테이블에 들어갈 내용 채우기
+            UserApplyPosts userApplyPosts = UserApplyPosts.builder()
+                    .user(findUser)
+                    .posts(findPosts)
+                    .confirm(false)     // 초기에는 승인되지 않았으므로, false
+                    .build();
 
-        System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 새로운 지원자가 있습니다.\"); ======");
-        System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
+            UserApplyPosts savedUserApplyPosts = userApplyPostsRepository.save(userApplyPosts);
 
-        String findUserNickname= findUser.getNickName(); // 지원자 닉네임
-        String findPostsTitle = findPosts.getTitle(); // 게시물 제목
-        User findPostUser = findPosts.getUser(); // 게시물 작성자
 
-        NotificationMessageDto notificationMessage;
-        String notifyMessage;
 
-        if (PostType.PROJECT.equals(findPosts.getPostType())) {
-            // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
-            // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+            String findUserNickname= findUser.getNickName(); // 지원자 닉네임
+            String findPostsTitle = findPosts.getTitle(); // 게시물 제목
+            User findPostUser = findPosts.getUser(); // 게시물 작성자
 
-            // notificationMessage : 실시간 알림 카드에 들어갈 내용
-            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
-            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
+                // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+
+                // notificationMessage : 실시간 알림 카드에 들어갈 내용
+                // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+                notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
+            }
+
+
+            // 지원을 하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+            // 실제 jpa를 통해 notification을 만들어 저장한다.
+            Notifications applyNotification = Notifications.builder()
+                    .user(findPostUser)
+                    .postId(postsId)
+                    .notificationMessage(notifyMessage)
+                    .postType(findPosts.getPostType())
+                    .checked(false)
+                    .build();
+
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 실시간 알림 전송
         }
-        else  {
-            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원하셨습니다.";
-        }
 
+        // 지원한 적이 있다면, 지원 DB에 저장하면 안됨
 
-        // 지원을 하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
-        // 실제 jpa를 통해 notification을 만들어 저장한다.
-        Notifications applyNotification = Notifications.builder()
-                .user(findPostUser)
-                .postId(postsId)
-                .notificationMessage(notifyMessage)
-                .postType(findPosts.getPostType())
-                .checked(false)
-                .build();
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
 
-        Notifications savedNotification = notificationsRepository.save(applyNotification);
-
-        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
-        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
-
-        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 실시간 알림 전송
-        System.out.println("==========================================================");
-
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
 
 
         PostsDto postsDto;
@@ -1599,6 +2450,9 @@ public class PostsService {
             applyCount = 1;
         }
 
+        // 해당 유저가 이 게시물에 스크랩 했는지의 여부를 알기 위해 사용
+        Optional<ScrapPosts> scrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
+
         // 해당 게시물을 스크랩했다면
         if (scrapPosts.isPresent()) {
             postsDto = PostsDto.builder()
@@ -1613,8 +2467,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
-                    .fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -1635,8 +2489,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
-                    .fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -1971,72 +2825,75 @@ public class PostsService {
         User findUser = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        // 유저 ID와 project ID로 지원한 게시물 찾기
-        UserApplyPosts findUserApplyPosts = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
-                .orElseThrow(() -> new AppException("지원한 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
-
         // 프로젝트 ID로 해당 프로젝트 찾기
         Posts findPosts = postsRepository.findById(postsId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
+        // 유저 ID와 project ID로 지원한 게시물 찾기
+        Optional<UserApplyPosts> byUserIdAndPostsId = userApplyPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
+
         // 해당 유저가 이 게시물에 스크랩 했는지의 여부를 알기 위해 사용
         Optional<ScrapPosts> scrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
-        // 승인한 사람이 지원 취소를 했다면, 인원 -= 1을 해야 함.
-//        if ("approved".equals(action)) {
-//            // 현재 counts 값이 2 이상일 때, counts -= 1을 진행함.
-//            // 게시물에 최소 1명(본인)은 지원했으므로, counts의 최소 값은 1이고, 2 이상일 때 1을 빼줄 수 있다.
-//            findPosts.cancel();
-//            postsRepository.save(findPosts);    // 1 뺀 값을 디비에 저장해주기.
-//        }
 
-        // 지원한 게시물 삭제
-        userApplyPostsRepository.delete(findUserApplyPosts);
+        // 알 수 없는 버그로 인해 유저가 게시물에 지원한 적이 없는데, 지원 취소 버튼이 뜬다면, 아무 것도 실행되어서는 안됨.
+        // 해당 유저가 해당 게시물에 지원한 적이 있어야 지원 DB에서 삭제 로직 진행 + 게시물 작성자에게 알림
+        if (byUserIdAndPostsId.isPresent()) {
+            // 지원한 게시물 삭제
+            userApplyPostsRepository.delete(byUserIdAndPostsId.get());
 
+            // 게시물 지원 취소 시, 게시물 작성자에게 알림.
 
-        // 게시물 지원 취소 시, 게시물 작성자에게 알림.
-        System.out.println("====== notificationService.notify(findPosts.getUser().getNickName(), \"게시물에 지원을 취소한 사용자가 있습니다.\"); ======");
-        System.out.println("findPosts.getUser().getId() = " + findPosts.getUser().getId());
+            String findUserNickname= findUser.getNickName(); // 지원 취소를 하고자 하는 사람 닉네임
+            String findPostsTitle = findPosts.getTitle(); // 지원 취소를 할 게시물 제목
+            User findPostUser = findPosts.getUser(); // 게시물 작성자
 
-        String findUserNickname= findUser.getNickName(); // 지원 취소를 하고자 하는 사람 닉네임
-        String findPostsTitle = findPosts.getTitle(); // 지원 취소를 할 게시물 제목
-        User findPostUser = findPosts.getUser(); // 게시물 작성자
+            NotificationMessageDto notificationMessage;
+            String notifyMessage;
 
-        NotificationMessageDto notificationMessage;
-        String notifyMessage;
+            // notificationMessage : 실시간 알림 카드에 들어갈 내용
+            // notifyMessage : Notification 배너 안에 들어갈 카드 내용
 
-        // notificationMessage : 실시간 알림 카드에 들어갈 내용
-        // notifyMessage : Notification 배너 안에 들어갈 카드 내용
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+                // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
+                // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
+                notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+            }
+            else  {
+                notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+            }
 
-        if (PostType.PROJECT.equals(findPosts.getPostType())) {
-            // notificationMessage에 들어갈 내용을 그냥 String으로 적으면, 한글은 알아듣지 못해 ???로 나온다.
-            // 이를 해결하기 위해 NotificationMessageDto를 만들고, 이 안에 값을 생성하여 반환하도록 함으로써, JSON으로 반환하여 한글을 인식하도록 한다.
-            notificationMessage = new NotificationMessageDto("project/detail/" + postsId + ": 프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "프로젝트 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
+            // 지원을 취소하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
+            // 실제 jpa를 통해 notification을 만들어 저장한다.
+            Notifications applyNotification = Notifications.builder()
+                    .user(findPostUser)
+                    .postId(postsId)
+                    .notificationMessage(notifyMessage)
+                    .postType(findPosts.getPostType())
+                    .checked(false)
+                    .build();
+
+            Notifications savedNotification = notificationsRepository.save(applyNotification);
+
+            // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
+            notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
+
+            notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
         }
-        else  {
-            notificationMessage = new NotificationMessageDto("study/detail/" + postsId + ": 스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다."); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
-            notifyMessage = "스터디 게시물 : \"" + findPostsTitle + "\"에 \"" + findUserNickname + "\"님이 지원을 취소하셨습니다.";
-        }
 
-        // 지원을 취소하면, 게시물 작성자의 알림 배너 안에 해당 알림 내용이 들어있어야함
-        // 실제 jpa를 통해 notification을 만들어 저장한다.
-        Notifications applyNotification = Notifications.builder()
-                .user(findPostUser)
-                .postId(postsId)
-                .notificationMessage(notifyMessage)
-                .postType(findPosts.getPostType())
-                .checked(false)
-                .build();
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
 
-        Notifications savedNotification = notificationsRepository.save(applyNotification);
-
-        // 기존의 Data에 넣을 메시지에, notification id를 추가해서 보냄
-        notificationMessage.setMessage(notificationMessage.getMessage() + savedNotification.getId().toString());
-
-        notificationService.notify(findPosts.getUser().getId(), notificationMessage); // 게시물 작성자에게 지원 취소 실시간 알림 보냄
-        System.out.println("==========================================================");
-
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
 
         PostsDto postsDto;
 
@@ -2068,8 +2925,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
-                    .fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -2090,15 +2947,14 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
-                    .fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .build();
         }
-
 
         return postsDto;
     }
@@ -2399,6 +3255,18 @@ public class PostsService {
             }
         }
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
+
         PostsDto postsDto;
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
@@ -2427,8 +3295,8 @@ public class PostsService {
                     .game(savedScrapPosts.getPosts().getCategory().getGame())
                     .ai(savedScrapPosts.getPosts().getCategory().getAi())
                     .content(savedScrapPosts.getPosts().getContent())
-                    .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
-                    .fileUrl(savedScrapPosts.getPosts().getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(savedScrapPosts.getPosts().getCounts())
                     .counts(applyCount)
                     .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
@@ -2451,8 +3319,8 @@ public class PostsService {
                         .game(savedScrapPosts.getPosts().getCategory().getGame())
                         .ai(savedScrapPosts.getPosts().getCategory().getAi())
                         .content(savedScrapPosts.getPosts().getContent())
-                        .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
-                        .fileUrl(savedScrapPosts.getPosts().getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(savedScrapPosts.getPosts().getCounts())
                         .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
@@ -2473,8 +3341,8 @@ public class PostsService {
                         .game(savedScrapPosts.getPosts().getCategory().getGame())
                         .ai(savedScrapPosts.getPosts().getCategory().getAi())
                         .content(savedScrapPosts.getPosts().getContent())
-                        .promoteImageUrl(savedScrapPosts.getPosts().getPromoteImageUrl())
-                        .fileUrl(savedScrapPosts.getPosts().getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(savedScrapPosts.getPosts().getCounts())
                         .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
@@ -2515,6 +3383,18 @@ public class PostsService {
             }
         }
 
+        // postsFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+        List<String> imageUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> postsFile.isImage()) // isImage가 true인 경우만 선택
+                .map(PostsFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // postsFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+        List<FileUrlNameMapperDto> fileUrls = findPosts.getPostsFiles().stream()
+                .filter(postsFile -> !postsFile.isImage()) // isImage가 false인 경우만 선택
+                .map(postsFile -> new FileUrlNameMapperDto(postsFile.getFileUrl(), postsFile.getFileName()))
+                .collect(Collectors.toList());
+
         PostsDto postsDto;
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
@@ -2544,8 +3424,8 @@ public class PostsService {
                     .game(findPosts.getCategory().getGame())
                     .ai(findPosts.getCategory().getAi())
                     .content(findPosts.getContent())
-                    .promoteImageUrl(findPosts.getPromoteImageUrl())
-                    .fileUrl(findPosts.getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     //.counts(findPosts.getCounts())
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
@@ -2568,8 +3448,8 @@ public class PostsService {
                         .game(findPosts.getCategory().getGame())
                         .ai(findPosts.getCategory().getAi())
                         .content(findPosts.getContent())
-                        .promoteImageUrl(findPosts.getPromoteImageUrl())
-                        .fileUrl(findPosts.getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(findPosts.getCounts())
                         .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())
@@ -2590,8 +3470,8 @@ public class PostsService {
                         .game(findPosts.getCategory().getGame())
                         .ai(findPosts.getCategory().getAi())
                         .content(findPosts.getContent())
-                        .promoteImageUrl(findPosts.getPromoteImageUrl())
-                        .fileUrl(findPosts.getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         //.counts(findPosts.getCounts())
                         .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())

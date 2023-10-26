@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +24,7 @@ public class PostsUpdateFormDto {
     private Integer recruitmentCount;
     private LocalDate endDate;
     private String content;
-    private String promoteImageUrl;
-    private String fileUrl;
+    private List<String> promoteImageUrl;
+    private List<FileUrlNameMapperDto> fileUrl;
+
 }

@@ -1,12 +1,12 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Layout, Button, Drawer, Card, message, Modal } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { setAuthHeader, setUserRole } from '../../../hoc/request';
 import { useSelector, useDispatch } from 'react-redux';
 import { request } from '../../../hoc/request';
 import { logout } from '../../../_actions/actions'
-import { lastVisitedEndpoint } from '../../../_actions/actions';
-import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
+//import { lastVisitedEndpoint } from '../../../_actions/actions';
+//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import CustomDropdown from './Sections/CustomDropdown';
 import { CloseOutlined } from '@ant-design/icons';
 //import Notifications from '../../utils/Notifications';
@@ -21,12 +21,29 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
     const currentEndpoint = location.pathname;
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
-    const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
+    //const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [open, setOpen] = useState(false);
     const [notificationData, setNotificationData] = useState([]);
     const [deleteReadModalVisible, setDeleteReadModalVisible] = useState(false);    // 읽은 알림 삭제 관련 모달
     const [deleteAllModalVisible, setDeleteAllModalVisible] = useState(false);      // 모든 알림 삭제 관련 모달
+    //const [notReadCount, setNotReadCount] = useState(0);        // 읽지 않은 알림 개수
+
+    // useEffect(() => {
+    //     getNotReadCount();  // 읽지 않은 알림 수 가져오기
+    // }, []);
+
+    // // 읽지 않은 알림 수 가져오기
+    // const getNotReadCount = () => {
+    //     request('GET', 'sse/getNotReadCount', {})
+    //         .then((response) => {
+    //             setNotReadCount(response.data);     // async await하면 데이터를 못가져오더라
+    //             console.log('알림', response.data);
+    //         })
+    //         .catch((error) => {
+    //             console.log("Error fetching data:", error);
+    //         })
+    // }
 
     // Notification 배너가 열리면 해당 회원의 모든 알림을 가져와서 렌더링
     const showDrawer = () => {
@@ -84,6 +101,9 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                 message.error('알림 삭제에 실패했습니다.');
             });
 
+        // // 읽지 않은 알림 수 가져오기
+        // getNotReadCount();
+
         hideDeleteReadModal();
     };
       
@@ -109,6 +129,9 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                 message.error('알림 삭제에 실패했습니다.');
             });
 
+        // // 읽지 않은 알림 수 가져오기
+        // getNotReadCount();
+        
         hideDeleteAllModal();
     };
 
@@ -132,10 +155,10 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
 
     const handleLogoClick = () => { //로고 클릭하면 홈 화면으로 다시 라우팅
         console.log("go home by site logo");
-        dispatch(lastVisitedEndpoint('/', '/', '/'));
-        setLastVisitedEndpoint('/');
-        setLastLastVisitedEndpoint('/');
-        setLastLastLastVisitedEndpoint('/');
+        // dispatch(lastVisitedEndpoint('/', '/', '/'));
+        // setLastVisitedEndpoint('/');
+        // setLastLastVisitedEndpoint('/');
+        // setLastLastLastVisitedEndpoint('/');
        
         navigate('/');
     };
@@ -184,17 +207,17 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
         
         // 디테일 페이지에서 알림 클릭 시, 목록으로 안돌아가지는 문제 해결을 위한 애.
         if (!currentEndpoint.startsWith("/project/detail/") && !currentEndpoint.startsWith("/study/detail/")) {
-            dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 
-            setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-            setLastLastVisitedEndpoint(currentEndpoint);
-            setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+            // dispatch(lastVisitedEndpoint(currentEndpoint, currentEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 
+            // setLastVisitedEndpoint(currentEndpoint);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+            // setLastLastVisitedEndpoint(currentEndpoint);
+            // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
         }
 
         
         const lowerType = postType.toLowerCase(); // 백엔드에서 받은 postType은 PROJECT , STUDY와 같은 형식이므로 navigate를 위해선 소문자로 바꿔줄 필요가 있음
 
         if (currentEndpoint === `/${lowerType}/detail/${postId}`) {
-            message.warning('이동하려는 페이지가 현재 보고있는 페이지입니다. 새로 고침을 눌러주세요.');
+            message.warning('이동하려는 페이지가 현재 보고있는 페이지입니다.');
         }
 
         navigate(`${lowerType}/detail/${postId}`); // 알림에 해당하는 게시물로 navigate 걸어줌
@@ -247,7 +270,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                         {isAuthenticated ? (
                             <div>
                                 <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }} onClick={showDrawer}>
-                                    Notification
+                                    Notification {/*notReadCount.notReadCount === 0 ? "" : "(" + notReadCount.notReadCount + ")"*/}
                                 </Button>
                                 <Drawer title={<CustomTitle />} width={520} closable={false} onClose={onClose} open={open}>
                                     <div>
@@ -307,20 +330,20 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                                 <Modal
                                     title="읽은 알림 삭제"
                                     open={deleteReadModalVisible}
-                                    onOk={hideDeleteReadModal}
-                                    onCancel={confirmDeleteRead}
-                                    okText="아니오"
-                                    cancelText="예"
+                                    onOk={confirmDeleteRead}
+                                    onCancel={hideDeleteReadModal}
+                                    okText="예"
+                                    cancelText="아니오"
                                 >
                                     읽은 알림을 모두 삭제하시겠습니까?
                                 </Modal>
                                 <Modal
                                     title="전체 알림 삭제"
                                     open={deleteAllModalVisible}
-                                    onOk={hideDeleteAllModal}
-                                    onCancel={confirmDeleteAll}
-                                    okText="아니오"
-                                    cancelText="예"
+                                    onOk={confirmDeleteAll}
+                                    onCancel={hideDeleteAllModal}
+                                    okText="예"
+                                    cancelText="아니오"
                                 >
                                     전체 알림을 모두 삭제하시겠습니까?
                                 </Modal>

@@ -68,7 +68,6 @@ function UploadPortfolioPage() {
 
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
         submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, fileUrl);
-        navigate('/portfolio');
     };
 
 
@@ -90,6 +89,7 @@ function UploadPortfolioPage() {
                 dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess을 디스패치
                 setHasPortfolio(response.data.isCreated);   // 포트폴리오 생성 상태를 로컬 스토리지에 세팅
                 alert('포트폴리오가 성공적으로 생성되었습니다.');
+                navigate('/portfolio');
             })
             .catch((error) => {
                 alert('포트폴리오 생성에 실패하였습니다.');

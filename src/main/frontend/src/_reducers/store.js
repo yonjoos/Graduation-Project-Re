@@ -117,27 +117,27 @@ const authReducer = (state = initialState, action) => {
 
 
 
-// 엔드포인트는 맨 처음 null로 세팅됨.
-const initialEndpointState = {
-    lastVisitedEndpoint: null,
-    lastLastVisitedEndpoint: null,
-    lastLastLastVisitedEndpoint: null
-};
+// // 엔드포인트는 맨 처음 null로 세팅됨.
+// const initialEndpointState = {
+//     lastVisitedEndpoint: null,
+//     lastLastVisitedEndpoint: null,
+//     lastLastLastVisitedEndpoint: null
+// };
 
-const endpointReducer = (state = initialEndpointState, action) => {
-    switch (action.type) {
-        // 엔드포인트 세팅하는 케이스 만들기
-        // 입력되는 엔드포인트를 저장하기
-        case 'SET_LAST_VISITED_ENDPOINT':
-            return {
-                lastVisitedEndpoint: action.payload.endpoint,
-                lastLastVisitedEndpoint: action.payload.endEndPoint,
-                lastLastLastVisitedEndpoint: action.payload.endEndEndPoint
-            };
-        default:
-            return state;
-    }
-};
+// const endpointReducer = (state = initialEndpointState, action) => {
+//     switch (action.type) {
+//         // 엔드포인트 세팅하는 케이스 만들기
+//         // 입력되는 엔드포인트를 저장하기
+//         case 'SET_LAST_VISITED_ENDPOINT':
+//             return {
+//                 lastVisitedEndpoint: action.payload.endpoint,
+//                 lastLastVisitedEndpoint: action.payload.endEndPoint,
+//                 lastLastLastVisitedEndpoint: action.payload.endEndEndPoint
+//             };
+//         default:
+//             return state;
+//     }
+// };
 
 // 3. 스토어 (store):
 
@@ -148,8 +148,8 @@ const endpointReducer = (state = initialEndpointState, action) => {
 
 // Combine both reducers into a single rootReducer
 const rootReducer = combineReducers({
-    auth: authReducer, // authReducer manages authentication-related state
-    endpoint: endpointReducer // endpointReducer manages endpoint-related state
+    auth: authReducer // authReducer manages authentication-related state
+    //endpoint: endpointReducer // endpointReducer manages endpoint-related state
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

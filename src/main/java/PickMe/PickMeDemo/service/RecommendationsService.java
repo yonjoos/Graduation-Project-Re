@@ -42,60 +42,62 @@ public class RecommendationsService {
 
     // 날아가는 쿼리 수가 상당할지도??
 
+
     @Transactional(readOnly = true)
     public List<PortfolioCardDto> getRecommend(String email){
 
+        /*
+        >> STEP 1 : 로그인한 유저(나) 찾기 <<<
+         */
+
         User user = userRepository.findByEmail(email).get();
-        System.out.println("getRecommend A ##############################################");
-        System.out.println("getRecommend A ##############################################");
-        System.out.println("getRecommend A ##############################################");
-        System.out.println("THE USER : " + user.getNickName());
 
-        //유저의 관심사 벡터
+        //유저의 관심사 벡터, 'usersIneterest'
         Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
-        System.out.println("getRecommend A - 1 ##############################################");
-        System.out.println("THE USER's interest : " + usersInterest[0] + usersInterest[1] + usersInterest[2] + usersInterest[3]);
 
 
-        //이 기간 안에 있는 : [현재로부터 200일 전, 현재]
+        /*
+        >>> STEP 2 : 다른 유저 추출 <<<
+         */
+
+        //이 기간 안에 있는 : [startDate, currentTime]
         LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime startDate = currentTime.minusDays(200);
+        LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
+
 
         //유저들의
         List<User> usersInDuration = findUsersByLastAccessDate(user, startDate, currentTime);
-        System.out.println("getRecommend A - 2 ##############################################");
-        System.out.println("THE USERs : " );
-        for(User u : usersInDuration){
-            System.out.println("USER's  name : " + u.getNickName());
-        }
 
-
-        //포트폴리오를 찾아서
+        //포트폴리오를 찾아서 Id랑 pair 해줌
         List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
-        System.out.println("getRecommend A - 3 ##############################################");
-        for(Pair<Long, Portfolio> p : pairedIdPortfolio){
-            System.out.println("THE USERs portfolio: "+ p.getSecond().getShortIntroduce() );
-            System.out.println();
-        }
 
 
-        System.out.println("getRecommend A - 4 ##############################################");
+
+        /*
+        >>> STEP 3 : 유사도 순위 매기기 <<<
+         */
+
+        //순위 매기기 - step 3.1 : 유사도 정렬하기
         List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration);
-        for(Pair<Long, Double> p : pairedIdInterests){
-            System.out.println("User's Id, sim : " + p.getFirst() + ", " + p.getSecond() );
-        }
 
+
+        //앞에 3명만 뽑는 기능은 일단 패쓰
         //List<Pair<Long, Double>> firstThreeElements = pairedIdInterests.subList(0, 3);
 
+
+        //순위 매기기 - step 3.2 : 정렬된 유사도에 맞춰 Portfolio 정렬
+        // Pair A : Pair<id, similarity> 정렬된 유사도
+        // Pair B : Pair<id, portfolio> --> Pair A, B 두 개의 id의 순서가 같게 만들어줌
+        // 결과적으로, Pair A를 정렬한 후, Pair A의 id에 맞춰 Pair B도 정렬하여, portfolio를 순서대로 반환
         List<Pair<Long, Portfolio>> sortedPairedIdPortfolio = sortPortfoliosById(pairedIdPortfolio, pairedIdInterests);
-        System.out.println("getRecommend A - 5 ##############################################");
-        for(Pair<Long, Portfolio> p : pairedIdPortfolio){
-            System.out.println("USERs Id: "+ p.getFirst() );
-            System.out.println("USERs portfolio: "+ p.getSecond().getShortIntroduce() );
-            System.out.println();
-        }
 
 
+
+        /*
+        >>> STEP 4 : DTO 변환 <<<
+         */
+
+        //최종 반환값, List<PortfolioCardDto> dtos
         List<PortfolioCardDto> dtos = new ArrayList<>();
         for(Pair<Long, Portfolio> pair : sortedPairedIdPortfolio){
 
@@ -119,15 +121,27 @@ public class RecommendationsService {
             dtos.add(cardDto);
         }
 
-        System.out.println("getRecommend A - 6 ##############################################");
-        for(PortfolioCardDto p : dtos){
-            System.out.println("DTO Id: "+ p.getNickName());
-            System.out.println();
-        }
-
         return dtos;
     }
 
+
+
+    /*
+    #################################### 내부 로직 함수 ###########################################################
+    #################################### 내부 로직 함수 ###########################################################
+    #################################### 내부 로직 함수 ###########################################################
+     */
+
+
+
+    /*
+    ========================================================================
+    sortPortfoliosById() : 첫 번째 arg의 id 순서에 맞춰 두 번째 arg의 index를 바꾸는(정렬하는) 함수
+                ARGUMENTS
+                    - List<Pair<Long, Portfolio>> pairedIdPortfolio : 정렬해야할 <id, 포트폴리오>
+                    - List<Pair<Long, Double>> pairedIdInterests : 유사도순으로 정렬된 <id, 유사도>
+                    - pairedIdInterests와 pairedIdPortfolio 의 id index 순서를 같게 만들어 반환
+     */
     public List<Pair<Long, Portfolio>> sortPortfoliosById(List<Pair<Long, Portfolio>> pairedIdPortfolio,
                                                           List<Pair<Long, Double>> pairedIdInterests){
         List<Pair<Long, Portfolio>> sorted = pairedIdInterests.stream()
@@ -159,10 +173,21 @@ public class RecommendationsService {
         return pairedIdPortfolios;
     }
 
+
+    /*
+    ========================================================================
+    rankSimilarity() : 유저들의 순위에 따라 Id와 유사도 반환
+                ARGUMENTS
+                    - userdInterest : 나의 관심사 백터
+                    - pairedPortfolio : Pair<Long id, Portfolio portfolio>, '아이디 - 포트폴리오' 묶음
+                    - usersInDuration : List<Users> 추출된 유저들
+     */
     public List<Pair<Long, Double>> rankSimilarity(final Integer[] userInterest,
                                                    final List<Pair<Long, Portfolio>> pairedIdPortfolio,
                                                    final List<User> users){
 
+
+        //최종 반환값, 'pairedSimilarities'
         List<Pair<Long, Double>> pairedSimilarities = new ArrayList<>();
         for(Pair<Long, Portfolio> pair : pairedIdPortfolio){
 
@@ -173,6 +198,7 @@ public class RecommendationsService {
             pairedSimilarities.add(pairedIdSimilarity);
         }
 
+        //Pair<id, similarity> 에서 similarity로 'List<> pairedSimilarities' 정렬
         Collections.sort(pairedSimilarities, new Comparator<Pair<Long, Double>>() {
             @Override
             public int compare(Pair<Long, Double> o1, Pair<Long, Double> o2) {
@@ -205,10 +231,16 @@ public class RecommendationsService {
         });
 
         return pairedSimilarities;
-
-
     }
 
+
+    /*
+    ========================================================================
+    calculateSimilarity() : 유사도 계산, Double 반환
+                ARGUMENTS
+                    - Integer[] userInterest : 나의 관심사 백터
+                    - Integer[] interest : 비교대상 관심사 벡터
+     */
     public Double calculateSimilarity(final Integer[] userInterest, final Integer[] interest){
 
         if (userInterest.length != interest.length) {
@@ -235,13 +267,21 @@ public class RecommendationsService {
         return dotProduct / (magnitudeUser * magnitudeOtherUser);
     }
 
+
+    /*
+    ========================================================================
+    findUserByLastAccessDate() : startDate ~ currentTime 사이에 로그인 한, user가 아닌 회원 반환
+            ARGUMENT
+                - user : User 이 유저가 아닌 유저를 반환
+     */
     @Transactional(readOnly = true)
     public List<User> findUsersByLastAccessDate(User user, LocalDateTime startDate, LocalDateTime endDate) {
         QUser users = QUser.user;
 
         JPQLQuery<User> query = queryFactory.selectFrom(users)
                 .where(users.lastAccessDate.between(startDate, endDate)
-                        .and(users.ne(user)));
+                        .and(users.ne(user)))
+                .limit(10);
 
         return query.fetch();
     }

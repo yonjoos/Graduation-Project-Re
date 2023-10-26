@@ -7,6 +7,7 @@ import PickMe.PickMeDemo.entity.QUser;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
+import PickMe.PickMeDemo.repository.ViewCountPortfolioRepository;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,6 +30,8 @@ public class RecommendationsService {
 
     private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
+    private final ViewCountPortfolioRepository viewCountPortfolioRepository;
+
 
     private final JPAQueryFactory queryFactory;
 
@@ -111,6 +114,8 @@ public class RecommendationsService {
                 }
             }
 
+            Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.getSecond().getId()).orElse(null);
+
             PortfolioCardDto cardDto = PortfolioCardDto.builder()
                     .nickName(nickName)   // user = posts.getUser()
                     .web(pair.getSecond().getWeb())     // category = posts.getCategory()
@@ -118,6 +123,7 @@ public class RecommendationsService {
                     .game(pair.getSecond().getGame())
                     .ai(pair.getSecond().getAi())
                     .shortIntroduce(pair.getSecond().getShortIntroduce())
+                    .viewCount(views)
                     .build();
 
             dtos.add(cardDto);

@@ -20,12 +20,13 @@ function UpdateProjectPage() {
         endDate: '',
         content: '',
         promoteImageUrl: [],
-        fileUrl: '',
+        fileUrl: [],
     });
 
-    const [newPromoteImageUrl, setNewPromoteImageUrl] = useState([]);
-    const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
-    const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
+    const [newPromoteImageUrl, setNewPromoteImageUrl] = useState([]); // 새롭게 추가된 이미지 관리하는 상태변수
+    const [newFileUrl, setNewFileUrl] = useState([]); // 새롭게 추가된 첨부파일 관리하는 상태변수
+    const [previewImage, setPreviewImage] = useState(null); // 이미지 확대 관련
+    const [previewVisible, setPreviewVisible] = useState(false); //이미지 확대 모달 관련
 
     useEffect(() => {
         fetchExistingProjectData();
@@ -137,17 +138,20 @@ function UpdateProjectPage() {
                 formattedEndDate,
                 data.content,
                 data.promoteImageUrl, // 기존의 이미지 변경사항
-                data.fileUrl,
-                newPromoteImageUrl // 새로 업로드할 이미지 
+                data.fileUrl, // 기존의 첨부파일 목록 변경사항
+                newPromoteImageUrl, // 새로 업로드할 이미지 
+                newFileUrl // 새로 업로드할 파일 목록
             );
-            
+
         } catch (error) {
             console.error('Error submitting project:', error);
         }
     };
 
-    const submitProject = async (event, title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl, newPromoteImageUrl) => {
+    const submitProject = async (event, title, postType, recruitmentCount, endDate, content, promoteImageUrl, fileUrl, newPromoteImageUrl, newFileUrl) => {
         event.preventDefault();
+
+        // console.log(fileUrl);
 
         const formData = new FormData();
         formData.append('title', title);
@@ -159,7 +163,14 @@ function UpdateProjectPage() {
         newPromoteImageUrl.forEach((image, index) => {
             formData.append(`newPromoteImageUrl[${index}]`, image);
         });
-        formData.append('fileUrl', fileUrl);
+        // 기존 첨부파일 List<파일 url, 파일 원본이름>의 자료형을 백엔드의 FileUrlNameMapperDto가 인식하려면 이러한 방식으로 백엔드에 보내야함!!!
+        fileUrl.forEach((file, index) => {
+            formData.append(`fileUrl[${index}].fileUrl`, file.fileUrl);
+            formData.append(`fileUrl[${index}].fileName`, file.fileName);
+        });
+        newFileUrl.forEach((file, index) => {
+            formData.append(`newFileUrl[${index}]`, file);
+        })
 
         const config = {
             headers: {
@@ -180,7 +191,7 @@ function UpdateProjectPage() {
                 console.error('Failed to upload post:', error);
                 alert('프로젝트 게시물 업데이트에 실패하였습니다.');
             });
-        
+
     };
 
     // 새로 올려진 이미지 remove 클릭 시 목록에서 제거
@@ -204,6 +215,29 @@ function UpdateProjectPage() {
         }));
         console.log(updatedPromoteImageUrl);
     };
+
+    // 새로 올려진 첨부파일 remove 클릭 시 목록에서 제거
+    const removeNewFile = (index) => {
+        const updatedNewFileUrl = [...newFileUrl];
+        updatedNewFileUrl.splice(index, 1);
+
+
+        setNewFileUrl(updatedNewFileUrl);
+        console.log(newFileUrl);
+    };
+
+    // 기존에 있던 첨부파일 remove 클릭 시 목록에서 제거
+    const removeFile = (index) => {
+        const updatedNewFileUrl = [...data.fileUrl];
+        updatedNewFileUrl.splice(index, 1);
+
+        setData((prevData) => ({
+            ...prevData,
+            fileUrl: updatedNewFileUrl,
+        }));
+
+    };
+
 
     // Open the modal to preview the clicked image
     const handlePreview = (image) => {
@@ -300,7 +334,7 @@ function UpdateProjectPage() {
                                             alt={`홍보 사진 ${index + 1}`}
                                             style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
                                             onClick={() => handlePreview(`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`)
-                                        }
+                                            }
                                         />
                                         <Button onClick={() => removePromoteImage(index)}>Remove</Button>
                                     </div>
@@ -334,13 +368,51 @@ function UpdateProjectPage() {
 
                     <div className="form-outline mb-1">첨부 파일</div>
                     <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            name="fileUrl"
-                            placeholder="파일 변경"
-                            value={data.fileUrl}
-                            onChange={onChangeHandler}
-                        />
+                        <Upload
+                            accept=".pdf,.doc,.docx"
+                            showUploadList={false}
+                            beforeUpload={(file) => {
+                                setNewFileUrl([...newFileUrl, file]);
+                                return false;
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
+                        </Upload>
+
+                        {/* 기존에 올려놨던 첨부파일 세팅 */}
+                        {data.fileUrl ? (
+                            data.fileUrl.map((file, index) => (
+
+                                <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                    <Button
+                                        onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                    >
+                                        {file.fileName} {/* 파일 이름 표시 */}
+                                    </Button>
+                                    <Button onClick={() => removeFile(index)}>Remove</Button>
+                                </div>
+
+
+
+                            ))
+                        ) : (
+                            <p>첨부파일이 없습니다</p>
+                        )}
+
+                        {/* 새로 올릴 첨부파일 세팅 */}
+                        {newFileUrl ?
+                            (newFileUrl.map((file, index) => (
+                                <div key={index} >
+
+                                    <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
+                                        {file.name}
+                                    </Button>
+                                    <Button onClick={() => removeNewFile(index)}>Remove</Button>
+                                </div>
+                            )))
+                            : (
+                                null
+                            )}
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>

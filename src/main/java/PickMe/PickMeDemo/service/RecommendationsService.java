@@ -235,7 +235,8 @@ public class RecommendationsService {
 
         JPQLQuery<User> query = queryFactory.selectFrom(users)
                 .where(users.lastAccessDate.between(startDate, endDate)
-                        .and(users.ne(user)));
+                        .and(users.ne(user)))
+                .limit(10);;
 
         return query.fetch();
     }

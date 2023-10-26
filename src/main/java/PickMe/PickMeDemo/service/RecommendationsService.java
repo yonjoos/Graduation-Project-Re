@@ -47,15 +47,9 @@ public class RecommendationsService {
     public List<PortfolioCardDto> getRecommend(String email){
 
         User user = userRepository.findByEmail(email).get();
-        System.out.println("getRecommend A ##############################################");
-        System.out.println("getRecommend A ##############################################");
-        System.out.println("getRecommend A ##############################################");
-        System.out.println("THE USER : " + user.getNickName());
 
         //유저의 관심사 벡터
         Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
-        System.out.println("getRecommend A - 1 ##############################################");
-        System.out.println("THE USER's interest : " + usersInterest[0] + usersInterest[1] + usersInterest[2] + usersInterest[3]);
 
 
         //이 기간 안에 있는 : [현재로부터 200일 전, 현재]
@@ -64,37 +58,17 @@ public class RecommendationsService {
 
         //유저들의
         List<User> usersInDuration = findUsersByLastAccessDate(user, startDate, currentTime);
-        System.out.println("getRecommend A - 2 ##############################################");
-        System.out.println("THE USERs : " );
-        for(User u : usersInDuration){
-            System.out.println("USER's  name : " + u.getNickName());
-        }
+
 
 
         //포트폴리오를 찾아서
         List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
-        System.out.println("getRecommend A - 3 ##############################################");
-        for(Pair<Long, Portfolio> p : pairedIdPortfolio){
-            System.out.println("THE USERs portfolio: "+ p.getSecond().getShortIntroduce() );
-            System.out.println();
-        }
 
-
-        System.out.println("getRecommend A - 4 ##############################################");
         List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration);
-        for(Pair<Long, Double> p : pairedIdInterests){
-            System.out.println("User's Id, sim : " + p.getFirst() + ", " + p.getSecond() );
-        }
 
         //List<Pair<Long, Double>> firstThreeElements = pairedIdInterests.subList(0, 3);
 
         List<Pair<Long, Portfolio>> sortedPairedIdPortfolio = sortPortfoliosById(pairedIdPortfolio, pairedIdInterests);
-        System.out.println("getRecommend A - 5 ##############################################");
-        for(Pair<Long, Portfolio> p : pairedIdPortfolio){
-            System.out.println("USERs Id: "+ p.getFirst() );
-            System.out.println("USERs portfolio: "+ p.getSecond().getShortIntroduce() );
-            System.out.println();
-        }
 
 
         List<PortfolioCardDto> dtos = new ArrayList<>();
@@ -120,7 +94,6 @@ public class RecommendationsService {
             dtos.add(cardDto);
         }
 
-        System.out.println("getRecommend A - 6 ##############################################");
         for(PortfolioCardDto p : dtos){
             System.out.println("DTO Id: "+ p.getNickName());
             System.out.println();

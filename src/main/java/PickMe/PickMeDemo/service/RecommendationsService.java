@@ -8,6 +8,7 @@ import PickMe.PickMeDemo.entity.QVectorSimilarity;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
+import PickMe.PickMeDemo.repository.ViewCountPortfolioRepository;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -30,6 +31,8 @@ public class RecommendationsService {
 
     private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
+    private final ViewCountPortfolioRepository viewCountPortfolioRepository;
+
 
     private final JPAQueryFactory queryFactory;
 
@@ -106,6 +109,8 @@ public class RecommendationsService {
                 }
             }
 
+            Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.getSecond().getId()).orElse(null);
+
             PortfolioCardDto cardDto = PortfolioCardDto.builder()
                     .nickName(nickName)   // user = posts.getUser()
                     .web(pair.getSecond().getWeb())     // category = posts.getCategory()
@@ -113,6 +118,7 @@ public class RecommendationsService {
                     .game(pair.getSecond().getGame())
                     .ai(pair.getSecond().getAi())
                     .shortIntroduce(pair.getSecond().getShortIntroduce())
+                    .viewCount(views)
                     .build();
 
             dtos.add(cardDto);
@@ -189,7 +195,7 @@ public class RecommendationsService {
         for(Pair<Long, Portfolio> pair : pairedIdPortfolio){
 
             Integer[] interest = pair.getSecond().getVector();
-            Double similarity = calculateSimilarity(userInterest, interest);
+            Double similarity = calculateSimilarityDB(userInterest, interest);
 
             Pair<Long, Double> pairedIdSimilarity = Pair.of(pair.getFirst(), similarity);
             pairedSimilarities.add(pairedIdSimilarity);
@@ -238,7 +244,7 @@ public class RecommendationsService {
                     - Integer[] userInterest : 나의 관심사 백터
                     - Integer[] interest : 비교대상 관심사 벡터
      */
-    private Double calculateSimilarity(final Integer[] userInterest, final Integer[] interest){
+    private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){
 
         QVectorSimilarity vectorSimilarity = QVectorSimilarity.vectorSimilarity;
 

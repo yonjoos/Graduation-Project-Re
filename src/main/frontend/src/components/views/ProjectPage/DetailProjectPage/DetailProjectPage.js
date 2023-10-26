@@ -1069,7 +1069,20 @@ function DetailProjectPage() {
                         <Divider className="bold-divider" />
 
                         <div style={{ marginLeft: '5px' }}>
-                            첨부 파일: {data.fileUrl}
+                            첨부 파일: {
+                                data.fileUrl ? (
+                                    data.fileUrl.map((file, index) => (
+                                        <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                            <Button
+                                                onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                            >
+                                                {file.fileName} {/* 파일 이름 표시 */}
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>이미지가 없습니다</p>
+                                )}
                         </div>
 
                         <Divider className="bold-divider" />

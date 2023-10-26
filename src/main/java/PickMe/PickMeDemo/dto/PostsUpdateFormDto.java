@@ -25,5 +25,6 @@ public class PostsUpdateFormDto {
     private LocalDate endDate;
     private String content;
     private List<String> promoteImageUrl;
-    private String fileUrl;
+    private List<FileUrlNameMapperDto> fileUrl;
+
 }

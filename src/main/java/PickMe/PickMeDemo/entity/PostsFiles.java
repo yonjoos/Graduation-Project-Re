@@ -24,4 +24,6 @@ public class PostsFiles extends BaseTimeEntity {
 
     private String fileUrl; // 구글 드라이브에 저장되는 파일의 uuid값
 
+    private String fileName; // 사용자가 지정한 파일의 이름
+
 }

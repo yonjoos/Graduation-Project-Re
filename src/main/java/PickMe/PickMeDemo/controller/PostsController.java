@@ -207,7 +207,7 @@ public class PostsController {
     // ** 중요 **
     // postType을 String 리스트로 받아오는 PostsFormDto 사용!
     @PutMapping("/project/update/{projectId}")
-    public ResponseEntity<String> updateProject(@PathVariable Long projectId, PostsUpdateRequestFormDto postsUpdateRequestFormDto) {
+    public ResponseEntity<String> updateProject(@PathVariable Long projectId, @Valid PostsUpdateRequestFormDto postsUpdateRequestFormDto) {
 
         try {
             postsService.updateProject(projectId, postsUpdateRequestFormDto);
@@ -221,10 +221,10 @@ public class PostsController {
 
     // 스터디 수정
     @PutMapping("/study/update/{studyId}")
-    public ResponseEntity<String> updateStudy(@PathVariable Long studyId, @RequestBody PostsFormDto postsFormDto) {
+    public ResponseEntity<String> updateStudy(@PathVariable Long studyId, @Valid PostsUpdateRequestFormDto postsUpdateRequestFormDto ) {
 
         try {
-            postsService.updateStudy(studyId, postsFormDto);
+            postsService.updateStudy(studyId, postsUpdateRequestFormDto);
             return ResponseEntity.ok("스터디가 성공적으로 업데이트 되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();

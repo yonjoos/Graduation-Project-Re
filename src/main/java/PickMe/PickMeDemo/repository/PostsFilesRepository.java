@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface PostsFilesRepository extends JpaRepository<PostsFiles, Long> {
 
     List<PostsFiles> findByPostsAndIsImageTrue(Posts posts);
+    List<PostsFiles> findByPostsAndIsImageFalse(Posts posts);
 
+    List<PostsFiles> findByPosts(Posts posts);
 }

@@ -44,16 +44,16 @@ public class RecommendationsService {
 
 
     @Transactional(readOnly = true)
-    public List<PortfolioCardDto> getRecommend(String email){
+    public List<PortfolioCardDto> getRecommend(final String email){
 
         /*
         >> STEP 1 : 로그인한 유저(나) 찾기 <<<
          */
 
-        User user = userRepository.findByEmail(email).get();
+        final User user = userRepository.findByEmail(email).get();
 
         //유저의 관심사 벡터, 'usersIneterest'
-        Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
+        final Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
 
 
         /*
@@ -61,12 +61,12 @@ public class RecommendationsService {
          */
 
         //이 기간 안에 있는 : [startDate, currentTime]
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
+        final LocalDateTime currentTime = LocalDateTime.now();
+        final LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
 
 
         //유저들의
-        List<User> usersInDuration = findUsersByLastAccessDate(user, startDate, currentTime);
+        final List<User> usersInDuration = findUsersByLastAccessDate(user, startDate, currentTime);
 
         //포트폴리오를 찾아서 Id랑 pair 해줌
         List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
@@ -78,7 +78,7 @@ public class RecommendationsService {
          */
 
         //순위 매기기 - step 3.1 : 유사도 정렬하기
-        List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration);
+        final List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration);
 
 
         //앞에 3명만 뽑는 기능은 일단 패쓰
@@ -89,7 +89,7 @@ public class RecommendationsService {
         // Pair A : Pair<id, similarity> 정렬된 유사도
         // Pair B : Pair<id, portfolio> --> Pair A, B 두 개의 id의 순서가 같게 만들어줌
         // 결과적으로, Pair A를 정렬한 후, Pair A의 id에 맞춰 Pair B도 정렬하여, portfolio를 순서대로 반환
-        List<Pair<Long, Portfolio>> sortedPairedIdPortfolio = sortPortfoliosById(pairedIdPortfolio, pairedIdInterests);
+        final List<Pair<Long, Portfolio>> sortedPairedIdPortfolio = sortPortfoliosById(pairedIdPortfolio, pairedIdInterests);
 
 
 
@@ -142,7 +142,7 @@ public class RecommendationsService {
                     - List<Pair<Long, Double>> pairedIdInterests : 유사도순으로 정렬된 <id, 유사도>
                     - pairedIdInterests와 pairedIdPortfolio 의 id index 순서를 같게 만들어 반환
      */
-    public List<Pair<Long, Portfolio>> sortPortfoliosById(List<Pair<Long, Portfolio>> pairedIdPortfolio,
+    private List<Pair<Long, Portfolio>> sortPortfoliosById(List<Pair<Long, Portfolio>> pairedIdPortfolio,
                                                           List<Pair<Long, Double>> pairedIdInterests){
         List<Pair<Long, Portfolio>> sorted = pairedIdInterests.stream()
                 .map(pair -> pairedIdPortfolio.stream()
@@ -156,7 +156,7 @@ public class RecommendationsService {
 
 
 
-    public List<Pair<Long, Portfolio>> findUsersPortfolio(List<User> users){
+    private List<Pair<Long, Portfolio>> findUsersPortfolio(final List<User> users){
 
         List<Pair<Long, Portfolio>> pairedIdPortfolios = new ArrayList<>();
         for(User u : users){
@@ -182,7 +182,7 @@ public class RecommendationsService {
                     - pairedPortfolio : Pair<Long id, Portfolio portfolio>, '아이디 - 포트폴리오' 묶음
                     - usersInDuration : List<Users> 추출된 유저들
      */
-    public List<Pair<Long, Double>> rankSimilarity(final Integer[] userInterest,
+    private List<Pair<Long, Double>> rankSimilarity(final Integer[] userInterest,
                                                    final List<Pair<Long, Portfolio>> pairedIdPortfolio,
                                                    final List<User> users){
 
@@ -241,7 +241,7 @@ public class RecommendationsService {
                     - Integer[] userInterest : 나의 관심사 백터
                     - Integer[] interest : 비교대상 관심사 벡터
      */
-    public Double calculateSimilarity(final Integer[] userInterest, final Integer[] interest){
+    private Double calculateSimilarity(final Integer[] userInterest, final Integer[] interest){
 
         if (userInterest.length != interest.length) {
             throw new IllegalArgumentException("Vectors must have the same length");
@@ -275,7 +275,7 @@ public class RecommendationsService {
                 - user : User 이 유저가 아닌 유저를 반환
      */
     @Transactional(readOnly = true)
-    public List<User> findUsersByLastAccessDate(User user, LocalDateTime startDate, LocalDateTime endDate) {
+    private List<User> findUsersByLastAccessDate(final User user, final LocalDateTime startDate, final LocalDateTime endDate) {
         QUser users = QUser.user;
 
         JPQLQuery<User> query = queryFactory.selectFrom(users)

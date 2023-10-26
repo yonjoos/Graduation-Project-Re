@@ -57,7 +57,7 @@ public class PortfolioCardController {
     public ResponseEntity<List<PortfolioCardDto>> getRecommendation(Principal principal){
         String email = principal.getName();
 
-        List<PortfolioCardDto> result = recommendationsService.getRecommend(email);
+        List<PortfolioCardDto> result = recommendationsService.getRecommend(email, "real-time");
         return ResponseEntity.ok(result);
     }
 

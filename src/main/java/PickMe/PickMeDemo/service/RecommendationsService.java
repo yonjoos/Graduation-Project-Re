@@ -7,6 +7,7 @@ import PickMe.PickMeDemo.entity.QUser;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import javax.sound.sampled.Port;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -281,6 +283,7 @@ public class RecommendationsService {
         JPQLQuery<User> query = queryFactory.selectFrom(users)
                 .where(users.lastAccessDate.between(startDate, endDate)
                         .and(users.ne(user)))
+                .orderBy(NumberExpression.random().asc())
                 .limit(10);
 
         return query.fetch();

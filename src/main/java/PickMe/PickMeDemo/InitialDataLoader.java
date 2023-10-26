@@ -1231,13 +1231,13 @@ public class InitialDataLoader implements CommandLineRunner {
 ////        0001
         createUserAndPortfolio("0001", "0001", "0001", "0001", 0, 0, 0, 1, "0001", "0001", "", LocalDateTime.of(2023, 9, 1, 14, 30, 0));
 ////        0002
-//        createUserAndPortfolio("0002", "0002", "0002", "0002", 0, 0, 0, 2, "0002", "0002", "");
+        createUserAndPortfolio("0002", "0002", "0002", "0002", 0, 0, 0, 2, "0002", "0002", "", LocalDateTime.of(2023, 9, 2, 14, 30, 0));
 ////        0003
-//        createUserAndPortfolio("0003", "0003", "0003", "0003", 0, 0, 0, 3, "0003", "0003", "");
+        createUserAndPortfolio("0003", "0003", "0003", "0003", 0, 0, 0, 3, "0003", "0003", "", LocalDateTime.of(2023, 8, 29, 14, 30, 0));
 ////        0004
-//        createUserAndPortfolio("0004", "0004", "0004", "0004", 0, 0, 0, 4, "0004", "0004", "");
+        createUserAndPortfolio("0004", "0004", "0004", "0004", 0, 0, 0, 4, "0004", "0004", "", LocalDateTime.of(2023, 9, 5, 14, 30, 0));
 ////        0010
-//        createUserAndPortfolio("0010", "0010", "0010", "0010", 0, 0, 1, 0, "0010", "0010", "");
+        createUserAndPortfolio("0010", "0010", "0010", "0010", 0, 0, 1, 0, "0010", "0010", "", LocalDateTime.of(2023, 8, 2, 14, 30, 0));
 ////        0012
 //        createUserAndPortfolio("0012", "0012", "0012", "0012", 0, 0, 1, 2, "0012", "0012", "");
 ////        0013

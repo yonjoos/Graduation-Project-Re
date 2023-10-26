@@ -3,7 +3,9 @@ package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.dto.PortfolioCardDto;
 import PickMe.PickMeDemo.dto.PostsListDto;
+import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.service.PortfolioService;
+import PickMe.PickMeDemo.service.RecommendationsService;
 import PickMe.PickMeDemo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -20,6 +23,7 @@ import java.util.List;
 public class PortfolioCardController {
 
     private final PortfolioService portfolioService;
+    private final RecommendationsService recommendationsService;
 
 //    @GetMapping("/getPortfolioCards")
 //    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
@@ -46,6 +50,14 @@ public class PortfolioCardController {
             @RequestParam(name = "searchTerm", required = false) String searchTerm){
 
         Page<PortfolioCardDto> result = portfolioService.getCards(selectedBanners, sortOption, searchTerm, PageRequest.of(page, size));
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/getRecommendation")
+    public ResponseEntity<List<PortfolioCardDto>> getRecommendation(Principal principal){
+        String email = principal.getName();
+
+        List<PortfolioCardDto> result = recommendationsService.getRecommend(email);
         return ResponseEntity.ok(result);
     }
 

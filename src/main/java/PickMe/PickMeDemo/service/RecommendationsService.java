@@ -196,7 +196,7 @@ public class RecommendationsService {
         for(Pair<Long, Portfolio> pair : pairedIdPortfolio){
 
             Integer[] interest = pair.getSecond().getVector();
-            Double similarity = (type.equals("DB")) ? calculateSimilarityDB(userInterest, interest) : calculateSimilarityDB(userInterest, interest);
+            Double similarity = (type.equals("DB")) ? calculateSimilarityDB(userInterest, interest) : calculateSimilarity(userInterest, interest);
 
 
             Pair<Long, Double> pairedIdSimilarity = Pair.of(pair.getFirst(), similarity);
@@ -246,24 +246,33 @@ public class RecommendationsService {
                     - Integer[] userInterest : 나의 관심사 백터
                     - Integer[] interest : 비교대상 관심사 벡터
      */
-    private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){
-
-        QVectorSimilarity vectorSimilarity = QVectorSimilarity.vectorSimilarity;
+    private Double calculateSimilarity(final Integer[] userInterest, final Integer[] interest){
 
         if (userInterest.length != interest.length) {
             throw new IllegalArgumentException("Vectors must have the same length");
         }
 
+        Double dotProduct = 0.0;
+        Double magnitudeUser = 0.0;
+        Double magnitudeOtherUser = 0.0;
 
-        double similarity = queryFactory.select(vectorSimilarity.similarity)
-                .from(vectorSimilarity)
-                .where(vectorSimilarity.vectorA.eq(userInterest), vectorSimilarity.vectorB.eq(interest))
-                .fetchOne();
+        for (int i = 0; i < userInterest.length; i++) {
+            dotProduct += userInterest[i] * interest[i];
+            magnitudeUser += Math.pow(userInterest[i], 2);
+            magnitudeOtherUser += Math.pow(interest[i], 2);
+        }
 
+        magnitudeUser = Math.sqrt(magnitudeUser);
+        magnitudeOtherUser = Math.sqrt(magnitudeOtherUser);
 
+        if (magnitudeUser == 0 || magnitudeOtherUser == 0) {
+            return 0.0; // To handle division by zero
+        }
 
-        return similarity;
+        return dotProduct / (magnitudeUser * magnitudeOtherUser);
     }
+
+
 
     private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){
 

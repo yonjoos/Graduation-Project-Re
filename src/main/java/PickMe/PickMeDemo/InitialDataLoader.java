@@ -24,6 +24,8 @@ public class InitialDataLoader implements CommandLineRunner {
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
     private final RecommendationsRepository recommendationsRepository;
+    private final VectorSimilarityRepository vectorSimilarityRepository;
+
 
     private void createUserAndPortfolio(
             String userName,
@@ -137,8 +139,71 @@ public class InitialDataLoader implements CommandLineRunner {
         return dotProduct / (magnitude1 * magnitude2);
     }
 
+    private void generateAndSaveSimilarityData(int dimension, int maxValue) {
+        double defaultSimilarity = 0.0;
+
+        for (int i = 0; i <= maxValue; i++) {
+            for (int j = 0; j <= maxValue; j++) {
+                for (int k = 0; k <= maxValue; k++) {
+                    for (int l = 0; l <= maxValue; l++) {
+                        Integer[] vectorA = {i, j, k, l};
+                        for (int m = 0; m <= maxValue; m++) {
+                            for (int n = 0; n <= maxValue; n++) {
+                                for (int o = 0; o <= maxValue; o++) {
+                                    for (int p = 0; p <= maxValue; p++) {
+                                        Integer[] vectorB = {m, n, o, p};
+
+                                        double similarity = calculateCosineSimilarity(vectorA, vectorB);
+                                        // Create VectorSimilarity entity and save it
+                                        VectorSimilarity similarityPair = new VectorSimilarity(vectorA, vectorB);
+                                        similarityPair.setSimilarity(similarity);
+                                        vectorSimilarityRepository.save(similarityPair);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private double calculateCosineSimilarity(Integer[] vectorA, Integer[] vectorB) {
+        // Calculate the dot product of vectorA and vectorB
+        double dotProduct = 0;
+        double magnitudeA = 0;
+        double magnitudeB = 0;
+
+        for (int i = 0; i < vectorA.length; i++) {
+            dotProduct += vectorA[i] * vectorB[i];
+            magnitudeA += Math.pow(vectorA[i], 2);
+            magnitudeB += Math.pow(vectorB[i], 2);
+        }
+
+        // Calculate the magnitude (Euclidean norm) of each vector
+        magnitudeA = Math.sqrt(magnitudeA);
+        magnitudeB = Math.sqrt(magnitudeB);
+
+        // Calculate the cosine similarity
+        if (magnitudeA == 0 || magnitudeB == 0) {
+            // Handle the case of zero magnitude (avoid division by zero)
+            return 0.0;
+        } else {
+            return dotProduct / (magnitudeA * magnitudeB);
+        }
+    }
+
+
+
     @Override
     public void run(String... args) throws Exception {
+
+        // 초기 벡터값 이니셜라이징
+        int dimension = 4;
+        int maxValue = 4; // Values can range from 0 to 4
+        generateAndSaveSimilarityData(dimension, maxValue);
+
+
+
         // 초기 데이터 생성 및 저장(관리자)
         User adminUser = User.builder()
                 .userName("admin")

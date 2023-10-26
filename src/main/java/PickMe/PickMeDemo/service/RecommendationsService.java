@@ -4,6 +4,7 @@ import PickMe.PickMeDemo.dto.PortfolioCardDto;
 import PickMe.PickMeDemo.dto.PortfolioDto;
 import PickMe.PickMeDemo.entity.Portfolio;
 import PickMe.PickMeDemo.entity.QUser;
+import PickMe.PickMeDemo.entity.QVectorSimilarity;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
@@ -51,14 +52,11 @@ public class RecommendationsService {
     @Transactional(readOnly = true)
     public List<PortfolioCardDto> getRecommend(final String email, final String type){
 
-        /*
-        >> STEP 1 : 로그인한 유저(나) 찾기 <<<
-         */
 
-        final User user = userRepository.findByEmail(email).get();
+        User user = userRepository.findByEmail(email).get();
 
-        //유저의 관심사 벡터, 'usersIneterest'
-        final Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
+        //유저의 관심사 벡터
+        Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
 
 
         /*
@@ -75,8 +73,6 @@ public class RecommendationsService {
 
         //포트폴리오를 찾아서 Id랑 pair 해줌
         List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
-
-
 
         /*
         >>> STEP 3 : 유사도 순위 매기기 <<<
@@ -95,7 +91,6 @@ public class RecommendationsService {
         // Pair B : Pair<id, portfolio> --> Pair A, B 두 개의 id의 순서가 같게 만들어줌
         // 결과적으로, Pair A를 정렬한 후, Pair A의 id에 맞춰 Pair B도 정렬하여, portfolio를 순서대로 반환
         final List<Pair<Long, Portfolio>> sortedPairedIdPortfolio = sortPortfoliosById(pairedIdPortfolio, pairedIdInterests);
-
 
 
         /*
@@ -203,6 +198,7 @@ public class RecommendationsService {
             Integer[] interest = pair.getSecond().getVector();
             Double similarity = (type.equals("DB")) ? calculateSimilarityDB(userInterest, interest) : calculateSimilarityDB(userInterest, interest);
 
+
             Pair<Long, Double> pairedIdSimilarity = Pair.of(pair.getFirst(), similarity);
             pairedSimilarities.add(pairedIdSimilarity);
         }
@@ -250,30 +246,23 @@ public class RecommendationsService {
                     - Integer[] userInterest : 나의 관심사 백터
                     - Integer[] interest : 비교대상 관심사 벡터
      */
-    private Double calculateSimilarity(final Integer[] userInterest, final Integer[] interest){
+    private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){
+
+        QVectorSimilarity vectorSimilarity = QVectorSimilarity.vectorSimilarity;
 
         if (userInterest.length != interest.length) {
             throw new IllegalArgumentException("Vectors must have the same length");
         }
 
-        Double dotProduct = 0.0;
-        Double magnitudeUser = 0.0;
-        Double magnitudeOtherUser = 0.0;
 
-        for (int i = 0; i < userInterest.length; i++) {
-            dotProduct += userInterest[i] * interest[i];
-            magnitudeUser += Math.pow(userInterest[i], 2);
-            magnitudeOtherUser += Math.pow(interest[i], 2);
-        }
+        double similarity = queryFactory.select(vectorSimilarity.similarity)
+                .from(vectorSimilarity)
+                .where(vectorSimilarity.vectorA.eq(userInterest), vectorSimilarity.vectorB.eq(interest))
+                .fetchOne();
 
-        magnitudeUser = Math.sqrt(magnitudeUser);
-        magnitudeOtherUser = Math.sqrt(magnitudeOtherUser);
 
-        if (magnitudeUser == 0 || magnitudeOtherUser == 0) {
-            return 0.0; // To handle division by zero
-        }
 
-        return dotProduct / (magnitudeUser * magnitudeOtherUser);
+        return similarity;
     }
 
     private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){

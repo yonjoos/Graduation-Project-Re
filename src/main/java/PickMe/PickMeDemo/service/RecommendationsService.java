@@ -1,6 +1,7 @@
 package PickMe.PickMeDemo.service;
 
 import PickMe.PickMeDemo.dto.PortfolioCardDto;
+import PickMe.PickMeDemo.dto.PortfolioDto;
 import PickMe.PickMeDemo.entity.Portfolio;
 import PickMe.PickMeDemo.entity.QUser;
 import PickMe.PickMeDemo.entity.User;
@@ -45,9 +46,15 @@ public class RecommendationsService {
     public List<PortfolioCardDto> getRecommend(String email){
 
         User user = userRepository.findByEmail(email).get();
+        System.out.println("getRecommend A ##############################################");
+        System.out.println("getRecommend A ##############################################");
+        System.out.println("getRecommend A ##############################################");
+        System.out.println("THE USER : " + user.getNickName());
 
         //유저의 관심사 벡터
         Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
+        System.out.println("getRecommend A - 1 ##############################################");
+        System.out.println("THE USER's interest : " + usersInterest[0] + usersInterest[1] + usersInterest[2] + usersInterest[3]);
 
 
         //이 기간 안에 있는 : [현재로부터 200일 전, 현재]
@@ -55,26 +62,50 @@ public class RecommendationsService {
         LocalDateTime startDate = currentTime.minusDays(200);
 
         //유저들의
-        List<User> usersInDuration = findUsersByLastAccessDate(startDate, currentTime);
+        List<User> usersInDuration = findUsersByLastAccessDate(user, startDate, currentTime);
+        System.out.println("getRecommend A - 2 ##############################################");
+        System.out.println("THE USERs : " );
+        for(User u : usersInDuration){
+            System.out.println("USER's  name : " + u.getNickName());
+        }
 
 
         //포트폴리오를 찾아서
         List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
+        System.out.println("getRecommend A - 3 ##############################################");
+        for(Pair<Long, Portfolio> p : pairedIdPortfolio){
+            System.out.println("THE USERs portfolio: "+ p.getSecond().getShortIntroduce() );
+            System.out.println();
+        }
 
+
+        System.out.println("getRecommend A - 4 ##############################################");
         List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration);
+        for(Pair<Long, Double> p : pairedIdInterests){
+            System.out.println("User's Id, sim : " + p.getFirst() + ", " + p.getSecond() );
+        }
 
         //List<Pair<Long, Double>> firstThreeElements = pairedIdInterests.subList(0, 3);
 
         List<Pair<Long, Portfolio>> sortedPairedIdPortfolio = sortPortfoliosById(pairedIdPortfolio, pairedIdInterests);
+        System.out.println("getRecommend A - 5 ##############################################");
+        for(Pair<Long, Portfolio> p : pairedIdPortfolio){
+            System.out.println("USERs Id: "+ p.getFirst() );
+            System.out.println("USERs portfolio: "+ p.getSecond().getShortIntroduce() );
+            System.out.println();
+        }
 
 
         List<PortfolioCardDto> dtos = new ArrayList<>();
         for(Pair<Long, Portfolio> pair : sortedPairedIdPortfolio){
-            String nickName = usersInDuration.stream()
-                    .filter(users -> user.getId().equals(pair.getFirst()))
-                    .findFirst()
-                    .map(User::getNickName)
-                    .orElse(null);
+
+            String nickName = "";
+            for(User u : usersInDuration){
+                if(u.getId() == pair.getFirst()){
+                    nickName = u.getNickName();
+                    break;
+                }
+            }
 
             PortfolioCardDto cardDto = PortfolioCardDto.builder()
                     .nickName(nickName)   // user = posts.getUser()
@@ -86,6 +117,12 @@ public class RecommendationsService {
                     .build();
 
             dtos.add(cardDto);
+        }
+
+        System.out.println("getRecommend A - 6 ##############################################");
+        for(PortfolioCardDto p : dtos){
+            System.out.println("DTO Id: "+ p.getNickName());
+            System.out.println();
         }
 
         return dtos;
@@ -112,10 +149,11 @@ public class RecommendationsService {
 
             Long userId = u.getId();
             //유저의 포트폴리오
-            Portfolio portfolio = portfolioRepository.findByUser(u).get();
-
-            Pair<Long, Portfolio> pairedIdPortfolio = Pair.of(userId, portfolio);
-            pairedIdPortfolios.add(pairedIdPortfolio);
+            Portfolio portfolio = portfolioRepository.findByUser(u).orElse(null);
+            if(portfolio != null){
+                Pair<Long, Portfolio> pairedIdPortfolio = Pair.of(userId, portfolio);
+                pairedIdPortfolios.add(pairedIdPortfolio);
+            }
         }
 
         return pairedIdPortfolios;
@@ -198,11 +236,12 @@ public class RecommendationsService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> findUsersByLastAccessDate(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<User> findUsersByLastAccessDate(User user, LocalDateTime startDate, LocalDateTime endDate) {
         QUser users = QUser.user;
 
         JPQLQuery<User> query = queryFactory.selectFrom(users)
-                .where(users.lastAccessDate.between(startDate, endDate));
+                .where(users.lastAccessDate.between(startDate, endDate)
+                        .and(users.ne(user)));
 
         return query.fetch();
     }

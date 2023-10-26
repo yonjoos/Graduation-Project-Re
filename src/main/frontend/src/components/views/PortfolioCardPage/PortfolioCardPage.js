@@ -28,6 +28,7 @@ function PortfolioCardPage() {
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [sortOption, setSortOption] = useState('latestPortfolio'); // 최신 등록 순 기본으로 선택
     const [reload, setReload] = useState(0);
+    const [recommend, setRecommend] = useState(0);
 
     const pageSize = 9;
 
@@ -51,21 +52,26 @@ function PortfolioCardPage() {
         fetchUsers();
 
         setReload(0);
-    }, [reload, data]);
+    }, [reload]);
+
+    useEffect(()=>{
+        if(recommend == 1) {
+            Recommend();
+            setRecommend(0);
+        }
+        else{
+        }
+    }, [recommend])
 
 
     // 검색 조건이 바뀔 때 실행
     // Handler : toggleBanner / handleSearch, toggleBanner, Pagination / handleSearch
-
-    /*
     useEffect(() => {
 
         console.log('현재 선택된 배너 정보', selectedBanners);
         console.log('현재 검색 완료된 키워드: ', searchTerm);
         fetchUsers();
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
-
-    */
 
 
     // 백엔드에 연관 검색어에 기반한 닉네임 값을 받아오기 위한 요청 보내기
@@ -243,13 +249,25 @@ function PortfolioCardPage() {
         setCurrentPage(0); // 만약 배너를 다른 걸 고르면 1페이지로 강제 이동시킴
     }
 
-    const handleRecommend = async() =>{
-        try {
+
+    const Recommend = async() => {
+
+        try{
+
             const response = await request('GET', `/getRecommendation`);
-            setData(response.data.content);
+            setData(response.data); 
+            setTotalPages(response.data.totalPages);
+            console.log(data);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("레코멘드 노노", error);
         }
+
+
+
+    }
+
+    const handleRecommend = () => {
+        setRecommend(1);
     }
 
 

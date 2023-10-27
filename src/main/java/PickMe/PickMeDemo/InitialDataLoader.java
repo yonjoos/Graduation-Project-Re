@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,8 +24,10 @@ public class InitialDataLoader implements CommandLineRunner {
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
     private final RecommendationsRepository recommendationsRepository;
+    private final VectorSimilarityRepository vectorSimilarityRepository;
 
-    private void createUserAndPortfolio (
+
+    private void createUserAndPortfolio(
             String userName,
             String nickName,
             String email,
@@ -35,7 +38,8 @@ public class InitialDataLoader implements CommandLineRunner {
             int ai,
             String shortIntroduce,
             String introduce,
-            String fileUrl
+            String fileUrl,
+            LocalDateTime LastAccessDate //이거 지워야됨
     ) {
         User user = User.builder()
                 .userName(userName)
@@ -43,7 +47,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.USER)
-                .build();
+                .lastAccessDate(LocalDateTime.now()).build();
 
         userRepository.save(user);
 
@@ -135,8 +139,71 @@ public class InitialDataLoader implements CommandLineRunner {
         return dotProduct / (magnitude1 * magnitude2);
     }
 
+    private void generateAndSaveSimilarityData(int dimension, int maxValue) {
+        double defaultSimilarity = 0.0;
+
+        for (int i = 0; i <= maxValue; i++) {
+            for (int j = 0; j <= maxValue; j++) {
+                for (int k = 0; k <= maxValue; k++) {
+                    for (int l = 0; l <= maxValue; l++) {
+                        Integer[] vectorA = {i, j, k, l};
+                        for (int m = 0; m <= maxValue; m++) {
+                            for (int n = 0; n <= maxValue; n++) {
+                                for (int o = 0; o <= maxValue; o++) {
+                                    for (int p = 0; p <= maxValue; p++) {
+                                        Integer[] vectorB = {m, n, o, p};
+
+                                        double similarity = calculateCosineSimilarity(vectorA, vectorB);
+                                        // Create VectorSimilarity entity and save it
+                                        VectorSimilarity similarityPair = new VectorSimilarity(vectorA, vectorB);
+                                        similarityPair.setSimilarity(similarity);
+                                        vectorSimilarityRepository.save(similarityPair);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private double calculateCosineSimilarity(Integer[] vectorA, Integer[] vectorB) {
+        // Calculate the dot product of vectorA and vectorB
+        double dotProduct = 0;
+        double magnitudeA = 0;
+        double magnitudeB = 0;
+
+        for (int i = 0; i < vectorA.length; i++) {
+            dotProduct += vectorA[i] * vectorB[i];
+            magnitudeA += Math.pow(vectorA[i], 2);
+            magnitudeB += Math.pow(vectorB[i], 2);
+        }
+
+        // Calculate the magnitude (Euclidean norm) of each vector
+        magnitudeA = Math.sqrt(magnitudeA);
+        magnitudeB = Math.sqrt(magnitudeB);
+
+        // Calculate the cosine similarity
+        if (magnitudeA == 0 || magnitudeB == 0) {
+            // Handle the case of zero magnitude (avoid division by zero)
+            return 0.0;
+        } else {
+            return dotProduct / (magnitudeA * magnitudeB);
+        }
+    }
+
+
+
     @Override
     public void run(String... args) throws Exception {
+
+        // 초기 벡터값 이니셜라이징
+        int dimension = 4;
+        int maxValue = 4; // Values can range from 0 to 4
+        generateAndSaveSimilarityData(dimension, maxValue);
+
+
+
         // 초기 데이터 생성 및 저장(관리자)
         User adminUser = User.builder()
                 .userName("admin")
@@ -144,6 +211,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("admin@gmail.com")
                 .password(passwordEncoder.encode("admin"))  // 비밀번호 해싱
                 .role(Role.ADMIN)
+                .lastAccessDate(LocalDateTime.of(2023, 9, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(adminUser);
@@ -199,6 +267,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("2")
                 .password(passwordEncoder.encode("2"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user2);
@@ -311,6 +380,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("3")
                 .password(passwordEncoder.encode("3"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user3);
@@ -424,6 +494,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("4")
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 6, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user4);
@@ -580,6 +651,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("5")
                 .password(passwordEncoder.encode("5"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
                 .build();
 
         userRepository.save(user5);
@@ -694,6 +766,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("6")
                 .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 9, 2, 14, 30, 0))
                 .build();
 
         userRepository.save(user6);
@@ -808,6 +881,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("7")
                 .password(passwordEncoder.encode("7"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
                 .build();
 
         userRepository.save(user7);
@@ -951,6 +1025,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("8")
                 .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 4, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user8);
@@ -1065,6 +1140,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("9")
                 .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
                 .build();
 
         userRepository.save(user9);
@@ -1218,15 +1294,15 @@ public class InitialDataLoader implements CommandLineRunner {
 ////        0000
 //        createUserAndPortfolio("0000", "0000", "0000", "0000", 0, 0, 0, 0, "0000", "0000", "");
 ////        0001
-//        createUserAndPortfolio("0001", "0001", "0001", "0001", 0, 0, 0, 1, "0001", "0001", "");
+        createUserAndPortfolio("0001", "0001", "0001", "0001", 0, 0, 0, 1, "0001", "0001", "", LocalDateTime.of(2023, 9, 1, 14, 30, 0));
 ////        0002
-//        createUserAndPortfolio("0002", "0002", "0002", "0002", 0, 0, 0, 2, "0002", "0002", "");
+        createUserAndPortfolio("0002", "0002", "0002", "0002", 0, 0, 0, 2, "0002", "0002", "", LocalDateTime.of(2023, 9, 2, 14, 30, 0));
 ////        0003
-//        createUserAndPortfolio("0003", "0003", "0003", "0003", 0, 0, 0, 3, "0003", "0003", "");
+        createUserAndPortfolio("0003", "0003", "0003", "0003", 0, 0, 0, 3, "0003", "0003", "", LocalDateTime.of(2023, 8, 29, 14, 30, 0));
 ////        0004
-//        createUserAndPortfolio("0004", "0004", "0004", "0004", 0, 0, 0, 4, "0004", "0004", "");
+        createUserAndPortfolio("0004", "0004", "0004", "0004", 0, 0, 0, 4, "0004", "0004", "", LocalDateTime.of(2023, 9, 5, 14, 30, 0));
 ////        0010
-//        createUserAndPortfolio("0010", "0010", "0010", "0010", 0, 0, 1, 0, "0010", "0010", "");
+        createUserAndPortfolio("0010", "0010", "0010", "0010", 0, 0, 1, 0, "0010", "0010", "", LocalDateTime.of(2023, 8, 2, 14, 30, 0));
 ////        0012
 //        createUserAndPortfolio("0012", "0012", "0012", "0012", 0, 0, 1, 2, "0012", "0012", "");
 ////        0013

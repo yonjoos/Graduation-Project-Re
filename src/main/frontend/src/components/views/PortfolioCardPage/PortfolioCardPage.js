@@ -28,6 +28,7 @@ function PortfolioCardPage() {
     const [selectedBanners, setSelectedBanners] = useState(['all']); // 처음 해당 페이지가 setting될 떄는 선택된 배너가 '전체'가 되도록 함
     const [sortOption, setSortOption] = useState('latestPortfolio'); // 최신 등록 순 기본으로 선택
     const [reload, setReload] = useState(0);
+    const [recommend, setRecommend] = useState(0);
 
     const pageSize = 9;
 
@@ -52,6 +53,15 @@ function PortfolioCardPage() {
 
         setReload(0);
     }, [reload]);
+
+    useEffect(()=>{
+        if(recommend == 1) {
+            Recommend();
+            setRecommend(0);
+        }
+        else{
+        }
+    }, [recommend])
 
 
     // 검색 조건이 바뀔 때 실행
@@ -240,6 +250,27 @@ function PortfolioCardPage() {
     }
 
 
+    const Recommend = async() => {
+
+        try{
+
+            const response = await request('GET', `/getRecommendation`);
+            setData(response.data); 
+            setTotalPages(response.data.totalPages);
+            console.log(data);
+        } catch (error) {
+            console.error("레코멘드 노노", error);
+        }
+
+
+
+    }
+
+    const handleRecommend = () => {
+        setRecommend(1);
+    }
+
+
     // 드롭다운을 위한 코드
     const menu = (
         <Menu selectedKeys={[sortOption]}>
@@ -348,7 +379,7 @@ function PortfolioCardPage() {
                         <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                             Study
                         </Button>
-                        <Button >
+                        <Button onClick={handleRecommend}>
                             RECOMMEND
                         </Button>
                     </Col>

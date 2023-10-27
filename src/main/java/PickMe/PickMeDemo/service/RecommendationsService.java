@@ -50,7 +50,7 @@ public class RecommendationsService {
 
 
     @Transactional(readOnly = true)
-    public List<PortfolioCardDto> getRecommend(final String email){
+    public List<PortfolioCardDto> getRecommend(final String email, final String type){
 
 
         User user = userRepository.findByEmail(email).get();
@@ -79,7 +79,7 @@ public class RecommendationsService {
          */
 
         //순위 매기기 - step 3.1 : 유사도 정렬하기
-        final List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration);
+        final List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration, type);
 
 
         //앞에 3명만 뽑는 기능은 일단 패쓰
@@ -187,7 +187,8 @@ public class RecommendationsService {
      */
     private List<Pair<Long, Double>> rankSimilarity(final Integer[] userInterest,
                                                    final List<Pair<Long, Portfolio>> pairedIdPortfolio,
-                                                   final List<User> users){
+                                                   final List<User> users,
+                                                    String type){
 
 
         //최종 반환값, 'pairedSimilarities'
@@ -195,7 +196,8 @@ public class RecommendationsService {
         for(Pair<Long, Portfolio> pair : pairedIdPortfolio){
 
             Integer[] interest = pair.getSecond().getVector();
-            Double similarity = calculateSimilarityDB(userInterest, interest);
+            Double similarity = (type.equals("DB")) ? calculateSimilarityDB(userInterest, interest) : calculateSimilarity(userInterest, interest);
+
 
             Pair<Long, Double> pairedIdSimilarity = Pair.of(pair.getFirst(), similarity);
             pairedSimilarities.add(pairedIdSimilarity);
@@ -244,6 +246,34 @@ public class RecommendationsService {
                     - Integer[] userInterest : 나의 관심사 백터
                     - Integer[] interest : 비교대상 관심사 벡터
      */
+    private Double calculateSimilarity(final Integer[] userInterest, final Integer[] interest){
+
+        if (userInterest.length != interest.length) {
+            throw new IllegalArgumentException("Vectors must have the same length");
+        }
+
+        Double dotProduct = 0.0;
+        Double magnitudeUser = 0.0;
+        Double magnitudeOtherUser = 0.0;
+
+        for (int i = 0; i < userInterest.length; i++) {
+            dotProduct += userInterest[i] * interest[i];
+            magnitudeUser += Math.pow(userInterest[i], 2);
+            magnitudeOtherUser += Math.pow(interest[i], 2);
+        }
+
+        magnitudeUser = Math.sqrt(magnitudeUser);
+        magnitudeOtherUser = Math.sqrt(magnitudeOtherUser);
+
+        if (magnitudeUser == 0 || magnitudeOtherUser == 0) {
+            return 0.0; // To handle division by zero
+        }
+
+        return dotProduct / (magnitudeUser * magnitudeOtherUser);
+    }
+
+
+
     private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){
 
         QVectorSimilarity vectorSimilarity = QVectorSimilarity.vectorSimilarity;

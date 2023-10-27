@@ -155,7 +155,6 @@ function GroupPage() {
            <div>
                 {posts.map((item, index) => (
                     <Card key={index} style={{ margin: '0 0 10px 0' }}>
-                        <Divider className="bold-divider" />
                         <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
                             <Col span={12} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
                                 <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
@@ -265,7 +264,6 @@ function GroupPage() {
                                 </div>
                             </Col>
                         </Row>
-                        <Divider className="bold-divider" />
                     </Card>
                 ))}
             </div>

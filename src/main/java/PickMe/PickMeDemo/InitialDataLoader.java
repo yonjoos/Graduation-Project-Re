@@ -23,7 +23,6 @@ public class InitialDataLoader implements CommandLineRunner {
     private final PortfolioRepository portfolioRepository;
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
-    private final RecommendationsRepository recommendationsRepository;
     private final VectorSimilarityRepository vectorSimilarityRepository;
 
 
@@ -205,7 +204,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("admin@gmail.com")
                 .password(passwordEncoder.encode("admin"))  // 비밀번호 해싱
                 .role(Role.ADMIN)
-                .lastAccessDate(LocalDateTime.of(2023, 9, 27, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2022, 9, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(adminUser);
@@ -217,6 +216,7 @@ public class InitialDataLoader implements CommandLineRunner {
                         .nickName("user")
                         .email("user@gmail.com")
                         .password(passwordEncoder.encode("user"))  // 비밀번호 해싱
+                        .lastAccessDate(LocalDateTime.of(2022, 8, 27, 14, 30, 0))
                         .role(Role.USER)
                         .build();
 
@@ -249,6 +249,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("1")
                 .password(passwordEncoder.encode("1"))  // 비밀번호 해싱
                 .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2022, 8, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user1);
@@ -270,8 +271,8 @@ public class InitialDataLoader implements CommandLineRunner {
                 .user(user2)
                 .web(4)
                 .app(3)
-                .game(2)
-                .ai(1)
+                .game(0)
+                .ai(0)
                 .shortIntroduce("안녕하세요, 웹과 앱에 관심있는 코딩 꿈나무입니다.")
                 .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js) \n- 픽미 프로젝트 (React + SpringBoot + JPA) \n- 코로나 보드 크롤링 프로젝트(Node.js + Express.js)")
                 .fileUrl("")
@@ -488,7 +489,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("4")
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2023, 6, 27, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2022, 6, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user4);
@@ -645,7 +646,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("5")
                 .password(passwordEncoder.encode("5"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2022, 9, 25, 14, 30, 0))
                 .build();
 
         userRepository.save(user5);
@@ -760,7 +761,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("6")
                 .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2023, 9, 2, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2022, 9, 2, 14, 30, 0))
                 .build();
 
         userRepository.save(user6);
@@ -1019,7 +1020,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("8")
                 .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2023, 4, 27, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2022, 4, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user8);
@@ -1134,7 +1135,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("9")
                 .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2022, 7, 21, 14, 30, 0))
                 .build();
 
         userRepository.save(user9);

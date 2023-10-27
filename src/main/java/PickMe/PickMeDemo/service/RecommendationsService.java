@@ -1,6 +1,7 @@
 package PickMe.PickMeDemo.service;
 
 import PickMe.PickMeDemo.dto.PortfolioCardDto;
+import PickMe.PickMeDemo.dto.PortfolioCardRecommendationDto;
 import PickMe.PickMeDemo.dto.PortfolioDto;
 import PickMe.PickMeDemo.entity.Portfolio;
 import PickMe.PickMeDemo.entity.QUser;
@@ -49,8 +50,10 @@ public class RecommendationsService {
     // 날아가는 쿼리 수가 상당할지도??
 
 
+    // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
+    // 중간 발표 이후로는 PortfolioCardDto로 돌려놓기!!
     @Transactional(readOnly = true)
-    public List<PortfolioCardDto> getRecommend(final String email, final String type){
+    public List<PortfolioCardRecommendationDto> getRecommend(final String email, final String type){
 
 
         User user = userRepository.findByEmail(email).get();
@@ -81,11 +84,6 @@ public class RecommendationsService {
         //순위 매기기 - step 3.1 : 유사도 정렬하기
         final List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration, type);
 
-
-        //앞에 3명만 뽑는 기능은 일단 패쓰
-        //List<Pair<Long, Double>> firstThreeElements = pairedIdInterests.subList(0, 3);
-
-
         //순위 매기기 - step 3.2 : 정렬된 유사도에 맞춰 Portfolio 정렬
         // Pair A : Pair<id, similarity> 정렬된 유사도
         // Pair B : Pair<id, portfolio> --> Pair A, B 두 개의 id의 순서가 같게 만들어줌
@@ -97,31 +95,49 @@ public class RecommendationsService {
         >>> STEP 4 : DTO 변환 <<<
          */
 
-        //최종 반환값, List<PortfolioCardDto> dtos
-        List<PortfolioCardDto> dtos = new ArrayList<>();
+        // 최종 반환값, List<PortfolioCardDto> dtos
+        // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
+        // 중간 발표 이후로는 PortfolioCardDto로 돌려놓기!!
+        List<PortfolioCardRecommendationDto> dtos = new ArrayList<>();
+
+        // 상위 3개의 데이터만 처리하기 위한 변수
+        int count = 0;
+        // 코사인 유사도 인덱스를 위해 필요
+        int i = 0;
+
         for(Pair<Long, Portfolio> pair : sortedPairedIdPortfolio){
 
-            String nickName = "";
-            for(User u : usersInDuration){
-                if(u.getId() == pair.getFirst()){
-                    nickName = u.getNickName();
-                    break;
+            // 상위 3개의 데이터만 처리
+            if (count < 3) {
+                String nickName = "";
+
+                for (User u : usersInDuration) {
+                    if (u.getId() == pair.getFirst()) {
+                        nickName = u.getNickName();
+                        break;
+                    }
                 }
+
+                Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.getSecond().getId()).orElse(null);
+                Double cosine = pairedIdInterests.get(i).getSecond();
+
+                PortfolioCardRecommendationDto cardDto = PortfolioCardRecommendationDto.builder()
+                        .nickName(nickName)
+                        .web(pair.getSecond().getWeb())
+                        .app(pair.getSecond().getApp())
+                        .game(pair.getSecond().getGame())
+                        .ai(pair.getSecond().getAi())
+                        .shortIntroduce(pair.getSecond().getShortIntroduce())
+                        .viewCount(views)
+                        .cosineSimilarity(cosine)
+                        .build();
+
+                dtos.add(cardDto);
+                count++; // 데이터 추가 시 count 증가
+                i++;    // 다음 코사인 유사도 값을 가져오기 위한 인덱스 증가
+            } else {
+                break; // 상위 3개 데이터를 처리한 후 루프 종료
             }
-
-            Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.getSecond().getId()).orElse(null);
-
-            PortfolioCardDto cardDto = PortfolioCardDto.builder()
-                    .nickName(nickName)   // user = posts.getUser()
-                    .web(pair.getSecond().getWeb())     // category = posts.getCategory()
-                    .app(pair.getSecond().getApp())
-                    .game(pair.getSecond().getGame())
-                    .ai(pair.getSecond().getAi())
-                    .shortIntroduce(pair.getSecond().getShortIntroduce())
-                    .viewCount(views)
-                    .build();
-
-            dtos.add(cardDto);
         }
 
         return dtos;

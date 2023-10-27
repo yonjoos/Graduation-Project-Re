@@ -29,6 +29,7 @@ function PortfolioCardPage() {
     const [sortOption, setSortOption] = useState('latestPortfolio'); // 최신 등록 순 기본으로 선택
     const [reload, setReload] = useState(0);
     const [recommend, setRecommend] = useState(0);
+    const [isRecommend, setIsRecommend] = useState(0);    // isRecommend가 0인 경우 일반적인 포폴 카드 리스트 확인, 1인 경우 추천 포폴 확인 -> 추천에서 페이지네이션 안보이게 하기 위함
 
     const pageSize = 9;
 
@@ -134,7 +135,6 @@ function PortfolioCardPage() {
         // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
         if (dataArray && dataArray.length > 0) {
             return (
-
                 <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
                     <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
                         <strong># {title}</strong>
@@ -152,7 +152,6 @@ function PortfolioCardPage() {
                         ))}
                     </div>
                 </Card>
-
             );
         }
         return null;
@@ -161,7 +160,6 @@ function PortfolioCardPage() {
 
     // 백엔드에서 받아온 포트폴리오 정보를 카드로 만들어서 뿌려줌
     const fetchUsers = async () => {
-
         try {
             const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
                 selectedBanners: selectedBanners.join(','), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
@@ -218,6 +216,7 @@ function PortfolioCardPage() {
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
+        setIsRecommend(0);
         setReload(1);
     };
 
@@ -251,9 +250,7 @@ function PortfolioCardPage() {
 
 
     const Recommend = async() => {
-
         try{
-
             const response = await request('GET', `/getRecommendation`);
             setData(response.data); 
             setTotalPages(response.data.totalPages);
@@ -261,12 +258,10 @@ function PortfolioCardPage() {
         } catch (error) {
             console.error("레코멘드 노노", error);
         }
-
-
-
     }
 
     const handleRecommend = () => {
+        setIsRecommend(1);
         setRecommend(1);
     }
 
@@ -296,13 +291,18 @@ function PortfolioCardPage() {
             <div>
                 <Row gutter={16}>
                     {cards.map((item, index) => (
-
                         <Col xs={24} sm={8} key={index}>
-                            <Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
+                            {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                 {/* style = {{cursor: 'pointer'}} */}
+                                <Card onClick={() => onClickHandler(item.nickName)} title={
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span>👩🏻‍💻 {item.nickName}</span>
+                                        <span>{item.cosineSimilarity}</span>
+                                    </div>
+                                } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
                                 <b>Field Of Interests</b>
                                 <br />
-                                {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                {item.web ? "#Web " : ""}{item.app ? "#App " : ""}{item.game ? "#Game " : ""}{item.ai ? "#AI " : ""}
                                 <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                 <b>Brief Introduction</b>
                                 <br />
@@ -396,15 +396,21 @@ function PortfolioCardPage() {
             <div>
                 {renderCards(data)}
             </div>
-            <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                <Pagination
-                    current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
-                    total={totalPages * pageSize}
-                    pageSize={pageSize}
-                    onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
-                    showSizeChanger={false}
-                />
-            </div>
+            {/** 일반적인 포폴 카드 페이지에서는 Pagination이 보이도록, 추천 페이지에서는 Pagination이 보이지 않도록 함 */}
+            {isRecommend === 0 ? (
+                <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                    <Pagination
+                        current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                        total={totalPages * pageSize}
+                        pageSize={pageSize}
+                        onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                        showSizeChanger={false}
+                    />
+                </div>
+            ) : (
+                <div/>
+            )}
+            
         </div>
     );
 }

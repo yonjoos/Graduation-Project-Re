@@ -2,6 +2,7 @@ package PickMe.PickMeDemo.controller;
 
 
 import PickMe.PickMeDemo.dto.PortfolioCardDto;
+import PickMe.PickMeDemo.dto.PortfolioCardRecommendationDto;
 import PickMe.PickMeDemo.dto.PostsListDto;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.service.PortfolioService;
@@ -53,13 +54,19 @@ public class PortfolioCardController {
         return ResponseEntity.ok(result);
     }
 
+    // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
+    // 중간 발표 이후로는 리턴 타입 등을 PortfolioCardDto로 돌려놓기!!
     @GetMapping("/getRecommendation")
-    public ResponseEntity<List<PortfolioCardDto>> getRecommendation(Principal principal){
+    public ResponseEntity<List<PortfolioCardRecommendationDto>> getRecommendation(Principal principal){
         String email = principal.getName();
 
         //String type = "real-time"; //' real-time' or 'DB'
         String type = "DB";
-        List<PortfolioCardDto> result = recommendationsService.getRecommend(email, type);
+
+        // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
+        // 중간 발표 이후로는 리턴 타입 등을 PortfolioCardDto로 돌려놓기!!
+        List<PortfolioCardRecommendationDto> result = recommendationsService.getRecommend(email, type);
+
         return ResponseEntity.ok(result);
     }
 

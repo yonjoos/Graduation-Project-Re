@@ -661,7 +661,7 @@ function DetailProjectPage() {
         console.log('com', comments);
 
         return comments.map((comment) => (
-            <Card key={comment.id} style={{ marginBottom: '16px' }}>
+            
                 <div className={`comment-container depth-${depth}`}>
                     <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -670,24 +670,24 @@ function DetailProjectPage() {
                         </div>
 
                         {comment.commentWriter && (
-                            <div>
-                                <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                            <div style={{display:'flex'}}>
+                                <div  style={{marginRight:'10px'}} onClick={() => showReplyInput(comment.id)}>답글달기</div>
                                 {editingCommentId === comment.id ? (
                                     // 수정 중일 때, Input으로 표시하고 수정 관련 버튼 표시
 
 
-                                    <Button size="small" onClick={handleCancelEditComment} style={{ marginBottom: '16px' }}>취소</Button>
+                                    <div style={{marginRight:'10px'}} onClick={handleCancelEditComment} >취소</div>
 
                                 ) : (
                                     // 수정 중이 아닐 때, "수정" 버튼 표시
-                                    <Button size="small" onClick={() => handleEditComment(comment.id, comment.content)}>수정</Button>
+                                    <div style={{marginRight:'10px'}} onClick={() => handleEditComment(comment.id, comment.content)}>수정</div>
                                 )}
                                 {/* <Button size="small" onClick={() => handleDeleteComment(comment.id, comment.isTopLevel)}>삭제</Button> */}
-                                <Button size="small" onClick={() => showCommentDeleteConfirmModal(comment.id, comment.isTopLevel)}>삭제</Button>
+                                <div onClick={() => showCommentDeleteConfirmModal(comment.id, comment.isTopLevel)}>삭제</div>
                             </div>
                         )}
                         {!comment.commentWriter && (
-                            <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                            <div onClick={() => showReplyInput(comment.id)}>답글 달기</div>
                         )}
                     </div>
 
@@ -744,7 +744,7 @@ function DetailProjectPage() {
                         </div>
                     )}
                 </div>
-            </Card>
+           
         ));
     };
 
@@ -1024,108 +1024,79 @@ function DetailProjectPage() {
                         {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
                         {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
 
-                        {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <Divider className="bold-divider" />
-
-                        <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                            <Col span={16}>
-                                <div style={{ marginLeft: '5%' }}>
-                                    제목: {data.title}
-                                </div>
-                            </Col>
-                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                            <Col span={8} className="vertical-line">
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <div style={{ marginLeft: '3px' }}>
-                                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                        분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
-                                    </div>
-                                    <div style={{ marginRight: '15px' }}>
-                                        조회 수: {data.viewCount}
-                                    </div>
-                                </div>
-                            </Col>
-                        </Row>
-
-                        <Divider className="simple-divider" />
-
-                        <Row gutter={[16, 16]} justify="center" align="middle">
-                            <Col span={16}>
-                                <div style={{ marginLeft: '5%', borderRight: '1px', cursor: 'pointer' }} onClick={() => handleNickNameClick(data.nickName)}>
-                                    닉네임: {data.nickName}
-                                </div>
-                            </Col>
-                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                            <Col span={8} className="vertical-line">
-                                <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                                    인원: {data.counts} / {data.recruitmentCount}
-                                </div>
-                                <div style={{ marginLeft: '3px' }}>
-                                    모집 마감일: {formatDate(data.endDate)}
-                                </div>
-                            </Col>
-                        </Row>
-
-                        <Divider className="bold-divider" />
-
-                        <div style={{ marginLeft: '5px' }}>
-                            첨부 파일: {
-                                data.fileUrl ? (
-                                    data.fileUrl.map((file, index) => (
-                                        <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
-                                            <Button
-                                                onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
-                                            >
-                                                {file.fileName} {/* 파일 이름 표시 */}
-                                            </Button>
+                        <Card>
+                            <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
+                                <div style={{display:'flex', justifyContent: 'space-between' }}>
+                                    <div style={{display:'grid'}}>
+                                        <div style={{fontSize:'25px',fontWeight:'bold'}}>
+                                            {data.title}
                                         </div>
-                                    ))
-                                ) : (
-                                    <p>이미지가 없습니다</p>
-                                )}
-                        </div>
-
-                        <Divider className="bold-divider" />
-
-                        <div style={{ marginLeft: '5px' }}>
-                            홍보 사진:
-                            {data.promoteImageUrl ? (
-                                data.promoteImageUrl.map((imageUrl, index) => (
-                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                        <img
-                                            key={index}
-                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                            alt={`홍보 사진 ${index + 1}`}
-                                            style={{ margin: '10px', width: 600 }}
-                                        />
+                                        <div style={{marginTop:'5px'}}>
+                                            {data.nickName}
+                                        </div>
                                     </div>
-                                ))
-                            ) : (
-                                <p>이미지가 없습니다</p>
-                            )}
-                        </div>
+                                    <div style={{alignItems:'center'}}>
+                                        {data.viewCount} views
+                                    </div>
+                                </div>
+                                <hr></hr>
+                                <div style={{display:'grid'}}>
+                                    <div >
+                                        {data.web ? " #Web " : ""}{data.app ? " #App " : ""}{data.game ? " #Game " : ""}{data.ai ? " #AI " : ""}
+                                    </div>
+                                    <div style={{marginTop:'20px'}}>
+                                        {insertLineBreaks(data.content, 45)}
+                                    </div>
+                                    <div style={{marginTop:'150px'}}>
+                                        첨부 파일 {
+                                        data.fileUrl ? (
+                                            data.fileUrl.map((file, index) => (
+                                                <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                                    <Button
+                                                        onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                    >
+                                                        {file.fileName} {/* 파일 이름 표시 */}
+                                                    </Button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            null
+                                        )}
 
-                        <Divider className="bold-divider" />
-
-                        {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
-                        <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
-                            내용: {insertLineBreaks(data.content, 45)}
-                        </div>
-
-                        <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                            <Button size="small" onClick={toggleCommentsVisibility}>
-                                {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
-                            </Button>
-                        </div>
-
-
-
-                        {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
-                        {areCommentsVisible && (
+                                    </div>
+                                    <div>
+                                        홍보 사진:
+                                        {data.promoteImageUrl ? (
+                                            data.promoteImageUrl.map((imageUrl, index) => (
+                                                <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                                    <img
+                                                        key={index}
+                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                        alt={`홍보 사진 ${index + 1}`}
+                                                        style={{ margin: '10px', width: 600 }}
+                                                    />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>이미지가 없습니다</p>
+                                        )}
+                                        
+                                    </div>
+                                    <hr></hr>
+                                </div>
+                                <div style={{display:'flex',justifyContent: 'space-between' }}>
+                                    <div style={{marginBottom:'30px'}}>
+                                        <strong>comments</strong>
+                                    </div>
+                                    <div>
+                                        <Button size="small" onClick={toggleCommentsVisibility}>
+                                            {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                                        </Button>
+                                    </div>
+                                </div>
+                                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
+                                {areCommentsVisible && (
                             <div>
-                                <Divider className="bold-divider" />
-
-                                <h5>댓글</h5>
                                 {renderComments(commentData.content)}
                                 <div style={{ textAlign: 'center', margin: '20px 0' }}>
                                     {moreCommentsAvailable && (
@@ -1135,23 +1106,19 @@ function DetailProjectPage() {
                                     )}
                                 </div>
 
-                                <div>
-                                    <Card>
-                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                                             <UserOutlined style={{ marginRight: '5px' }} />
                                             <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
-                                        </div>
-                                        <TextArea
-                                            autoSize={{ minRows: 4 }}
-                                            value={commentText}
-                                            onChange={(e) => setCommentText(e.target.value)}
-                                            placeholder="Write a comment"
-                                        />
-                                        <div style={{ textAlign: 'right', marginTop: '16px' }}>
-                                            <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
-                                        </div>
-                                    </Card>
                                 </div>
+                                            <TextArea
+                                                autoSize={{ minRows: 4 }}
+                                                value={commentText}
+                                                onChange={(e) => setCommentText(e.target.value)}
+                                                placeholder="Write a comment"
+                                            />
+                                    <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                            <Button size="small" onClick={handleCommentSubmit}>등록</Button>
+                                    </div>
                                 {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
                                     <Pagination
                                         current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
@@ -1164,6 +1131,19 @@ function DetailProjectPage() {
                             </div>
 
                         )}
+                                </div>
+                            </div>
+                        </Card>
+
+
+                        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                            
+                        </div>
+
+
+
+                        {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
+                        
 
                         {/* Modal */}
                         <Modal

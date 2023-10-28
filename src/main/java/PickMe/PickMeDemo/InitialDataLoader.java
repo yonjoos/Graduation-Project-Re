@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -61,10 +63,42 @@ public class InitialDataLoader implements CommandLineRunner {
         portfolioRepository.save(portfolio);
     }
 
+    // 여기서 createRecommendationsTable 함수는 Recommendations 테이블에 데이터를 저장하도록 되어 있다.
 
+    public static List<List<Integer>> getPermutations(List<Integer> numbers) {
+        Collections.sort(numbers);
+        List<List<Integer>> permutations = new ArrayList<>();
+        do {
+            permutations.add(new ArrayList<>(numbers));
+        } while (nextPermutation(numbers));
+        return permutations;
+    }
 
+    public static boolean nextPermutation(List<Integer> arr) {
+        int n = arr.size();
+        int i = n - 2;
+        while (i >= 0 && arr.get(i) >= arr.get(i + 1)) {
+            i--;
+        }
+        if (i < 0) {
+            return false;
+        }
+        int j = n - 1;
+        while (arr.get(j) <= arr.get(i)) {
+            j--;
+        }
+        Collections.swap(arr, i, j);
+        Collections.reverse(arr.subList(i + 1, n));
+        return true;
+    }
 
-
+    public static Integer[] listToVector(List<Integer> list) {
+        Integer[] vector = new Integer[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            vector[i] = list.get(i);
+        }
+        return vector;
+    }
 
     private double calculateCosineSimilarity(Integer[] vectorA, Integer[] vectorB) {
         // Calculate the dot product of vectorA and vectorB
@@ -91,35 +125,74 @@ public class InitialDataLoader implements CommandLineRunner {
         }
     }
 
-    private void saveIntoRepository(List<Integer[]> vectorA, List<Integer[]> vectorB) {
-        Set<String> processedCombinations = new HashSet<>();
-
-        for (Integer[] f : vectorA) {
-            for (Integer[] s : vectorB) {
-                String combinationKey = Arrays.toString(f) + Arrays.toString(s);
-
-                if (!processedCombinations.contains(combinationKey)) {
-                    double sim = calculateCosineSimilarity(f, s);
-                    VectorSimilarity v = new VectorSimilarity(f, s, sim);
-                    vectorSimilarityRepository.save(v);
-
-                    processedCombinations.add(combinationKey);
-                }
-            }
-        }
-    }
 
 
     @Override
     public void run(String... args) throws Exception {
 
-        for(int i = 1; i <= 4; i++){
-            for(int j = 1; j <= 4; j++){
+//        // 초기 벡터값 이니셜라이징
+//        int dimension = 4;
+//        int maxValue = 4; // Values can range from 0 to 4
+//        generateAndSaveSimilarityData(dimension, maxValue);
 
-                List<Integer[]> vectorA = RandomUsers.getInterests(i);
-                List<Integer[]> vectorB = RandomUsers.getInterests(j);
+        List<List<Integer>> standardPermutations = new ArrayList<>();
+        standardPermutations.add(List.of(0, 0, 0, 0));
+        standardPermutations.add(List.of(1, 0, 0, 0));
+        standardPermutations.add(List.of(2, 0, 0, 0));
+        standardPermutations.add(List.of(3, 0, 0, 0));
+        standardPermutations.add(List.of(4, 0, 0, 0));
+        standardPermutations.add(List.of(2, 1, 0, 0));
+        standardPermutations.add(List.of(3, 1, 0, 0));
+        standardPermutations.add(List.of(3, 2, 0, 0));
+        standardPermutations.add(List.of(4, 1, 0, 0));
+        standardPermutations.add(List.of(4, 2, 0, 0));
+        standardPermutations.add(List.of(4, 3, 0, 0));
+        standardPermutations.add(List.of(3, 2, 1, 0));
+        standardPermutations.add(List.of(4, 2, 1, 0));
+        standardPermutations.add(List.of(4, 3, 1, 0));
+        standardPermutations.add(List.of(4, 3, 2, 0));
+        standardPermutations.add(List.of(4, 3, 2, 1));
 
-                saveIntoRepository(vectorA, vectorB);
+        List<List<Integer>> standardPermutationsList = new ArrayList<>();
+        for (List<Integer> standardPermutation : standardPermutations) {
+            standardPermutationsList.addAll(getPermutations(new ArrayList<>(standardPermutation)));
+        }
+
+        List<List<Integer>> numbers = new ArrayList<>();
+        numbers.add(List.of(0, 0, 0, 0));
+        numbers.add(List.of(1, 0, 0, 0));
+        numbers.add(List.of(2, 0, 0, 0));
+        numbers.add(List.of(3, 0, 0, 0));
+        numbers.add(List.of(4, 0, 0, 0));
+        numbers.add(List.of(2, 1, 0, 0));
+        numbers.add(List.of(3, 1, 0, 0));
+        numbers.add(List.of(3, 2, 0, 0));
+        numbers.add(List.of(4, 1, 0, 0));
+        numbers.add(List.of(4, 2, 0, 0));
+        numbers.add(List.of(4, 3, 0, 0));
+        numbers.add(List.of(3, 2, 1, 0));
+        numbers.add(List.of(4, 2, 1, 0));
+        numbers.add(List.of(4, 3, 1, 0));
+        numbers.add(List.of(4, 3, 2, 0));
+        numbers.add(List.of(4, 3, 2, 1));
+
+        for (List<Integer> standard : standardPermutationsList) {
+
+            List<List<Integer>> permutations = new ArrayList<>();
+
+            for (List<Integer> number : numbers) {
+                permutations.addAll(getPermutations(new ArrayList<>(number)));
+            }
+
+            for (List<Integer> permutation : permutations) {
+                Integer[] standardArray = listToVector(standard);
+                Integer[] permutationArray = listToVector(permutation);
+
+                double similarity = calculateCosineSimilarity(permutationArray, standardArray);
+
+                VectorSimilarity vectorSimilarity = new VectorSimilarity(standardArray, permutationArray, similarity);
+
+                vectorSimilarityRepository.save(vectorSimilarity);
             }
         }
 
@@ -131,7 +204,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("admin@gmail.com")
                 .password(passwordEncoder.encode("admin"))  // 비밀번호 해싱
                 .role(Role.ADMIN)
-                .lastAccessDate(LocalDateTime.of(2022, 9, 27, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2023, 9, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(adminUser);
@@ -139,13 +212,12 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(유저)
         User generalUser = User.builder()
-                        .userName("user")
-                        .nickName("user")
-                        .email("user@gmail.com")
-                        .password(passwordEncoder.encode("user"))  // 비밀번호 해싱
-                        .lastAccessDate(LocalDateTime.of(2022, 8, 27, 14, 30, 0))
-                        .role(Role.USER)
-                        .build();
+                .userName("user")
+                .nickName("user")
+                .email("user@gmail.com")
+                .password(passwordEncoder.encode("user"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .build();
 
         userRepository.save(generalUser);
 
@@ -176,7 +248,6 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("1")
                 .password(passwordEncoder.encode("1"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2022, 8, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user1);
@@ -198,13 +269,13 @@ public class InitialDataLoader implements CommandLineRunner {
                 .user(user2)
                 .web(4)
                 .app(3)
-                .game(0)
-                .ai(0)
+                .game(2)
+                .ai(1)
                 .shortIntroduce("안녕하세요, 웹과 앱에 관심있는 코딩 꿈나무입니다.")
                 .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js) \n- 픽미 프로젝트 (React + SpringBoot + JPA) \n- 코로나 보드 크롤링 프로젝트(Node.js + Express.js)")
                 .fileUrl("")
                 .build();
-        
+
         portfolioRepository.save(user2Portfolio);
 
         String initialEndDate1 = "2023-11-30"; // 원하는 종료 날짜를 스트링으로 받음
@@ -416,7 +487,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("4")
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2022, 6, 27, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2023, 6, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user4);
@@ -573,7 +644,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("5")
                 .password(passwordEncoder.encode("5"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2022, 9, 25, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
                 .build();
 
         userRepository.save(user5);
@@ -688,7 +759,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("6")
                 .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2022, 9, 2, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2023, 9, 2, 14, 30, 0))
                 .build();
 
         userRepository.save(user6);
@@ -947,7 +1018,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("8")
                 .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2022, 4, 27, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2023, 4, 27, 14, 30, 0))
                 .build();
 
         userRepository.save(user8);
@@ -1062,7 +1133,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .email("9")
                 .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
                 .role(Role.USER)
-                .lastAccessDate(LocalDateTime.of(2022, 7, 21, 14, 30, 0))
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
                 .build();
 
         userRepository.save(user9);

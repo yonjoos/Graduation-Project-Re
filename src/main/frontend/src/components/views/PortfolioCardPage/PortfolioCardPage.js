@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
-import { request } from '../../../hoc/request';
+import { request, setHasPortfolio } from '../../../hoc/request';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
@@ -29,6 +29,7 @@ function PortfolioCardPage() {
     const [sortOption, setSortOption] = useState('latestPortfolio'); // 최신 등록 순 기본으로 선택
     const [reload, setReload] = useState(0);
     const [recommend, setRecommend] = useState(0);
+    const [sustain, setSustain] = useState(0);
 
     const pageSize = 9;
 
@@ -58,6 +59,7 @@ function PortfolioCardPage() {
         if(recommend == 1) {
             Recommend();
             setRecommend(0);
+            setSustain(1);
         }
         else{
         }
@@ -198,6 +200,7 @@ function PortfolioCardPage() {
 
     // 엔터나 클릭 시에만 변경됨(검색어 관련)
     const handleSearch = (value) => {
+        setSustain(0);
         setSearchTerm(value); // 검색어를 세팅
         setRelatedSearchTermEnable(false); // 엔터나 클릭을 눌렀으므로 연관 검색어 렌더링 여부를 false로 설정
         setCurrentPage(0); // 검색어가 바뀌면, 강제로 1페이지로 이동시킴
@@ -212,18 +215,21 @@ function PortfolioCardPage() {
 
     // <Button> Project의 핸들러, ProjectPage로 이동
     const handleProjectPage = () => {
+        setSustain(0);
         navigate('/project');
     };
 
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
+        setSustain(0);
         setReload(1);
     };
 
 
     // <Button> Study의 핸들러, StudyPage로 이동
     const handleStudyPage = () => {
+        setSustain(0);
         navigate('/study');
     };
 
@@ -393,7 +399,12 @@ function PortfolioCardPage() {
                 </Row>
                 <hr />
             </div>
-            <div>
+            <div style={{display:'grid'}}> 
+                {sustain === 1 ? (
+                    <div style={{ textAlign: 'center', marginBottom:'20px', backgroundColor: 'skyblue'  }} >
+                        <strong>이런 사람은 어떠세요?</strong>
+                    </div>
+                ) : null}
                 {renderCards(data)}
             </div>
             <div style={{ textAlign: 'center', margin: '20px 0' }}>

@@ -35,6 +35,7 @@ function PortfolioCardPage() {
     const [showRecommend, setShow] = useState(0);
 
 
+
     const pageSize = 9;
 
     // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
@@ -278,16 +279,15 @@ function PortfolioCardPage() {
         setIsRecommend(1);
         setShow(1);
 
-        // Show the loading message for 2 seconds before rendering the cards
         setTimeout(() => {
             setRecommend(1);
 
-            // Delay rendering of cards
             setTimeout(() => {
                 setSustain(1);
                 setShow(0);
             }, 1000);
         }, 1000);
+
     }
 
 
@@ -475,6 +475,7 @@ function PortfolioCardPage() {
             <div style={{display:'grid'}}> 
                 
                 {renderContent()}
+
             </div>
             {/** 일반적인 포폴 카드 페이지에서는 Pagination이 보이도록, 추천 페이지에서는 Pagination이 보이지 않도록 함 */}
             {isRecommend === 0 ? (

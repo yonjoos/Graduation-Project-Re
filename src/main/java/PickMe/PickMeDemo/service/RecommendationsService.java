@@ -217,6 +217,7 @@ public class RecommendationsService {
             Double similarity = (type.equals("DB")) ? calculateSimilarityDB(userInterest, interest) : calculateSimilarity(userInterest, interest);
 
 
+
             Pair<Long, Double> pairedIdSimilarity = Pair.of(pair.getFirst(), similarity);
             pairedSimilarities.add(pairedIdSimilarity);
         }
@@ -292,38 +293,41 @@ public class RecommendationsService {
 
 
 
-    private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){
+    private Double calculateSimilarityDB(final Integer[] vectorA, final Integer[] vectorB){
 
         QVectorSimilarity vectorSimilarity = QVectorSimilarity.vectorSimilarity;
 
-        if (userInterest.length != interest.length) {
+        if (vectorA.length != vectorB.length) {
             throw new IllegalArgumentException("Vectors must have the same length");
         }
 
-        boolean user = true;
-        boolean other = true;
+        boolean allZerosA = true;
+        boolean allZerosB = true;
 
-        for(int i = 0; i < userInterest.length; i++){
-            if(userInterest[i] != 0) {
-                user = false;
+        for (int i = 0; i < vectorA.length; i++) {
+            if (vectorA[i] != 0) {
+                allZerosA = false;
                 break;
             }
         }
 
-        for(int i = 0; i < interest.length; i++){
-            if(interest[i] != 0) {
-                other = false;
+        for (int i = 0; i < vectorB.length; i++) {
+            if (vectorB[i] != 0) {
+                allZerosB = false;
                 break;
             }
         }
 
-        if(user && other) return 0.0;
+        if (allZerosA || allZerosB) {
+            return 0.0;
+        }
 
 
         Double similarity = queryFactory.select(vectorSimilarity.similarity)
                 .from(vectorSimilarity)
-                .where(vectorSimilarity.vectorA.eq(userInterest), vectorSimilarity.vectorB.eq(interest))
+                .where(vectorSimilarity.vectorA.eq(vectorA), vectorSimilarity.vectorB.eq(vectorB))
                 .fetchOne();
+
 
         if (similarity == null) {
             similarity = 0.0;

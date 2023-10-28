@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -93,30 +91,31 @@ public class InitialDataLoader implements CommandLineRunner {
         }
     }
 
-    private void saveIntoRepository(List<Integer[]> vectorA, List<Integer[]> vectorB){
+    private void saveIntoRepository(List<Integer[]> vectorA, List<Integer[]> vectorB) {
+        Set<String> processedCombinations = new HashSet<>();
 
-        int sizeFirst = vectorA.size();
-        int sizeSecond = vectorB.size();
+        for (Integer[] f : vectorA) {
+            for (Integer[] s : vectorB) {
+                String combinationKey = Arrays.toString(f) + Arrays.toString(s);
 
-        for(int i = 0; i < sizeFirst; i++){
-            Integer[] f = vectorA.get(i);
-            for(int j = 0; j < sizeSecond; j++){
-                Integer[] s = vectorB.get(j);
-                double sim = calculateCosineSimilarity(f, s);
-                VectorSimilarity v = new VectorSimilarity(f, s, sim);
-                vectorSimilarityRepository.save(v);
+                if (!processedCombinations.contains(combinationKey)) {
+                    double sim = calculateCosineSimilarity(f, s);
+                    VectorSimilarity v = new VectorSimilarity(f, s, sim);
+                    vectorSimilarityRepository.save(v);
+
+                    processedCombinations.add(combinationKey);
+                }
             }
         }
-
     }
 
 
     @Override
     public void run(String... args) throws Exception {
 
+        for(int i = 1; i <= 4; i++){
+            for(int j = 1; j <= 4; j++){
 
-        for(int i = 4; i > 0; i--){
-            for(int j = i; j > 0; j--){
                 List<Integer[]> vectorA = RandomUsers.getInterests(i);
                 List<Integer[]> vectorB = RandomUsers.getInterests(j);
 

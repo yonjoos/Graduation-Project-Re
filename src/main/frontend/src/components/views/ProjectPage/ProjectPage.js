@@ -260,9 +260,55 @@ function ProjectPage() {
             </Menu.Item> */}
         </Menu>
     );
+    
+    const renderPosts = (posts) =>{
+        return(
+            <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width:'100%' }} justify="space-between" >
+                <Card title={`PROJECTs`}>
+                {posts.map((item, index) => (
+                    <div key={index} style={{ display: 'grid' }} onClick={() => handleRowClick(item.id, item.postType)}>
+                        <div style={{ display: 'flex', marginTop: '0px' }}>
+                            <div style={{ width: '80%', display: 'grid', marginLeft:'10px' }}>
+                                <div>
+                                    <strong>{item.nickName}</strong>
+                                </div>
+                                <div style={{display:'flex'}}>
+                                    
+                                    <div>
+                                        <strong style={{ fontSize: '18px' }}>{item.title}</strong>
+                                    </div>
+                                    <div style={{marginLeft:'10px'}}>
+                                        {item.web ? '#Web ' : ''} {item.app ? '#App ' : ''} {item.game ? '#Game ' : ''} {item.ai ? '#AI ' : ''}
+                                    </div>
+                                </div> 
+                                <div >
+
+                                    <div style={{marginTop:'10px', marginRight:'20px', textAlign:'left'}}>
+                                        {item.briefContent}
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+                            <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems:'center' }}>
+                                <div>
+                                인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)}
+                                </div>
+                            </div>
+  
+                        </div>
+
+
+                        <Divider />
+                    </div>
+                ))}  
+                </Card>
+            </div>
+        )
+    }
 
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
-    const renderPosts = (posts) => {
+    const renderPosts22 = (posts) => {
         return (
             <div>
                 {posts.map((item, index) => (

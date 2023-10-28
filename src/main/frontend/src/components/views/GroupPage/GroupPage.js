@@ -365,36 +365,29 @@ function GroupPage() {
     //   }
       
 
-    const renderPosts = (posts) => {
-        return (
-            <div style={{ width: '100%', height: '100px' }}>
-                <Card title={`GROUP PAGE`}>
+    const renderPosts = (posts) =>{
+        return(
+            <div gutter={[16, 16]} style={{ marginTop: '0px', padding: '0px', width:'100%' }} justify="space-between" >
+                <Card title={`PROJECTs`}>
                 {posts.map((item, index) => (
                     <div key={index} style={{ display: 'grid' }} onClick={() => handleRowClick(item.id, item.postType)}>
+                        <div style={{marginLeft:'10px' }}>
+                            {item.postType}
+                        </div>
                         <div style={{ display: 'flex', marginTop: '0px' }}>
-                            <div style={{ width: '80%', display: 'grid' }}>
-                                <div style={{ display: 'flex' }}>
-                                    <div>
-                                        {item.postType}
-                                    </div>
-                                    <div style={{marginLeft:'20px'}}>
-                                        {item.web ? 'Web ' : ''} {item.app ? 'App ' : ''} {item.game ? 'Game ' : ''} {item.ai ? 'AI ' : ''}
-                                    </div>
-                                </div>
+                            <div style={{ width: '80%', display: 'grid', marginLeft:'10px' }}>  
                                 <div>
                                     <strong style={{ fontSize: '18px' }}>{item.title}</strong>
+                                </div>
+                                <div>
+                                    {item.web ? '#Web ' : ''} {item.app ? '#App ' : ''} {item.game ? '#Game ' : ''} {item.ai ? '#AI ' : ''}
                                 </div> 
                             </div>
-
-                            <div style={{ display: 'grid', marginLeft: '0px', width: '200px' }}>
+                            <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems:'center' }}>
                                 <div>
-                                인원: {item.counts} / {item.recruitmentCount}
-                                </div>
-                                <div>
-                                모집 마감일: {formatDate(item.endDate)}
+                                인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)}
                                 </div>
                             </div>
-  
                         </div>
 
 
@@ -402,9 +395,8 @@ function GroupPage() {
                     </div>
                 ))}  
                 </Card>
-                
             </div>
-        );
+        )
     }
 
 

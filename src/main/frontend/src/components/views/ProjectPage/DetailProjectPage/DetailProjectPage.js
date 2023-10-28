@@ -1002,69 +1002,50 @@ function DetailProjectPage() {
         );
     };
 
-
-    return (
+    const renderPost = (data) => {
+        return(
         <div>
-            {data.writer !== null ? (
-                // data.writer가 null이 아닌 경우 (게시물이 존재하는 경우)
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
-                    <div style={{ flex: 1 }}>
-                        {/** 좌측 여백을 위해 만든 더미 div */}
-                    </div>
-
-                    <div style={{ flex: 2.5 }}>
-                        {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
-                        {data.writer && renderButtons()}
-                        {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
-                        {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
-                        {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
-                        {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
-                        {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
-                        {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
-                        {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
-
-                        <Card>
-                            <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
-                                <div style={{display:'flex', justifyContent: 'space-between' }}>
-                                    <div style={{display:'grid'}}>
-                                        <div style={{fontSize:'25px',fontWeight:'bold'}}>
+            <Card>
+                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
+                    <div style={{display:'flex', justifyContent: 'space-between' }}>
+                        <div style={{display:'grid'}}>
+                            <div style={{fontSize:'25px',fontWeight:'bold'}}>
                                             {data.title}
+                            </div>
+                            <div style={{marginTop:'5px'}}>
+                                {data.nickName}
                                         </div>
-                                        <div style={{marginTop:'5px'}}>
-                                            {data.nickName}
-                                        </div>
+                            </div>
+                            <div style={{alignItems:'center'}}>
+                                {data.viewCount} views
                                     </div>
-                                    <div style={{alignItems:'center'}}>
-                                        {data.viewCount} views
-                                    </div>
+                            </div>
+                            <hr></hr>
+                            <div style={{display:'grid'}}>
+                                <div >
+                                    {data.web ? " #Web " : ""}{data.app ? " #App " : ""}{data.game ? " #Game " : ""}{data.ai ? " #AI " : ""}
                                 </div>
-                                <hr></hr>
-                                <div style={{display:'grid'}}>
-                                    <div >
-                                        {data.web ? " #Web " : ""}{data.app ? " #App " : ""}{data.game ? " #Game " : ""}{data.ai ? " #AI " : ""}
-                                    </div>
-                                    <div style={{marginTop:'20px'}}>
-                                        {insertLineBreaks(data.content, 45)}
-                                    </div>
-                                    <div style={{marginTop:'150px'}}>
-                                        첨부 파일 {
-                                        data.fileUrl ? (
-                                            data.fileUrl.map((file, index) => (
-                                                <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
-                                                    <Button
-                                                        onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
-                                                    >
-                                                        {file.fileName} {/* 파일 이름 표시 */}
-                                                    </Button>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            null
-                                        )}
+                                 <div style={{marginTop:'20px'}}>
+                                    {insertLineBreaks(data.content, 45)}
+                                </div>
+                                <div style={{marginTop:'150px'}}>
+                                    첨부 파일 {
+                                    data.fileUrl ? (
+                                        data.fileUrl.map((file, index) => (
+                                            <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                                <Button
+                                                    onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                >
+                                                    {file.fileName} {/* 파일 이름 표시 */}
+                                                </Button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        null
+                                    )}
 
-                                    </div>
-                                    <div>
+                                </div>
+                                <div>
                                         홍보 사진:
                                         {data.promoteImageUrl ? (
                                             data.promoteImageUrl.map((imageUrl, index) => (
@@ -1081,9 +1062,9 @@ function DetailProjectPage() {
                                             <p>이미지가 없습니다</p>
                                         )}
                                         
-                                    </div>
-                                    <hr></hr>
                                 </div>
+                                <hr></hr>
+                            </div>
                                 <div style={{display:'flex',justifyContent: 'space-between' }}>
                                     <div style={{marginBottom:'30px'}}>
                                         <strong>comments</strong>
@@ -1131,9 +1112,37 @@ function DetailProjectPage() {
                             </div>
 
                         )}
-                                </div>
-                            </div>
-                        </Card>
+                    </div>
+                </div>
+            </Card>
+        </div>
+
+        )
+    };
+
+
+    return (
+        <div>
+            {data.writer !== null ? (
+                // data.writer가 null이 아닌 경우 (게시물이 존재하는 경우)
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
+                    <div style={{ flex: 1 }}>
+                        {/** 좌측 여백을 위해 만든 더미 div */}
+                    </div>
+
+                    <div style={{ flex: 2.5 }}>
+                        {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
+                        {data.writer && renderButtons()}
+                        {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
+                        {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
+                        {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
+                        {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
+                        {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
+
+                        {renderPost(data)}
 
 
                         <div style={{ textAlign: 'center', marginTop: '16px' }}>

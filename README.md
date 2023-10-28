@@ -10,3 +10,7 @@
 
 #### ER Diagram
 ![ERDiagram](ERDiagram.png)
+
+
+#### Tech Stack
+![TechStack](TechStack.png)

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import '../LandingPage.css';
 //import { useDispatch } from 'react-redux';
 //import { lastVisitedEndpoint } from '../../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../../hoc/request';
@@ -20,18 +20,29 @@ function StudyCard(props) {
     navigate('/study')
   }
 
+  // return (
+  //   <div onClick={onClickHandler} style={{ position: 'relative', marginTop: '30px', cursor: 'pointer' }}>
+  //     <div className="white-rectangle" style={{ position: 'absolute', marginTop: '-3.0%', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1 }}>
+  //       {/** 얘는 뒤에 카드 모양 배경 */}
+  //     </div>
+  //     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'relative', zIndex: 2 }}>
+  //       <img
+  //         src={'https://storage.googleapis.com/hongik-pickme-bucket/4%EC%9E%90%EC%82%B0%206.png'}
+  //         style={{ width: '65%', height: '65%' }}
+  //       />
+  //       <p style={{ fontSize: '30px' }}> STUDY </p>
+  //     </div>
+  //   </div>
+  // );
+
   return (
-    <div>
-      <Card onClick={onClickHandler} style={{ width: '100%', height: '200px', textAlign: 'center', boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', cursor: 'pointer' }}>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img
-              src={'https://storage.googleapis.com/hongik-pickme-bucket/StudyIcon.png'}
-              style={{ width: '50%', height: '50%' }}
-          />
-        </div>
-      </Card>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <p style={{ fontSize: '30px' }}> STUDY </p>
+    <div onClick={onClickHandler} style={{ position: 'relative', marginTop: '30px', cursor: 'pointer' }}>
+
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'relative', zIndex: 2 }}>
+        <img
+          src={'https://storage.googleapis.com/hongik-pickme-bucket/StudyCard.png'}
+          style={{ width: '100%', height: '100%', borderRadius: '15px' }}
+        />
       </div>
     </div>
   );

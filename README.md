@@ -8,3 +8,5 @@
 ### 이윤식, 박시홍, 정연주
 
 
+#### ER Diagram
+![ERDiagram](ERDiagram.png)

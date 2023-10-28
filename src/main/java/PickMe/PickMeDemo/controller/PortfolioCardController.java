@@ -2,8 +2,11 @@ package PickMe.PickMeDemo.controller;
 
 
 import PickMe.PickMeDemo.dto.PortfolioCardDto;
+import PickMe.PickMeDemo.dto.PortfolioCardRecommendationDto;
 import PickMe.PickMeDemo.dto.PostsListDto;
+import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.service.PortfolioService;
+import PickMe.PickMeDemo.service.RecommendationsService;
 import PickMe.PickMeDemo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -20,6 +24,7 @@ import java.util.List;
 public class PortfolioCardController {
 
     private final PortfolioService portfolioService;
+    private final RecommendationsService recommendationsService;
 
 //    @GetMapping("/getPortfolioCards")
 //    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
@@ -46,6 +51,22 @@ public class PortfolioCardController {
             @RequestParam(name = "searchTerm", required = false) String searchTerm){
 
         Page<PortfolioCardDto> result = portfolioService.getCards(selectedBanners, sortOption, searchTerm, PageRequest.of(page, size));
+        return ResponseEntity.ok(result);
+    }
+
+    // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
+    // 중간 발표 이후로는 리턴 타입 등을 PortfolioCardDto로 돌려놓기!!
+    @GetMapping("/getRecommendation")
+    public ResponseEntity<List<PortfolioCardRecommendationDto>> getRecommendation(Principal principal){
+        String email = principal.getName();
+
+        //String type = "real-time"; //' real-time' or 'DB'
+        String type = "DB";
+
+        // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
+        // 중간 발표 이후로는 리턴 타입 등을 PortfolioCardDto로 돌려놓기!!
+        List<PortfolioCardRecommendationDto> result = recommendationsService.getRecommend(email, type);
+
         return ResponseEntity.ok(result);
     }
 

@@ -63,42 +63,10 @@ public class InitialDataLoader implements CommandLineRunner {
         portfolioRepository.save(portfolio);
     }
 
-    // 여기서 createRecommendationsTable 함수는 Recommendations 테이블에 데이터를 저장하도록 되어 있다.
 
-    public static List<List<Integer>> getPermutations(List<Integer> numbers) {
-        Collections.sort(numbers);
-        List<List<Integer>> permutations = new ArrayList<>();
-        do {
-            permutations.add(new ArrayList<>(numbers));
-        } while (nextPermutation(numbers));
-        return permutations;
-    }
 
-    public static boolean nextPermutation(List<Integer> arr) {
-        int n = arr.size();
-        int i = n - 2;
-        while (i >= 0 && arr.get(i) >= arr.get(i + 1)) {
-            i--;
-        }
-        if (i < 0) {
-            return false;
-        }
-        int j = n - 1;
-        while (arr.get(j) <= arr.get(i)) {
-            j--;
-        }
-        Collections.swap(arr, i, j);
-        Collections.reverse(arr.subList(i + 1, n));
-        return true;
-    }
 
-    public static Integer[] listToVector(List<Integer> list) {
-        Integer[] vector = new Integer[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            vector[i] = list.get(i);
-        }
-        return vector;
-    }
+
 
     private double calculateCosineSimilarity(Integer[] vectorA, Integer[] vectorB) {
         // Calculate the dot product of vectorA and vectorB
@@ -125,74 +93,34 @@ public class InitialDataLoader implements CommandLineRunner {
         }
     }
 
+    private void saveIntoRepository(List<Integer[]> vectorA, List<Integer[]> vectorB){
+
+        int sizeFirst = vectorA.size();
+        int sizeSecond = vectorB.size();
+
+        for(int i = 0; i < sizeFirst; i++){
+            Integer[] f = vectorA.get(i);
+            for(int j = 0; j < sizeSecond; j++){
+                Integer[] s = vectorB.get(j);
+                double sim = calculateCosineSimilarity(f, s);
+                VectorSimilarity v = new VectorSimilarity(f, s, sim);
+                vectorSimilarityRepository.save(v);
+            }
+        }
+
+    }
 
 
     @Override
     public void run(String... args) throws Exception {
 
-//        // 초기 벡터값 이니셜라이징
-//        int dimension = 4;
-//        int maxValue = 4; // Values can range from 0 to 4
-//        generateAndSaveSimilarityData(dimension, maxValue);
 
-        List<List<Integer>> standardPermutations = new ArrayList<>();
-        standardPermutations.add(List.of(0, 0, 0, 0));
-        standardPermutations.add(List.of(1, 0, 0, 0));
-        standardPermutations.add(List.of(2, 0, 0, 0));
-        standardPermutations.add(List.of(3, 0, 0, 0));
-        standardPermutations.add(List.of(4, 0, 0, 0));
-        standardPermutations.add(List.of(2, 1, 0, 0));
-        standardPermutations.add(List.of(3, 1, 0, 0));
-        standardPermutations.add(List.of(3, 2, 0, 0));
-        standardPermutations.add(List.of(4, 1, 0, 0));
-        standardPermutations.add(List.of(4, 2, 0, 0));
-        standardPermutations.add(List.of(4, 3, 0, 0));
-        standardPermutations.add(List.of(3, 2, 1, 0));
-        standardPermutations.add(List.of(4, 2, 1, 0));
-        standardPermutations.add(List.of(4, 3, 1, 0));
-        standardPermutations.add(List.of(4, 3, 2, 0));
-        standardPermutations.add(List.of(4, 3, 2, 1));
+        for(int i = 4; i > 0; i--){
+            for(int j = i; j > 0; j--){
+                List<Integer[]> vectorA = RandomUsers.getInterests(i);
+                List<Integer[]> vectorB = RandomUsers.getInterests(j);
 
-        List<List<Integer>> standardPermutationsList = new ArrayList<>();
-        for (List<Integer> standardPermutation : standardPermutations) {
-            standardPermutationsList.addAll(getPermutations(new ArrayList<>(standardPermutation)));
-        }
-
-        List<List<Integer>> numbers = new ArrayList<>();
-        numbers.add(List.of(0, 0, 0, 0));
-        numbers.add(List.of(1, 0, 0, 0));
-        numbers.add(List.of(2, 0, 0, 0));
-        numbers.add(List.of(3, 0, 0, 0));
-        numbers.add(List.of(4, 0, 0, 0));
-        numbers.add(List.of(2, 1, 0, 0));
-        numbers.add(List.of(3, 1, 0, 0));
-        numbers.add(List.of(3, 2, 0, 0));
-        numbers.add(List.of(4, 1, 0, 0));
-        numbers.add(List.of(4, 2, 0, 0));
-        numbers.add(List.of(4, 3, 0, 0));
-        numbers.add(List.of(3, 2, 1, 0));
-        numbers.add(List.of(4, 2, 1, 0));
-        numbers.add(List.of(4, 3, 1, 0));
-        numbers.add(List.of(4, 3, 2, 0));
-        numbers.add(List.of(4, 3, 2, 1));
-
-        for (List<Integer> standard : standardPermutationsList) {
-
-            List<List<Integer>> permutations = new ArrayList<>();
-
-            for (List<Integer> number : numbers) {
-                permutations.addAll(getPermutations(new ArrayList<>(number)));
-            }
-
-            for (List<Integer> permutation : permutations) {
-                Integer[] standardArray = listToVector(standard);
-                Integer[] permutationArray = listToVector(permutation);
-
-                double similarity = calculateCosineSimilarity(permutationArray, standardArray);
-
-                VectorSimilarity vectorSimilarity = new VectorSimilarity(standardArray, permutationArray, similarity);
-
-                vectorSimilarityRepository.save(vectorSimilarity);
+                saveIntoRepository(vectorA, vectorB);
             }
         }
 

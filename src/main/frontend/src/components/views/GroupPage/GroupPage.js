@@ -150,127 +150,264 @@ function GroupPage() {
         }
     };
 
+    // const renderPosts = (posts) => {
+    //     return (
+    //        <div>
+    //             {posts.map((item, index) => (
+    //                 <Card key={index} style={{ margin: '0 0 10px 0' }}>
+    //                     <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
+    //                         <Col span={12} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
+    //                             <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+    //                                 <strong style={{ fontSize: '18px' }}>{item.title}</strong>
+    //                             </div>
+    //                             <div style={{ marginLeft: '3px' }}>
+    //                                 게시판 이름: {item.postType} &nbsp;/&nbsp; 분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+    //                             </div>
+    //                         </Col>
+    //                         <Col span={6} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
+    //                             <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+    //                                 인원: {item.counts} / {item.recruitmentCount}
+    //                             </div>
+    //                             <div style={{ marginLeft: '3px' }}>
+    //                                 모집 마감일: {formatDate(item.endDate)}
+    //                             </div>
+    //                         </Col>
+    //                         <Col span={6}>
+    //                             <div style={{ borderRight: '1px' }}>
+    //                                 {postsOption === 'writer' ? (
+    //                                     // 내가 쓴 게시물을 눌렀을 때 보이는 화면
+    //                                     <div>
+    //                                         <div>
+    //                                             지원자
+    //                                         </div>
+    //                                         {item.applyNickNames ? (
+    //                                             <div>
+    //                                                 {item.applyNickNames.length > 0 && item.applyNickNames.map((nickName, index) => (
+    //                                                     <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
+    //                                                         <div onClick={() => handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
+    //                                                             {nickName}
+    //                                                         </div>
+    //                                                         <div>
+    //                                                             <Button size="small" onClick={() => handleNickNameClick(nickName)} style={{ marginRight: '5px' }}>
+    //                                                                 포트폴리오
+    //                                                             </Button>
+    //                                                             {item.approved[index] ? (
+    //                                                                 // 승인 취소 버튼 클릭 시 모달 열기
+    //                                                                 <Button
+    //                                                                     size="small"
+    //                                                                     onClick={() => {
+    //                                                                         setNickName(nickName); // 승인 취소 대상 유저의 닉네임 저장
+    //                                                                         setPostsId(item.id); // 게시물 ID 저장
+    //                                                                         setCancelModalVisible(true); // 모달 열기
+    //                                                                     }}
+    //                                                                     style={{ marginRight: '5px' }}
+    //                                                                 >
+    //                                                                     승인 취소
+    //                                                                 </Button>
+    //                                                             ) : (
+    //                                                                 <Button
+    //                                                                     size="small"
+    //                                                                     onClick={() => {
+    //                                                                         setNickName(nickName);
+    //                                                                         setPostsId(item.id);
+    //                                                                         setIsModalVisible(true);
+    //                                                                         if (item.isFull) {
+    //                                                                             message.warning('정원이 모두 찼습니다!');
+    //                                                                         }
+    //                                                                     }}
+    //                                                                     style={{ marginRight: '5px' }}
+    //                                                                 >
+    //                                                                     승인
+    //                                                                 </Button>
+    //                                                             )}
+    //                                                         </div>
+    //                                                     </div>
+    //                                                 ))}
+    //                                                 </div>
+    //                                         ) : (
+    //                                             <div>
+    //                                                 {/** item.applyNickNames가 null인 경우 처리. 이 부분 처리 안하면 에러 발생함!! */}
+    //                                             </div>
+    //                                         )}
+    //                                     </div>
+    //                                 ) : (
+    //                                     // 내가 지원한 게시물을 클릭했을 때 보이는 화면
+    //                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+    //                                         <div>
+    //                                             <div>
+    //                                                 작성자
+    //                                             </div>
+    //                                             <div onClick={() => handleNickNameClick(item.writerNickName)} style={{ cursor: 'pointer' }}>
+    //                                                 {item.writerNickName}
+    //                                             </div>
+    //                                         </div>
+    //                                         {/** alignItems로 상하의 가운데에 놓기 */}
+    //                                         <div style={{ display: 'flex', alignItems: 'center' }}>
+    //                                             <div>
+    //                                                 {item.isApproved ? (
+    //                                                     // 승인 완료시 보여줄 내용
+    //                                                     "승인 완료"
+    //                                                 ) : (
+    //                                                     // 승인이 완료되지 않았고
+    //                                                     item.counts === item.recruitmentCount ? (
+    //                                                         // 정원이 다 찼다면, 모집 마감을 보여줌
+    //                                                         "모집 마감"
+    //                                                     ) : (
+    //                                                         // 정원이 다 안찼다면, 승인 대기 중을 보여줌
+    //                                                         "승인 대기 중"
+    //                                                     )
+    //                                                 )}
+    //                                             </div>
+    //                                         </div>
+    //                                     </div>
+    //                                 )}
+    //                             </div>
+    //                         </Col>
+    //                     </Row>
+    //                 </Card>
+    //             ))}
+    //         </div>
+    //     );
+    // }
+
+
+
+
+    // const renderByRole = (postsOption, item) => {
+    //     return (
+    //       <div style={{width:'40px'}}>
+    //         {postsOption === 'writer' ? (
+    //           <div>
+    //             <div>
+    //               지원자
+    //             </div>
+    //             <div>
+    //               {item.applyNickNames ? (
+    //                 <div>
+    //                   {item.applyNickNames.length > 0 && item.applyNickNames.map((nickName, index) => (
+    //                     <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
+    //                       <div onClick={() => handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
+    //                         {nickName}
+    //                       </div>
+    //                       <div>
+    //                         <Button size="small" onClick={() => handleNickNameClick(nickName)} style={{ marginRight: '5px' }}>
+    //                           포트폴리오
+    //                         </Button>
+    //                         {item.approved[index] ? (
+    //                           <Button
+    //                             size="small"
+    //                             onClick={() => {
+    //                               setNickName(nickName);
+    //                               setPostsId(item.id);
+    //                               setCancelModalVisible(true);
+    //                             }}
+    //                             style={{ marginRight: '5px' }}
+    //                           >
+    //                             승인 취소
+    //                           </Button>
+    //                         ) : (
+    //                           <Button
+    //                             size="small"
+    //                             onClick={() => {
+    //                               setNickName(nickName);
+    //                               setPostsId(item.id);
+    //                               setIsModalVisible(true);
+    //                               if (item.isFull) {
+    //                                 message.warning('정원이 모두 찼습니다!');
+    //                               }
+    //                             }}
+    //                             style={{ marginRight: '5px' }}
+    //                           >
+    //                             승인
+    //                           </Button>
+    //                         )}
+    //                       </div>
+    //                     </div>
+    //                   ))}
+    //                 </div>
+    //               ) : 
+    //               (
+    //                 <div>
+    //                   {/** item.applyNickNames가 null인 경우 처리. 이 부분 처리 안하면 에러 발생함!! */}
+    //                 </div>
+    //               )
+    //               }
+    //             </div>
+    //           </div>
+    //         ) : (
+    //           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+    //             <div>
+    //               <div>
+    //                 작성자
+    //               </div>
+    //               <div onClick={() => handleNickNameClick(item.writerNickName)} style={{ cursor: 'pointer' }}>
+    //                 {item.writerNickName}
+    //               </div>
+    //             </div>
+    //             {/** alignItems로 상하의 가운데에 놓기 */}
+    //             <div style={{ display: 'flex', alignItems: 'center' }}>
+    //               <div>
+    //                 {item.isApproved ? (
+    //                   "승인 완료"
+    //                 ) : (
+    //                   item.counts === item.recruitmentCount ? (
+    //                     "모집 마감"
+    //                   ) : (
+    //                     "승인 대기 중"
+    //                   )
+    //                 )}
+    //               </div>
+    //             </div>
+    //           </div>
+    //         )}
+    //       </div>
+    //     );
+    //   }
+      
+
     const renderPosts = (posts) => {
         return (
-           <div>
+            <div style={{ width: '100%', height: '100px' }}>
+                <Card title={`GROUP PAGE`}>
                 {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 10px 0' }}>
-                        <Divider className="bold-divider" />
-                        <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                            <Col span={12} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
-                                <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
+                    <div key={index} style={{ display: 'grid' }} onClick={() => handleRowClick(item.id, item.postType)}>
+                        <div style={{ display: 'flex', marginTop: '0px' }}>
+                            <div style={{ width: '80%', display: 'grid' }}>
+                                <div style={{ display: 'flex' }}>
+                                    <div>
+                                        {item.postType}
+                                    </div>
+                                    <div style={{marginLeft:'20px'}}>
+                                        {item.web ? 'Web ' : ''} {item.app ? 'App ' : ''} {item.game ? 'Game ' : ''} {item.ai ? 'AI ' : ''}
+                                    </div>
+                                </div>
+                                <div>
                                     <strong style={{ fontSize: '18px' }}>{item.title}</strong>
+                                </div> 
+                            </div>
+
+                            <div style={{ display: 'grid', marginLeft: '0px', width: '200px' }}>
+                                <div>
+                                인원: {item.counts} / {item.recruitmentCount}
                                 </div>
-                                <div style={{ marginLeft: '3px' }}>
-                                    게시판 이름: {item.postType} &nbsp;/&nbsp; 분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                <div>
+                                모집 마감일: {formatDate(item.endDate)}
                                 </div>
-                            </Col>
-                            <Col span={6} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
-                                <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                    인원: {item.counts} / {item.recruitmentCount}
-                                </div>
-                                <div style={{ marginLeft: '3px' }}>
-                                    모집 마감일: {formatDate(item.endDate)}
-                                </div>
-                            </Col>
-                            <Col span={6}>
-                                <div style={{ borderRight: '1px' }}>
-                                    {postsOption === 'writer' ? (
-                                        // 내가 쓴 게시물을 눌렀을 때 보이는 화면
-                                        <div>
-                                            <div>
-                                                지원자
-                                            </div>
-                                            {item.applyNickNames ? (
-                                                <div>
-                                                    {item.applyNickNames.length > 0 && item.applyNickNames.map((nickName, index) => (
-                                                        <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                            <div onClick={() => handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
-                                                                {nickName}
-                                                            </div>
-                                                            <div>
-                                                                <Button size="small" onClick={() => handleNickNameClick(nickName)} style={{ marginRight: '5px' }}>
-                                                                    포트폴리오
-                                                                </Button>
-                                                                {item.approved[index] ? (
-                                                                    // 승인 취소 버튼 클릭 시 모달 열기
-                                                                    <Button
-                                                                        size="small"
-                                                                        onClick={() => {
-                                                                            setNickName(nickName); // 승인 취소 대상 유저의 닉네임 저장
-                                                                            setPostsId(item.id); // 게시물 ID 저장
-                                                                            setCancelModalVisible(true); // 모달 열기
-                                                                        }}
-                                                                        style={{ marginRight: '5px' }}
-                                                                    >
-                                                                        승인 취소
-                                                                    </Button>
-                                                                ) : (
-                                                                    <Button
-                                                                        size="small"
-                                                                        onClick={() => {
-                                                                            setNickName(nickName);
-                                                                            setPostsId(item.id);
-                                                                            setIsModalVisible(true);
-                                                                            if (item.isFull) {
-                                                                                message.warning('정원이 모두 찼습니다!');
-                                                                            }
-                                                                        }}
-                                                                        style={{ marginRight: '5px' }}
-                                                                    >
-                                                                        승인
-                                                                    </Button>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                    </div>
-                                            ) : (
-                                                <div>
-                                                    {/** item.applyNickNames가 null인 경우 처리. 이 부분 처리 안하면 에러 발생함!! */}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        // 내가 지원한 게시물을 클릭했을 때 보이는 화면
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <div>
-                                                <div>
-                                                    작성자
-                                                </div>
-                                                <div onClick={() => handleNickNameClick(item.writerNickName)} style={{ cursor: 'pointer' }}>
-                                                    {item.writerNickName}
-                                                </div>
-                                            </div>
-                                            {/** alignItems로 상하의 가운데에 놓기 */}
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div>
-                                                    {item.isApproved ? (
-                                                        // 승인 완료시 보여줄 내용
-                                                        "승인 완료"
-                                                    ) : (
-                                                        // 승인이 완료되지 않았고
-                                                        item.counts === item.recruitmentCount ? (
-                                                            // 정원이 다 찼다면, 모집 마감을 보여줌
-                                                            "모집 마감"
-                                                        ) : (
-                                                            // 정원이 다 안찼다면, 승인 대기 중을 보여줌
-                                                            "승인 대기 중"
-                                                        )
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </Col>
-                        </Row>
-                        <Divider className="bold-divider" />
-                    </Card>
-                ))}
+                            </div>
+  
+                        </div>
+
+
+                        <Divider />
+                    </div>
+                ))}  
+                </Card>
+                
             </div>
         );
     }
+
+
 
     return (
         <div>

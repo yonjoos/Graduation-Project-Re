@@ -26,21 +26,6 @@ public class PortfolioCardController {
     private final PortfolioService portfolioService;
     private final RecommendationsService recommendationsService;
 
-//    @GetMapping("/getPortfolioCards")
-//    public ResponseEntity<List<PortfolioCardDto>> getPortfolioCards(){
-//
-//        return ResponseEntity.ok(portfolioService.getPortfolioCard());
-//
-//    }
-
-    /*
-    const queryParams = new URLSearchParams({ //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
-                selectedBanners: selectedBanners.join(','), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
-                page: currentPage, //현재 페이지 정보
-                size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-                searchTerm: searchTerm // 검색어 키워드 문자열
-            });
-     */
 
     @GetMapping("/getCards")
     public ResponseEntity<Page<PortfolioCardDto>> getCards(

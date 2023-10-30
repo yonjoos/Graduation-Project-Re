@@ -37,18 +37,6 @@ public class RecommendationsService {
 
     private final JPAQueryFactory queryFactory;
 
-    // User 테이블에서 last_access_date가 특정 날짜 이상인 유저 중, 랜덤 10명 뽑기 + 포폴도 함께 가져오기
-
-    // 10명의 포폴에서, 관심사를 web app game ai 순으로 string으로 연결하기
-
-    // 코사인 유사도 계산하기. (관심사, 유저 닉네임)을 pair로 만들어 계산하기
-
-    // 코사인 유사도를 내림차순으로 정렬, 같은 값에 대해 후, pair의 닉네임을 활용해 상위 3개의 프로필 가져오기
-
-    // 일치하는 상대방의 관심사를 바탕으로 해당 프로필 찾아 DTO에 담아 리턴하기
-
-    // 날아가는 쿼리 수가 상당할지도??
-
 
     // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
     // 중간 발표 이후로는 PortfolioCardDto로 돌려놓기!!
@@ -69,13 +57,25 @@ public class RecommendationsService {
         //이 기간 안에 있는 : [startDate, currentTime]
         final LocalDateTime currentTime = LocalDateTime.now();
         final LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
+        StartEnd startEnd = new StartEnd(startDate, currentTime);
 
 
         //유저들의
-        final List<User> usersInDuration = findUsersByLastAccessDate(user, startDate, currentTime);
+        final List<User> usersInDuration = findUsersByLastAccessDate(user, startEnd);
 
         //포트폴리오를 찾아서 Id랑 pair 해줌
         List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
+        int size = pairedIdPortfolio.size();
+
+        while(size < 10){
+            List<User> additionalUsers = findUsersAgain(usersInDuration, startEnd, 10);
+            List<Pair<Long, Portfolio>> additionalPairedIdPortfolio = findUsersPortfolio(additionalUsers);
+            pairedIdPortfolio.addAll(additionalPairedIdPortfolio);
+            size = pairedIdPortfolio.size();
+        }
+        if(size > 10){
+            pairedIdPortfolio = pairedIdPortfolio.subList(0, Math.min(10, pairedIdPortfolio.size()));
+        }
 
         /*
         >>> STEP 3 : 유사도 순위 매기기 <<<
@@ -193,6 +193,8 @@ public class RecommendationsService {
     }
 
 
+
+
     /*
     ========================================================================
     rankSimilarity() : 유저들의 순위에 따라 Id와 유사도 반환
@@ -213,6 +215,7 @@ public class RecommendationsService {
 
             Integer[] interest = pair.getSecond().getVector();
             Double similarity = (type.equals("DB")) ? calculateSimilarityDB(userInterest, interest) : calculateSimilarity(userInterest, interest);
+
 
 
             Pair<Long, Double> pairedIdSimilarity = Pair.of(pair.getFirst(), similarity);
@@ -290,23 +293,47 @@ public class RecommendationsService {
 
 
 
-    private Double calculateSimilarityDB(final Integer[] userInterest, final Integer[] interest){
+    private Double calculateSimilarityDB(final Integer[] vectorA, final Integer[] vectorB){
 
         QVectorSimilarity vectorSimilarity = QVectorSimilarity.vectorSimilarity;
 
-        if (userInterest.length != interest.length) {
+        if (vectorA.length != vectorB.length) {
             throw new IllegalArgumentException("Vectors must have the same length");
         }
 
+        boolean allZerosA = true;
+        boolean allZerosB = true;
 
-        double similarity = queryFactory.select(vectorSimilarity.similarity)
+        for (int i = 0; i < vectorA.length; i++) {
+            if (vectorA[i] != 0) {
+                allZerosA = false;
+                break;
+            }
+        }
+
+        for (int i = 0; i < vectorB.length; i++) {
+            if (vectorB[i] != 0) {
+                allZerosB = false;
+                break;
+            }
+        }
+
+        if (allZerosA || allZerosB) {
+            return 0.0;
+        }
+
+
+        Double similarity = queryFactory.select(vectorSimilarity.similarity)
                 .from(vectorSimilarity)
-                .where(vectorSimilarity.vectorA.eq(userInterest), vectorSimilarity.vectorB.eq(interest))
+                .where(vectorSimilarity.vectorA.eq(vectorA), vectorSimilarity.vectorB.eq(vectorB))
                 .fetchOne();
 
 
-
+        if (similarity == null) {
+            similarity = 0.0;
+        }
         return similarity;
+
     }
 
 
@@ -317,15 +344,50 @@ public class RecommendationsService {
                 - user : User 이 유저가 아닌 유저를 반환
      */
     @Transactional(readOnly = true)
-    private List<User> findUsersByLastAccessDate(final User user, final LocalDateTime startDate, final LocalDateTime endDate) {
+    private List<User> findUsersByLastAccessDate(final User user, final StartEnd startEnd) {
         QUser users = QUser.user;
 
         JPQLQuery<User> query = queryFactory.selectFrom(users)
-                .where(users.lastAccessDate.between(startDate, endDate)
+                .where(users.lastAccessDate.between(startEnd.getStartDate(), startEnd.getEndDate())
                         .and(users.ne(user)))
                 .orderBy(NumberExpression.random().asc())
                 .limit(10);
 
         return query.fetch();
     }
+
+    @Transactional(readOnly = true)
+    private List<User> findUsersAgain(final List<User> user,
+                                      final StartEnd startEnd,
+                                      int amount) {
+        QUser users = QUser.user;
+
+        JPQLQuery<User> query = queryFactory.selectFrom(users)
+                .where(users.lastAccessDate.between(startEnd.getStartDate(), startEnd.getEndDate())
+                        .and(users.notIn(user)))
+                .orderBy(NumberExpression.random().asc())
+                .limit(amount);
+
+        return query.fetch();
+    }
+
+    class StartEnd{
+        private LocalDateTime start;
+        private LocalDateTime end;
+
+        public StartEnd(LocalDateTime start, LocalDateTime end){
+            this.start = start;
+            this.end = end;
+        }
+
+        public LocalDateTime getStartDate(){
+            return start;
+        }
+        public LocalDateTime getEndDate(){
+            return end;
+        }
+
+    }
+
+
 }

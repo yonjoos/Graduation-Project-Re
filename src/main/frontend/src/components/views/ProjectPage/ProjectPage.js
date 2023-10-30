@@ -261,58 +261,60 @@ function ProjectPage() {
         </Menu>
     );
 
+    const categoryTagStyle = {
+        display: 'inline-block',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '1.2%'
+    };
+
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
-            <div>
-                {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 0 0', padding: '1px', textAlign: 'left' }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
+            <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
+                <Card title={`PROJECTS`}>
+                    {posts.map((item, index) => (
+                        <div key={index} style={{ display: 'grid' }} onClick={() => handleRowClick(item.id, item.postType)}>
+                            <div style={{ display: 'flex', marginTop: '0px' }}>
+                                <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
+                                    <div>
+                                        <strong>{item.nickName}</strong>
+                                    </div>
+                                    <strong style={{ display: 'inline-block' }}>
 
-                        {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
-                        {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px' }} justify="space-between" align="middle">
-                                {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={2} style={{ marginRight: '10px', marginLeft: '5px', textAlign: 'left' }} align="left">
-                                    <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
-                                </Col>
-                                <Col span={16}>
-                                    <Row>
-                                        <Col>
-                                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                                                <strong style={{ fontSize: '15px' }}>{item.title}</strong>
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        {item.web ? "#Web " : ""}{item.app ? "#App " : ""}{item.game ? "#Game " : ""}{item.ai ? "#AI " : ""}
-                                    </Row>
-                                    <Divider></Divider>
-                                    <Row>
-                                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                                            {item.briefContent}
-                                        </div>
-                                    </Row>
+                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
+                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
+                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
+                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+                                    </strong>
+                                    <div style={{ display: 'flex' }}>
+                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                    </div>
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
+                                        {truncateString(item.briefContent, 50)}
+                                    </div>
+                                </div>
 
-                                </Col>
-                                <Col span={4} >
-                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        인원: {item.counts} / {item.recruitmentCount}
+
+                                <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
+                                    <div>
+                                        인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)}
                                     </div>
-                                    <div style={{ marginLeft: '3px', fontSize: '13px' }}>
-                                        모집 마감일: {formatDate(item.endDate)}
-                                    </div>
-                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        조회 수: {item.viewCount}
-                                    </div>
-                                </Col>
-                            </Row>
+                                </div>
+
+                            </div>
+
+
+                            <Divider />
                         </div>
-                    </Card>
-
-                ))}
+                    ))}
+                </Card>
             </div>
-        );
+        )
     }
 
     return (
@@ -330,7 +332,6 @@ function ProjectPage() {
                     {(relatedSearchTermEnable ?
                         (renderSection('Project', searchData.projectSearchDtoList)) : null)}
                 </div>
-
             </div>
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Row>

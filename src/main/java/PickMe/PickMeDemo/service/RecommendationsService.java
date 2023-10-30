@@ -67,6 +67,7 @@ public class RecommendationsService {
         List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
         int size = pairedIdPortfolio.size();
 
+        /*
         while(size < 10){
             List<User> additionalUsers = findUsersAgain(usersInDuration, startEnd, 10);
             List<Pair<Long, Portfolio>> additionalPairedIdPortfolio = findUsersPortfolio(additionalUsers);
@@ -76,6 +77,8 @@ public class RecommendationsService {
         if(size > 10){
             pairedIdPortfolio = pairedIdPortfolio.subList(0, Math.min(10, pairedIdPortfolio.size()));
         }
+        */
+
 
         /*
         >>> STEP 3 : 유사도 순위 매기기 <<<
@@ -343,20 +346,19 @@ public class RecommendationsService {
             ARGUMENT
                 - user : User 이 유저가 아닌 유저를 반환
      */
-    @Transactional(readOnly = true)
     private List<User> findUsersByLastAccessDate(final User user, final StartEnd startEnd) {
         QUser users = QUser.user;
 
         JPQLQuery<User> query = queryFactory.selectFrom(users)
                 .where(users.lastAccessDate.between(startEnd.getStartDate(), startEnd.getEndDate())
-                        .and(users.ne(user)))
+                        .and(users.ne(user))
+                        .and(users.portfolio.isNotNull()))
                 .orderBy(NumberExpression.random().asc())
                 .limit(10);
 
         return query.fetch();
     }
 
-    @Transactional(readOnly = true)
     private List<User> findUsersAgain(final List<User> user,
                                       final StartEnd startEnd,
                                       int amount) {

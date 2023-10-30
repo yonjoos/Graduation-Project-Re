@@ -303,6 +303,17 @@ function PortfolioCardPage() {
         </Menu>
     );
 
+    const categoryTagStyle = {
+        display: 'inline-block',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '1.2%'
+    };
+
 
     // COMPONENTS ###############################################
 
@@ -352,35 +363,83 @@ function PortfolioCardPage() {
             return <div>No data available</div>; // or any other appropriate message
         }
 
-        return (
-            <div>
-                <Row gutter={16}>
-                    {cards.map((item, index) => (
-                        <Col xs={24} sm={8} key={index}>
-                            {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
-                                {/* style = {{cursor: 'pointer'}} */}
-                                <Card onClick={() => onClickHandler(item.nickName)} title={
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>👩🏻‍💻 {item.nickName}</span>
-                                        <span>{item.cosineSimilarity}</span>
-                                    </div>
-                                } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
-                                <b>Field Of Interests</b>
-                                <br />
-                                {item.web ? "#Web " : ""}{item.app ? "#App " : ""}{item.game ? "#Game " : ""}{item.ai ? "#AI " : ""}
-                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
-                                <b>Brief Introduction</b>
-                                <br />
-                                {item.shortIntroduce}
-                                <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
-                                <b>조회 수 : </b>
-                                {item.viewCount}
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            </div>
-        )
+        if (isRecommend === 1) {
+            return (
+                <div>
+                    <Row gutter={16}>
+                        {cards.map((item, index) => (
+                            <Col xs={24} sm={8} key={index}>
+                                {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
+                                    {/* style = {{cursor: 'pointer'}} */}
+                                    <Card onClick={() => onClickHandler(item.nickName)} title={
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <span>👩🏻‍💻 {item.nickName}</span>
+                                            <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
+                                        </div>
+                                    } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
+                                    <b>Field Of Interests</b>
+                                    <br />
+                                    
+                                    <strong style={{ display: 'flex' }}>
+
+                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
+                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
+                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
+                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                    </strong>             
+                                    <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
+                                    <b>Brief Introduction</b>
+                                    <br />
+                                    {truncateString(item.shortIntroduce, 20)}
+                                    <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
+                                    <b>조회 수 : </b>
+                                    {item.viewCount}
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
+            )
+        }
+
+        else {
+            return (
+                <div>
+                    <Row gutter={16}>
+                        {cards.map((item, index) => (
+                            <Col xs={24} sm={8} key={index}>
+                                {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
+                                    {/* style = {{cursor: 'pointer'}} */}
+                                    <Card onClick={() => onClickHandler(item.nickName)} title={
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <span>👩🏻‍💻 {item.nickName}</span>
+                                            <span>{item.cosineSimilarity}</span>
+                                        </div>
+                                    } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
+                                    <b>Field Of Interests</b>
+                                    <br />
+                                    <strong style={{ display: 'flex' }}>
+                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
+                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
+                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
+                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                    </strong> 
+                                    <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
+                                    <b>Brief Introduction</b>
+                                    <br />
+                                    {truncateString(item.shortIntroduce, 20)}
+                                    <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
+                                    <b>조회 수 : </b>
+                                    {item.viewCount}
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
+            )
+        }
+
+        
     }
 
 

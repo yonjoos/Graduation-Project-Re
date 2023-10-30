@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
-import { Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
-import { request } from '../../../hoc/request';
+import { Spin, Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
+import { request, setHasPortfolio } from '../../../hoc/request';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
@@ -30,6 +30,11 @@ function PortfolioCardPage() {
     const [reload, setReload] = useState(0);
     const [recommend, setRecommend] = useState(0);
     const [isRecommend, setIsRecommend] = useState(0);    // isRecommend가 0인 경우 일반적인 포폴 카드 리스트 확인, 1인 경우 추천 포폴 확인 -> 추천에서 페이지네이션 안보이게 하기 위함
+
+    const [sustain, setSustain] = useState(0);
+    const [showRecommend, setShow] = useState(0);
+
+
 
     const pageSize = 9;
 
@@ -59,6 +64,7 @@ function PortfolioCardPage() {
         if(recommend == 1) {
             Recommend();
             setRecommend(0);
+            setSustain(1);
         }
         else{
         }
@@ -196,6 +202,7 @@ function PortfolioCardPage() {
 
     // 엔터나 클릭 시에만 변경됨(검색어 관련)
     const handleSearch = (value) => {
+        setSustain(0);
         setSearchTerm(value); // 검색어를 세팅
         setRelatedSearchTermEnable(false); // 엔터나 클릭을 눌렀으므로 연관 검색어 렌더링 여부를 false로 설정
         setCurrentPage(0); // 검색어가 바뀌면, 강제로 1페이지로 이동시킴
@@ -210,19 +217,25 @@ function PortfolioCardPage() {
 
     // <Button> Project의 핸들러, ProjectPage로 이동
     const handleProjectPage = () => {
+        setSustain(0);
         navigate('/project');
     };
 
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
+ 
         setIsRecommend(0);
+
+        setSustain(0);
+
         setReload(1);
     };
 
 
     // <Button> Study의 핸들러, StudyPage로 이동
     const handleStudyPage = () => {
+        setSustain(0);
         navigate('/study');
     };
 
@@ -260,9 +273,21 @@ function PortfolioCardPage() {
         }
     }
 
+    // ... (other code)
+
     const handleRecommend = () => {
         setIsRecommend(1);
-        setRecommend(1);
+        setShow(1);
+
+        setTimeout(() => {
+            setRecommend(1);
+
+            setTimeout(() => {
+                setSustain(1);
+                setShow(0);
+            }, 1000);
+        }, 1000);
+
     }
 
 
@@ -280,6 +305,46 @@ function PortfolioCardPage() {
 
 
     // COMPONENTS ###############################################
+
+    const renderContent = () => {
+        if (showRecommend === 1) {
+            // Show the loading message when data is loading
+            return (
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center', 
+                    alignItems: 'center',    
+                    textAlign: 'center',
+                    marginBottom: '20px'
+                }}>
+                    <div>
+                        <strong>알맞는 사람을 찾는중입니다. 잠시만 기다려주세요</strong>
+                    </div>
+                    <div style={{marginLeft:'20px'}}>
+                        <Spin size="large" />
+                    </div>
+                    
+                </div>
+            );
+        } else if (sustain === 1) {
+            // Show the "이런 사람은 어떠세요?" message
+            return (
+                <div>
+                    <div style={{ textAlign: 'center', marginBottom: '20px', backgroundColor: 'skyblue' }}>
+                        <strong>이런 사람은 어떠세요?</strong>
+                    
+                    </div>
+                    <div>
+                        {renderCards(data)}
+                    </div>
+                </div>
+
+            );
+        } else {
+            // Render the cards when data is ready
+            return renderCards(data);
+        }
+    };
 
     // renderCards
     const renderCards = (cards) => {
@@ -371,7 +436,7 @@ function PortfolioCardPage() {
                     <Col span={18} style={{ textAlign: 'left' }}>
                         {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                         <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handleReload}>
-                            Portfolio Card
+                            Portfolios
                         </Button>
                         <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                             Project
@@ -379,9 +444,7 @@ function PortfolioCardPage() {
                         <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                             Study
                         </Button>
-                        <Button onClick={handleRecommend}>
-                            RECOMMEND
-                        </Button>
+                        
                     </Col>
                     <Col span={6} style={{ textAlign: 'right' }}>
                         <Dropdown overlay={menu} placement="bottomRight">
@@ -393,8 +456,26 @@ function PortfolioCardPage() {
                 </Row>
                 <hr />
             </div>
-            <div>
-                {renderCards(data)}
+            <div style={{
+                        display: 'flex',
+                        alignItems: 'center',    
+                        textAlign: 'center',
+                        marginBottom: '20px'
+                    }}>
+                <div >
+                    <Button onClick={handleRecommend}>
+                        RECOMMEND
+                    </Button>
+
+                </div>
+                <div style={{marginLeft:'20px'}}>
+                    ⬅️ try our recommendation system!
+                </div>
+            </div>
+            <div style={{display:'grid'}}> 
+                
+                {renderContent()}
+
             </div>
             {/** 일반적인 포폴 카드 페이지에서는 Pagination이 보이도록, 추천 페이지에서는 Pagination이 보이지 않도록 함 */}
             {isRecommend === 0 ? (

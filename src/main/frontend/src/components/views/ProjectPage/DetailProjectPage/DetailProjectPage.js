@@ -852,7 +852,7 @@ function DetailProjectPage() {
                 <Col span={12} style={{ textAlign: 'right' }}>
                     {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
                     {isWriter && (
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => navigate(`/project/update/${projectId}`)} style={{ marginRight: '5px' }}>
                                 게시물 수정
                             </Button>
@@ -865,7 +865,7 @@ function DetailProjectPage() {
                     {!isWriter && !isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -875,7 +875,7 @@ function DetailProjectPage() {
                             </div>
                         ) : (
                             // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -889,7 +889,7 @@ function DetailProjectPage() {
                     {!isWriter && isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -899,7 +899,7 @@ function DetailProjectPage() {
                             </div>
                         ) : (
                             // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -913,7 +913,7 @@ function DetailProjectPage() {
                     {!isWriter && !isScrapped && isApplying && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -926,7 +926,7 @@ function DetailProjectPage() {
                             </div>
                         ) : (
                             // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -943,7 +943,7 @@ function DetailProjectPage() {
                     {!isWriter && isScrapped && isApplying && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -956,7 +956,7 @@ function DetailProjectPage() {
                             </div>
                         ) : (
                             // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -971,7 +971,7 @@ function DetailProjectPage() {
                     )}
                     {/** 승인 허가된 사람 + 스크랩 안한 사람 */}
                     {!isWriter && !isScrapped && isApplied && (
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                 게시물 스크랩
                             </Button>
@@ -985,7 +985,7 @@ function DetailProjectPage() {
                     )}
                     {/** 승인 허가된 사람 + 스크랩 한 사람 */}
                     {!isWriter && isScrapped && isApplied && (
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                 스크랩 취소
                             </Button>

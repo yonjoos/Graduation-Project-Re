@@ -852,7 +852,7 @@ function DetailStudyPage() {
                 <Col span={12} style={{ textAlign: 'right' }}>
                     {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
                     {isWriter && (
-                        <div>
+                        <div> style={{ marginBottom: '10px' }}
                             <Button type="primary" onClick={() => navigate(`/study/update/${studyId}`)} style={{ marginRight: '5px' }}>
                                 게시물 수정
                             </Button>
@@ -865,7 +865,7 @@ function DetailStudyPage() {
                     {!isWriter && !isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -875,7 +875,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -889,7 +889,7 @@ function DetailStudyPage() {
                     {!isWriter && isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -899,7 +899,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -913,7 +913,7 @@ function DetailStudyPage() {
                     {!isWriter && !isScrapped && isApplying && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -926,7 +926,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -943,7 +943,7 @@ function DetailStudyPage() {
                     {!isWriter && isScrapped && isApplying && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -956,7 +956,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
-                            <div>
+                            <div style={{ marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -971,7 +971,7 @@ function DetailStudyPage() {
                     )}
                     {/** 승인 허가된 사람 + 스크랩 안한 사람 */}
                     {!isWriter && !isScrapped && isApplied && (
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                 게시물 스크랩
                             </Button>
@@ -985,7 +985,7 @@ function DetailStudyPage() {
                     )}
                     {/** 승인 허가된 사람 + 스크랩 한 사람 */}
                     {!isWriter && isScrapped && isApplied && (
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                 스크랩 취소
                             </Button>
@@ -1002,6 +1002,124 @@ function DetailStudyPage() {
         );
     };
 
+
+    const renderPost = (data) => {
+        return(
+        <div>
+            <Card>
+                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
+                    <div style={{display:'flex', justifyContent: 'space-between' }}>
+                        <div style={{display:'grid'}}>
+                            <div style={{fontSize:'25px',fontWeight:'bold'}}>
+                                            {data.title}
+                            </div>
+                            <div style={{marginTop:'5px'}}>
+                                {data.nickName}
+                                        </div>
+                            </div>
+                            <div style={{alignItems:'center'}}>
+                                {data.viewCount} views
+                                    </div>
+                            </div>
+                            <hr></hr>
+                            <div style={{display:'grid'}}>
+                                <div >
+                                    {data.web ? " #Web " : ""}{data.app ? " #App " : ""}{data.game ? " #Game " : ""}{data.ai ? " #AI " : ""}
+                                </div>
+                                 <div style={{marginTop:'20px'}}>
+                                    {insertLineBreaks(data.content, 45)}
+                                </div>
+                                <div style={{marginTop:'150px'}}>
+                                    첨부 파일 {
+                                    data.fileUrl ? (
+                                        data.fileUrl.map((file, index) => (
+                                            <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                                <Button
+                                                    onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                >
+                                                    {file.fileName} {/* 파일 이름 표시 */}
+                                                </Button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        null
+                                    )}
+
+                                </div>
+                                <div>
+                                        홍보 사진:
+                                        {data.promoteImageUrl ? (
+                                            data.promoteImageUrl.map((imageUrl, index) => (
+                                                <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                                    <img
+                                                        key={index}
+                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                        alt={`홍보 사진 ${index + 1}`}
+                                                        style={{ margin: '10px', width: 600 }}
+                                                    />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>이미지가 없습니다</p>
+                                        )}
+                                        
+                                </div>
+                                <hr></hr>
+                            </div>
+                                <div style={{display:'flex',justifyContent: 'space-between' }}>
+                                    <div style={{marginBottom:'30px'}}>
+                                        <strong>comments</strong>
+                                    </div>
+                                    <div>
+                                        <Button size="small" onClick={toggleCommentsVisibility}>
+                                            {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                                        </Button>
+                                    </div>
+                                </div>
+                                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
+                                {areCommentsVisible && (
+                            <div>
+                                {renderComments(commentData.content)}
+                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                    {moreCommentsAvailable && (
+                                        <Button size="small" onClick={loadMoreComments}>
+                                            댓글 더보기
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                            <UserOutlined style={{ marginRight: '5px' }} />
+                                            <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
+                                </div>
+                                            <TextArea
+                                                autoSize={{ minRows: 4 }}
+                                                value={commentText}
+                                                onChange={(e) => setCommentText(e.target.value)}
+                                                placeholder="Write a comment"
+                                            />
+                                    <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                            <Button size="small" onClick={handleCommentSubmit}>등록</Button>
+                                    </div>
+                                {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                    <Pagination
+                                        current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
+                                        total={totalPages * pageSize}
+                                        pageSize={pageSize}
+                                        onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
+                                    />
+
+                                </div> */}
+                            </div>
+
+                        )}
+                    </div>
+                </div>
+            </Card>
+        </div>
+
+        )
+    };
 
     return (
         <div>
@@ -1025,145 +1143,8 @@ function DetailStudyPage() {
                         {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
         
                         {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <Divider className="bold-divider" />
-        
-                        <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-                            <Col span={16}>
-                                <div style={{ marginLeft: '5%' }}>
-                                    제목: {data.title}
-                                </div>
-                            </Col>
-                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                            <Col span={8} className="vertical-line">
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <div style={{ marginLeft: '3px' }}>
-                                        {/** Boolean으로 반환되는 애들은 삼항연산자를 통해 값을 보여줘야 함 */}
-                                        분류: &nbsp; {data.web ? " Web " : ""}{data.app ? " App " : ""}{data.game ? " Game " : ""}{data.ai ? " AI " : ""}
-                                    </div>
-                                    <div style={{ marginRight: '15px' }}>
-                                        조회 수: {data.viewCount}
-                                    </div>
-                                </div>
-                            </Col>
-                        </Row>
-        
-                        <Divider className="simple-divider" />
-        
-                        <Row gutter={[16, 16]} justify="center" align="middle">
-                            <Col span={16}>
-                                <div style={{ marginLeft: '5%', borderRight: '1px', cursor: 'pointer' }} onClick={() => handleNickNameClick(data.nickName)}>
-                                    닉네임: {data.nickName}
-                                </div>
-                            </Col>
-                            {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                            <Col span={8} className="vertical-line">
-                                <div className="form-outline mb-1" style={{ marginLeft: '3px' }}>
-                                    인원: {data.counts} / {data.recruitmentCount}
-                                </div>
-                                <div style={{ marginLeft: '3px' }}>
-                                    모집 마감일: {formatDate(data.endDate)}
-                                </div>
-                            </Col>
-                        </Row>
-        
-                        <Divider className="bold-divider" />
-        
-                        <div style={{ marginLeft: '5px' }}>
-                            첨부 파일: {
-                                data.fileUrl ? (
-                                    data.fileUrl.map((file, index) => (
-                                        <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
-                                            <Button
-                                                onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
-                                            >
-                                                {file.fileName} {/* 파일 이름 표시 */}
-                                            </Button>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>이미지가 없습니다</p>
-                                )}
-                        </div>
-        
-                        <Divider className="bold-divider" />
-        
-                        <div style={{ marginLeft: '5px' }}>
-                            홍보 사진:
-                                {data.promoteImageUrl ? (
-                                    data.promoteImageUrl.map((imageUrl, index) => (
-                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                        <img
-                                            key={index}
-                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                            alt={`홍보 사진 ${index + 1}`}
-                                            style={{ margin: '10px', width: 600 }}
-                                        />
-                                    </div>
-                                ))
-                            ): (
-                                <p>이미지가 없습니다</p>
-                            )}
-                        </div>
-        
-                        <Divider className="bold-divider" />
-        
-                        {/** whiteSpace: 'pre-wrap'을 통해, DB에 저장된 개행을 알아서 <br>로 바꾸고 올바르게 화면에 출력함. */}
-                        <div style={{ whiteSpace: 'pre-wrap', marginLeft: '5px' }}>
-                            내용: {insertLineBreaks(data.content, 45)}
-                        </div>
-        
-                        <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                            <Button size="small" onClick={toggleCommentsVisibility}>
-                                {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
-                            </Button>
-                        </div>
-        
-        
-        
-                        {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
-                        {areCommentsVisible && (
-                            <div>
-                                <Divider className="bold-divider" />
-        
-                                <h5>댓글</h5>
-                                {renderComments(commentData.content)}
-                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                                    {moreCommentsAvailable && (
-                                        <Button size="small" onClick={loadMoreComments}>
-                                            댓글 더보기
-                                        </Button>
-                                    )}
-                                </div>
-        
-                                <div>
-                                    <Card>
-                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                            <UserOutlined style={{ marginRight: '5px' }} />
-                                            <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
-                                        </div>
-                                        <TextArea
-                                            autoSize={{ minRows: 4 }}
-                                            value={commentText}
-                                            onChange={(e) => setCommentText(e.target.value)}
-                                            placeholder="Write a comment"
-                                        />
-                                        <div style={{ textAlign: 'right', marginTop: '16px' }}>
-                                            <Button size="small" onClick={handleCommentSubmit}>댓글 등록</Button>
-                                        </div>
-                                    </Card>
-                                </div>
-                                {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                                    <Pagination
-                                        current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
-                                        total={totalPages * pageSize}
-                                        pageSize={pageSize}
-                                        onChange={(page) => setCurrentPage(page - 1)} //사용자가 해당 버튼 (예: 2번 버튼)을 누르면 currentPage를 1로 세팅하여 백엔드에 요청 보냄(백엔드는 프런트에서 보는 페이지보다 하나 적은 수부터 페이징을 시작하므로)
-                                    />
-        
-                                </div> */}
-                            </div>
-        
-                        )}
+                        
+                        {renderPost(data)}
         
                         {/* Modal */}
                         <Modal

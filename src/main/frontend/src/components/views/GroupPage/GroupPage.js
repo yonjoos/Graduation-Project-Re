@@ -150,6 +150,14 @@ function GroupPage() {
         }
     };
 
+    // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
+    const truncateString = (str, maxLength) => {
+        if (str.length > maxLength) {
+            return str.slice(0, maxLength) + '...';
+        }
+        return str;
+    };
+
     // const renderPosts = (posts) => {
     //     return (
     //        <div>
@@ -363,25 +371,40 @@ function GroupPage() {
     //       </div>
     //     );
     //   }
-      
+
+    
+    const categoryTagStyle = {
+        display: 'inline-block',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '1.2%'
+    };
 
     const renderPosts = (posts) =>{
         return(
             <div gutter={[16, 16]} style={{ marginTop: '0px', padding: '0px', width:'100%' }} justify="space-between" >
-                <Card title={`PROJECTs`}>
+                <Card title={`GROUPS`}>
                 {posts.map((item, index) => (
-                    <div key={index} style={{ display: 'grid' }} onClick={() => handleRowClick(item.id, item.postType)}>
+                    <div key={index} style={{ display: 'grid', cursor: 'pointer' }} onClick={() => handleRowClick(item.id, item.postType)}>
                         <div style={{marginLeft:'10px' }}>
                             {item.postType}
                         </div>
                         <div style={{ display: 'flex', marginTop: '0px' }}>
                             <div style={{ width: '80%', display: 'grid', marginLeft:'10px' }}>  
                                 <div>
-                                    <strong style={{ fontSize: '18px' }}>{item.title}</strong>
+                                    <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                 </div>
-                                <div>
-                                    {item.web ? '#Web ' : ''} {item.app ? '#App ' : ''} {item.game ? '#Game ' : ''} {item.ai ? '#AI ' : ''}
-                                </div> 
+                                <strong style={{ display: 'inline-block' }}>
+                                
+                                    {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
+                                    {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
+                                    {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
+                                    {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+                                </strong>
                             </div>
                             <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems:'center' }}>
                                 <div>

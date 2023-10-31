@@ -151,10 +151,10 @@ function LandingPage() {
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        //marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '1.2%'
+        marginRight: '3.6%'
     };
 
     // 백엔드에서 받아온 검색 결과를 가지고 실제 렌더링 진행.

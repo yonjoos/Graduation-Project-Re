@@ -155,7 +155,7 @@ function DetailProjectPage() {
         marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '0.9%'
+        marginRight: '0.6%'
     };
 
 
@@ -677,7 +677,7 @@ function DetailProjectPage() {
                 <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <UserOutlined style={{ marginRight: '5px' }} />
-                        <p style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></p>
+                        <div style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></div>
                     </div>
 
                     {comment.commentWriter && (

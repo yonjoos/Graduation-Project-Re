@@ -275,7 +275,7 @@ function ProjectPage() {
         marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '1.2%'
+        marginRight: '0.6%'
     };
 
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행

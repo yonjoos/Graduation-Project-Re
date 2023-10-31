@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 //import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
+import { Divider, Row, Col, Button, Modal, message, Input, Card, Image } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 //import { lastVisitedEndpoint } from "../../../../_actions/actions";
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
@@ -132,6 +132,11 @@ function DetailStudyPage() {
 
     // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
     const formatDateTime = (dateTimeArray) => {
+
+        if (!Array.isArray(dateTimeArray)) {
+            // dateTimeArray가 배열이 아닌 경우 오류 처리
+            return 'Invalid date and time format';
+        }
         const [year, month, day, hours, minutes] = dateTimeArray;
         const date = new Date(year, month - 1, day, hours, minutes);
 
@@ -1032,6 +1037,8 @@ function DetailStudyPage() {
                             </div>
                             <div style={{ alignItems: 'center' }}>
                                 {data.viewCount} views
+                                <br/> <br/>
+                                <div style={{color: 'gray'}}>{formatDateTime(data.finalUpdatedTime)}</div>
                             </div>
                         </div>
                         <hr></hr>
@@ -1068,11 +1075,11 @@ function DetailStudyPage() {
                                 {data.promoteImageUrl ? (
                                     data.promoteImageUrl.map((imageUrl, index) => (
                                         <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                            <img
+                                            <Image
                                                 key={index}
                                                 src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
                                                 alt={`홍보 사진 ${index + 1}`}
-                                                style={{ margin: '10px', width: 600 }}
+                                                style={{ margin: '10px', width: 300 }}
                                             />
                                         </div>
                                     ))

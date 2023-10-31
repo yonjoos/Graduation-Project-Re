@@ -187,6 +187,28 @@ function ProjectPage() {
         return `${year}년 ${month}월 ${day}일`;
     };
 
+    // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
+    const formatDateTime = (dateTimeArray) => {
+
+        if (!Array.isArray(dateTimeArray)) {
+            // dateTimeArray가 배열이 아닌 경우 오류 처리
+            return 'Invalid date and time format';
+        }
+        const [year, month, day, hours, minutes] = dateTimeArray;
+        const date = new Date(year, month - 1, day, hours, minutes);
+
+        // 년, 월, 일, 시간, 분 형식으로 포맷팅
+        const formattedYear = date.getFullYear();
+        const formattedMonth = (date.getMonth() + 1).toString().padStart(2, '0'); // 월을 2자리로 표현
+        const formattedDay = date.getDate().toString().padStart(2, '0'); // 일을 2자리로 표현
+        const formattedHours = date.getHours().toString().padStart(2, '0'); // 시를 2자리로 표현
+        const formattedMinutes = date.getMinutes().toString().padStart(2, '0'); // 분을 2자리로 표현
+
+        const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
+
+        return formattedDateTime;
+    };
+
 
     // 배너를 선택할 때마다 selectedBanners가 추가되거나 변경됨
     // 처음엔 all(모든 게시물 상태)
@@ -285,7 +307,7 @@ function ProjectPage() {
                 <Card title={`PROJECTS`}>
                     {posts.map((item, index) => (
                         <div key={index} style={{ display: 'grid' }} onClick={(e) => {
-                            if (e.target.tagName.toLowerCase() === 'div' && e.target.classList.contains('nickname')) { //div 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
+                            if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
                                 handleNicknameClick(item.nickName);
                             } else {
                                 handleRowClick(item.id, item.postType);
@@ -293,9 +315,6 @@ function ProjectPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <div>
-                                        <strong><div className="nickname">{item.nickName}</div></strong>
-                                    </div>
                                     <strong style={{ display: 'inline-block' }}>
 
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
@@ -306,6 +325,9 @@ function ProjectPage() {
                                     <div style={{ display: 'flex' }}>
                                         <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                     </div>
+                                    <div>
+                                        <div><strong className="nickname">{item.nickName}</strong></div>
+                                    </div>
                                     <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
                                         {truncateString(item.briefContent, 50)}
                                     </div>
@@ -314,7 +336,8 @@ function ProjectPage() {
 
                                 <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                     <div>
-                                        인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)}
+                                        인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
+                                        <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
                                     </div>
                                 </div>
 

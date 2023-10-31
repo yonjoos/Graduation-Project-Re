@@ -308,6 +308,7 @@ public class PostsService {
                         .recruitmentCount(posts.getRecruitmentCount())
                         .endDate(posts.getEndDate())
                         .viewCount(viewCount)
+                        .finalUpdatedTime(posts.getLastModifiedDate())
                         .build();
             }
             // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
@@ -356,6 +357,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -379,6 +381,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                 }
@@ -405,6 +408,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -428,6 +432,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                 }
@@ -454,6 +459,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -477,6 +483,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                 }
@@ -585,6 +592,7 @@ public class PostsService {
                         .recruitmentCount(posts.getRecruitmentCount())
                         .endDate(posts.getEndDate())
                         .viewCount(viewCount)
+                        .finalUpdatedTime(posts.getLastModifiedDate())
                         .build();
             }
             // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
@@ -633,6 +641,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -656,6 +665,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                 }
@@ -682,6 +692,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -705,6 +716,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                 }
@@ -731,6 +743,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -754,6 +767,7 @@ public class PostsService {
                                 .recruitmentCount(posts.getRecruitmentCount())
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
+                                .finalUpdatedTime(posts.getLastModifiedDate())
                                 .build();
                     }
                 }
@@ -1903,6 +1917,7 @@ public class PostsService {
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .finalUpdatedTime(post.getLastModifiedDate())
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가
@@ -2111,6 +2126,7 @@ public class PostsService {
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .finalUpdatedTime(post.getLastModifiedDate())
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가
@@ -2473,6 +2489,7 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
+                    .finalUpdatedTime(findPosts.getLastModifiedDate())
                     .build();
         }
         // 해당 게시물을 스크랩하지 않았다면
@@ -2495,6 +2512,7 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
+                    .finalUpdatedTime(findPosts.getLastModifiedDate())
                     .build();
         }
 
@@ -2931,6 +2949,7 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
+                    .finalUpdatedTime(findPosts.getLastModifiedDate())
                     .build();
         }
         // 해당 게시물을 스크랩하지 않았다면
@@ -2953,6 +2972,7 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
+                    .finalUpdatedTime(findPosts.getLastModifiedDate())
                     .build();
         }
 
@@ -3301,6 +3321,7 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                     .endDate(savedScrapPosts.getPosts().getEndDate())
+                    .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
                     .build();
         }
         // 게시물 지원 한 사람
@@ -3325,6 +3346,7 @@ public class PostsService {
                         .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                         .endDate(savedScrapPosts.getPosts().getEndDate())
+                        .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
                         .build();
             }
             // 승인 난 사람
@@ -3347,6 +3369,7 @@ public class PostsService {
                         .counts(applyCount)
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                         .endDate(savedScrapPosts.getPosts().getEndDate())
+                        .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
                         .build();
             }
         }
@@ -3430,6 +3453,7 @@ public class PostsService {
                     .counts(applyCount)
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
+                    .finalUpdatedTime(findPosts.getLastModifiedDate())
                     .build();
         }
         // 게시물 지원 한 사람
@@ -3454,6 +3478,7 @@ public class PostsService {
                         .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())
                         .endDate(findPosts.getEndDate())
+                        .finalUpdatedTime(findPosts.getLastModifiedDate())
                         .build();
             }
             // 승인 난 사람
@@ -3476,6 +3501,7 @@ public class PostsService {
                         .counts(applyCount)
                         .recruitmentCount(findPosts.getRecruitmentCount())
                         .endDate(findPosts.getEndDate())
+                        .finalUpdatedTime(findPosts.getLastModifiedDate())
                         .build();
             }
         }

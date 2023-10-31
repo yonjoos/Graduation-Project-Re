@@ -279,18 +279,8 @@ public class RecommendationsService {
                     return result;
                 }
 
-                LocalDateTime lastAccessDate1 = portfolios.stream()
-                        .filter(p->p.user.equals(o1.user))
-                        .findFirst()
-                        .map(p->p.user.getLastAccessDate())
-                        .orElse(null);
-
-
-                LocalDateTime lastAccessDate2 = portfolios.stream()
-                        .filter(p->p.user.equals(o2.user))
-                        .findFirst()
-                        .map(p->p.user.getLastAccessDate())
-                        .orElse(null);
+                LocalDateTime lastAccessDate1 = o1.user.getLastAccessDate();
+                LocalDateTime lastAccessDate2 = o2.user.getLastAccessDate();
 
                 if (lastAccessDate1 != null && lastAccessDate2 != null) {
                     return lastAccessDate2.compareTo(lastAccessDate1);

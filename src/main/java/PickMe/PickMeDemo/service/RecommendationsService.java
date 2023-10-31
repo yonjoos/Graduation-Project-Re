@@ -29,6 +29,7 @@ public class RecommendationsService {
     private final PortfolioRepository portfolioRepository;
     private final ViewCountPortfolioRepository viewCountPortfolioRepository;
 
+    //hi
 
     private final JPAQueryFactory queryFactory;
 

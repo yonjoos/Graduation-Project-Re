@@ -354,7 +354,7 @@ public class RecommendationsService {
                         .and(users.ne(user))
                         .and(users.portfolio.isNotNull()))
                 .orderBy(NumberExpression.random().asc())
-                .limit(10);
+                .limit(8);
 
         return query.fetch();
     }

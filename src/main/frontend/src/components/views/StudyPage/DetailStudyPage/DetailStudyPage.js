@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 //import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
+import { Divider, Row, Col, Button, Modal, message, Input, Card, Image } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 //import { lastVisitedEndpoint } from "../../../../_actions/actions";
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
@@ -132,6 +132,11 @@ function DetailStudyPage() {
 
     // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
     const formatDateTime = (dateTimeArray) => {
+
+        if (!Array.isArray(dateTimeArray)) {
+            // dateTimeArray가 배열이 아닌 경우 오류 처리
+            return 'Invalid date and time format';
+        }
         const [year, month, day, hours, minutes] = dateTimeArray;
         const date = new Date(year, month - 1, day, hours, minutes);
 
@@ -145,6 +150,17 @@ function DetailStudyPage() {
         const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
 
         return formattedDateTime;
+    };
+
+    const categoryTagStyle = {
+        display: 'inline-block',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '0.6%'
     };
 
 
@@ -218,7 +234,7 @@ function DetailStudyPage() {
             try {
                 const response = await request('POST', `/study/delete/${studyId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-                message.success('스터디가 성공적으로 삭제되었습니다');    
+                message.success('스터디가 성공적으로 삭제되었습니다');
                 navigate('/study');
             } catch (error) {
                 // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
@@ -226,22 +242,22 @@ function DetailStudyPage() {
                 message.warning('스터디를 삭제하려면 승인했던 인원을 모두 승인 취소해주세요.');
             }
         }
-    
+
         // writer가 아닌 사람이 지원하기 버튼을 누른 경우
         else if (modalAction === 'apply') {
             try {
                 const response = await request('POST', `/study/apply/${studyId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-    
+
                 navigate(`/study/detail/${studyId}`);
             } catch (error) {
                 console.error("Error fetching study data:", error);
             }
         }
-    
+
         setIsModalVisible(false);   // 모달 안보이게 숨김
     };
-    
+
 
     const handleCancelModalConfirm = async () => {
         try {
@@ -340,7 +356,7 @@ function DetailStudyPage() {
 
             // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
             const newData = { ...data };
-            
+
             // count 값을 response.data[0].count로 업데이트
             newData.counts = response.data[0].count;
 
@@ -365,10 +381,10 @@ function DetailStudyPage() {
 
             // 승인 상태를 '수정'하는 것이므로, put request 
             const response = await request('PUT', `/posts/detail/cancelApprove?${queryParams}`);
-            
+
             // 기존 data 객체의 내용을 복사하여 새로운 객체를 생성
             const newData = { ...data };
-            
+
             // count 값을 response.data[0].count로 업데이트
             newData.counts = response.data[0].count;
             console.log("response.data[0].count : ", response.data[0].count);
@@ -661,90 +677,93 @@ function DetailStudyPage() {
         console.log('com', comments);
 
         return comments.map((comment) => (
-            <Card key={comment.id} style={{ marginBottom: '16px' }}>
-                <div className={`comment-container depth-${depth}`}>
-                    <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }} />
-                            <p style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></p>
-                        </div>
 
-                        {comment.commentWriter && (
-                            <div>
-                                <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
-                                {editingCommentId === comment.id ? (
-                                    // 수정 중일 때, Input으로 표시하고 수정 관련 버튼 표시
-
-
-                                    <Button size="small" onClick={handleCancelEditComment} style={{ marginBottom: '16px' }}>취소</Button>
-
-                                ) : (
-                                    // 수정 중이 아닐 때, "수정" 버튼 표시
-                                    <Button size="small" onClick={() => handleEditComment(comment.id, comment.content)}>수정</Button>
-                                )}
-                                {/* <Button size="small" onClick={() => handleDeleteComment(comment.id)}>삭제</Button> */}
-                                <Button size="small" onClick={() => showCommentDeleteConfirmModal(comment.id, comment.isTopLevel)}>삭제</Button>
-                            </div>
-                        )}
-                        {!comment.commentWriter && (
-                            <Button size="small" onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
-                        )}
+            <div className={`comment-container depth-${depth}`}>
+                <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <UserOutlined style={{ marginRight: '5px' }} />
+                        <div style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></div>
                     </div>
 
-                    {editingCommentId === comment.id ? (
-                        // 수정 중일 때, Input으로 표시
-                        <>
-                            <TextArea
-                                autoSize={{ minRows: 3 }}
-                                type="text"
-                                value={editedCommentText}
-                                onChange={(e) => setEditedCommentText(e.target.value)}
-                                placeholder="Edit your comment"
+                    {comment.commentWriter && (
+                        <div style={{ display: 'flex', textAlign: 'right' }}>
+                            <Button size="small" type="text" style={{ color: 'black' }} onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                            {editingCommentId === comment.id ? (
+                                // 수정 중일 때, Input으로 표시하고 수정 관련 버튼 표시
 
-                            />
-                            <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
-                                {/* <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button> */}
-                                <Button size="small" onClick={() => showCommentEditConfirmModal(comment.id, comment.isTopLevel)}>
-                                    수정 완료
-                                </Button>
-                            </div>
-                        </>
-                    ) : (
-                        // 수정 중이 아닐 때, <p>로 표시
-                        <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>{insertLineBreaks(comment.content, 45)}</p>
-                    )}
 
-                    <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray' }}>
-                        {formatDateTime(comment.finalCommentedTime)}
-                    </div>
-                    {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
-                        <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
-                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
-                            <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
-                            <TextArea
-                                autoSize={{ minRows: 3 }}
-                                type="text"
-                                value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
-                                placeholder="Write a reply"
-                                style={{ marginBottom: '16px' }}
-                            />
-                            <Button size="small" onClick={() => handleReplySubmit(comment.id)} style={{ marginBottom: '16px', marginLeft: '5px' }} >답글 등록</Button>
-                            <Button size="small" onClick={cancelReply} style={{ marginBottom: '16px' }}>취소</Button> {/* 취소 버튼 추가 */}
+                                <Button size="small" type="text" style={{ color: 'black' }} onClick={handleCancelEditComment}>취소</Button>
+
+                            ) : (
+                                // 수정 중이 아닐 때, "수정" 버튼 표시
+                                <Button size="small" type="text" style={{ color: 'black' }} onClick={() => handleEditComment(comment.id, comment.content)}>수정</Button>
+                            )}
+                            {/* <Button size="small" onClick={() => handleDeleteComment(comment.id)}>삭제</Button> */}
+                            <Button size="small" type="text" style={{ color: 'black' }} onClick={() => showCommentDeleteConfirmModal(comment.id, comment.isTopLevel)}>삭제</Button>
                         </div>
                     )}
-                    {/* 1차 level렌더링 후, 각 1차 level에 children이 있다면 하위 level을 재귀적으로 다시 렌더링함 */}
-                    {comment.children && comment.children.length > 0 && (
-                        <div>
-                            <Button size="small" onClick={() => toggleReplyVisibility(comment.id)} style={{ marginBottom: '16px' }}>
-                                {replyVisibility[comment.id] ? '답글 숨기기' : '답글 보기'}
-                            </Button>
-                            {/* Step 2: Conditionally render replies */}
-                            {replyVisibility[comment.id] && renderComments(comment.children, depth + 1)}
-                        </div>
+                    {!comment.commentWriter && (
+                        <div style={{ display: 'flex' }}>
+                            <Button size="small" type="text" style={{ color: 'black', marginLeft: '2px' }} onClick={() => showReplyInput(comment.id)}>답글 달기</Button></div>
                     )}
                 </div>
-            </Card>
+
+                {editingCommentId === comment.id ? (
+                    // 수정 중일 때, Input으로 표시
+                    <>
+                        <TextArea
+                            autoSize={{ minRows: 3 }}
+                            type="text"
+                            value={editedCommentText}
+                            onChange={(e) => setEditedCommentText(e.target.value)}
+                            style={{ marginTop: '10px' }}
+                            placeholder="Edit your comment"
+
+                        />
+                        <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
+                            {/* <Button size="small" onClick={() => handleEditCommentSubmit(comment.id)}>수정 완료</Button> */}
+                            <Button size="small" onClick={() => showCommentEditConfirmModal(comment.id, comment.isTopLevel)}>
+                                수정 완료
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    // 수정 중이 아닐 때, <p>로 표시
+                    <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>{insertLineBreaks(comment.content, 45)}</p>
+                )}
+
+                <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray', marginRight: '10px' }}>
+                    {formatDateTime(comment.finalCommentedTime)}
+                    <hr />
+                </div>
+                {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
+                    <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px', marginBottom: '20px' }}>
+                        <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
+                        <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
+                        <TextArea
+                            autoSize={{ minRows: 3 }}
+                            type="text"
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Write a reply"
+                            style={{ marginBottom: '16px' }}
+                        />
+                        <Button size="small" onClick={() => handleReplySubmit(comment.id)} style={{ marginLeft: '5px', marginRight: '5px', marginTop: '33px' }} >답글 등록</Button>
+                        <Button size="small" style={{ marginTop: '33px' }} onClick={cancelReply} >취소</Button> {/* 취소 버튼 추가 */}
+                    </div>
+                )}
+                {/* 1차 level렌더링 후, 각 1차 level에 children이 있다면 하위 level을 재귀적으로 다시 렌더링함 */}
+                {comment.children && comment.children.length > 0 && (
+                    <div>
+                        <Button size="small" onClick={() => toggleReplyVisibility(comment.id)} style={{ marginBottom: '16px' }}>
+                            {replyVisibility[comment.id] ? '답글 숨기기' : '답글 보기'}
+                        </Button>
+                        {/* Step 2: Conditionally render replies */}
+                        {replyVisibility[comment.id] && renderComments(comment.children, depth + 1)}
+                    </div>
+                )}
+            </div>
+
         ));
     };
 
@@ -852,7 +871,7 @@ function DetailStudyPage() {
                 <Col span={12} style={{ textAlign: 'right' }}>
                     {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
                     {isWriter && (
-                        <div> style={{ marginBottom: '10px' }}
+                        <div style={{ marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => navigate(`/study/update/${studyId}`)} style={{ marginRight: '5px' }}>
                                 게시물 수정
                             </Button>
@@ -1002,35 +1021,40 @@ function DetailStudyPage() {
         );
     };
 
-
     const renderPost = (data) => {
-        return(
-        <div>
-            <Card>
-                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
-                    <div style={{display:'flex', justifyContent: 'space-between' }}>
-                        <div style={{display:'grid'}}>
-                            <div style={{fontSize:'25px',fontWeight:'bold'}}>
-                                            {data.title}
+        return (
+            <div>
+                <Card>
+                    <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'grid' }}>
+                                <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
+                                    {data.title}
+                                </div>
+                                <div style={{ marginTop: '5px' }}>
+                                    {data.nickName}
+                                </div>
                             </div>
-                            <div style={{marginTop:'5px'}}>
-                                {data.nickName}
-                                        </div>
-                            </div>
-                            <div style={{alignItems:'center'}}>
+                            <div style={{ alignItems: 'center' }}>
                                 {data.viewCount} views
-                                    </div>
+                                <br/> <br/>
+                                <div style={{color: 'gray'}}>{formatDateTime(data.finalUpdatedTime)}</div>
                             </div>
-                            <hr></hr>
-                            <div style={{display:'grid'}}>
-                                <div >
-                                    {data.web ? " #Web " : ""}{data.app ? " #App " : ""}{data.game ? " #Game " : ""}{data.ai ? " #AI " : ""}
-                                </div>
-                                 <div style={{marginTop:'20px'}}>
-                                    {insertLineBreaks(data.content, 45)}
-                                </div>
-                                <div style={{marginTop:'150px'}}>
-                                    첨부 파일 {
+                        </div>
+                        <hr></hr>
+                        <div style={{ display: 'grid' }}>
+                            <strong style={{ display: 'inline-block' }}>
+
+                                {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
+                                {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
+                                {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
+                                {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+                            </strong>
+                            <div style={{ marginTop: '20px' }}>
+                                {insertLineBreaks(data.content, 45)}
+                            </div>
+                            <div style={{ marginTop: '150px' }}>
+                                첨부 파일 {
                                     data.fileUrl ? (
                                         data.fileUrl.map((file, index) => (
                                             <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
@@ -1045,63 +1069,63 @@ function DetailStudyPage() {
                                         null
                                     )}
 
-                                </div>
-                                <div>
-                                        홍보 사진:
-                                        {data.promoteImageUrl ? (
-                                            data.promoteImageUrl.map((imageUrl, index) => (
-                                                <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                                    <img
-                                                        key={index}
-                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                                        alt={`홍보 사진 ${index + 1}`}
-                                                        style={{ margin: '10px', width: 600 }}
-                                                    />
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>이미지가 없습니다</p>
-                                        )}
-                                        
-                                </div>
-                                <hr></hr>
                             </div>
-                                <div style={{display:'flex',justifyContent: 'space-between' }}>
-                                    <div style={{marginBottom:'30px'}}>
-                                        <strong>comments</strong>
-                                    </div>
-                                    <div>
-                                        <Button size="small" onClick={toggleCommentsVisibility}>
-                                            {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
-                                {areCommentsVisible && (
                             <div>
-                                {renderComments(commentData.content)}
-                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                                    {moreCommentsAvailable && (
-                                        <Button size="small" onClick={loadMoreComments}>
-                                            댓글 더보기
-                                        </Button>
-                                    )}
-                                </div>
-
-                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                            <UserOutlined style={{ marginRight: '5px' }} />
-                                            <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
-                                </div>
-                                            <TextArea
-                                                autoSize={{ minRows: 4 }}
-                                                value={commentText}
-                                                onChange={(e) => setCommentText(e.target.value)}
-                                                placeholder="Write a comment"
+                                홍보 사진:
+                                {data.promoteImageUrl ? (
+                                    data.promoteImageUrl.map((imageUrl, index) => (
+                                        <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                            <Image
+                                                key={index}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                alt={`홍보 사진 ${index + 1}`}
+                                                style={{ margin: '10px', width: 300 }}
                                             />
-                                    <div style={{ textAlign: 'right', marginTop: '16px' }}>
-                                            <Button size="small" onClick={handleCommentSubmit}>등록</Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>이미지가 없습니다</p>
+                                )}
+
+                            </div>
+                            <hr></hr>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ marginBottom: '30px' }}>
+                                <strong>comments</strong>
+                            </div>
+                            <div>
+                                <Button size="small" onClick={toggleCommentsVisibility}>
+                                    {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                                </Button>
+                            </div>
+                        </div>
+                        <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
+                            {areCommentsVisible && (
+                                <div>
+                                    {renderComments(commentData.content)}
+                                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                        {moreCommentsAvailable && (
+                                            <Button size="small" onClick={loadMoreComments}>
+                                                댓글 더보기
+                                            </Button>
+                                        )}
                                     </div>
-                                {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                        <UserOutlined style={{ marginRight: '5px' }} />
+                                        <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
+                                    </div>
+                                    <TextArea
+                                        autoSize={{ minRows: 4 }}
+                                        value={commentText}
+                                        onChange={(e) => setCommentText(e.target.value)}
+                                        placeholder="Write a comment"
+                                    />
+                                    <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                        <Button size="small" onClick={handleCommentSubmit}>등록</Button>
+                                    </div>
+                                    {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
                                     <Pagination
                                         current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
                                         total={totalPages * pageSize}
@@ -1110,13 +1134,13 @@ function DetailStudyPage() {
                                     />
 
                                 </div> */}
-                            </div>
+                                </div>
 
-                        )}
+                            )}
+                        </div>
                     </div>
-                </div>
-            </Card>
-        </div>
+                </Card>
+            </div>
 
         )
     };
@@ -1130,7 +1154,7 @@ function DetailStudyPage() {
                     <div style={{ flex: 1 }}>
                         {/** 좌측 여백을 위해 만든 더미 div */}
                     </div>
-                    
+
                     <div style={{ flex: 2.5 }}>
                         {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
                         {data.writer && renderButtons()}
@@ -1141,11 +1165,9 @@ function DetailStudyPage() {
                         {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
                         {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
                         {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
-        
-                        {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        
+
                         {renderPost(data)}
-        
+
                         {/* Modal */}
                         <Modal
                             title="Confirm Action"
@@ -1208,7 +1230,7 @@ function DetailStudyPage() {
                             {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
                         </Modal>
                     </div>
-        
+
                     <div style={{ flex: 1 }}>
                         {data.writer && renderApplicantButton()}
                     </div>

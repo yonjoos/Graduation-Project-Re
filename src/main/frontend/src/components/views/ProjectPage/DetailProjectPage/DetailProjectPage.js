@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 //import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message, Input, Card } from 'antd';
+import { Divider, Row, Col, Button, Modal, message, Input, Card, Image } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 //import { lastVisitedEndpoint } from "../../../../_actions/actions";
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
@@ -132,6 +132,11 @@ function DetailProjectPage() {
 
     // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
     const formatDateTime = (dateTimeArray) => {
+
+        if (!Array.isArray(dateTimeArray)) {
+            // dateTimeArray가 배열이 아닌 경우 오류 처리
+            return 'Invalid date and time format';
+        }
         const [year, month, day, hours, minutes] = dateTimeArray;
         const date = new Date(year, month - 1, day, hours, minutes);
 
@@ -145,6 +150,17 @@ function DetailProjectPage() {
         const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
 
         return formattedDateTime;
+    };
+
+    const categoryTagStyle = {
+        display: 'inline-block',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '0.6%'
     };
 
 
@@ -661,90 +677,93 @@ function DetailProjectPage() {
         console.log('com', comments);
 
         return comments.map((comment) => (
-            
-                <div className={`comment-container depth-${depth}`}>
-                    <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }} />
-                            <p style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></p>
-                        </div>
 
-                        {comment.commentWriter && (
-                            <div style={{display:'flex'}}>
-                                <div  style={{marginRight:'10px'}} onClick={() => showReplyInput(comment.id)}>답글달기</div>
-                                {editingCommentId === comment.id ? (
-                                    // 수정 중일 때, Input으로 표시하고 수정 관련 버튼 표시
-
-
-                                    <div style={{marginRight:'10px'}} onClick={handleCancelEditComment} >취소</div>
-
-                                ) : (
-                                    // 수정 중이 아닐 때, "수정" 버튼 표시
-                                    <div style={{marginRight:'10px'}} onClick={() => handleEditComment(comment.id, comment.content)}>수정</div>
-                                )}
-                                {/* <Button size="small" onClick={() => handleDeleteComment(comment.id, comment.isTopLevel)}>삭제</Button> */}
-                                <div onClick={() => showCommentDeleteConfirmModal(comment.id, comment.isTopLevel)}>삭제</div>
-                            </div>
-                        )}
-                        {!comment.commentWriter && (
-                            <div onClick={() => showReplyInput(comment.id)}>답글 달기</div>
-                        )}
+            <div className={`comment-container depth-${depth}`}>
+                <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <UserOutlined style={{ marginRight: '5px' }} />
+                        <div style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></div>
                     </div>
 
-                    {editingCommentId === comment.id ? (
-                        // 수정 중일 때, Input으로 표시
-                        <>
-                            <TextArea
-                                autoSize={{ minRows: 3 }}
-                                type="text"
-                                value={editedCommentText}
-                                onChange={(e) => setEditedCommentText(e.target.value)}
-                                placeholder="Edit your comment"
+                    {comment.commentWriter && (
+                        <div style={{ display: 'flex', textAlign: 'right' }}>
+                            <Button size="small" type="text" style={{ color: 'black' }} onClick={() => showReplyInput(comment.id)}>답글 달기</Button>
+                            {editingCommentId === comment.id ? (
+                                // 수정 중일 때, Input으로 표시하고 수정 관련 버튼 표시
 
-                            />
-                            <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
-                                {/* <Button size="small" onClick={() => handleEditCommentSubmit(comment.id, comment.isTopLevel)}>수정 완료</Button> */}
-                                <Button size="small" onClick={() => showCommentEditConfirmModal(comment.id, comment.isTopLevel)}>
-                                    수정 완료
-                                </Button>
-                            </div>
-                        </>
-                    ) : (
-                        // 수정 중이 아닐 때, <p>로 표시
-                        <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>{insertLineBreaks(comment.content, 45)}</p>
-                    )}
 
-                    <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray' }}>
-                        {formatDateTime(comment.finalCommentedTime)}
-                    </div>
-                    {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
-                        <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
-                            <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
-                            <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
-                            <TextArea
-                                autoSize={{ minRows: 3 }}
-                                type="text"
-                                value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
-                                placeholder="Write a reply"
-                                style={{ marginBottom: '16px' }}
-                            />
-                            <Button size="small" onClick={() => handleReplySubmit(comment.id)} style={{ marginBottom: '16px', marginLeft: '5px' }} >답글 등록</Button>
-                            <Button size="small" onClick={cancelReply} style={{ marginBottom: '16px' }}>취소</Button> {/* 취소 버튼 추가 */}
+                                <Button size="small" type="text" style={{ color: 'black' }} onClick={handleCancelEditComment}>취소</Button>
+
+                            ) : (
+                                // 수정 중이 아닐 때, "수정" 버튼 표시
+                                <Button size="small" type="text" style={{ color: 'black' }} onClick={() => handleEditComment(comment.id, comment.content)}>수정</Button>
+                            )}
+                            {/* <Button size="small" onClick={() => handleDeleteComment(comment.id, comment.isTopLevel)}>삭제</Button> */}
+                            <Button size="small" type="text" style={{ color: 'black' }} onClick={() => showCommentDeleteConfirmModal(comment.id, comment.isTopLevel)}>삭제</Button>
                         </div>
                     )}
-                    {/* 1차 level렌더링 후, 각 1차 level에 children이 있다면 하위 level을 재귀적으로 다시 렌더링함 */}
-                    {comment.children && comment.children.length > 0 && (
-                        <div>
-                            <Button size="small" onClick={() => toggleReplyVisibility(comment.id)} style={{ marginBottom: '16px' }}>
-                                {replyVisibility[comment.id] ? '답글 숨기기' : '답글 보기'}
-                            </Button>
-                            {/* Step 2: Conditionally render replies */}
-                            {replyVisibility[comment.id] && renderComments(comment.children, depth + 1)}
-                        </div>
+                    {!comment.commentWriter && (
+                        <div style={{ display: 'flex' }}>
+                            <Button size="small" type="text" style={{ color: 'black', marginLeft: '2px' }} onClick={() => showReplyInput(comment.id)}>답글 달기</Button></div>
                     )}
                 </div>
-           
+
+                {editingCommentId === comment.id ? (
+                    // 수정 중일 때, Input으로 표시
+                    <>
+                        <TextArea
+                            autoSize={{ minRows: 3 }}
+                            type="text"
+                            value={editedCommentText}
+                            onChange={(e) => setEditedCommentText(e.target.value)}
+                            style={{ marginTop: '10px' }}
+                            placeholder="Edit your comment"
+
+                        />
+                        <div style={{ marginBottom: '16px', textAlign: 'right', marginTop: '16px' }}>
+                            {/* <Button size="small" onClick={() => handleEditCommentSubmit(comment.id, comment.isTopLevel)}>수정 완료</Button> */}
+                            <Button size="small" onClick={() => showCommentEditConfirmModal(comment.id, comment.isTopLevel)}>
+                                수정 완료
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    // 수정 중이 아닐 때, <p>로 표시
+                    <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>{insertLineBreaks(comment.content, 45)}</p>
+                )}
+
+                <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray', marginRight: '10px' }}>
+                    {formatDateTime(comment.finalCommentedTime)}
+                    <hr />
+                </div>
+                {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
+                    <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px', marginBottom: '20px' }}>
+                        <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
+                        <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
+                        <TextArea
+                            autoSize={{ minRows: 3 }}
+                            type="text"
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Write a reply"
+                            style={{ marginBottom: '16px' }}
+                        />
+                        <Button size="small" onClick={() => handleReplySubmit(comment.id)} style={{ marginLeft: '5px', marginRight: '5px', marginTop: '33px' }} >답글 등록</Button>
+                        <Button size="small" style={{ marginTop: '33px' }} onClick={cancelReply} >취소</Button> {/* 취소 버튼 추가 */}
+                    </div>
+                )}
+                {/* 1차 level렌더링 후, 각 1차 level에 children이 있다면 하위 level을 재귀적으로 다시 렌더링함 */}
+                {comment.children && comment.children.length > 0 && (
+                    <div>
+                        <Button size="small" onClick={() => toggleReplyVisibility(comment.id)} style={{ marginBottom: '16px' }}>
+                            {replyVisibility[comment.id] ? '답글 숨기기' : '답글 보기'}
+                        </Button>
+                        {/* Step 2: Conditionally render replies */}
+                        {replyVisibility[comment.id] && renderComments(comment.children, depth + 1)}
+                    </div>
+                )}
+            </div>
+
         ));
     };
 
@@ -1003,33 +1022,39 @@ function DetailProjectPage() {
     };
 
     const renderPost = (data) => {
-        return(
-        <div>
-            <Card>
-                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
-                    <div style={{display:'flex', justifyContent: 'space-between' }}>
-                        <div style={{display:'grid'}}>
-                            <div style={{fontSize:'25px',fontWeight:'bold'}}>
-                                            {data.title}
+        return (
+            <div>
+                <Card>
+                    <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'grid' }}>
+                                <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
+                                    {data.title}
+                                </div>
+                                <div style={{ marginTop: '5px' }}>
+                                    {data.nickName}
+                                </div>
                             </div>
-                            <div style={{marginTop:'5px'}}>
-                                {data.nickName}
-                                        </div>
-                            </div>
-                            <div style={{alignItems:'center'}}>
+                            <div style={{ alignItems: 'center' }}>
                                 {data.viewCount} views
-                                    </div>
+                                <br/><br/>
+                                <div style={{color: 'gray'}}>{formatDateTime(data.finalUpdatedTime)}</div>
                             </div>
-                            <hr></hr>
-                            <div style={{display:'grid'}}>
-                                <div >
-                                    {data.web ? " #Web " : ""}{data.app ? " #App " : ""}{data.game ? " #Game " : ""}{data.ai ? " #AI " : ""}
-                                </div>
-                                 <div style={{marginTop:'20px'}}>
-                                    {insertLineBreaks(data.content, 45)}
-                                </div>
-                                <div style={{marginTop:'150px'}}>
-                                    첨부 파일 {
+                        </div>
+                        <hr></hr>
+                        <div style={{ display: 'grid' }}>
+                            <strong style={{ display: 'inline-block' }}>
+
+                                {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
+                                {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
+                                {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
+                                {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+                            </strong>
+                            <div style={{ marginTop: '20px' }}>
+                                {insertLineBreaks(data.content, 45)}
+                            </div>
+                            <div style={{ marginTop: '150px' }}>
+                                첨부 파일 {
                                     data.fileUrl ? (
                                         data.fileUrl.map((file, index) => (
                                             <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
@@ -1044,63 +1069,63 @@ function DetailProjectPage() {
                                         null
                                     )}
 
-                                </div>
-                                <div>
-                                        홍보 사진:
-                                        {data.promoteImageUrl ? (
-                                            data.promoteImageUrl.map((imageUrl, index) => (
-                                                <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                                    <img
-                                                        key={index}
-                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                                        alt={`홍보 사진 ${index + 1}`}
-                                                        style={{ margin: '10px', width: 600 }}
-                                                    />
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>이미지가 없습니다</p>
-                                        )}
-                                        
-                                </div>
-                                <hr></hr>
                             </div>
-                                <div style={{display:'flex',justifyContent: 'space-between' }}>
-                                    <div style={{marginBottom:'30px'}}>
-                                        <strong>comments</strong>
-                                    </div>
-                                    <div>
-                                        <Button size="small" onClick={toggleCommentsVisibility}>
-                                            {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div style={{display:'grid', marginLeft:'10px', marginRight:'10px'}}>
-                                {areCommentsVisible && (
                             <div>
-                                {renderComments(commentData.content)}
-                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                                    {moreCommentsAvailable && (
-                                        <Button size="small" onClick={loadMoreComments}>
-                                            댓글 더보기
-                                        </Button>
-                                    )}
-                                </div>
-
-                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                            <UserOutlined style={{ marginRight: '5px' }} />
-                                            <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
-                                </div>
-                                            <TextArea
-                                                autoSize={{ minRows: 4 }}
-                                                value={commentText}
-                                                onChange={(e) => setCommentText(e.target.value)}
-                                                placeholder="Write a comment"
+                                홍보 사진:
+                                {data.promoteImageUrl ? (
+                                    data.promoteImageUrl.map((imageUrl, index) => (
+                                        <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                            <Image
+                                                key={index}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                alt={`홍보 사진 ${index + 1}`}
+                                                style={{ margin: '10px', width: 300 }}
                                             />
-                                    <div style={{ textAlign: 'right', marginTop: '16px' }}>
-                                            <Button size="small" onClick={handleCommentSubmit}>등록</Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>이미지가 없습니다</p>
+                                )}
+
+                            </div>
+                            <hr></hr>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ marginBottom: '30px' }}>
+                                <strong>comments</strong>
+                            </div>
+                            <div>
+                                <Button size="small" onClick={toggleCommentsVisibility}>
+                                    {areCommentsVisible ? '댓글 숨기기' : '모든 댓글 보기'}
+                                </Button>
+                            </div>
+                        </div>
+                        <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
+                            {areCommentsVisible && (
+                                <div>
+                                    {renderComments(commentData.content)}
+                                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                        {moreCommentsAvailable && (
+                                            <Button size="small" onClick={loadMoreComments}>
+                                                댓글 더보기
+                                            </Button>
+                                        )}
                                     </div>
-                                {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                        <UserOutlined style={{ marginRight: '5px' }} />
+                                        <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
+                                    </div>
+                                    <TextArea
+                                        autoSize={{ minRows: 4 }}
+                                        value={commentText}
+                                        onChange={(e) => setCommentText(e.target.value)}
+                                        placeholder="Write a comment"
+                                    />
+                                    <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                                        <Button size="small" onClick={handleCommentSubmit}>등록</Button>
+                                    </div>
+                                    {/* <div style={{ textAlign: 'center', margin: '20px 0' }}>
                                     <Pagination
                                         current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0
                                         total={totalPages * pageSize}
@@ -1109,17 +1134,16 @@ function DetailProjectPage() {
                                     />
 
                                 </div> */}
-                            </div>
+                                </div>
 
-                        )}
+                            )}
+                        </div>
                     </div>
-                </div>
-            </Card>
-        </div>
+                </Card>
+            </div>
 
         )
     };
-
 
     return (
         <div>
@@ -1143,16 +1167,6 @@ function DetailProjectPage() {
                         {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
 
                         {renderPost(data)}
-
-
-                        <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                            
-                        </div>
-
-
-
-                        {/* 프로젝트 내용 하단에 댓글, 답글 렌더링 */}
-                        
 
                         {/* Modal */}
                         <Modal

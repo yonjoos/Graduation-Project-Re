@@ -146,6 +146,17 @@ function LandingPage() {
         // console.log('검색어', searchTerm);
     };
 
+    const categoryTagStyle = {
+        display: 'inline-block',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '3.6%'
+    };
+
     // 백엔드에서 받아온 검색 결과를 가지고 실제 렌더링 진행.
     // 프로젝트, 스터디, 유저를 각각 카드로 감싸고, 그 안엔 버튼으로 감쌈
     const renderSection = (title, dataArray) => {
@@ -260,9 +271,13 @@ function LandingPage() {
                                                 }}>
                                                 <b>{truncateString(item.title, 15)}</b>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                                                    <div>
-                                                        {item.web ? "#Web " : ""}{item.app ? "#App " : ""}{item.game ? "#Game " : ""}{item.ai ? "#AI " : ""}
-                                                    </div>
+                                                    <strong style={{ display: 'flex' }}>
+
+                                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
+                                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
+                                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
+                                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                                    </strong>
                                                     <div>
 
                                                     </div>
@@ -359,9 +374,13 @@ function LandingPage() {
                                                     border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'
                                                 }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                    <div>
-                                                        {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                                    </div>
+                                                    <strong style={{ display: 'flex' }}>
+
+                                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
+                                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
+                                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
+                                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                                    </strong>
                                                     <div>
 
                                                     </div>

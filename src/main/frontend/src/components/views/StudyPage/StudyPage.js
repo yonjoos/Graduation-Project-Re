@@ -167,6 +167,12 @@ function StudyPage() {
         navigate(`/study/detail/${studyId}`);
     }
 
+    // 게시물 목록에서 닉네임 필드를 클릭하면, 해당 닉네임을 가진 회원의 포트폴리오 창으로 navigate
+    const handleNicknameClick = (nickName) => {
+
+        navigate(`/portfolio/${nickName}`);
+    }    
+
     // 현재 페이지에서 게시물 업로드를 할 수 있으므로 study upload 버튼을 클릭 시 업로드할 수 있는 페이지로 navigate함
     const onClickHandler = () => {
         navigate('/study/upload');
@@ -278,11 +284,17 @@ function StudyPage() {
             <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
                 <Card title={`STUDIES`}>
                     {posts.map((item, index) => (
-                        <div key={index} style={{ display: 'grid' }} onClick={() => handleRowClick(item.id, item.postType)}>
+                        <div key={index} style={{ display: 'grid' }} onClick={(e) => {
+                            if (e.target.tagName.toLowerCase() === 'div' && e.target.classList.contains('nickname')) { //div 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
+                                handleNicknameClick(item.nickName);
+                            } else {
+                                handleRowClick(item.id, item.postType);
+                            }
+                        }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
                                     <div>
-                                        <strong>{item.nickName}</strong>
+                                        <strong><div className="nickname">{item.nickName}</div></strong>
                                     </div>
                                     <strong style={{ display: 'inline-block' }}>
 

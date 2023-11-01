@@ -12,7 +12,7 @@ function PortfolioPage() {
     //const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
 
     const [postData, setPostData] = useState([]);
-    const [loadPosts, setloadPosts] = useState("more");   
+    const [loadPosts, setloadPosts] = useState("more");
 
     const [data, setData] = useState(null);
     const [hasPortfolio, setHasPortfolio] = useState('');
@@ -67,25 +67,31 @@ function PortfolioPage() {
     // RETURN : Posts Lists <Card> components
     const renderPosts = (posts) => {
 
-        if(loadPosts === "fold"){
-            return(
+        if (loadPosts === "fold") {
+            return (
 
                 posts.map((post) => (
                     <Row justify="center" key={post.id}>
                         <Col span={16}>
-                            <Card 
+                            <Card headStyle={{ background: '#f0fff0' }}
                                 onClick={() => onClickPosts(post)}
-                                style = {{ height:'150px', cursor: 'pointer' }}
+                                style={{ height: '150px', cursor: 'pointer' }}
                                 title={
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div style={{ fontWeight: 'bold' }}>{post.title}</div>
                                         <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
                                     </div>
-                            }>
+                                }>
                                 <div>
-                                    {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
+                                    <strong style={{ display: 'flex' }}>
+
+                                        {post.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
+                                        {post.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
+                                        {post.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
+                                        {post.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                    </strong>
                                 </div>
-                                <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
+                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                                     {post.briefContent}
                                 </div>
                             </Card>
@@ -93,9 +99,9 @@ function PortfolioPage() {
                     </Row>
                 )))
         }
-        else{
-            return(
-                <div/>
+        else {
+            return (
+                <div />
             )
         }
 
@@ -133,14 +139,14 @@ function PortfolioPage() {
         }
     };
 
-        
+
     // 백엔드에서 받아온 데이터에 공백이 없으면, maxCharacters번째 글자 이후에 공백을 넣어주는 함수
     // text: 덩어리로 나누어 줄 바꿈을 삽입하려는 입력 텍스트.
     // maxCharacters: 줄 바꿈을 삽입하기 전의 최대 문자 수.
     function insertLineBreaks(text, maxCharacters) {
         // 함수는 먼저 text 매개변수가 거짓인지(비어 있거나 정의되지 않음) 확인. text가 비어 있거나 정의되지 않은 경우 함수는 동일한 입력 텍스트를 반환함.
         if (!text) return text;
-    
+
         // text가 비어 있지 않으면 함수는 chunks라는 빈 배열을 초기화함. 이 배열은 줄 바꿈을 사용하여 텍스트 덩어리를 저장하는 역할을 함.
         const chunks = [];
         // 띄어쓰기가 없는 한 개의 문자열의 인덱스
@@ -161,7 +167,7 @@ function PortfolioPage() {
                 j = 0;
             }
         }
-        
+
         return chunks;
     }
 
@@ -199,7 +205,7 @@ function PortfolioPage() {
     // OnClick : FETCH PostsListsDTO, switch 'loadPosts' status
     const onLoadPosts = () => {
 
-        if(loadPosts === "more"){
+        if (loadPosts === "more") {
 
             request('GET', `/getOtherUsersPosts?nickName=${nickName}`)
                 .then((response) => {
@@ -214,7 +220,7 @@ function PortfolioPage() {
 
                 });
         }
-        else if(loadPosts === "fold"){
+        else if (loadPosts === "fold") {
             setloadPosts("more");
         }
 
@@ -224,7 +230,7 @@ function PortfolioPage() {
     // onClick : move to post's detail page
     const onClickPosts = (post) => {
 
-        if(post.postType === "PROJECT") {
+        if (post.postType === "PROJECT") {
             navigate(`/project/detail/${post.id}`);
         }
         else {
@@ -232,6 +238,19 @@ function PortfolioPage() {
         }
 
     }
+
+
+    const categoryTagStyle = {
+        display: 'inline-block',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '0.6%'
+    };
+
 
     /*
     RETURN #####################################################################################################################
@@ -252,7 +271,7 @@ function PortfolioPage() {
             {/** 아직 포트폴리오를 만들지 않았다면? */}
             {data && !data.isCreated ? (
                 <div style={{ marginLeft: '15%' }}>
-                    <br/>
+                    <br />
                     <h2> {data.nickName} 님의 포트폴리오가 아직 작성되지 않았습니다.</h2>
                     <br />
                     <br />
@@ -261,10 +280,10 @@ function PortfolioPage() {
                 <div>
                     <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div>
-                        
+
                             <div style={{ fontSize: '35px' }}>
-                                
-                                
+
+
                                 <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
                                 {/* 
                                         == 변경사항 ==
@@ -298,7 +317,7 @@ function PortfolioPage() {
                         <Col span={16}>
                             <Row>
                                 <Col span={14}>
-                                    <Card title="ABOUT" style={{ height: '100%' }}>
+                                    <Card title="ABOUT" style={{ height: '100%' }} headStyle={{ background: '#ddeeff' }}>
                                         {/* 
                                             == 변경사항 ==
                                             1) 라디오 카드, 한 줄 소개 카드 없애고
@@ -307,19 +326,19 @@ function PortfolioPage() {
 
                                         <h6>Nick Name</h6>
                                         {nickName}
-                                        <br/>
-                                        <br/>
+                                        <br />
+                                        <br />
                                         <h6>Brief Introduction</h6>
                                         {data && data.shortIntroduce ? (
                                             data.shortIntroduce
                                         ) : (
                                             <p>No introduction available</p>
                                         )}
-                                        </Card>
+                                    </Card>
                                 </Col>
                                 <Col span={10}>
-                                    <Card title="관심 분야 선호도" style={{ height: '100%' }}> 
-                                    {/* 
+                                    <Card title="관심 분야 선호도" style={{ height: '100%' }} headStyle={{ background: '#ddeeff' }}>
+                                        {/* 
                                         == 변경사항 ==
                                         관심 분야 선호도 "그래프" -> 관심분야 선호도 그래프 
                                     */}
@@ -333,9 +352,9 @@ function PortfolioPage() {
                         </Col>
                     </Row>
 
-                    
 
-                {/**멀티라인 콘텐츠를 데이터베이스에 저장된 대로 프론트엔드에서 줄바꿈(새 줄 문자)을 포함하여 표시하려면
+
+                    {/**멀티라인 콘텐츠를 데이터베이스에 저장된 대로 프론트엔드에서 줄바꿈(새 줄 문자)을 포함하여 표시하려면
                  *  <pre> HTML 태그나 CSS 스타일을 사용하여 공백 및 줄바꿈 형식을 보존할 수 있다.
                  * 
                  * <Row justify="center">
@@ -353,7 +372,7 @@ function PortfolioPage() {
                  *  */}
                     <Row justify="center">
                         <Col span={16}>
-                            <Card title="경력">
+                            <Card title="경력" headStyle={{ background: '#ddeeff' }}>
                                 <div style={{ whiteSpace: 'pre-wrap' }}>
                                     {/** 받아온 데이터에 공백이 없으면, 40번째 글자 이후에 강제로 공백을 넣어주는 함수 */}
                                     {/** Card안에 데이터를 넣는 경우 발생하는 문제인 것 같음. */}
@@ -365,14 +384,14 @@ function PortfolioPage() {
 
                     <br />
                     <br />
-        
+
                     {/* >> Posts Lists << */}
                     <Row justify="center">
-                        <Col span = {16}>
+                        <Col span={16}>
                             <Card >
                                 <Row justify="space-between">
                                     <Col span={8}>
-                                        Post
+                                        <div style={{ fontWeight: 'bold', fontSize: '1.2em' }}>{data && data.nickName}님이 작성한 게시물</div>
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>
@@ -387,8 +406,8 @@ function PortfolioPage() {
                     {/* >> Posts << */}
                     {postData && postData.length > 0 ? (
                         renderPosts(postData)
-                        ) : (
-                            <div></div>
+                    ) : (
+                        <div></div>
 
                     )}
                 </div>

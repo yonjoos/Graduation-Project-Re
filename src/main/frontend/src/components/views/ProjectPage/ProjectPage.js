@@ -304,7 +304,7 @@ function ProjectPage() {
     const renderPosts = (posts) => {
         return (
             <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
-                <Card title={`PROJECTS`} headStyle={{ background: '#ffffdd', color: '#ff8400' }}>
+                <Card title={`PROJECTS`} headStyle={{ background: '#fffec1', color: '#ff8400' }}>
                     {posts.map((item, index) => (
                         <div key={index} style={{ display: 'grid' }} onClick={(e) => {
                             if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate

@@ -308,7 +308,7 @@ function PortfolioCardPage() {
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        color: '#677779', /* 텍스트 색상 설정 */
+        color: '#1365E6', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
         marginRight: '1.2%'
     };
@@ -374,7 +374,7 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#ddeeff' }} title={
+                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span>👩🏻‍💻 {item.nickName}</span>
                                             <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
@@ -385,10 +385,10 @@ function PortfolioCardPage() {
                                     
                                     <strong style={{ display: 'flex' }}>
 
-                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
-                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
-                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
-                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : ""}
+                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : ""}
+                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : ""}
+                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : ""}
                                     </strong>             
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>
@@ -413,7 +413,7 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#ddeeff' }} title={
+                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span>👩🏻‍💻 {item.nickName}</span>
                                             <span>{item.cosineSimilarity}</span>
@@ -422,10 +422,10 @@ function PortfolioCardPage() {
                                     <b>Field Of Interests</b>
                                     <br />
                                     <strong style={{ display: 'flex' }}>
-                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
-                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
-                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
-                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : ""}
+                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : ""}
+                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : ""}
+                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : ""}
                                     </strong> 
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>

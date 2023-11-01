@@ -304,13 +304,13 @@ function PortfolioCardPage() {
     );
 
     const categoryTagStyle = {
-        display: 'inline-block',
+        display: 'flex',
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
         color: '#1365E6', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '1.2%'
+        marginRight: '5px'
     };
 
 

@@ -194,6 +194,8 @@ public class UserService {
     }
 
 
+
+    // 이미 등록되어있는 프사 가져오기
     @Transactional(readOnly = true)
     public UserDto getUserProfileImage(Principal principal){
         String email = principal.getName();
@@ -214,6 +216,8 @@ public class UserService {
         return userDto;
     }
 
+
+    //프사 등록하기
     public void uploadProfileImage(ProfileImageUploadDTO updateDto, Principal principal)
             throws IOException, FileNotFoundException {
 

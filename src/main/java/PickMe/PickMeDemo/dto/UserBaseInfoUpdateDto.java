@@ -12,6 +12,5 @@ public class UserBaseInfoUpdateDto {
     private String nickName;
     private String userName;
     private String password;
-    private MultipartFile imageUrl;
 
 }

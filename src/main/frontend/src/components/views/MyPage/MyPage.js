@@ -44,10 +44,10 @@ function MyPage() {
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false); // 정말로 삭제하시겠습니까? 라는 내용을 보여주는 모달 창을 보여줄지 말지 여부 설정
 
 
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null); //업로드할 이미지, 내 도큐먼트에서 선택한거
     const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
     const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
-    const [profileImage, setProfileImage] = useState(null);
+    const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
 
 
     // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅 -> userDto값이 세팅되어짐
@@ -60,6 +60,8 @@ function MyPage() {
                 console.error("Error fetching data:", error);
             });
 
+
+        // 이미 프사가 등록되어있으면, 그거 가져오세요
         request('GET', '/userProfileImage')
             .then((response) => {
                 console.log(response.data.imageUrl);
@@ -110,13 +112,6 @@ function MyPage() {
         setUserBaseInfo((prevData) => ({ ...prevData, [fieldName]: value }));
     };
 
-    // Function to handle file input change
-    const handleImageChange = (e) => {
-        // Get the selected file from the input
-        const file = e;
-        setSelectedImage(file);
-        
-    };
 
     const handleSubmit = () => {
         if (selectedImage) {
@@ -134,16 +129,12 @@ function MyPage() {
             };
             console.log("왜안돼");
     
-            // Send the formData with headers to the server
             axios
-            .post('/updateProfileImage', formData, config) // Replace with your API endpoint
+            .post('/updateProfileImage', formData, config) 
             .then((response) => {
-                // Handle the response
-                console.log("막혔어요");
                 if (response.data === 'success') {
                     alert('Information has been updated.');
                     setSelectedImage(null);
-                    // Additional logic as needed
                 } else {
                     console.error('Unknown response:', response.data);
                     message.error('Failed to update information.');
@@ -477,6 +468,7 @@ function MyPage() {
                         <Card title="프로필 이미지" style={{ width: '100%' }}>
                             {userBaseInfo && (
                                 <Form>
+                                    {/* 이미 있는 프사 있으면 띄움 */}
                                     <div style={{ marginTop: '20px' }}>
                                         <Image
                                             src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
@@ -484,6 +476,7 @@ function MyPage() {
                                         />
                                     </div>
                                     <div>
+                                        {/* 업로드할 사진 */}
                                         <Upload
                                             accept="image/*"
                                             showUploadList={false}
@@ -494,6 +487,7 @@ function MyPage() {
                                         >
                                             <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
                                         </Upload>
+                                        {/* 미리보기 */}
                                         <div style={{ display: 'flex', marginBottom: '8px' }}>
                                             {selectedImage && (
                                                 <img

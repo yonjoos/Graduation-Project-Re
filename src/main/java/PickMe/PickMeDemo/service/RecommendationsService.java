@@ -10,7 +10,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.Port;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class RecommendationsService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
@@ -35,7 +39,15 @@ public class RecommendationsService {
 
 
         User user = null; // 추천을 받을 회원(나)
+        Portfolio userPortfolio = null; // 유저(나)의 포트폴리오
         Integer[] usersInterest = null; // 유저(나)의 관심사 벡터
+
+        //기간 설정, 이 기간안에 로그인한 유저들을 추천할 것임
+        //이 기간 안에 있는 : [startDate, currentTime]
+        final LocalDateTime currentTime = LocalDateTime.now();
+        final LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
+        StartEnd startEnd = new StartEnd(startDate, currentTime); // 현재 시간부터 200일 전까지 그 사이의 기간 설정
+
 
         // 추천 받을 회원(나)를 찾기
         try{
@@ -43,26 +55,30 @@ public class RecommendationsService {
                     .orElseThrow(()-> new IllegalStateException("There is no such user"));
 
         }catch(IllegalStateException e){
-            System.out.println("User가 없어요");
+            log.info(e.getMessage());
         }
 
-        // 나의 관심사 벡터 가져오기
-        try{
-            usersInterest = portfolioRepository.findByUser(user)
-                    .orElseThrow(()-> new IllegalStateException("There is no such portfolio")).getVector();
-        }catch(IllegalStateException e){
-            System.out.println("portfolio가 없어요");
+        // 나의 포트폴리오 찾기
+        // 없으면, 그대로 랜덤하게 DTO만들어 반환
+        userPortfolio= portfolioRepository.findByUser(user).orElse(null);
+        if(userPortfolio == null){
+            System.out.println("그런거없다");
+            List<Portfolio> portfolios = findPortfolioByLastAccessDate(user, startEnd);
+            List<Portfolio> randomlySelected = portfolios.subList(0,3);
+
+            // DTO 만들기
+            List<PortfolioCardRecommendationDto> recommendation = getNullUserDTO(randomlySelected);
+
+            return recommendation;
         }
+
+        // 유저 포트폴리오 != null
+        // 포폴에서 유저(나) 벡터 추출
+        usersInterest = userPortfolio.getVector();
 
         /*
         >>> STEP 2 : 다른 유저들의 포폴 추출 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          */
-
-        //이 기간 안에 있는 : [startDate, currentTime]
-        final LocalDateTime currentTime = LocalDateTime.now();
-        final LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
-        StartEnd startEnd = new StartEnd(startDate, currentTime); // 현재 시간부터 200일 전까지 그 사이의 기간 설정
-
 
         // 포폴 추출
         final List<Portfolio> portfolioList = findPortfolioByLastAccessDate(user, startEnd);
@@ -105,10 +121,52 @@ public class RecommendationsService {
         // 최종 반환값, List<PortfolioCardDto> dtos
         // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
         // 중간 발표 이후로는 PortfolioCardDto로 돌려놓기!!
-        List<PortfolioCardRecommendationDto> dtos = new ArrayList<>();
 
-        // 상위 3개의 데이터만 처리하기 위한 변수
-        for(PairedUsersPortfolio pair : top3){
+        List<PortfolioCardRecommendationDto> dtos = getDTO(top3);
+
+        return dtos;
+    }
+
+
+
+    /*
+    #################################### 내부 로직 함수 ###########################################################
+    #################################### 내부 로직 함수 ###########################################################
+    #################################### 내부 로직 함수 ###########################################################
+     */
+
+
+    // 유저(나)의 포폴이 null일 경우 바로 DTO 만들어서 return, getRecommend() 컨트롤러로 반환하고 종료
+    private List<PortfolioCardRecommendationDto> getNullUserDTO(List<Portfolio> portfolios){
+        List<PortfolioCardRecommendationDto> dtos = new ArrayList<>();
+        for(Portfolio p : portfolios){
+
+            User u = p.getUser();
+            String nickName = u.getNickName();
+
+            Integer views = viewCountPortfolioRepository.countByPortfolio_Id(p.getId()).orElse(null);
+
+            PortfolioCardRecommendationDto cardDto = PortfolioCardRecommendationDto.builder()
+                    .nickName(nickName)
+                    .web(p.getWeb())
+                    .app(p.getApp())
+                    .game(p.getGame())
+                    .ai(p.getAi())
+                    .shortIntroduce(p.getShortIntroduce())
+                    .viewCount(views)
+                    .build();
+
+            dtos.add(cardDto);
+        }
+        return dtos;
+
+    }
+
+    // 유저(나) 포폴이 있어서 정상적으로 실행될 경우 만들어지는 DTO
+    private List<PortfolioCardRecommendationDto> getDTO(List<PairedUsersPortfolio> portfolios){
+
+        List<PortfolioCardRecommendationDto> dtos = new ArrayList<>();
+        for(PairedUsersPortfolio pair : portfolios){
 
             User u = pair.portfolio.getUser();
             String nickName = u.getNickName();
@@ -129,18 +187,8 @@ public class RecommendationsService {
 
             dtos.add(cardDto);
         }
-
         return dtos;
     }
-
-
-
-    /*
-    #################################### 내부 로직 함수 ###########################################################
-    #################################### 내부 로직 함수 ###########################################################
-    #################################### 내부 로직 함수 ###########################################################
-     */
-
 
     /*
     ========================================================================

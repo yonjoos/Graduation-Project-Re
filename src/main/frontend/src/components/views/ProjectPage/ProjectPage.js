@@ -292,10 +292,10 @@ function ProjectPage() {
     const categoryTagStyle = {
         display: 'inline-block',
         padding: '0px 5px 0px 5px',
-        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        backgroundColor: '#faf082', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
         marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
-        color: '#677779', /* 텍스트 색상 설정 */
+        color: '#ff8400', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
         marginRight: '0.6%'
     };
@@ -304,7 +304,7 @@ function ProjectPage() {
     const renderPosts = (posts) => {
         return (
             <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
-                <Card title={`PROJECTS`}>
+                <Card title={`PROJECTS`} headStyle={{ background: '#fffec1', color: '#ff8400' }}>
                     {posts.map((item, index) => (
                         <div key={index} style={{ display: 'grid' }} onClick={(e) => {
                             if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
@@ -317,10 +317,10 @@ function ProjectPage() {
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
                                     <strong style={{ display: 'inline-block' }}>
 
-                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
-                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
-                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
-                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
+                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#APP</span>}
+                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}
+                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#AI</span>}
                                     </strong>
                                     <div style={{ display: 'flex' }}>
                                         <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>

@@ -153,14 +153,13 @@ function DetailProjectPage() {
     };
 
     const categoryTagStyle = {
-        display: 'inline-block',
+        display: 'flex',
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
-        color: '#677779', /* 텍스트 색상 설정 */
+        color: '#ff8400', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '0.6%'
+        marginRight: '5px'
     };
 
 
@@ -1031,68 +1030,85 @@ function DetailProjectPage() {
                                 <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
                                     {data.title}
                                 </div>
+                                <strong style={{ display: 'flex' }}>
+
+                                    {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
+                                    {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#APP</span>}
+                                    {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}
+                                    {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#AI</span>}
+                                </strong>
+
                                 <div style={{ marginTop: '5px' }}>
-                                    {data.nickName}
+                                    <strong>{data.nickName}</strong>
                                 </div>
+
                             </div>
                             <div style={{ alignItems: 'center' }}>
+                                <br />
                                 {data.viewCount} views
-                                <br/><br/>
-                                <div style={{color: 'gray'}}>{formatDateTime(data.finalUpdatedTime)}</div>
+                                <br />
+                                <div style={{ color: 'gray' }}>{formatDateTime(data.finalUpdatedTime)}</div>
                             </div>
                         </div>
                         <hr></hr>
-                        <div style={{ display: 'grid' }}>
-                            <strong style={{ display: 'inline-block' }}>
+                        <div>
 
-                                {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
-                                {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
-                                {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
-                                {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
-                            </strong>
-                            <div style={{ marginTop: '20px' }}>
-                                {insertLineBreaks(data.content, 45)}
-                            </div>
-                            <div style={{ marginTop: '150px' }}>
-                                첨부 파일 {
-                                    data.fileUrl ? (
-                                        data.fileUrl.map((file, index) => (
-                                            <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
-                                                <Button
-                                                    onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
-                                                >
-                                                    {file.fileName} {/* 파일 이름 표시 */}
-                                                </Button>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        null
-                                    )}
+                            {data.fileUrl && data.fileUrl.length >= 1 ? (
+                                <Card size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
+                                    {
+                                        data.fileUrl ? (
+                                            data.fileUrl.map((file, index) => (
+                                                <div style={{ display: 'flex', justifyContent: 'left', width: '100%' }} key={index}>
+                                                    <Button type='text' style={{ width: '100%', textAlign: 'left' }}
+                                                        onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                    >
+                                                        {file.fileName} {/* 파일 이름 표시 */}
+                                                    </Button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            null
+                                        )}
+                                </Card>
+                            ) : null}
 
-                            </div>
-                            <div>
-                                홍보 사진:
-                                {data.promoteImageUrl ? (
-                                    data.promoteImageUrl.map((imageUrl, index) => (
-                                        <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                            <Image
-                                                key={index}
-                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                                alt={`홍보 사진 ${index + 1}`}
-                                                style={{ margin: '10px', width: 300 }}
-                                            />
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>이미지가 없습니다</p>
-                                )}
+
+                        </div>
+
+                        <div style={{ display: 'grid', marginTop: '20px' }}>
+                            <Card size='small' title={`프로젝트 소개`} headStyle={{ background: '#ddeeff' }} bodyStyle={{ paddingTop: '0px', paddingBottom: '10px' }} >
+                                <div style={{ marginTop: '20px' }}>
+                                    {insertLineBreaks(data.content, 45)}
+                                </div>
+                            </Card>
+
+                            <div style={{ marginTop: '20px' }} >
+                                {data.promoteImageUrl && data.promoteImageUrl.length >= 1 ? (
+                                    <Card size='small' title={`홍보 사진`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
+
+                                        {data.promoteImageUrl ?
+                                            (
+                                                data.promoteImageUrl.map((imageUrl, index) => (
+                                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                                        <Image
+                                                            key={index}
+                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                            alt={`홍보 사진 ${index + 1}`}
+                                                            style={{ margin: '10px', width: 300 }}
+                                                        />
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p>이미지가 없습니다</p>
+                                            )}
+                                    </Card>) : null}
 
                             </div>
                             <hr></hr>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ marginBottom: '30px' }}>
-                                <strong>comments</strong>
+                                <strong>댓글</strong>
                             </div>
                             <div>
                                 <Button size="small" onClick={toggleCommentsVisibility}>

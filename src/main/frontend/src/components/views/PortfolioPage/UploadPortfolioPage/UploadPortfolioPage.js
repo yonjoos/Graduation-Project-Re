@@ -21,6 +21,8 @@ function UploadPortfolioPage() {
         game: 0,
         ai: 0
     });
+    
+
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
     const onChangeHandler = (event) => {
@@ -65,6 +67,11 @@ function UploadPortfolioPage() {
     // 포트폴리오 폼 제출 시 호출되는 이벤트 핸들러
     const onSubmitPortfolio = (e) => {
         e.preventDefault();
+
+        if (!shortIntroduce) {
+            message.warning('한 줄 소개를 입력해주세요!');
+            return;
+        }
 
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
         submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, fileUrl);
@@ -125,6 +132,9 @@ function UploadPortfolioPage() {
                             </tbody>
                         </table>
                     </div>
+                    <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                        한 줄 소개
+                    </div>
                     <div className="form-outline mb-4">
                         <Input
                             type="text"
@@ -132,6 +142,9 @@ function UploadPortfolioPage() {
                             placeholder="한 줄 소개를 작성해주세요."
                             onChange={onChangeHandler}
                         />
+                    </div>
+                    <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                        경력
                     </div>
                     <div className="form-outline mb-4">
                         <TextArea
@@ -142,6 +155,9 @@ function UploadPortfolioPage() {
                             autoSize={{ minRows: 20 }}
                         />
                     </div>
+                    <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                        첨부파일
+                    </div>
                     <div className="form-outline mb-4">
                         <Input
                             type="text"
@@ -150,7 +166,9 @@ function UploadPortfolioPage() {
                             onChange={onChangeHandler}
                         />
                     </div>
-                    <Button type="primary" block htmlType="submit">Create Portfolio</Button>
+                    <Button type="primary" block htmlType="submit">
+                        Create Portfolio
+                    </Button>
                 </form>
             </Col>
         </Row>

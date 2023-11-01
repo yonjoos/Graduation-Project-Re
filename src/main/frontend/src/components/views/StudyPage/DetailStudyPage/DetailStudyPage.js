@@ -158,7 +158,7 @@ function DetailStudyPage() {
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
         marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
-        color: '#677779', /* 텍스트 색상 설정 */
+        color: '#ff4646', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
         marginRight: '0.6%'
     };
@@ -1031,25 +1031,29 @@ function DetailStudyPage() {
                                 <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
                                     {data.title}
                                 </div>
+                                <strong style={{ display: 'inline-block' }}>
+
+                                    {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
+                                    {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
+                                    {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
+                                    {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
+                                </strong>
+
                                 <div style={{ marginTop: '5px' }}>
-                                    {data.nickName}
+                                    <strong>{data.nickName}</strong>
                                 </div>
+
                             </div>
                             <div style={{ alignItems: 'center' }}>
+                                <br />
                                 {data.viewCount} views
-                                <br/> <br/>
-                                <div style={{color: 'gray'}}>{formatDateTime(data.finalUpdatedTime)}</div>
+                                <br />
+                                <div style={{ color: 'gray' }}>{formatDateTime(data.finalUpdatedTime)}</div>
                             </div>
                         </div>
                         <hr></hr>
                         <div style={{ display: 'grid' }}>
-                            <strong style={{ display: 'inline-block' }}>
 
-                                {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
-                                {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
-                                {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
-                                {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
-                            </strong>
                             <div style={{ marginTop: '20px' }}>
                                 {insertLineBreaks(data.content, 45)}
                             </div>

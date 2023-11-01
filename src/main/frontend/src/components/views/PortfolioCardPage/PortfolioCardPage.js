@@ -374,21 +374,18 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} title={
+                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span>👩🏻‍💻 {item.nickName}</span>
                                             <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
                                         </div>
                                     } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
                                     <b>Field Of Interests</b>
-                                    <br />
-                                    
-                                    <strong style={{ display: 'flex' }}>
-
-                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : ""}
-                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : ""}
-                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : ""}
-                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : ""}
+                                    <strong style={{ display: 'flex', marginTop: '5px' }}>
+                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
                                     </strong>             
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>
@@ -413,19 +410,18 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} title={
+                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span>👩🏻‍💻 {item.nickName}</span>
                                             <span>{item.cosineSimilarity}</span>
                                         </div>
-                                    } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
+                                    } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>
                                     <b>Field Of Interests</b>
-                                    <br />
-                                    <strong style={{ display: 'flex' }}>
-                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : ""}
-                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : ""}
-                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : ""}
-                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : ""}
+                                    <strong style={{ display: 'flex', marginTop: '5px' }}>
+                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
                                     </strong> 
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>

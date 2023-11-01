@@ -149,6 +149,8 @@ function UpdatePortfolioPage() {
             <Row justify="center">
                 <Col span={12}>
                 {/* Existing input fields */}
+                {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
+                <p>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 선호도는 중복해서 체크할 수 없습니다. </p>
                     <div className="form-outline mb-4">
                         <table>
                             <tbody>
@@ -173,6 +175,9 @@ function UpdatePortfolioPage() {
                     </div>
                     <form onSubmit={onSubmitPortfolio}>
                         {/* Short Introduce */}
+                        <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                            한 줄 소개
+                        </div>
                         <div className="form-outline mb-4">
                             <Input
                                 type="text"
@@ -183,6 +188,9 @@ function UpdatePortfolioPage() {
                             />
                         </div>
                         {/* Introduce */}
+                        <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                            경력
+                        </div>
                         <div className="form-outline mb-4">
                             <TextArea
                                 type="text"
@@ -194,6 +202,9 @@ function UpdatePortfolioPage() {
                             />
                         </div>
                         {/* File URL */}
+                        <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                            첨부파일
+                        </div>
                         <div className="form-outline mb-4">
                             <Input
                                 type="text"

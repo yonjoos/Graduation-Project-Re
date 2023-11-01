@@ -2229,6 +2229,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, lastModifiedDate를 기준으로 정렬해서 가져옴
                     .stream()
                     .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))   // // 승인을 하는 순간, 데이터가 변경되므로, 승인버튼에서 유저의 위치가 뒤죽박죽 된다. 따라서 getLastModifiedDate가 아닌 getCreatedDate를 사용한다.
@@ -2259,6 +2271,10 @@ public class PostsService {
                     .approved(approvedList) // userApplyPost에서 각 게시물에 대해 지원한 유저들의 승인 허가 여부 리스트 설정
                     .isApproved(null) // 작성자 승인 여부 설정 (null로 초기화)
                     .isFull(null) // 정원이 다 찼는지 여부 설정 (null로 초기화)
+                    .finalUpdatedTime(post.getLastModifiedDate())
+                    .briefContent(post.getContent())
+                    .viewCount(viewCount)
+                    .nickName(post.getUser().getNickName())
                     .build(); // GroupPostsDto 객체 생성 및 초기화
 
             groupPostsDtosList.add(groupPostsDto); // 생성한 GroupPostsListDto를 리스트에 추가
@@ -2341,6 +2357,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             GroupPostsDto groupPostsDto = GroupPostsDto.builder()
                     .id(post.getId())
                     .writerNickName(post.getUser().getNickName())   // post = userApplyPost.getPosts()
@@ -2358,6 +2386,10 @@ public class PostsService {
                     .approved(null)                 // 지원한 게시물이므로, 지원 승인한 사람들의 리스트는 없음. null로 반환.
                     .isApproved(userApplyPost.getConfirm())     // 지원한 게시물이므로, 내가 승인 받았는지의 여부를 DTO에 포함하여 넘겨주어야 함.
                     .isFull(null)           // 프론트 측에 DTO로 반환했을 때, 정원이 다 찼는지의 여부는 어차피 사용하지 않으므로, null로 세팅
+                    .finalUpdatedTime(post.getLastModifiedDate())
+                    .briefContent(post.getContent())
+                    .viewCount(viewCount)
+                    .nickName(post.getUser().getNickName())
                     .build();
 
             groupPostsDtosList.add(groupPostsDto);     // 컬렉션에 추가
@@ -2657,6 +2689,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             // 정원이 다 찬 경우, isFull을 true로 담아서 내보낸다.
             //if (post.getCounts().equals(post.getRecruitmentCount())) {
             if (applyCount.equals(post.getRecruitmentCount())) {
@@ -2677,6 +2721,10 @@ public class PostsService {
                         .approved(approvedList)         // approvedList : 사람들의 승인 허가 여부를 담은 리스트
                         .isApproved(null)               // writer 본인은 승인 허가 여부와 상관 없으므로, null로 세팅
                         .isFull(true)               // 프론트 측에 DTO를 반환했을 때, 정원이 다 찼는지의 여부를 알려주어야, 이에 대한 예외 처리가 가능하다. 현재, 정원이 다 찼으므로 true를 세팅.
+                        .finalUpdatedTime(post.getLastModifiedDate())
+                        .briefContent(post.getContent())
+                        .viewCount(viewCount)
+                        .nickName(post.getUser().getNickName())
                         .build();
             }
             else {
@@ -2697,6 +2745,10 @@ public class PostsService {
                         .approved(approvedList)         // approvedList : 사람들의 승인 허가 여부를 담은 리스트
                         .isApproved(null)               // writer 본인은 승인 허가 여부와 상관 없으므로, null로 세팅
                         .isFull(false)              // 프론트 측에 DTO를 반환했을 때, 정원이 다 찼는지의 여부를 알려주어야, 이에 대한 예외 처리가 가능하다. 현재, 정원이 안찼으므로 false를 세팅.
+                        .finalUpdatedTime(post.getLastModifiedDate())
+                        .briefContent(post.getContent())
+                        .viewCount(viewCount)
+                        .nickName(post.getUser().getNickName())
                         .build();
             }
 
@@ -3086,6 +3138,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             List<UserApplyPosts> userApplyPost = post.getUserApplyPosts()   // 게시물에 지원한 유저를 선착순으로 보여주기 위해, lastModifiedDate를 기준으로 정렬해서 가져옴
                     .stream()
                     .sorted(Comparator.comparing(UserApplyPosts::getCreatedDate))   // 승인을 취소하는 순간, 데이터가 변경되므로, 승인버튼에서 유저의 위치가 뒤죽박죽 된다. 따라서 getLastModifiedDate가 아닌 getCreatedDate를 사용한다.
@@ -3117,6 +3181,10 @@ public class PostsService {
                     .approved(approvedList)         // approvedList : 사람들의 승인 허가 여부를 담은 리스트
                     .isApproved(null)       // 내가 게시물 작성자이므로, 나의 승인 허가 여부는 알 필요가 없다. 따라서 null로 반환.
                     .isFull(null)           // 승인 허가 취소하면, 인원이 줄게 되므로, Full과는 무관하다. 따라서 null로 반환.
+                    .finalUpdatedTime(post.getLastModifiedDate())
+                    .briefContent(post.getContent())
+                    .viewCount(viewCount)
+                    .nickName(post.getUser().getNickName())
                     .build();
 
             groupPostsDtosList.add(groupPostsDto);     // 컬렉션에 추가
@@ -3563,6 +3631,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             ScrapPostsDto scrapPostsDto = ScrapPostsDto.builder()
                     .id(post.getId())
                     .nickName(post.getUser().getNickName())
@@ -3579,6 +3659,9 @@ public class PostsService {
                     // userApplyPost == null인 경우 isApplied와 isApproved는 false로 설정되고, userApplyPost != null인 경우 true로 설정됨
                     .isApplied(userApplyPost != null) // 지원 여부 확인 (userApplyPosts가 null이 아닌 경우 지원한 것으로 처리).
                     .isApproved(userApplyPost != null && userApplyPost.getConfirm()) // 승인 여부 확인
+                    .finalUpdatedTime(post.getLastModifiedDate())
+                    .briefContent(post.getContent())
+                    .viewCount(viewCount)
                     .build();
 
             scrapPostsDtosList.add(scrapPostsDto); // 컬렉션에 추가
@@ -3641,6 +3724,18 @@ public class PostsService {
                 applyCount = 1;
             }
 
+            // ViewCountPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
+            Optional<Integer> viewCountOptional = viewCountPostsRepository.countByPosts_Id(post.getId());
+            Integer viewCount;
+
+            // viewCountOptional에 값이 존재한다면, 해당 값 가져오기
+            // null이라면 조회수는 0으로 세팅
+            if (viewCountOptional.isPresent()) {
+                viewCount = viewCountOptional.get();
+            } else {
+                viewCount = 0;
+            }
+
             ScrapPostsDto scrapPostsDto = ScrapPostsDto.builder()
                     .id(post.getId())
                     .nickName(post.getUser().getNickName())
@@ -3657,6 +3752,9 @@ public class PostsService {
                     // userApplyPost == null인 경우 isApplied와 isApproved는 false로 설정되고, userApplyPost != null인 경우 true로 설정됨
                     .isApplied(userApplyPost != null) // 지원 여부 확인 (userApplyPosts가 null이 아닌 경우 지원한 것으로 처리).
                     .isApproved(userApplyPost != null && userApplyPost.getConfirm()) // 승인 여부 확인
+                    .finalUpdatedTime(post.getLastModifiedDate())
+                    .briefContent(post.getContent())
+                    .viewCount(viewCount)
                     .build();
 
             scrapPostsDtosList.add(scrapPostsDto); // 컬렉션에 추가

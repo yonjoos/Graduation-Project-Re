@@ -8,22 +8,40 @@ import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.mapper.UserMapper;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.CharBuffer;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 // 로그인 및 회원 등록을 처리
 public class UserService {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Storage storage;
+    @Value("${spring.cloud.gcp.storage.bucket}") // application.yml에 써둔 bucket 이름
+    private String bucketName;
+
+
 
     private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
@@ -138,6 +156,40 @@ public class UserService {
                 }
             });
 
+            String fileUrl = user.getFileUrl();
+            if(fileUrl == null || fileUrl.isEmpty()){
+                throw new IllegalArgumentException("No file was uploaded to the server.");
+            }
+            MultipartFile image = updateDto.getImageUrl();
+
+            String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+            System.out.println("uuid = " + uuid);
+            String ext = image.getContentType(); // 파일의 형식 ex) JPG
+            System.out.println("ext = " + ext);
+
+            try {
+                System.out.println("업로드 Blob 전");
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        image.getInputStream()
+                );
+                System.out.println("업로드 Blob 후");
+
+                user.setfileUrl(uuid);
+                user.setfileName(image.getOriginalFilename());
+            } catch (IOException e) {
+                log.error("Error during file upload: " + e.getMessage());
+            } catch (Exception e) {
+                log.error("Unexpected error: " + e.getMessage());
+            }
+            System.out.println("업로드 Blob 후");
+
+            user.setfileUrl(uuid);
+            user.setfileName(image.getOriginalFilename());
+
+
             user.setNickName(updateDto.getNickName()); //변경 감지에 의해 닉네임이 변경되도록 함
             user.setUserName(updateDto.getUserName()); //변경 감지에 의해 이름이 변경되도록 함
             userRepository.save(user); //변경감지 기능 통해 업데이트
@@ -170,5 +222,65 @@ public class UserService {
         Optional<User> existingUserWithNickname = userRepository.findByNickName(nickname);
 
         return existingUserWithNickname.isEmpty(); //비어있으면 available: true / 비어있지 않으면 available: false
+    }
+
+
+    public void uploadProfileImage(UserBaseInfoUpdateDto updateDto, Principal principal)
+            throws IOException, FileNotFoundException {
+
+        System.out.println("업로드 업로드함수입성");
+        String email = principal.getName();
+        User user = null;
+
+        try {
+            user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException("그런 유저가 없다", HttpStatus.NOT_FOUND));
+            System.out.println("업로드 트라이 입성");
+        } catch (AppException e) {
+            log.info(e.getMessage());
+            System.out.println("=====================================================");
+            System.out.println("UserService error " + e.getMessage());
+            System.out.println("업로드 캐치걸림");
+        }
+
+
+        System.out.println("업로드 A");
+        String fileUrl = user.getFileUrl();
+        System.out.println("업로드 A-" + fileUrl);
+        if(fileUrl == null || fileUrl.isEmpty()){
+            System.out.println("업로드 B");
+            throw new IllegalArgumentException("No file was uploaded to the server.");
+        }
+
+
+        System.out.println("업로드 C");
+        MultipartFile image = updateDto.getImageUrl();
+        System.out.println("업로드 D");
+
+        String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+        System.out.println("uuid = " + uuid);
+        String ext = image.getContentType(); // 파일의 형식 ex) JPG
+        System.out.println("ext = " + ext);
+
+        System.out.println("업로드 그 뭐냐 ext");
+        try {
+            System.out.println("업로드 Blob 전");
+            BlobInfo blobInfo = storage.create(
+                    BlobInfo.newBuilder(bucketName, uuid)
+                            .setContentType(ext)
+                            .build(),
+                    image.getInputStream()
+            );
+            System.out.println("업로드 Blob 후");
+
+            user.setfileUrl(uuid);
+            user.setfileName(image.getOriginalFilename());
+        } catch (IOException e) {
+            log.error("Error during file upload: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error: " + e.getMessage());
+        }
+        System.out.println("업로드 드");
+
     }
 }

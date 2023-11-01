@@ -8,9 +8,11 @@ import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -41,7 +43,18 @@ public class MyPageController {
             return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
         }
     }
+    @PostMapping("/updateProfileImage")
+    public ResponseEntity<String> updateProfileImage(@RequestBody @Valid UserBaseInfoUpdateDto FormDto, Principal principal)throws IOException {
+        try{
+            userService.uploadProfileImage(FormDto, principal);
+            System.out.println("성공했어요");
+            return ResponseEntity.ok("success");
+        }catch (IllegalArgumentException ex) {
+            // Handle the exception and send an appropriate HTTP response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
 
+    }
 
     //user의 비밀번호 변경 관련
     @PutMapping("/updatePassword")

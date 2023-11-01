@@ -2,6 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Row, Col, Button, Menu, message, Form, Input, Modal } from 'antd';
+import { Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+
+
 import { request } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
@@ -33,6 +37,11 @@ function MyPage() {
     const [currentPasswordForSignOut, setCurrentPasswordForSignOut] = useState(''); //기존 비밀번호를 입력하는 필드
     const [isSignOutButtonEnabled, setIsSignOutButtonEnabled] = useState(false); //기존 비밀번호를 입력하는 필드가 입력되어야 탈퇴하기 버튼이 활성화됨
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false); // 정말로 삭제하시겠습니까? 라는 내용을 보여주는 모달 창을 보여줄지 말지 여부 설정
+
+
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
+    const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
 
 
     // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅 -> userDto값이 세팅되어짐
@@ -73,11 +82,54 @@ function MyPage() {
     const handleMenuClick = (e) => {
         setSelectedOption(e.key);
     };
+    const handlePreview = (image) => {
+        setPreviewImage(image);
+        setPreviewVisible(true);
+    };
 
     //회원 정보 수정 드롭다운 내에서, 필드 값의 변경을 감지하고 세팅하는 장치 - (filedName : nickName, userName, password) / (value : 변경하려는 값)
     const handleInputChange = (fieldName, value) => {
         // prevData로 이전의 회원 정보 변경 관련하여 입력된 필드 상태 값을 가져오고, value를 사용하여 이름이 fieldName인 속성을 추가하거나 업데이트하여 새 상태 값을 반환
         setUserBaseInfo((prevData) => ({ ...prevData, [fieldName]: value }));
+    };
+
+    // Function to handle file input change
+    const handleImageChange = (e) => {
+        // Get the selected file from the input
+        const file = e;
+        setSelectedImage(file);
+        
+    };
+    const handleSubmit = () => {
+        if (selectedImage) {
+            // Prepare the data to send to the server, including the image file
+            console.log("이미지");
+            console.log(selectedImage);
+            const formData = new FormData();
+            formData.append('image', selectedImage); // 'image' should match your server's expected field name
+
+            // Send the formData to the server
+            request('POST', '/updateProfileImage', formData) // Replace with your API endpoint
+                .then((response) => {
+                    // Handle the response
+                    if (response.data === "User information has been successfully updated.") {
+                        alert('Information has been updated.');
+                        // Reset the selected image
+                        setSelectedImage(null);
+                        // Additional logic as needed
+                    } else {
+                        console.error('Unknown response:', response.data);
+                        message.error('Failed to update information.');
+                    }
+                })
+                .catch((error) => {
+                    // Handle errors
+                    // Additional error handling logic as needed
+                });
+        } else {
+            // Handle the case where no image is selected
+            message.warning('Please select an image before updating information.');
+        }
     };
 
     // '회원 정보 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
@@ -237,6 +289,7 @@ function MyPage() {
                         <Menu.Item key="info">정보 수정</Menu.Item>
                         <Menu.Item key="password">비밀번호 변경</Menu.Item>
                         <Menu.Item key="withdrawal">회원 탈퇴</Menu.Item>
+                        <Menu.Item key="image">사진</Menu.Item>
                     </Menu>
                 </div>
                 <div style={{ width: '75%' }}>
@@ -393,6 +446,49 @@ function MyPage() {
                             >
                                 <p>정말로 탈퇴하시겠습니까?</p>
                             </Modal>
+                        </Card>
+                    )}
+                    {selectedOption === 'image' && (
+                        <Card title="프로필 이미지" style={{ width: '100%' }}>
+                            {userBaseInfo && (
+                                <Form>
+                                    <div>
+                                        <Upload
+                                            accept="image/*"
+                                            showUploadList={false}
+                                            beforeUpload={(image) => {
+                                                setSelectedImage(image);
+                                                return false; // Stops the upload action
+                                            }}
+                                        >
+                                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
+                                        </Upload>
+                                        <div style={{ display: 'flex', marginBottom: '8px' }}>
+                                            {selectedImage && (
+                                                <img
+                                                src={URL.createObjectURL(selectedImage)}
+                                                style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                                onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <Item label="패스워드">
+                                            <Input
+                                                type="password"
+                                                value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
+                                                placeholder="비밀번호를 입력해주세요"
+                                                onChange={(e) => handleInputChange('password', e.target.value)} />
+                                        </Item>
+                                    </div>
+
+                                    <Button type="primary" onClick={handleSubmit}
+                                        disabled={!isUpdateButtonEnabled}>
+                                        정보 업데이트
+                                    </Button>
+                                </Form>
+                            )}
                         </Card>
                     )}
                 </div>

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,5 +26,6 @@ public class PostsListDto {
     private LocalDate endDate;
     private String briefContent;
     private Integer viewCount;
+    private LocalDateTime finalUpdatedTime; // 최종 게시물 수정 등록 시간
 
 }

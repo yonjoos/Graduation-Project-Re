@@ -47,25 +47,23 @@ public class RecommendationsService {
         }
 
         // 나의 관심사 벡터 가져오기
-        try{
-            usersInterest = portfolioRepository.findByUser(user)
-                    .orElseThrow(()-> new IllegalStateException("There is no such portfolio")).getVector();
-        }catch(IllegalStateException e){
-            System.out.println("portfolio가 없어요");
-        }
+        Optional<Portfolio> userPortfolioOptional = portfolioRepository.findByUser(user);
 
-        /*
+        if (userPortfolioOptional.isPresent()) {
+            usersInterest = userPortfolioOptional.get().getVector();
+
+            /*
         >>> STEP 2 : 다른 유저들의 포폴 추출 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          */
 
-        //이 기간 안에 있는 : [startDate, currentTime]
-        final LocalDateTime currentTime = LocalDateTime.now();
-        final LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
-        StartEnd startEnd = new StartEnd(startDate, currentTime); // 현재 시간부터 200일 전까지 그 사이의 기간 설정
+            //이 기간 안에 있는 : [startDate, currentTime]
+            final LocalDateTime currentTime = LocalDateTime.now();
+            final LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
+            StartEnd startEnd = new StartEnd(startDate, currentTime); // 현재 시간부터 200일 전까지 그 사이의 기간 설정
 
 
-        // 포폴 추출
-        final List<Portfolio> portfolioList = findPortfolioByLastAccessDate(user, startEnd);
+            // 포폴 추출
+            final List<Portfolio> portfolioList = findPortfolioByLastAccessDate(user, startEnd);
 
         /*
         ####### 포트폴리오, 유저와 사용자간의 유사를 매핑하기 위해 클래스를 새로 선언 #########
@@ -74,63 +72,66 @@ public class RecommendationsService {
             2. Double similarity
          */
 
-        // 즉, 8명 뽑은 유저의 'portfolio'를 PairedUsersPortfolio의 속성인 portfolio에 세팅
-        List<PairedUsersPortfolio> portfolios = portfolioList.stream()
-                .map(PairedUsersPortfolio::new)
-                .collect(Collectors.toList());
+            // 즉, 8명 뽑은 유저의 'portfolio'를 PairedUsersPortfolio의 속성인 portfolio에 세팅
+            List<PairedUsersPortfolio> portfolios = portfolioList.stream()
+                    .map(PairedUsersPortfolio::new)
+                    .collect(Collectors.toList());
 
-        // 사용자와 다른 유저의 유사도를 계산해서 유저의 portfolio와 매핑
-        // PairedUsersPortfoliodml similarity attribute 할당
-        // 즉, 8명 뽑은 유저의 'similarity'값을 PairedUsersPortfolio의의 속성인 similarity에 세팅
-        for(PairedUsersPortfolio pair :portfolios){
-            pair.setSimilarity(usersInterest, type);
-        }
+            // 사용자와 다른 유저의 유사도를 계산해서 유저의 portfolio와 매핑
+            // PairedUsersPortfoliodml similarity attribute 할당
+            // 즉, 8명 뽑은 유저의 'similarity'값을 PairedUsersPortfolio의의 속성인 similarity에 세팅
+            for(PairedUsersPortfolio pair :portfolios){
+                pair.setSimilarity(usersInterest, type);
+            }
 
 
         /*
         >>> STEP 3 : 유사도 순위 매기기 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          */
 
-        //순위 매기기 - step 3.1 : 유사도 정렬하기
-        //List<PairedUsersPortfolio> portfolios, 3개의 attributes been sorted
-        sortPortfolios(portfolios);
+            //순위 매기기 - step 3.1 : 유사도 정렬하기
+            //List<PairedUsersPortfolio> portfolios, 3개의 attributes been sorted
+            sortPortfolios(portfolios);
 
-        //인덱스 0, 1, 2 만 추출
-        List<PairedUsersPortfolio> top3 = portfolios.subList(0,3);
+            //인덱스 0, 1, 2 만 추출
+            List<PairedUsersPortfolio> top3 = portfolios.subList(0,3);
 
 
         /*
         >>> STEP 4 : DTO 변환 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          */
-        // 최종 반환값, List<PortfolioCardDto> dtos
-        // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
-        // 중간 발표 이후로는 PortfolioCardDto로 돌려놓기!!
-        List<PortfolioCardRecommendationDto> dtos = new ArrayList<>();
+            // 최종 반환값, List<PortfolioCardDto> dtos
+            // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
+            // 중간 발표 이후로는 PortfolioCardDto로 돌려놓기!!
+            List<PortfolioCardRecommendationDto> dtos = new ArrayList<>();
 
-        // 상위 3개의 데이터만 처리하기 위한 변수
-        for(PairedUsersPortfolio pair : top3){
+            // 상위 3개의 데이터만 처리하기 위한 변수
+            for(PairedUsersPortfolio pair : top3){
 
-            User u = pair.portfolio.getUser();
-            String nickName = u.getNickName();
+                User u = pair.portfolio.getUser();
+                String nickName = u.getNickName();
 
-            Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.portfolio.getId()).orElse(null);
-            Double cosine = pair.similarity;
+                Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.portfolio.getId()).orElse(null);
+                Double cosine = pair.similarity;
 
-            PortfolioCardRecommendationDto cardDto = PortfolioCardRecommendationDto.builder()
-                    .nickName(nickName)
-                    .web(pair.portfolio.getWeb())
-                    .app(pair.portfolio.getApp())
-                    .game(pair.portfolio.getGame())
-                    .ai(pair.portfolio.getAi())
-                    .shortIntroduce(pair.portfolio.getShortIntroduce())
-                    .viewCount(views)
-                    .cosineSimilarity(cosine)
-                    .build();
+                PortfolioCardRecommendationDto cardDto = PortfolioCardRecommendationDto.builder()
+                        .nickName(nickName)
+                        .web(pair.portfolio.getWeb())
+                        .app(pair.portfolio.getApp())
+                        .game(pair.portfolio.getGame())
+                        .ai(pair.portfolio.getAi())
+                        .shortIntroduce(pair.portfolio.getShortIntroduce())
+                        .viewCount(views)
+                        .cosineSimilarity(cosine)
+                        .build();
 
-            dtos.add(cardDto);
+                dtos.add(cardDto);
+            }
+
+            return dtos;
+        } else {
+            return null;
         }
-
-        return dtos;
     }
 
 

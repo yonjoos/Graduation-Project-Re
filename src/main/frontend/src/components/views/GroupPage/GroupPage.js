@@ -71,6 +71,11 @@ function GroupPage() {
         }
     }
 
+    // 게시물 목록에서 닉네임 필드를 클릭하면, 해당 닉네임을 가진 회원의 포트폴리오 창으로 navigate
+    const handleNicknameClick = (nickName) => {
+        navigate(`/portfolio/${nickName}`);
+    }
+
     // 2023826 -> 2023년 8월 26일 형식으로 변환
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -156,6 +161,28 @@ function GroupPage() {
             return str.slice(0, maxLength) + '...';
         }
         return str;
+    };
+
+    // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
+    const formatDateTime = (dateTimeArray) => {
+
+        if (!Array.isArray(dateTimeArray)) {
+            // dateTimeArray가 배열이 아닌 경우 오류 처리
+            return 'Invalid date and time format';
+        }
+        const [year, month, day, hours, minutes] = dateTimeArray;
+        const date = new Date(year, month - 1, day, hours, minutes);
+
+        // 년, 월, 일, 시간, 분 형식으로 포맷팅
+        const formattedYear = date.getFullYear();
+        const formattedMonth = (date.getMonth() + 1).toString().padStart(2, '0'); // 월을 2자리로 표현
+        const formattedDay = date.getDate().toString().padStart(2, '0'); // 일을 2자리로 표현
+        const formattedHours = date.getHours().toString().padStart(2, '0'); // 시를 2자리로 표현
+        const formattedMinutes = date.getMinutes().toString().padStart(2, '0'); // 분을 2자리로 표현
+
+        const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
+
+        return formattedDateTime;
     };
 
     // const renderPosts = (posts) => {
@@ -373,56 +400,111 @@ function GroupPage() {
     //   }
 
     
+    // const categoryTagStyle = {
+    //     display: 'inline-block',
+    //     padding: '0px 5px 0px 5px',
+    //     backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+    //     borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+    //     marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+    //     color: '#677779', /* 텍스트 색상 설정 */
+    //     marginLeft: '-0.3%',
+    //     marginRight: '0.6%'
+    // };
+
+    // const renderPosts = (posts) =>{
+    //     return(
+    //         <div gutter={[16, 16]} style={{ marginTop: '0px', padding: '0px', width:'100%' }} justify="space-between">
+    //             <Card title={`GROUPS`}>
+    //             {posts.map((item, index) => (
+    //                 <div key={index} style={{ display: 'grid', cursor: 'pointer' }} onClick={() => handleRowClick(item.id, item.postType)}>
+    //                     <div style={{marginLeft:'10px' }}>
+    //                         {item.postType}
+    //                     </div>
+    //                     <div style={{ display: 'flex', marginTop: '0px' }}>
+    //                         <div style={{ width: '80%', display: 'grid', marginLeft:'10px' }}>  
+    //                             <div style={{ marginTop: '5px' }}>
+    //                                 <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+    //                             </div>
+    //                             <strong style={{ display: 'inline-block' }}>
+    //                                 {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
+    //                                 {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
+    //                                 {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
+    //                                 {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+    //                             </strong>
+    //                         </div>
+    //                         <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems:'center' }}>
+    //                             <div style={{ marginTop: '-10.0%' }}>
+    //                                 인원: {item.counts} / {item.recruitmentCount}
+    //                                 <br/>
+    //                                 마감: {formatDate(item.endDate)}
+    //                                 <br/>
+    //                                 <div style={{ color: 'gray', fontSize: 'small', marginTop: '10px' }}>
+    //                                     {formatDateTime(item.finalUpdatedTime)}
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    //                     <Divider />
+    //                 </div>
+    //             ))}  
+    //             </Card>
+    //         </div>
+    //     )
+    // }
+
     const categoryTagStyle = {
         display: 'inline-block',
         padding: '0px 5px 0px 5px',
-        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
         marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
-        color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
         marginRight: '0.6%'
     };
 
-    const renderPosts = (posts) =>{
-        return(
-            <div gutter={[16, 16]} style={{ marginTop: '0px', padding: '0px', width:'100%' }} justify="space-between" >
-                <Card title={`GROUPS`}>
-                {posts.map((item, index) => (
-                    <div key={index} style={{ display: 'grid', cursor: 'pointer' }} onClick={() => handleRowClick(item.id, item.postType)}>
-                        <div style={{marginLeft:'10px' }}>
-                            {item.postType}
-                        </div>
-                        <div style={{ display: 'flex', marginTop: '0px' }}>
-                            <div style={{ width: '80%', display: 'grid', marginLeft:'10px' }}>  
-                                <div>
-                                    <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-                                </div>
-                                <strong style={{ display: 'inline-block' }}>
-                                
+    const renderPosts = (posts) => {
+        return (
+            <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
+                <Card title={`GROUPS`} headStyle={{ background: '#DDEEFF' }}>
+                    {posts.map((item, index) => (
+                        <div key={index} style={{ display: 'grid' }} onClick={(e) => {
+                            if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
+                                handleNicknameClick(item.nickName);
+                            } else {
+                                handleRowClick(item.id, item.postType);
+                            }
+                        }}>
+                            <div style={{ display: 'flex', marginTop: '0px' }}>
+                                <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
+                                    <strong style={{ display: 'inline-block' }}>
                                     {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
-                                    {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
-                                    {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
-                                    {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
-                                </strong>
-                            </div>
-                            <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems:'center' }}>
-                                <div>
-                                인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)}
+                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
+                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
+                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+                                    </strong>
+                                    <div style={{ display: 'flex' }}>
+                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                    </div>
+                                    <div>
+                                        <div><strong className="nickname">{item.nickName}</strong></div>
+                                    </div>
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
+                                        {truncateString(item.briefContent, 50)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
+                                    <div>
+                                        인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
+                                        <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
+                                    </div>
                                 </div>
                             </div>
+                            <Divider />
                         </div>
-
-
-                        <Divider />
-                    </div>
-                ))}  
+                    ))}
                 </Card>
             </div>
         )
     }
-
-
 
     return (
         <div>

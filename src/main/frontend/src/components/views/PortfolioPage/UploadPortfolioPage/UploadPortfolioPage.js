@@ -21,6 +21,8 @@ function UploadPortfolioPage() {
         game: 0,
         ai: 0
     });
+    
+
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
     const onChangeHandler = (event) => {
@@ -66,6 +68,11 @@ function UploadPortfolioPage() {
     const onSubmitPortfolio = (e) => {
         e.preventDefault();
 
+        if (!shortIntroduce) {
+            message.warning('한 줄 소개를 입력해주세요!');
+            return;
+        }
+        
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
         submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, fileUrl);
     };
@@ -150,7 +157,9 @@ function UploadPortfolioPage() {
                             onChange={onChangeHandler}
                         />
                     </div>
-                    <Button type="primary" block htmlType="submit">Create Portfolio</Button>
+                    <Button type="primary" block htmlType="submit">
+                        Create Portfolio
+                    </Button>
                 </form>
             </Col>
         </Row>

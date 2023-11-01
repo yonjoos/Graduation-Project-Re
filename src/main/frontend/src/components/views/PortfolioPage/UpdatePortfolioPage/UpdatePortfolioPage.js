@@ -86,6 +86,12 @@ function UpdatePortfolioPage() {
     // 포트폴리오 폼 제출 시 호출되는 이벤트 핸들러
     const onSubmitPortfolio = async (e) => {
         e.preventDefault();
+
+        if (!existingShortIntroduce) {
+            message.warning('한 줄 소개를 입력해주세요!');
+            return;
+        }
+
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
         try {
             await submitPortfolio(

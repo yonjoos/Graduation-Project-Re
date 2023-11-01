@@ -61,7 +61,7 @@ function GroupPage() {
         //setLastVisitedEndpoint('/group');
         //setLastLastVisitedEndpoint('/group');
         //setLastLastLastVisitedEndpoint('/group');
-        
+
 
         if (postType === "PROJECT") {
             navigate(`/project/detail/${postsId}`);
@@ -399,7 +399,7 @@ function GroupPage() {
     //     );
     //   }
 
-    
+
     // const categoryTagStyle = {
     //     display: 'inline-block',
     //     padding: '0px 5px 0px 5px',
@@ -453,12 +453,12 @@ function GroupPage() {
     // }
 
     const categoryTagStyle = {
-        display: 'inline-block',
+        display: 'flex',
         padding: '0px 5px 0px 5px',
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
+        color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '0.6%'
+        marginRight: '5px'
     };
 
     const renderPosts = (posts) => {
@@ -475,8 +475,8 @@ function GroupPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <strong style={{ display: 'inline-block' }}>
-                                    {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
+                                    <strong style={{ display: 'flex' }}>
+                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
                                         {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
@@ -494,7 +494,7 @@ function GroupPage() {
                                 <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                     <div>
                                         인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
-                                        <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
+                                        <br /><br /><div style={{ color: 'gray', fontSize: 'small' }}>{formatDateTime(item.finalUpdatedTime)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -519,9 +519,9 @@ function GroupPage() {
                             onClick={() => handleSortOptionChange('latestPosts')}
                             style={{ marginRight: '10px' }}
                         >
-                             {postsOption === 'writer' ? '등록순' : '최신 등록순'}
+                            {postsOption === 'writer' ? '등록순' : '최신 등록순'}
                         </Button>
-                        
+
                         <Button
                             type={sortOption === 'nearDeadline' ? 'primary' : 'default'}
                             onClick={() => handleSortOptionChange('nearDeadline')}

@@ -256,12 +256,11 @@ function ScrapPage() {
     // }
 
     const categoryTagStyle = {
-        display: 'inline-block',
+        display: 'flex',
         padding: '0px 5px 0px 5px',
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         marginLeft: '-0.3%',
-        marginRight: '0.6%',
+        marginRight: '5px',
         color: '#677779',
     };
 
@@ -279,7 +278,7 @@ function ScrapPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <strong style={{ display: 'inline-block' }}>
+                                    <strong style={{ display: 'flex' }}>
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
@@ -298,7 +297,7 @@ function ScrapPage() {
                                 <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                     <div>
                                         인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
-                                        <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
+                                        <br /><br /><div style={{ color: 'gray', fontSize: 'small' }}>{formatDateTime(item.finalUpdatedTime)}</div>
                                     </div>
                                 </div>
                             </div>

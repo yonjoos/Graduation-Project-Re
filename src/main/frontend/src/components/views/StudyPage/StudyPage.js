@@ -290,14 +290,13 @@ function StudyPage() {
     );
 
     const categoryTagStyle = {
-        display: 'inline-block',
+        display: 'flex',
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         color: '#ff4646', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '0.6%'
+        marginRight: '6px'
     };
 
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
@@ -315,7 +314,7 @@ function StudyPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <strong style={{ display: 'inline-block' }}>
+                                    <strong style={{ display: 'flex' }}>
 
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}

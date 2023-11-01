@@ -44,7 +44,10 @@ public class MyPageController {
     @GetMapping("/userProfileImage") // Use path variable to get project ID from URL
     private ResponseEntity<UserDto> getUserProfileImage(Principal principal) {
 
+        System.out.println("프사 컨트롤러");
         UserDto userDto = userService.getUserProfileImage(principal);
+        System.out.println("프사 컨트롤러 끝");
+
 
         return ResponseEntity.ok(userDto);
     }

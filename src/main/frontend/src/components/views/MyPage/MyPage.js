@@ -59,6 +59,15 @@ function MyPage() {
             .catch((error) => {
                 console.error("Error fetching data:", error);
             });
+
+        request('GET', '/userProfileImage')
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
         
     }, []);
 
@@ -84,18 +93,7 @@ function MyPage() {
         setIsSignOutButtonEnabled(signOutPasswordFieldFilled); //만약 하나라도 입력되지 않으면 버튼 활성화되지 않음
     }, [currentPasswordForSignOut])
 
-    useEffect(() => {
 
-        request('GET', '/userProfileImage')
-            .then((response) => {
-                setProfileImage(response.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-            });
-
-
-    }, [profileImage])
 
     //드롭다운에서 특정 배너를 클릭하면 변경되는 기능
     const handleMenuClick = (e) => {
@@ -480,12 +478,11 @@ function MyPage() {
                             {userBaseInfo && (
                                 <Form>
                                     <div style={{ marginTop: '20px' }}>
-                                    {selectedImage ? (
-                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            <Image src={URL.createObjectURL(selectedImage)} style={{ margin: '10px', width: 300 }} />
-                                        </div>
-                                    ) : null}
-                                </div>
+                                        <Image
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                            style={{ margin: '10px', width: 300 }}
+                                        />
+                                    </div>
                                     <div>
                                         <Upload
                                             accept="image/*"

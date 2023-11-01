@@ -157,38 +157,6 @@ public class UserService {
                 }
             });
 
-            String fileUrl = user.getFileUrl();
-            if(fileUrl == null || fileUrl.isEmpty()){
-                throw new IllegalArgumentException("No file was uploaded to the server.");
-            }
-            MultipartFile image = updateDto.getImageUrl();
-
-            String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
-            System.out.println("uuid = " + uuid);
-            String ext = image.getContentType(); // 파일의 형식 ex) JPG
-            System.out.println("ext = " + ext);
-
-            try {
-                System.out.println("업로드 Blob 전");
-                BlobInfo blobInfo = storage.create(
-                        BlobInfo.newBuilder(bucketName, uuid)
-                                .setContentType(ext)
-                                .build(),
-                        image.getInputStream()
-                );
-                System.out.println("업로드 Blob 후");
-
-                user.setfileUrl(uuid);
-                user.setfileName(image.getOriginalFilename());
-            } catch (IOException e) {
-                log.error("Error during file upload: " + e.getMessage());
-            } catch (Exception e) {
-                log.error("Unexpected error: " + e.getMessage());
-            }
-            System.out.println("업로드 Blob 후");
-
-            user.setfileUrl(uuid);
-            user.setfileName(image.getOriginalFilename());
 
 
             user.setNickName(updateDto.getNickName()); //변경 감지에 의해 닉네임이 변경되도록 함
@@ -229,11 +197,18 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDto getUserProfileImage(Principal principal){
         String email = principal.getName();
+
         User user = userRepository.findByEmail(email).get();
-        String url = user.getFileUrl();
+        String nick = user.getNickName();
+        String url = user.getImageUrl();
+
+        System.out.println("프사 유저 -"+nick);
+        System.out.println("프사 가져옴");
+        System.out.println("프사 가져옴-" + url); //계속 null
+
 
         UserDto userDto = UserDto.builder()
-                .imageUrl(url)
+                .imageUrl(user.getImageUrl())
                 .build();
 
         return userDto;
@@ -289,12 +264,14 @@ public class UserService {
 
             user.setfileUrl(uuid);
             user.setfileName(image.getOriginalFilename());
+
         } catch (IOException e) {
             log.error("Error during file upload: " + e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error: " + e.getMessage());
         }
         System.out.println("업로드 드");
+        userRepository.save(user);
 
     }
 }

@@ -6,18 +6,14 @@ import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
 import PickMe.PickMeDemo.repository.ViewCountPortfolioRepository;
 import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.querydsl.core.types.ExpressionUtils.orderBy;
 
 
 @Service
@@ -29,8 +25,6 @@ public class RecommendationsService {
     private final PortfolioRepository portfolioRepository;
     private final ViewCountPortfolioRepository viewCountPortfolioRepository;
 
-    //hi
-
     private final JPAQueryFactory queryFactory;
 
 
@@ -40,16 +34,19 @@ public class RecommendationsService {
     public List<PortfolioCardRecommendationDto> getRecommend(final String email, final String type){
 
 
-        User user = null;
-        Integer[] usersInterest = null; //유저의 관심사 벡터
+        User user = null; // 추천을 받을 회원(나)
+        Integer[] usersInterest = null; // 유저(나)의 관심사 벡터
 
+        // 추천 받을 회원(나)를 찾기
         try{
-            user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalStateException("There is no such user"));
+            user = userRepository.findByEmail(email)
+                    .orElseThrow(()-> new IllegalStateException("There is no such user"));
 
         }catch(IllegalStateException e){
             System.out.println("User가 없어요");
         }
 
+        // 나의 관심사 벡터 가져오기
         try{
             usersInterest = portfolioRepository.findByUser(user)
                     .orElseThrow(()-> new IllegalStateException("There is no such portfolio")).getVector();
@@ -64,16 +61,11 @@ public class RecommendationsService {
         //이 기간 안에 있는 : [startDate, currentTime]
         final LocalDateTime currentTime = LocalDateTime.now();
         final LocalDateTime startDate = currentTime.minusDays(200); //200일 전부터 지금까지
-        StartEnd startEnd = new StartEnd(startDate, currentTime);
+        StartEnd startEnd = new StartEnd(startDate, currentTime); // 현재 시간부터 200일 전까지 그 사이의 기간 설정
 
 
-        //포폴 추출
+        // 포폴 추출
         final List<Portfolio> portfolioList = findPortfolioByLastAccessDate(user, startEnd);
-
-        List<PairedUsersPortfolio> portfolios = portfolioList.stream()
-                .map(PairedUsersPortfolio::new)
-                .collect(Collectors.toList());
-
 
         /*
         ####### 포트폴리오, 유저와 사용자간의 유사를 매핑하기 위해 클래스를 새로 선언 #########
@@ -82,13 +74,17 @@ public class RecommendationsService {
             2. Double similarity
          */
 
+        // 즉, 8명 뽑은 유저의 'portfolio'를 PairedUsersPortfolio의 속성인 portfolio에 세팅
+        List<PairedUsersPortfolio> portfolios = portfolioList.stream()
+                .map(PairedUsersPortfolio::new)
+                .collect(Collectors.toList());
 
-        //사용자와 다른 유저의 유사도를 계산해서 유저의 portfolio와 매핑
-        //PairedUsersPortfoliodml similarity attribute 할당
+        // 사용자와 다른 유저의 유사도를 계산해서 유저의 portfolio와 매핑
+        // PairedUsersPortfoliodml similarity attribute 할당
+        // 즉, 8명 뽑은 유저의 'similarity'값을 PairedUsersPortfolio의의 속성인 similarity에 세팅
         for(PairedUsersPortfolio pair :portfolios){
             pair.setSimilarity(usersInterest, type);
         }
-
 
 
         /*
@@ -252,18 +248,23 @@ public class RecommendationsService {
         Collections.sort(portfolios, new Comparator<PairedUsersPortfolio>() {
             @Override
             public int compare(PairedUsersPortfolio o1, PairedUsersPortfolio o2) {
-                int result =  Double.compare(o2.similarity, o1.similarity);
-                if (result != 0) {
+                int result =  Double.compare(o2.similarity, o1.similarity); // 유사도를 비교해서 내림차순 정렬
+                if (result != 0) { // 만약 두 portfolio에 대해 유사도가 다른 경우 -> 정상적으로 비교 로직 동작
                     return result;
                 }
 
+                // 만약 두 portfolio간에 유사도가 같은 경우, 두 포트폴리오를 지닌 유저의 마지막 접속 일자를 비교
                 LocalDateTime lastAccessDate1 = o1.portfolio.getUser().getLastAccessDate();
                 LocalDateTime lastAccessDate2 = o2.portfolio.getUser().getLastAccessDate();
 
+                // 두 포트폴리오(사용자)가 둘 다 로그인을 한번이라도 한 적이 있다면,
+                // 두 포트폴리오를 가진 사용자 중 더 최근에 로그인 한 사용자에 더 높은 우선순위를 부여
                 if (lastAccessDate1 != null && lastAccessDate2 != null) {
                     return lastAccessDate2.compareTo(lastAccessDate1);
                 }
 
+                // 두 포트폴리오를 가진 사용자가 로그인 시간까지 똑같다면
+                // 0을 반환
                 return 0;
 
             }

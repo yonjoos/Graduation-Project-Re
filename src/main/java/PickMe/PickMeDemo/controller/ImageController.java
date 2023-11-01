@@ -3,6 +3,7 @@ package PickMe.PickMeDemo.controller;
 
 import PickMe.PickMeDemo.dto.PortfolioFormDto;
 import PickMe.PickMeDemo.dto.PostsFormDto;
+import PickMe.PickMeDemo.dto.ProfileImageUploadDTO;
 import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
 import PickMe.PickMeDemo.entity.PostType;
 import PickMe.PickMeDemo.exception.AppException;
@@ -25,7 +26,7 @@ public class ImageController {
 
 
     @PostMapping("/uploadProfileImage")
-    public ResponseEntity<String> uploadProfileImage(@Valid UserBaseInfoUpdateDto FormDto, Principal principal) throws IOException {
+    public ResponseEntity<String> uploadProfileImage(@Valid ProfileImageUploadDTO FormDto, Principal principal) throws IOException {
         try{
             userService.uploadProfileImage(FormDto, principal);
             System.out.println("성공했어요");

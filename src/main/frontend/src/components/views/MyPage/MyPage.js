@@ -1,7 +1,7 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Row, Col, Button, Menu, message, Form, Input, Modal } from 'antd';
+import { Card, Row, Col, Button, Menu, message, Form, Input, Modal, Image } from 'antd';
 import { Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
@@ -10,6 +10,11 @@ import { request } from '../../../hoc/request';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../_actions/actions'
 import { setAuthHeader, setUserRole } from '../../../hoc/request';
+
+import axios from 'axios';
+import { getAuthToken } from '../../../hoc/request';
+
+
 
 const { Item } = Form;
 function MyPage() {
@@ -42,6 +47,7 @@ function MyPage() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
     const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
+    const [profileImage, setProfileImage] = useState(null);
 
 
     // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅 -> userDto값이 세팅되어짐
@@ -53,6 +59,7 @@ function MyPage() {
             .catch((error) => {
                 console.error("Error fetching data:", error);
             });
+        
     }, []);
 
     // 회원 정보 수정 관련 - 버튼 활성화를 컨트롤하는 장치
@@ -77,6 +84,18 @@ function MyPage() {
         setIsSignOutButtonEnabled(signOutPasswordFieldFilled); //만약 하나라도 입력되지 않으면 버튼 활성화되지 않음
     }, [currentPasswordForSignOut])
 
+    useEffect(() => {
+
+        request('GET', '/userProfileImage')
+            .then((response) => {
+                setProfileImage(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
+
+
+    }, [profileImage])
 
     //드롭다운에서 특정 배너를 클릭하면 변경되는 기능
     const handleMenuClick = (e) => {
@@ -100,37 +119,45 @@ function MyPage() {
         setSelectedImage(file);
         
     };
+
     const handleSubmit = () => {
         if (selectedImage) {
-            // Prepare the data to send to the server, including the image file
-            console.log("이미지");
-            console.log(selectedImage);
             const formData = new FormData();
-            formData.append('image', selectedImage); // 'image' should match your server's expected field name
-
-            // Send the formData to the server
-            request('POST', '/updateProfileImage', formData) // Replace with your API endpoint
-                .then((response) => {
-                    // Handle the response
-                    if (response.data === "User information has been successfully updated.") {
-                        alert('Information has been updated.');
-                        // Reset the selected image
-                        setSelectedImage(null);
-                        // Additional logic as needed
-                    } else {
-                        console.error('Unknown response:', response.data);
-                        message.error('Failed to update information.');
-                    }
-                })
-                .catch((error) => {
-                    // Handle errors
-                    // Additional error handling logic as needed
-                });
-        } else {
-            // Handle the case where no image is selected
-            message.warning('Please select an image before updating information.');
+            formData.append('imageUrl', selectedImage);
+            console.log(selectedImage);
+            console.log(formData);
+    
+            // Include the authentication token (replace 'yourAuthToken' with the actual token)
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                    'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+                },
+            };
+            console.log("왜안돼");
+    
+            // Send the formData with headers to the server
+            axios
+            .post('/updateProfileImage', formData, config) // Replace with your API endpoint
+            .then((response) => {
+                // Handle the response
+                console.log("막혔어요");
+                if (response.data === 'success') {
+                    alert('Information has been updated.');
+                    setSelectedImage(null);
+                    // Additional logic as needed
+                } else {
+                    console.error('Unknown response:', response.data);
+                    message.error('Failed to update information.');
+                }
+            })
+            .catch((error) => {
+            });
         }
     };
+    
+    
+    
 
     // '회원 정보 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
     const updateInfo = (updatedData) => {
@@ -452,6 +479,13 @@ function MyPage() {
                         <Card title="프로필 이미지" style={{ width: '100%' }}>
                             {userBaseInfo && (
                                 <Form>
+                                    <div style={{ marginTop: '20px' }}>
+                                    {selectedImage ? (
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <Image src={URL.createObjectURL(selectedImage)} style={{ margin: '10px', width: 300 }} />
+                                        </div>
+                                    ) : null}
+                                </div>
                                     <div>
                                         <Upload
                                             accept="image/*"

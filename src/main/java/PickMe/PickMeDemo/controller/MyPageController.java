@@ -1,9 +1,6 @@
 package PickMe.PickMeDemo.controller;
 
-import PickMe.PickMeDemo.dto.SignOutDto;
-import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
-import PickMe.PickMeDemo.dto.UserDto;
-import PickMe.PickMeDemo.dto.UserPasswordUpdateDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
@@ -43,9 +40,18 @@ public class MyPageController {
             return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
         }
     }
+
+    @GetMapping("/userProfileImage") // Use path variable to get project ID from URL
+    private ResponseEntity<UserDto> getUserProfileImage(Principal principal) {
+
+        UserDto userDto = userService.getUserProfileImage(principal);
+
+        return ResponseEntity.ok(userDto);
+    }
     @PostMapping("/updateProfileImage")
-    public ResponseEntity<String> updateProfileImage(@RequestBody @Valid UserBaseInfoUpdateDto FormDto, Principal principal)throws IOException {
+    public ResponseEntity<String> updateProfileImage(@Valid ProfileImageUploadDTO FormDto, Principal principal)throws IOException {
         try{
+            System.out.println("업로드 드드");
             userService.uploadProfileImage(FormDto, principal);
             System.out.println("성공했어요");
             return ResponseEntity.ok("success");

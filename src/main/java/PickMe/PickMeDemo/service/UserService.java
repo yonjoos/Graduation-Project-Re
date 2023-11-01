@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.CharBuffer;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -225,7 +226,20 @@ public class UserService {
     }
 
 
-    public void uploadProfileImage(UserBaseInfoUpdateDto updateDto, Principal principal)
+    @Transactional(readOnly = true)
+    public UserDto getUserProfileImage(Principal principal){
+        String email = principal.getName();
+        User user = userRepository.findByEmail(email).get();
+        String url = user.getFileUrl();
+
+        UserDto userDto = UserDto.builder()
+                .imageUrl(url)
+                .build();
+
+        return userDto;
+    }
+
+    public void uploadProfileImage(ProfileImageUploadDTO updateDto, Principal principal)
             throws IOException, FileNotFoundException {
 
         System.out.println("업로드 업로드함수입성");
@@ -245,7 +259,7 @@ public class UserService {
 
 
         System.out.println("업로드 A");
-        String fileUrl = user.getFileUrl();
+        String fileUrl = updateDto.getImageUrl().toString();
         System.out.println("업로드 A-" + fileUrl);
         if(fileUrl == null || fileUrl.isEmpty()){
             System.out.println("업로드 B");

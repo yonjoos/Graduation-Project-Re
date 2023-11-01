@@ -1,12 +1,7 @@
 package PickMe.PickMeDemo.service;
 
-import PickMe.PickMeDemo.dto.PortfolioCardDto;
 import PickMe.PickMeDemo.dto.PortfolioCardRecommendationDto;
-import PickMe.PickMeDemo.dto.PortfolioDto;
-import PickMe.PickMeDemo.entity.Portfolio;
-import PickMe.PickMeDemo.entity.QUser;
-import PickMe.PickMeDemo.entity.QVectorSimilarity;
-import PickMe.PickMeDemo.entity.User;
+import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
 import PickMe.PickMeDemo.repository.ViewCountPortfolioRepository;
@@ -14,15 +9,15 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sound.sampled.Port;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.querydsl.core.types.ExpressionUtils.orderBy;
 
 
 @Service
@@ -34,6 +29,7 @@ public class RecommendationsService {
     private final PortfolioRepository portfolioRepository;
     private final ViewCountPortfolioRepository viewCountPortfolioRepository;
 
+    //hi
 
     private final JPAQueryFactory queryFactory;
 
@@ -44,14 +40,25 @@ public class RecommendationsService {
     public List<PortfolioCardRecommendationDto> getRecommend(final String email, final String type){
 
 
-        User user = userRepository.findByEmail(email).get();
+        User user = null;
+        Integer[] usersInterest = null; //유저의 관심사 벡터
 
-        //유저의 관심사 벡터
-        Integer[] usersInterest = portfolioRepository.findByUser(user).get().getVector();
+        try{
+            user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalStateException("There is no such user"));
 
+        }catch(IllegalStateException e){
+            System.out.println("User가 없어요");
+        }
+
+        try{
+            usersInterest = portfolioRepository.findByUser(user)
+                    .orElseThrow(()-> new IllegalStateException("There is no such portfolio")).getVector();
+        }catch(IllegalStateException e){
+            System.out.println("portfolio가 없어요");
+        }
 
         /*
-        >>> STEP 2 : 다른 유저 추출 <<<
+        >>> STEP 2 : 다른 유저들의 포폴 추출 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          */
 
         //이 기간 안에 있는 : [startDate, currentTime]
@@ -60,87 +67,71 @@ public class RecommendationsService {
         StartEnd startEnd = new StartEnd(startDate, currentTime);
 
 
-        //유저들의
-        final List<User> usersInDuration = findUsersByLastAccessDate(user, startEnd);
+        //포폴 추출
+        final List<Portfolio> portfolioList = findPortfolioByLastAccessDate(user, startEnd);
 
-        //포트폴리오를 찾아서 Id랑 pair 해줌
-        List<Pair<Long, Portfolio>> pairedIdPortfolio = findUsersPortfolio(usersInDuration);
-        int size = pairedIdPortfolio.size();
-
-        /*
-        while(size < 10){
-            List<User> additionalUsers = findUsersAgain(usersInDuration, startEnd, 10);
-            List<Pair<Long, Portfolio>> additionalPairedIdPortfolio = findUsersPortfolio(additionalUsers);
-            pairedIdPortfolio.addAll(additionalPairedIdPortfolio);
-            size = pairedIdPortfolio.size();
-        }
-        if(size > 10){
-            pairedIdPortfolio = pairedIdPortfolio.subList(0, Math.min(10, pairedIdPortfolio.size()));
-        }
-        */
+        List<PairedUsersPortfolio> portfolios = portfolioList.stream()
+                .map(PairedUsersPortfolio::new)
+                .collect(Collectors.toList());
 
 
         /*
-        >>> STEP 3 : 유사도 순위 매기기 <<<
+        ####### 포트폴리오, 유저와 사용자간의 유사를 매핑하기 위해 클래스를 새로 선언 #########
+        class PairedUsersPortfolio 의 attributes
+            1. Portfolio portfolio
+            2. Double similarity
+         */
+
+
+        //사용자와 다른 유저의 유사도를 계산해서 유저의 portfolio와 매핑
+        //PairedUsersPortfoliodml similarity attribute 할당
+        for(PairedUsersPortfolio pair :portfolios){
+            pair.setSimilarity(usersInterest, type);
+        }
+
+
+
+        /*
+        >>> STEP 3 : 유사도 순위 매기기 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          */
 
         //순위 매기기 - step 3.1 : 유사도 정렬하기
-        final List<Pair<Long, Double>> pairedIdInterests = rankSimilarity(usersInterest, pairedIdPortfolio, usersInDuration, type);
+        //List<PairedUsersPortfolio> portfolios, 3개의 attributes been sorted
+        sortPortfolios(portfolios);
 
-        //순위 매기기 - step 3.2 : 정렬된 유사도에 맞춰 Portfolio 정렬
-        // Pair A : Pair<id, similarity> 정렬된 유사도
-        // Pair B : Pair<id, portfolio> --> Pair A, B 두 개의 id의 순서가 같게 만들어줌
-        // 결과적으로, Pair A를 정렬한 후, Pair A의 id에 맞춰 Pair B도 정렬하여, portfolio를 순서대로 반환
-        final List<Pair<Long, Portfolio>> sortedPairedIdPortfolio = sortPortfoliosById(pairedIdPortfolio, pairedIdInterests);
+        //인덱스 0, 1, 2 만 추출
+        List<PairedUsersPortfolio> top3 = portfolios.subList(0,3);
 
 
         /*
-        >>> STEP 4 : DTO 변환 <<<
+        >>> STEP 4 : DTO 변환 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          */
-
         // 최종 반환값, List<PortfolioCardDto> dtos
         // 일단은 중간 발표용 코사인 유사도 값이 포함된 PortfolioCardRecommendationDto를 사용.
         // 중간 발표 이후로는 PortfolioCardDto로 돌려놓기!!
         List<PortfolioCardRecommendationDto> dtos = new ArrayList<>();
 
         // 상위 3개의 데이터만 처리하기 위한 변수
-        int count = 0;
-        // 코사인 유사도 인덱스를 위해 필요
-        int i = 0;
+        for(PairedUsersPortfolio pair : top3){
 
-        for(Pair<Long, Portfolio> pair : sortedPairedIdPortfolio){
+            User u = pair.portfolio.getUser();
+            String nickName = u.getNickName();
 
-            // 상위 3개의 데이터만 처리
-            if (count < 3) {
-                String nickName = "";
+            Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.portfolio.getId()).orElse(null);
+            Double cosine = pair.similarity;
 
-                for (User u : usersInDuration) {
-                    if (u.getId() == pair.getFirst()) {
-                        nickName = u.getNickName();
-                        break;
-                    }
-                }
+            PortfolioCardRecommendationDto cardDto = PortfolioCardRecommendationDto.builder()
+                    .nickName(nickName)
+                    .web(pair.portfolio.getWeb())
+                    .app(pair.portfolio.getApp())
+                    .game(pair.portfolio.getGame())
+                    .ai(pair.portfolio.getAi())
+                    .shortIntroduce(pair.portfolio.getShortIntroduce())
+                    .viewCount(views)
+                    .cosineSimilarity(cosine)
+                    .build();
 
-                Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.getSecond().getId()).orElse(null);
-                Double cosine = pairedIdInterests.get(i).getSecond();
-
-                PortfolioCardRecommendationDto cardDto = PortfolioCardRecommendationDto.builder()
-                        .nickName(nickName)
-                        .web(pair.getSecond().getWeb())
-                        .app(pair.getSecond().getApp())
-                        .game(pair.getSecond().getGame())
-                        .ai(pair.getSecond().getAi())
-                        .shortIntroduce(pair.getSecond().getShortIntroduce())
-                        .viewCount(views)
-                        .cosineSimilarity(cosine)
-                        .build();
-
-                dtos.add(cardDto);
-                count++; // 데이터 추가 시 count 증가
-                i++;    // 다음 코사인 유사도 값을 가져오기 위한 인덱스 증가
-            } else {
-                break; // 상위 3개 데이터를 처리한 후 루프 종료
-            }
+            dtos.add(cardDto);
         }
 
         return dtos;
@@ -153,112 +144,6 @@ public class RecommendationsService {
     #################################### 내부 로직 함수 ###########################################################
     #################################### 내부 로직 함수 ###########################################################
      */
-
-
-
-    /*
-    ========================================================================
-    sortPortfoliosById() : 첫 번째 arg의 id 순서에 맞춰 두 번째 arg의 index를 바꾸는(정렬하는) 함수
-                ARGUMENTS
-                    - List<Pair<Long, Portfolio>> pairedIdPortfolio : 정렬해야할 <id, 포트폴리오>
-                    - List<Pair<Long, Double>> pairedIdInterests : 유사도순으로 정렬된 <id, 유사도>
-                    - pairedIdInterests와 pairedIdPortfolio 의 id index 순서를 같게 만들어 반환
-     */
-    private List<Pair<Long, Portfolio>> sortPortfoliosById(List<Pair<Long, Portfolio>> pairedIdPortfolio,
-                                                          List<Pair<Long, Double>> pairedIdInterests){
-        List<Pair<Long, Portfolio>> sorted = pairedIdInterests.stream()
-                .map(pair -> pairedIdPortfolio.stream()
-                        .filter(portfolioPair -> portfolioPair.getFirst().equals(pair.getFirst()))
-                        .findFirst()
-                        .orElse(null)) // You can handle cases where there's no match
-                .collect(Collectors.toList());
-
-        return sorted;
-    }
-
-
-
-    private List<Pair<Long, Portfolio>> findUsersPortfolio(final List<User> users){
-
-        List<Pair<Long, Portfolio>> pairedIdPortfolios = new ArrayList<>();
-        for(User u : users){
-
-            Long userId = u.getId();
-            //유저의 포트폴리오
-            Portfolio portfolio = portfolioRepository.findByUser(u).orElse(null);
-            if(portfolio != null){
-                Pair<Long, Portfolio> pairedIdPortfolio = Pair.of(userId, portfolio);
-                pairedIdPortfolios.add(pairedIdPortfolio);
-            }
-        }
-
-        return pairedIdPortfolios;
-    }
-
-
-
-
-    /*
-    ========================================================================
-    rankSimilarity() : 유저들의 순위에 따라 Id와 유사도 반환
-                ARGUMENTS
-                    - userdInterest : 나의 관심사 백터
-                    - pairedPortfolio : Pair<Long id, Portfolio portfolio>, '아이디 - 포트폴리오' 묶음
-                    - usersInDuration : List<Users> 추출된 유저들
-     */
-    private List<Pair<Long, Double>> rankSimilarity(final Integer[] userInterest,
-                                                   final List<Pair<Long, Portfolio>> pairedIdPortfolio,
-                                                   final List<User> users,
-                                                    String type){
-
-
-        //최종 반환값, 'pairedSimilarities'
-        List<Pair<Long, Double>> pairedSimilarities = new ArrayList<>();
-        for(Pair<Long, Portfolio> pair : pairedIdPortfolio){
-
-            Integer[] interest = pair.getSecond().getVector();
-            Double similarity = (type.equals("DB")) ? calculateSimilarityDB(userInterest, interest) : calculateSimilarity(userInterest, interest);
-
-
-
-            Pair<Long, Double> pairedIdSimilarity = Pair.of(pair.getFirst(), similarity);
-            pairedSimilarities.add(pairedIdSimilarity);
-        }
-
-        //Pair<id, similarity> 에서 similarity로 'List<> pairedSimilarities' 정렬
-        Collections.sort(pairedSimilarities, new Comparator<Pair<Long, Double>>() {
-            @Override
-            public int compare(Pair<Long, Double> o1, Pair<Long, Double> o2) {
-                int result = Double.compare(o2.getSecond(), o1.getSecond());
-
-                if (result != 0) {
-                    return result;
-                }
-                else {
-
-                    LocalDateTime lastAccessDate1 = users.stream()
-                            .filter(user -> user.getId().equals(o1.getFirst()))
-                            .findFirst()
-                            .map(User::getLastAccessDate)
-                            .orElse(null);
-
-                    LocalDateTime lastAccessDate2 = users.stream()
-                            .filter(user -> user.getId().equals(o2.getFirst()))
-                            .findFirst()
-                            .map(User::getLastAccessDate)
-                            .orElse(null);
-
-                    if (lastAccessDate1 != null && lastAccessDate2 != null) {
-                        return lastAccessDate2.compareTo(lastAccessDate1);
-                    } else {
-                        return 0;
-                    }
-                }
-            }
-        });
-
-        return pairedSimilarities;
-    }
 
 
     /*
@@ -340,52 +225,99 @@ public class RecommendationsService {
     }
 
 
+    //포트폴리오 Entity 안에 User 변수가 있음(fetch_type.LAZY -> 나중에 fetchJoin()으로 가져올거임)
+    //portfolio.getUser() 로 받을 수 있는 유저의 최근 접속일자가
+    //startEnd에 속해있으면서
+    //로그인한 user와 겹치지 않고
+    //포트폴리오 값이 있으면
+    //반환
+    private List<Portfolio> findPortfolioByLastAccessDate(final User user, final StartEnd startEnd) {
+        QPortfolio portfolios = QPortfolio.portfolio;
+
+        List<Portfolio> result = queryFactory.selectFrom(portfolios)
+                .leftJoin(portfolios.user).fetchJoin()
+                .where(portfolios.user.lastAccessDate.between(startEnd.getStartDate(), startEnd.getEndDate())
+                        .and(portfolios.user.ne(user))
+                        .and(portfolios.isNotNull()))
+                .orderBy(NumberExpression.random().asc())
+                .limit(8)
+                .fetch();
+
+        return result;
+    }
+
+
+    //portfolio 를 similarity 가 큰 순으로 정렬하는 함수
+    private void sortPortfolios(List<PairedUsersPortfolio> portfolios){
+        Collections.sort(portfolios, new Comparator<PairedUsersPortfolio>() {
+            @Override
+            public int compare(PairedUsersPortfolio o1, PairedUsersPortfolio o2) {
+                int result =  Double.compare(o2.similarity, o1.similarity);
+                if (result != 0) {
+                    return result;
+                }
+
+                LocalDateTime lastAccessDate1 = o1.portfolio.getUser().getLastAccessDate();
+                LocalDateTime lastAccessDate2 = o2.portfolio.getUser().getLastAccessDate();
+
+                if (lastAccessDate1 != null && lastAccessDate2 != null) {
+                    return lastAccessDate2.compareTo(lastAccessDate1);
+                }
+
+                return 0;
+
+            }
+        });
+    }
+
+
+
     /*
-    ========================================================================
-    findUserByLastAccessDate() : startDate ~ currentTime 사이에 로그인 한, user가 아닌 회원 반환
-            ARGUMENT
-                - user : User 이 유저가 아닌 유저를 반환
+    내부 class #####################################################################################################
+    내부 class #####################################################################################################
+    내부 class #####################################################################################################
      */
-    private List<User> findUsersByLastAccessDate(final User user, final StartEnd startEnd) {
-        QUser users = QUser.user;
 
-        JPQLQuery<User> query = queryFactory.selectFrom(users)
-                .where(users.lastAccessDate.between(startEnd.getStartDate(), startEnd.getEndDate())
-                        .and(users.ne(user))
-                        .and(users.portfolio.isNotNull()))
-                .orderBy(NumberExpression.random().asc())
-                .limit(8);
+    //User, Portfolio, similarity 3개를 묶기위한 class
+    private class PairedUsersPortfolio{
+        private Portfolio portfolio;
+        private Double similarity;
 
-        return query.fetch();
+
+        private PairedUsersPortfolio(Portfolio portfolio){
+            this.portfolio = portfolio;
+        }
+
+        //로그인한 사용자의 벡터(vectorA) 와
+        //다른 유저의 벡터(vectorB)
+        //사이의 유사도 구하는 함수
+        // type 의 종류 :  {real-time, DB}
+        private void setSimilarity(final Integer[] vectorA, String type){
+            Integer[] vectorB = portfolio.getVector();
+            Double sim = (type.equals("DB")) ? calculateSimilarityDB(vectorA, vectorB) : calculateSimilarity(vectorA, vectorB);
+
+            this.similarity = sim;
+        }
+
     }
 
-    private List<User> findUsersAgain(final List<User> user,
-                                      final StartEnd startEnd,
-                                      int amount) {
-        QUser users = QUser.user;
 
-        JPQLQuery<User> query = queryFactory.selectFrom(users)
-                .where(users.lastAccessDate.between(startEnd.getStartDate(), startEnd.getEndDate())
-                        .and(users.notIn(user)))
-                .orderBy(NumberExpression.random().asc())
-                .limit(amount);
-
-        return query.fetch();
-    }
-
-    class StartEnd{
+    //기간을 나타내는 클래스
+    //start : 시작일
+    //end : 끝
+    private class StartEnd{
         private LocalDateTime start;
         private LocalDateTime end;
 
-        public StartEnd(LocalDateTime start, LocalDateTime end){
+        private StartEnd(LocalDateTime start, LocalDateTime end){
             this.start = start;
             this.end = end;
         }
 
-        public LocalDateTime getStartDate(){
+        private LocalDateTime getStartDate(){
             return start;
         }
-        public LocalDateTime getEndDate(){
+        private LocalDateTime getEndDate(){
             return end;
         }
 

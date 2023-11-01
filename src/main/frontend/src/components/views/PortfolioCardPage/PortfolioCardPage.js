@@ -61,7 +61,7 @@ function PortfolioCardPage() {
     }, [reload]);
 
     useEffect(()=>{
-        if(recommend == 1) {
+        if(recommend === 1) {
             Recommend();
             setRecommend(0);
             setSustain(1);
@@ -308,7 +308,6 @@ function PortfolioCardPage() {
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
         marginRight: '1.2%'
@@ -338,19 +337,23 @@ function PortfolioCardPage() {
                 </div>
             );
         } else if (sustain === 1) {
-            // Show the "이런 사람은 어떠세요?" message
-            return (
-                <div>
-                    <div style={{ textAlign: 'center', marginBottom: '20px', backgroundColor: 'skyblue' }}>
-                        <strong>이런 사람은 어떠세요?</strong>
-                    
-                    </div>
+            // 포트폴리오가 없는 사람인 경우, 백엔드의 getRecommend함수를 통해 반환되는 data는 null이고, 프론트의 data는 ""로 세팅됨.
+            if (data === "") {
+                alert("추천 기능을 사용하시려면, 정확한 추천을 위해 먼저 포트폴리오를 작성해주세요!");
+            } else {
+                // Show the "이런 사람은 어떠세요?" message
+                return (
                     <div>
-                        {renderCards(data)}
+                        <div style={{ textAlign: 'center', marginBottom: '20px', backgroundColor: 'skyblue' }}>
+                            <strong>이런 사람은 어떠세요?</strong>
+                        </div>
+                        <div>
+                            {renderCards(data)}
+                        </div>
                     </div>
-                </div>
 
-            );
+                );
+            }
         } else {
             // Render the cards when data is ready
             return renderCards(data);
@@ -371,7 +374,7 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} title={
+                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#ddeeff' }} title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span>👩🏻‍💻 {item.nickName}</span>
                                             <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
@@ -410,7 +413,7 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} title={
+                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#ddeeff' }} title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span>👩🏻‍💻 {item.nickName}</span>
                                             <span>{item.cosineSimilarity}</span>
@@ -438,8 +441,6 @@ function PortfolioCardPage() {
                 </div>
             )
         }
-
-        
     }
 
 

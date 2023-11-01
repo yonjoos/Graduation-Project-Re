@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -26,5 +27,8 @@ public class ScrapPostsDto {
     private LocalDate endDate;
     private Boolean isApplied;  // 유저의 지원 여부.
     private Boolean isApproved; // 유저의 승인 여부.
+    private LocalDateTime finalUpdatedTime; // 최종 게시물 수정 등록 시간
+    private String briefContent;
+    private Integer viewCount;
 
 }

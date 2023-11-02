@@ -32,6 +32,8 @@ import PortfolioNotifyPage from './views/PortfolioPage/PortfolioNotifyPage';
 import SearchPortfolioListPage from './views/SearchListPage/SearchPortfolioListPage';
 import SearchProjectListPage from './views/SearchListPage/SearchProjectListPage';
 import SearchStudyListPage from './views/SearchListPage/SearchStudyListPage';
+import About from './views/About/About';
+
 import Footer from './views/Footer/Footer';
 import './App.css';
 //import logo2 from '../logo2.png'
@@ -112,6 +114,10 @@ function Main() {
                              * 
                              */
                         }
+                        <Route
+                            path="/about"
+                            element={Auth(About, null)}
+                        />
                         <Route
                             path="/adminPage"
                             element={Auth(AdminPage, null, true)}

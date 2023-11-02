@@ -48,6 +48,7 @@ function MyPage() {
     const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
     const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
+    const [profileUploaded, setProfileUploaded] = useState(false);
 
 
     // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅 -> userDto값이 세팅되어짐
@@ -58,17 +59,6 @@ function MyPage() {
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);
-            });
-
-
-        // 이미 프사가 등록되어있으면, 그거 가져오세요
-        request('GET', '/userProfileImage')
-            .then((response) => {
-                console.log(response.data.imageUrl);
-                setProfileImage(response.data.imageUrl);
-            })
-            .catch((error) => {
-                console.error("Error fetching profile image:", error);
             });
         
     }, []);
@@ -94,6 +84,20 @@ function MyPage() {
         const signOutPasswordFieldFilled = currentPasswordForSignOut;
         setIsSignOutButtonEnabled(signOutPasswordFieldFilled); //만약 하나라도 입력되지 않으면 버튼 활성화되지 않음
     }, [currentPasswordForSignOut])
+
+    useEffect(()=>{
+
+        request('GET', '/userProfileImage')
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+                setProfileUploaded(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
+
+    }, [setProfileUploaded])
 
 
 
@@ -135,6 +139,10 @@ function MyPage() {
                 if (response.data === 'success') {
                     alert('Information has been updated.');
                     setSelectedImage(null);
+                    setProfileUploaded(true);
+
+                    navigate('/myPage');
+
                 } else {
                     console.error('Unknown response:', response.data);
                     message.error('Failed to update information.');
@@ -150,7 +158,7 @@ function MyPage() {
 
     // '회원 정보 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
     const updateInfo = (updatedData) => {
-        if (updatedData.nickName && updatedData.userName && updatedData.password) { //닉네임, 이름, 패스워드가 다 입력되면, 백엔드에 요청을 보냄
+        if (updatedData.nickName && updatedData.userName && updatedData.password && selectedImage) { //닉네임, 이름, 패스워드가 다 입력되면, 백엔드에 요청을 보냄
             request('PUT', '/updateUserInfo', updatedData)
                 .then((response) => {
                     if (response.data === "User information has been successfully updated.") {
@@ -183,10 +191,44 @@ function MyPage() {
                         message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
                     }
                 });
+
+                const formData = new FormData();
+            formData.append('imageUrl', selectedImage);
+            console.log(selectedImage);
+            console.log(formData);
+    
+            // Include the authentication token (replace 'yourAuthToken' with the actual token)
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                    'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+                },
+            };
+            console.log("왜안돼");
+    
+            axios
+            .post('/updateProfileImage', formData, config) 
+            .then((response) => {
+                if (response.data === 'success') {
+                    alert('Information has been updated.');
+                    setSelectedImage(null);
+                    setProfileUploaded(true);
+
+                    navigate('/myPage');
+
+                } else {
+                    console.error('Unknown response:', response.data);
+                    message.error('Failed to update information.');
+                }
+            })
+            .catch((error) => {
+            });
         } else {
             //만약 모든 필드값을 다 입력하지 않은 경우
             message.warning('모든 필수 정보를 입력하세요.');
         }
+
+        
     };
 
     // '비밀 번호 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
@@ -300,12 +342,11 @@ function MyPage() {
     return (
         <div>
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <div style={{ width: '25%' }}>
+                <div style={{ width: '18%' }}>
                     <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
                         <Menu.Item key="info">정보 수정</Menu.Item>
                         <Menu.Item key="password">비밀번호 변경</Menu.Item>
                         <Menu.Item key="withdrawal">회원 탈퇴</Menu.Item>
-                        <Menu.Item key="image">사진</Menu.Item>
                     </Menu>
                 </div>
                 <div style={{ width: '75%' }}>
@@ -313,71 +354,132 @@ function MyPage() {
                         <Card title="정보 수정" style={{ width: '100%' }}>
                             {userBaseInfo && (
                                 <Form>
-                                    <div>
-                                        <Item label="이메일">
-                                            <Input
-                                                type="email"
-                                                value={userBaseInfo.email}
-                                                readOnly
-                                                disabled // Prevent interaction with the field
-                                                style={{ backgroundColor: '#f0f0f0' }} />
-                                        </Item>
-                                    </div>
-                                    <div style={{ display: "flex" }}>
-                                        <Item label="닉네임" style={{ flex: 6 }}>
-                                            <Input
-                                                type="text"
-                                                value={userBaseInfo.nickName}
-                                                placeholder = "닉네임을 입력해주세요"
-                                                onChange={(e) => handleInputChange('nickName', e.target.value)}
-                                            />
-                                        </Item>
-                                        <Button onClick={handleDuplicateCheck} style={{ flex: 1 }}>닉네임 중복 확인</Button>
-                                    </div>
-                                    {nicknameAvailability !== null && ( // 중복 확인 버튼 눌러서 중복 확인 여부를 알아왔을 때,
-                                        // 사용 가능한 닉네임인 경우 초록색으로 아래에 사용 가능하단 문구를 렌더링
-                                        // 사용 불가능한 닉네임인 경우 빨간색으로 아래에 사용 불가능하단 문구를 렌더링
-                                        // 빈 문자열로 중복확인 한 경우 빨간색으로 다시 입력하라는 문구를 렌더링
-                                        <div className={nicknameAvailability ? "verification-success" : "verification-failure"} style={{ marginLeft: '60px' ,marginBottom: '20px', marginTop: '-20px', color: (userBaseInfo.nickName === "" || !nicknameAvailability) ? "#ff4d4f" : "#00cc00" }}>
-                                            {(() => {
-                                                if (userBaseInfo.nickName === "") {
-                                                    return "빈 문자열로는 닉네임을 생성할 수 없습니다. 다시 입력하세요"
-                                                }
-                                                else if (!nicknameAvailability) {
-                                                    return "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요."
-                                                }
-                                                else if (userBaseInfo.nickName.length > 10) {
-                                                    return "닉네임은 최대 10자까지 입력 가능합니다."
-                                                }
-                                                else {
-                                                    return "사용 가능한 닉네임입니다!"
-                                                }
-                                            })()}
+                                    <div style={{display:'flex'}}>
+                                        <div style={{display:'grid', width :'800px'}}>
+                                            <div>
+                                                <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
+                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                        이메일
+                                                    </div>
+                                                    <div>
+                                                        <Input
+                                                                type="email"
+                                                                value={userBaseInfo.email}
+                                                                readOnly
+                                                                disabled // Prevent interaction with the field
+                                                                style={{ backgroundColor: '#f0f0f0' }} />
+
+                                                    </div>
+                                                </div>
+                                                <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
+                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                        닉네임
+                                                    </div>
+                                                    <div>
+                                                        <Input
+                                                                type="text"
+                                                                value={userBaseInfo.nickName}
+                                                                placeholder = "닉네임을 입력해주세요"
+                                                                onChange={(e) => handleInputChange('nickName', e.target.value)}
+                                                            />
+                                                    </div>
+                                                    <div>
+                                                        <Button onClick={handleDuplicateCheck} style={{}}>중복 확인</Button>
+                                                    </div>
+                                                </div>
+                                                <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}} >
+                                                    {nicknameAvailability !== null && ( // 중복 확인 버튼 눌러서 중복 확인 여부를 알아왔을 때,
+                                                        // 사용 가능한 닉네임인 경우 초록색으로 아래에 사용 가능하단 문구를 렌더링
+                                                        // 사용 불가능한 닉네임인 경우 빨간색으로 아래에 사용 불가능하단 문구를 렌더링
+                                                        // 빈 문자열로 중복확인 한 경우 빨간색으로 다시 입력하라는 문구를 렌더링
+                                                        <div className={nicknameAvailability ? "verification-success" : "verification-failure"} style={{ fontSize: '12px', marginLeft: '60px' ,marginBottom: '20px', marginTop: '', color: (userBaseInfo.nickName === "" || !nicknameAvailability) ? "#ff4d4f" : "#00cc00"}}>
+                                                            {(() => {
+                                                                if (userBaseInfo.nickName === "") {
+                                                                    return "빈 문자열로는 닉네임을 생성할 수 없습니다. 다시 입력하세요"
+                                                                }
+                                                                else if (!nicknameAvailability) {
+                                                                    return "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요."
+                                                                }
+                                                                else if (userBaseInfo.nickName.length > 10) {
+                                                                    return "닉네임은 최대 10자까지 입력 가능합니다."
+                                                                }
+                                                                else {
+                                                                    return "사용 가능한 닉네임입니다!"
+                                                                }
+                                                            })()}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
+                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                        성명
+                                                    </div>
+                                                    <div>
+                                                        <Input
+                                                                type="text"
+                                                                value={userBaseInfo.userName}
+                                                                placeholder="이름을 입력해주세요"
+                                                                onChange={(e) => handleInputChange('userName', e.target.value)} />
+                                                    </div>
+                                                </div>
+                                                <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
+                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                        비밀번호
+                                                    </div>
+                                                    <div>
+                                                        <Input
+                                                                    type="password"
+                                                                    value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
+                                                                    placeholder="비밀번호를 입력해주세요"
+                                                                    onChange={(e) => handleInputChange('password', e.target.value)} />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    )}
-                                    <div>
-                                        <Item label="이름">
-                                            <Input
-                                                type="text"
-                                                value={userBaseInfo.userName}
-                                                placeholder="이름을 입력해주세요"
-                                                onChange={(e) => handleInputChange('userName', e.target.value)} />
-                                        </Item>
+                                        <div>
+                                            {/* 이미 있는 프사 있으면 띄움 */}
+                                            <div style={{ marginTop: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
+                                                <Image
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                {/* 업로드할 사진 */}
+                                                <Upload
+                                                    accept="image/*"
+                                                    showUploadList={false}
+                                                    beforeUpload={(image) => {
+                                                        setSelectedImage(image);
+                                                        return false; // Stops the upload action
+                                                    }}
+                                                >
+                                                    <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
+                                                </Upload>
+                                                {/* 미리보기 */}
+                                                <div style={{ display: 'flex', marginBottom: '8px' }}>
+                                                    {selectedImage && (
+                                                        <img
+                                                        src={URL.createObjectURL(selectedImage)}
+                                                        style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                                        onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <Item label="패스워드">
-                                            <Input
-                                                type="password"
-                                                value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
-                                                placeholder="비밀번호를 입력해주세요"
-                                                onChange={(e) => handleInputChange('password', e.target.value)} />
-                                        </Item>
+                                    
+                                    <div style={{marginTop:'10px'}}>
+                                        <Button type="primary" onClick={() => updateInfo(userBaseInfo)}
+                                            disabled={!isUpdateButtonEnabled}>
+                                            정보 업데이트
+                                        </Button>
+
                                     </div>
 
-                                    <Button type="primary" onClick={() => updateInfo(userBaseInfo)}
-                                        disabled={!isUpdateButtonEnabled}>
-                                        정보 업데이트
-                                    </Button>
+                                    
                                 </Form>
                             )}
                         </Card>
@@ -462,58 +564,6 @@ function MyPage() {
                             >
                                 <p>정말로 탈퇴하시겠습니까?</p>
                             </Modal>
-                        </Card>
-                    )}
-                    {selectedOption === 'image' && (
-                        <Card title="프로필 이미지" style={{ width: '100%' }}>
-                            {userBaseInfo && (
-                                <Form>
-                                    {/* 이미 있는 프사 있으면 띄움 */}
-                                    <div style={{ marginTop: '20px' }}>
-                                        <Image
-                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                            style={{ margin: '10px', width: 300 }}
-                                        />
-                                    </div>
-                                    <div>
-                                        {/* 업로드할 사진 */}
-                                        <Upload
-                                            accept="image/*"
-                                            showUploadList={false}
-                                            beforeUpload={(image) => {
-                                                setSelectedImage(image);
-                                                return false; // Stops the upload action
-                                            }}
-                                        >
-                                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
-                                        </Upload>
-                                        {/* 미리보기 */}
-                                        <div style={{ display: 'flex', marginBottom: '8px' }}>
-                                            {selectedImage && (
-                                                <img
-                                                src={URL.createObjectURL(selectedImage)}
-                                                style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
-                                                onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Item label="패스워드">
-                                            <Input
-                                                type="password"
-                                                value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
-                                                placeholder="비밀번호를 입력해주세요"
-                                                onChange={(e) => handleInputChange('password', e.target.value)} />
-                                        </Item>
-                                    </div>
-
-                                    <Button type="primary" onClick={handleSubmit}
-                                        disabled={!isUpdateButtonEnabled}>
-                                        정보 업데이트
-                                    </Button>
-                                </Form>
-                            )}
                         </Card>
                     )}
                 </div>

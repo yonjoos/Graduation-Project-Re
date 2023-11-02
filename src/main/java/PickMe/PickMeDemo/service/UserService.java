@@ -197,20 +197,26 @@ public class UserService {
 
     // 이미 등록되어있는 프로필사진 가져오기
     @Transactional(readOnly = true)
-    public UserDto getUserProfileImage(Principal principal){
+    public ProfileImageUrlDto getUserProfileImage(Principal principal){
         String email = principal.getName();
 
         User user = userRepository.findByEmail(email).get();
         String nick = user.getNickName();
         String url = user.getImageUrl();
 
+        if(url == null){
+            url = "%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB%E1%84%91%E1%85%B3%E1%84%89%E1%85%A1.png";
+        }else{
+            url = user.getImageUrl();
+        }
+
         System.out.println("user -"+nick);
         System.out.println("fetch");
         System.out.println("image url -" + url); //null :(
 
 
-        UserDto userDto = UserDto.builder()
-                .imageUrl(user.getImageUrl())
+        ProfileImageUrlDto userDto = ProfileImageUrlDto.builder()
+                .imageUrl(url)
                 .build();
 
         return userDto;
@@ -218,7 +224,7 @@ public class UserService {
 
 
     //프사 등록하기
-    public void uploadProfileImage(ProfileImageUploadDTO updateDto, Principal principal)
+    public void updateProfileImage(ProfileImageUploadDTO updateDto, Principal principal)
             throws IOException, FileNotFoundException {
 
         System.out.println("업로드 업로드함수입성");
@@ -266,8 +272,7 @@ public class UserService {
             );
             System.out.println("업로드 Blob 후");
 
-            user.setfileUrl(uuid);
-            user.setfileName(image.getOriginalFilename());
+            user.setImageUrl(uuid);
 
         } catch (IOException e) {
             log.error("Error during file upload: " + e.getMessage());

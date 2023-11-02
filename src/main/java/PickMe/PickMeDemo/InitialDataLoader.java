@@ -135,6 +135,8 @@ public class InitialDataLoader implements CommandLineRunner {
 //        int maxValue = 4; // Values can range from 0 to 4
 //        generateAndSaveSimilarityData(dimension, maxValue);
 
+        String initialImg = "%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB%E1%84%91%E1%85%B3%E1%84%89%E1%85%A1.png";
+
         List<List<Integer>> standardPermutations = new ArrayList<>();
         standardPermutations.add(List.of(0, 0, 0, 0));
         standardPermutations.add(List.of(1, 0, 0, 0));
@@ -261,6 +263,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("2"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl(initialImg)
                 .build();
 
         userRepository.save(user2);

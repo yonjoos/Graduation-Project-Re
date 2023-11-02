@@ -28,7 +28,7 @@ public class ImageController {
     @PostMapping("/uploadProfileImage")
     public ResponseEntity<String> uploadProfileImage(@Valid ProfileImageUploadDTO FormDto, Principal principal) throws IOException {
         try{
-            userService.uploadProfileImage(FormDto, principal);
+            userService.updateProfileImage(FormDto, principal);
             System.out.println("성공했어요");
             return ResponseEntity.ok("success");
         }catch (IllegalArgumentException ex) {

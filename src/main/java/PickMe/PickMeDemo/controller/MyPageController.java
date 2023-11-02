@@ -42,10 +42,10 @@ public class MyPageController {
     }
 
     @GetMapping("/userProfileImage") // Use path variable to get project ID from URL
-    private ResponseEntity<UserDto> getUserProfileImage(Principal principal) {
+    private ResponseEntity<ProfileImageUrlDto> getUserProfileImage(Principal principal) {
 
         System.out.println("프사 컨트롤러");
-        UserDto userDto = userService.getUserProfileImage(principal);
+        ProfileImageUrlDto userDto = userService.getUserProfileImage(principal);
         System.out.println("프사 컨트롤러 끝");
 
 
@@ -55,7 +55,7 @@ public class MyPageController {
     public ResponseEntity<String> updateProfileImage(@Valid ProfileImageUploadDTO FormDto, Principal principal)throws IOException {
         try{
             System.out.println("업로드 드드");
-            userService.uploadProfileImage(FormDto, principal);
+            userService.updateProfileImage(FormDto, principal);
             System.out.println("성공했어요");
             return ResponseEntity.ok("success");
         }catch (IllegalArgumentException ex) {

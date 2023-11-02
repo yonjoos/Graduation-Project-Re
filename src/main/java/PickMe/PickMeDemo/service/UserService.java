@@ -195,7 +195,7 @@ public class UserService {
 
 
 
-    // 이미 등록되어있는 프사 가져오기
+    // 이미 등록되어있는 프로필사진 가져오기
     @Transactional(readOnly = true)
     public UserDto getUserProfileImage(Principal principal){
         String email = principal.getName();
@@ -204,9 +204,9 @@ public class UserService {
         String nick = user.getNickName();
         String url = user.getImageUrl();
 
-        System.out.println("프사 유저 -"+nick);
-        System.out.println("프사 가져옴");
-        System.out.println("프사 가져옴-" + url); //계속 null
+        System.out.println("user -"+nick);
+        System.out.println("fetch");
+        System.out.println("image url -" + url); //null :(
 
 
         UserDto userDto = UserDto.builder()

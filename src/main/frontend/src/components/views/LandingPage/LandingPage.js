@@ -208,6 +208,10 @@ function LandingPage() {
     };
 
 
+    const handleAbout = () => {
+        navigate('/about');
+    }
+
 
 
     return (
@@ -254,6 +258,12 @@ function LandingPage() {
 
                                 </div>
 
+                            </Col>
+                            <Col span={24}>
+                                <div onClick={handleAbout}>
+                                    <b>ABOUT US</b>
+                                </div>
+                                
                             </Col>
                             <Col span={24}>
                                 <br />

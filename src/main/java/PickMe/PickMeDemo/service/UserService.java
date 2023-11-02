@@ -195,13 +195,12 @@ public class UserService {
 
 
 
+
     // 이미 등록되어있는 프로필사진 가져오기
     @Transactional(readOnly = true)
-    public ProfileImageUrlDto getUserProfileImage(Principal principal){
-        String email = principal.getName();
+    public ProfileImageUrlDto getUserProfileImageByNickName(String nickName){
 
-        User user = userRepository.findByEmail(email).get();
-        String nick = user.getNickName();
+        User user = userRepository.findByNickName(nickName).get();
         String url = user.getImageUrl();
 
         if(url == null){
@@ -210,7 +209,29 @@ public class UserService {
             url = user.getImageUrl();
         }
 
-        System.out.println("user -"+nick);
+        System.out.println("fetch");
+        System.out.println("image url -" + url); //null :(
+
+
+        ProfileImageUrlDto userDto = ProfileImageUrlDto.builder()
+                .imageUrl(url)
+                .build();
+
+        return userDto;
+    }
+
+    @Transactional(readOnly = true)
+    public ProfileImageUrlDto getUserProfileImageByEmail(String email){
+
+        User user = userRepository.findByEmail(email).get();
+        String url = user.getImageUrl();
+
+        if(url == null){
+            url = "%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB%E1%84%91%E1%85%B3%E1%84%89%E1%85%A1.png";
+        }else{
+            url = user.getImageUrl();
+        }
+
         System.out.println("fetch");
         System.out.println("image url -" + url); //null :(
 

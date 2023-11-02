@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 //import { useSelector } from "react-redux";
-import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
+import { Button, Card, Row, Col, Radio, Progress,Image } from 'antd';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
 
@@ -13,6 +13,8 @@ function PortfolioPage() {
 
     const [postData, setPostData] = useState([]);
     const [loadPosts, setloadPosts] = useState("more");
+    const [profileImage, setProfileImage] = useState(null); //프사 띄우는 용도
+
 
     const [data, setData] = useState(null);
     const [hasPortfolio, setHasPortfolio] = useState('');
@@ -45,7 +47,23 @@ function PortfolioPage() {
             .catch((error) => {
                 console.error("Error fetching data:", error);
             });
+
+        
     }, [nickName]);
+
+    useEffect(()=>{
+
+
+        request('GET', `/getOtherUsersProfileImage?nickName=${nickName}`)
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
+
+    }, [profileImage])
 
     // 아무런 정보도 없는 유저의 포트폴리오에 접근 시 (존재하지 않는 유저의 포트폴리오에 접근 시) visitedEndpoint로 강제로 이동
     useEffect(() => {
@@ -258,7 +276,7 @@ function PortfolioPage() {
 
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
-        <div>
+        <div style={{width:'100%'}}>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                 {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
                 {/* <Button type="primary" onClick={handleGoBackClick}>
@@ -279,18 +297,29 @@ function PortfolioPage() {
                 <div>
                     <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div>
+                            <div style={{display:'flex'}}>
+                                <div style={{ marginTop: '', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
+                                                    <Image
+                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    />
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '35px' }}>
+                                        <strong>Welcome To </strong><i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
+                                        {/* 
+                                                == 변경사항 ==
+                                                상단 <Divider> 제거, 선이 너무 많음
+                                                하단 <hr> 제거, 같은 이유
+                                            
+                                        */}
+                                    </div>
 
-                            <div style={{ fontSize: '35px' }}>
-
-
-                                <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
-                                {/* 
-                                        == 변경사항 ==
-                                        상단 <Divider> 제거, 선이 너무 많음
-                                        하단 <hr> 제거, 같은 이유
-                                    
-                                */}
+                                </div>
+                                
                             </div>
+
+                            
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{ fontSize: '12px' }}>
                                     <strong>CONTACT : </strong>

@@ -438,7 +438,7 @@ function MyPage() {
                                         </div>
                                         <div>
                                             {/* 이미 있는 프사 있으면 띄움 */}
-                                            <div style={{ marginTop: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
+                                            <div style={{ marginTop: '', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
                                                 <Image
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}

@@ -1,10 +1,7 @@
 package PickMe.PickMeDemo.controller;
 
 
-import PickMe.PickMeDemo.dto.PortfolioFormDto;
-import PickMe.PickMeDemo.dto.PostsFormDto;
-import PickMe.PickMeDemo.dto.ProfileImageUploadDTO;
-import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.PostType;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.UserService;
@@ -36,6 +33,15 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
 
+    }
+
+    @GetMapping("/getOtherUsersProfileImage")
+    public ResponseEntity<ProfileImageUrlDto> getOtherUsersProfileImage(@RequestParam String nickName) {
+
+        // getUserPortfolio : 유저의 닉네임을 통해 해당 유저의 포트폴리오를 가져오는 함수
+        ProfileImageUrlDto imageUrlDto = userService.getUserProfileImageByNickName(nickName);
+
+        return ResponseEntity.ok(imageUrlDto);
     }
 
 }

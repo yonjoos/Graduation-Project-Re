@@ -242,14 +242,13 @@ function MyPortfolioPage() {
     };
 
     const categoryTagStyle = {
-        display: 'inline-block',
+        display: 'flex',
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '0.6%'
+        marginRight: '5px'
     };
 
 
@@ -378,7 +377,7 @@ function MyPortfolioPage() {
                             <Card >
                                 <Row justify="space-between">
                                     <Col span={8}>
-                                        <div style={{ fontWeight: 'bold', fontSize: '1.2em' }}>{data && data.nickName}님이 작성한 게시물</div>
+                                        <div style={{ fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>

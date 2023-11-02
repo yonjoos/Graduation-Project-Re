@@ -153,14 +153,13 @@ function DetailStudyPage() {
     };
 
     const categoryTagStyle = {
-        display: 'inline-block',
+        display: 'flex',
         padding: '0px 5px 0px 5px',
         backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
         borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-        marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
         color: '#ff4646', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
-        marginRight: '0.6%'
+        marginRight: '5px'
     };
 
 
@@ -1031,7 +1030,7 @@ function DetailStudyPage() {
                                 <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
                                     {data.title}
                                 </div>
-                                <strong style={{ display: 'inline-block' }}>
+                                <strong style={{ display: 'flex' }}>
 
                                     {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
                                     {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
@@ -1073,8 +1072,8 @@ function DetailStudyPage() {
                                 </Card>
                             ) : null}
 
-                        </div>
 
+                        </div>
 
                         <div style={{ display: 'grid', marginTop: '20px' }}>
                             <Card size='small' title={`스터디 소개`} headStyle={{ background: '#ddeeff' }} bodyStyle={{ paddingTop: '0px', paddingBottom: '10px' }} >

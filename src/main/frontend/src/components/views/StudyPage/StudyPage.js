@@ -303,9 +303,9 @@ function StudyPage() {
     const renderPosts = (posts) => {
         return (
             <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
-                <Card title={`STUDIES`} headStyle={{ background: '#fee5eb', color: '#ff4646' }}>
+                <Card title={`STUDIES`} headStyle={{ background: '#fee5eb', color: '#ff4646' }} >
                     {posts.map((item, index) => (
-                        <div key={index} style={{ display: 'grid' }} onClick={(e) => {
+                        <div key={index} style={{ display: 'grid'}} onClick={(e) => {
                             if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
                                 handleNicknameClick(item.nickName);
                             } else {
@@ -314,22 +314,32 @@ function StudyPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <strong style={{ display: 'flex' }}>
-
-                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
-                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
-                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
-                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
-                                    </strong>
+                                    <div style={{display:'flex', marginBottom:'10px'}}>
+                                        <div>
+                                            <img
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                            />
+                            
+                                        </div>
+                                        <div>
+                                            <strong className="nickname">{item.nickName}</strong>
+                                        </div>
+                                    </div>
+                                    
                                     <div style={{ display: 'flex' }}>
                                         <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                     </div>
-                                    <div>
-                                        <div><strong className="nickname">{item.nickName}</strong></div>
-                                    </div>
-                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
+
+                                    <div style={{ marginTop: '10px', marginRight: '20px', marginBottom:'10px',textAlign: 'left' }}>
                                         {truncateString(item.briefContent, 50)}
                                     </div>
+                                    <strong style={{ display: 'flex' }}>
+                                    {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
+                                    {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
+                                    {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
+                                    {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
+                                    </strong>
                                 </div>
 
 

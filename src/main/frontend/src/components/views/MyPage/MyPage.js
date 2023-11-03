@@ -354,8 +354,8 @@ function MyPage() {
                         <Card title="정보 수정" style={{ width: '100%' }}>
                             {userBaseInfo && (
                                 <Form>
-                                    <div style={{display:'flex'}}>
-                                        <div style={{display:'grid', width :'800px'}}>
+                                    <div style={{display:'flex', paddingLeft:'20px', paddingRight:'20px'}}>
+                                        <div style={{display:'grid', width :'1200px'}}>
                                             <div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
                                                     <div style={{marginRight:'10px', width:'50px'}}>
@@ -367,7 +367,7 @@ function MyPage() {
                                                                 value={userBaseInfo.email}
                                                                 readOnly
                                                                 disabled // Prevent interaction with the field
-                                                                style={{ backgroundColor: '#f0f0f0' }} />
+                                                                style={{ backgroundColor: '#f0f0f0', width:'400px' }} />
 
                                                     </div>
                                                 </div>
@@ -381,10 +381,11 @@ function MyPage() {
                                                                 value={userBaseInfo.nickName}
                                                                 placeholder = "닉네임을 입력해주세요"
                                                                 onChange={(e) => handleInputChange('nickName', e.target.value)}
+                                                                style={{ backgroundColor: '#f0f0f0', width:'300px' }}
                                                             />
                                                     </div>
                                                     <div>
-                                                        <Button onClick={handleDuplicateCheck} style={{ marginLeft: '10px' }}>중복 확인</Button>
+                                                        <Button onClick={handleDuplicateCheck} style={{ marginLeft: '10px' , width : "90px"}}>중복 확인</Button>
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}} >
@@ -419,7 +420,8 @@ function MyPage() {
                                                                 type="text"
                                                                 value={userBaseInfo.userName}
                                                                 placeholder="이름을 입력해주세요"
-                                                                onChange={(e) => handleInputChange('userName', e.target.value)} />
+                                                                onChange={(e) => handleInputChange('userName', e.target.value)}
+                                                                style={{ backgroundColor: '#f0f0f0', width:'400px' }}  />
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
@@ -431,12 +433,13 @@ function MyPage() {
                                                                     type="password"
                                                                     value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
                                                                     placeholder="비밀번호를 입력해주세요"
-                                                                    onChange={(e) => handleInputChange('password', e.target.value)} />
+                                                                    onChange={(e) => handleInputChange('password', e.target.value)}
+                                                                    style={{ backgroundColor: '#f0f0f0', width:'400px' }}  />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div style={{marginRight:'30px'}}>
                                             {/* 이미 있는 프사 있으면 띄움 */}
                                             {/* <div style={{ borderRadius: '50%', backgroundColor: 'skyblue', width: '200px', height: '200px' }}>
                                                 <Image
@@ -444,10 +447,22 @@ function MyPage() {
                                                     style={{ borderRadius: '50%', width: '200px', height: '200px', objectFit: 'cover' }}
                                                 />
                                             </div> */}
-                                            <img
-                                                style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px' }}
-                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                            />
+                                            {/* 미리보기 */}
+                                            <div style={{ display: 'flex', marginBottom: '8px' }}>
+                                                    {selectedImage ? (
+                                                        <img
+                                                        src={URL.createObjectURL(selectedImage)}
+                                                        style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                                        onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                        />
+                                                    ):(
+                                                        <img
+                                                            style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                                        />
+
+                                                    )}
+                                            </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
                                                 <Upload
@@ -460,16 +475,7 @@ function MyPage() {
                                                 >
                                                     <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
                                                 </Upload>
-                                                {/* 미리보기 */}
-                                                <div style={{ display: 'flex', marginBottom: '8px' }}>
-                                                    {selectedImage && (
-                                                        <img
-                                                        src={URL.createObjectURL(selectedImage)}
-                                                        style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
-                                                        onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                                        />
-                                                    )}
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>

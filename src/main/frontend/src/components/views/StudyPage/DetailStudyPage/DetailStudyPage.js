@@ -1038,7 +1038,11 @@ function DetailStudyPage() {
                                     {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
                                 </strong>
 
-                                <div style={{ marginTop: '5px' }}>
+                                <div style={{ marginTop: '5px', display:'flex' }}>
+                                    <img
+                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
+                                    />
                                     <strong>{data.nickName}</strong>
                                 </div>
 

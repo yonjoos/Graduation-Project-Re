@@ -295,41 +295,40 @@ function PortfolioPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '0px' }}>
-                            <div style={{display:'flex'}}>
-                                <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
-                                                    <Image
-                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                    />
-                                </div>
-                                <div style={{display:'grid'}}>
-                                    <div>
-                                        <div style={{ fontSize: '35px', marginBottom:'0px' }}>
-                                            <strong>Welcome To </strong><br></br><i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
-                                        </div>
-                                    </div>
-                                    <div style={{ fontSize: '12px', display:'flex', justifyContent: 'space-between' }}>
-                                        <div>
-                                            <strong>CONTACT : </strong>
-                                            {data && data.email}
-                                        </div>
-                                        <div>
-                                            <strong>조회수 : </strong>
-                                            {data && data.viewCount}
-                                        </div>
-                                    </div>
-                                </div>
-
+                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
+                        <div>
+                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
+                                    <img
+                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                    />
                             </div>
+                            <div style={{ fontSize: '35px' }}>
+                                <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
+                                {/* 
+                                        == 변경사항 ==
+                                        상단 <Divider> 제거, 선이 너무 많음
+                                        하단 <hr> 제거, 같은 이유
+                                    
+                                */}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>CONTACT : </strong>
+                                    {data && data.email}
+                                </div>
+                                <div style={{ fontSize: '12px' }}>
+                                    <strong>조회수 : </strong>
+                                    {data && data.viewCount}
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
                     <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '0.1px solid black' }} />
 
-                    <div style={{ marginLeft: '20%', fontSize: '12px' }}>
-                        <strong>첨부 파일:</strong>
-                        {data && data.fileUrl}
-                    </div>
+                    <div style={{ marginLeft: '20%', fontSize: '12px' }}><strong>첨부 파일:</strong> {data && data.fileUrl}</div>
 
                     <Row justify="center" style={{ marginTop: '20px' }}>
                         <Col span={16}>

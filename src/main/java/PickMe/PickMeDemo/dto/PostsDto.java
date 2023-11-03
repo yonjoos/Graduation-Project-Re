@@ -33,5 +33,8 @@ public class PostsDto {
     private LocalDate endDate;
     private Integer viewCount;
     private LocalDateTime finalUpdatedTime; // 최종 게시물 수정 등록 시간
+    private String imageUrl; // profile image
+
+
 
 }

@@ -384,7 +384,7 @@ function MyPage() {
                                                             />
                                                     </div>
                                                     <div>
-                                                        <Button onClick={handleDuplicateCheck} style={{}}>중복 확인</Button>
+                                                        <Button onClick={handleDuplicateCheck} style={{ marginLeft: '10px' }}>중복 확인</Button>
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}} >
@@ -438,14 +438,17 @@ function MyPage() {
                                         </div>
                                         <div>
                                             {/* 이미 있는 프사 있으면 띄움 */}
-                                            <div style={{ marginTop: '', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
+                                            {/* <div style={{ borderRadius: '50%', backgroundColor: 'skyblue', width: '200px', height: '200px' }}>
                                                 <Image
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    style={{ borderRadius: '50%', width: '200px', height: '200px', objectFit: 'cover' }}
                                                 />
-                                            </div>
-
-                                            <div>
+                                            </div> */}
+                                            <img
+                                                style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px' }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                            />
+                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
                                                 <Upload
                                                     accept="image/*"

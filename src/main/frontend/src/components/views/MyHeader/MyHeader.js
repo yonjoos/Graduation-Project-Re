@@ -357,7 +357,7 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
                                     Group
                                 </Button>
                                 <CustomDropdown userRole={userRole} handleLogout={handleLogout}>
-                                    Me
+                                    gd
                                 </CustomDropdown>
                             </div>
                         ) : (

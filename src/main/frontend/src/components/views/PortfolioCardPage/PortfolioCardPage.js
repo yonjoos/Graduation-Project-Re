@@ -377,7 +377,7 @@ function PortfolioCardPage() {
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
                                     <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'flex-end' }}>
                                             <span>
                                                 <img
                                                 style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
@@ -419,7 +419,7 @@ function PortfolioCardPage() {
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
                                     <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
-                                        <div style={{ display: 'flex' }}>
+                                        <div style={{ display: 'flex', alignItems:'center'  }}>
                                             <span>
                                                 <img
                                                 style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}

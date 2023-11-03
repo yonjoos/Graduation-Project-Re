@@ -314,8 +314,8 @@ function StudyPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <div style={{display:'flex', marginBottom:'10px'}}>
-                                        <div>
+                                    <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
+                                        <div >
                                             <img
                                                 style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
                                                 src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
@@ -362,7 +362,7 @@ function StudyPage() {
     }
 
     return (
-        <div>
+        <div style={{width:'100%'}}>
             {/* 
                 검색어 입력 후 엔터/클릭 , 검색어 입력을 할 때마다 바뀌는 이벤트를 별도로 보냄
                 handleSearch: 엔터/클릭 관련

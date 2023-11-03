@@ -66,7 +66,7 @@ function Main() {
         <Layout>
             {/** 로고 모양을 인자로 넘김 */}
             {renderHeader() && <MyHeader logoSrc={logo4} />}
-            <Content style={{ padding: '20px' }}>
+            <Content style={{ padding: '20px', width: '1500px' ,margin: '0 auto', backgroundColor: '#FDFDFD'}}>
                 <div style={{ paddingLeft: '15%', paddingRight: '15%' }}>
                     <Routes>
                         {

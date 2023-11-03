@@ -254,8 +254,8 @@ function MyHeader(props) { //여기서 props는 로고 모양을 app.js에서 �
 
     return (
         <div>
-            <Header className="App-header">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%', paddingLeft: '15%', paddingRight: '15%' }}>
+            <Header className="App-header" style={{}}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%', paddingLeft: '15%', paddingRight: '15%',  }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <img
                             src={props.logoSrc}

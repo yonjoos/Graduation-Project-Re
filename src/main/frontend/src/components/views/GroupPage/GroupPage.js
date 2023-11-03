@@ -481,30 +481,31 @@ function GroupPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <strong style={{ display: 'flex' }}>
+                                    <div style={{display:'flex', alignItems: 'center', marginBottom:'15px'}}>
+                                        <div>
+                                            <img
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                            />
+                                        </div>
+                                        <div >
+                                            <strong className="nickname">{item.nickName}</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style={{ display: 'flex' }}>
+                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                    </div>
+                                    
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
+                                        {truncateString(item.briefContent, 50)}
+                                    </div>
+                                    <strong style={{ display: 'flex',marginTop:'10px' }}>
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
                                         {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
                                     </strong>
-                                    <div style={{ display: 'flex' }}>
-                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-                                    </div>
-                                    <div style={{display:'flex'}}>
-                                        <div>
-                                            <img
-                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                    />
-                                        </div>
-                                        <div>
-        
-                                            <strong className="nickname">{item.nickName}</strong>
-                                        </div>
-                                    </div>
-                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
-                                        {truncateString(item.briefContent, 50)}
-                                    </div>
                                 </div>
                                 <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                     <div>
@@ -522,7 +523,7 @@ function GroupPage() {
     }
 
     return (
-        <div>
+        <div style={{width:'100%'}}>
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Row>
                     {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}

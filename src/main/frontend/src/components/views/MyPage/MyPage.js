@@ -340,7 +340,7 @@ function MyPage() {
     };
 
     return (
-        <div>
+        <div style={{width:'1200px'}}>
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <div style={{ width: '18%' }}>
                     <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
@@ -354,10 +354,10 @@ function MyPage() {
                         <Card title="정보 수정" style={{ width: '100%' }}>
                             {userBaseInfo && (
                                 <Form>
-                                    <div style={{display:'flex', paddingLeft:'20px', paddingRight:'20px'}}>
+                                    <div style={{display:'flex', paddingLeft:'20px', paddingRight:'20px',alignItems: 'center' }}>
                                         <div style={{display:'grid', width :'1200px'}}>
-                                            <div>
-                                                <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
+                                            <div >
+                                                <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
                                                     <div style={{marginRight:'10px', width:'50px'}}>
                                                         이메일
                                                     </div>
@@ -452,7 +452,7 @@ function MyPage() {
                                                     {selectedImage ? (
                                                         <img
                                                         src={URL.createObjectURL(selectedImage)}
-                                                        style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
                                                         onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
                                                         />
                                                     ):(

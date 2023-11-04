@@ -214,6 +214,7 @@ function MyPage() {
                     setSelectedImage(null);
                     setProfileUploaded(true);
 
+                    window.location.reload();
                     navigate('/myPage');
 
                 } else {
@@ -223,10 +224,16 @@ function MyPage() {
             })
             .catch((error) => {
             });
+
+            // Trigger a page refresh in React component
+            
+
         } else {
             //만약 모든 필드값을 다 입력하지 않은 경우
             message.warning('모든 필수 정보를 입력하세요.');
         }
+
+
 
         
     };

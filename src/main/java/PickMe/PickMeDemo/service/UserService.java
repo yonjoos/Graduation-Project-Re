@@ -204,7 +204,7 @@ public class UserService {
         String url = user.getImageUrl();
 
         if(url == null){
-            url = "%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB%E1%84%91%E1%85%B3%E1%84%89%E1%85%A1.png";
+            url = "comgongWow.png";
         }else{
             url = user.getImageUrl();
         }
@@ -227,7 +227,7 @@ public class UserService {
         String url = user.getImageUrl();
 
         if(url == null){
-            url = "%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB%E1%84%91%E1%85%B3%E1%84%89%E1%85%A1.png";
+            url = "comgongWow.png";
         }else{
             url = user.getImageUrl();
         }

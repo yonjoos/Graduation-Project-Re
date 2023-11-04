@@ -98,7 +98,7 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
     //imageUrl(프사) 없으면 ㅂ본 프사 주소 반환
     public String getImageUrl(){
         if(this.imageUrl == null){
-            return "%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB%E1%84%91%E1%85%B3%E1%84%89%E1%85%A1.png";
+            return "comgongWow.png";
         }
         else return this.imageUrl;
     }

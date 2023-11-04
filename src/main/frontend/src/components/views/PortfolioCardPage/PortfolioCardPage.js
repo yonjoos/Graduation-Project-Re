@@ -36,6 +36,7 @@ function PortfolioCardPage() {
 
 
 
+
     const pageSize = 9;
 
     // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
@@ -79,6 +80,7 @@ function PortfolioCardPage() {
         console.log('현재 검색 완료된 키워드: ', searchTerm);
         fetchUsers();
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
+
 
 
     // 백엔드에 연관 검색어에 기반한 닉네임 값을 받아오기 위한 요청 보내기
@@ -375,8 +377,14 @@ function PortfolioCardPage() {
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
                                     <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <span>👩🏻‍💻 {item.nickName}</span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'flex-end' }}>
+                                            <span>
+                                                <img
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                />
+                                            </span>
+                                            <span> {item.nickName}</span>
                                             <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
                                         </div>
                                     } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
@@ -411,8 +419,15 @@ function PortfolioCardPage() {
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                     {/* style = {{cursor: 'pointer'}} */}
                                     <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <span>👩🏻‍💻 {item.nickName}</span>
+                                        <div style={{ display: 'flex', alignItems:'center'  }}>
+                                            <span>
+                                                <img
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                />
+                                            </span>
+
+                                            <span>{item.nickName}</span>
                                             <span>{item.cosineSimilarity}</span>
                                         </div>
                                     } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>

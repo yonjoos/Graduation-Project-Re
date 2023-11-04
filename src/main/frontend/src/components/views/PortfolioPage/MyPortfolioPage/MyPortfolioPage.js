@@ -12,6 +12,8 @@ function MyPortfolioPage() {
 
     const [postData, setPostData] = useState([]);
     const [loadPosts, setloadPosts] = useState("more");
+    const [profileImage, setProfileImage] = useState(null); //프사 띄우는 용도
+
 
     const [data, setData] = useState(null);
     const [existingPreferences, setExistingPreferences] = useState({
@@ -51,6 +53,19 @@ function MyPortfolioPage() {
                 console.error("Error fetching data:", error);
             });
     }, [dispatch]);
+
+    useEffect(()=>{
+
+        request('GET', '/userProfileImage')
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
+
+    }, [profileImage])
 
 
 
@@ -279,6 +294,12 @@ function MyPortfolioPage() {
                 <div>
                     <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div>
+                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
+                                    <img
+                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                    />
+                            </div>
                             <div style={{ fontSize: '35px' }}>
                                 <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
                                 {/* 

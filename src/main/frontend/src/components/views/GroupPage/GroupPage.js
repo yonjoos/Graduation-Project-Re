@@ -19,6 +19,9 @@ function GroupPage() {
     const [cancelModalVisible, setCancelModalVisible] = useState(false);    // 유저 승인 취소 모달이 보이는지 여부 설정
     const [nickName, setNickName] = useState(null);       // 승인할 때 필요한 유저 nickName을 저장
     const [postsId, setPostsId] = useState();               // 승인할 때 필요한 게시물 ID를 저장
+    const [profileImage, setProfileImage] = useState(null); //프사 띄우는 용도
+
+
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
 
@@ -30,6 +33,9 @@ function GroupPage() {
     useEffect(() => {
         fetchFilteredPosts();
     }, [postsOption, currentPage, sortOption]);
+    
+
+
 
     // 실제 백엔드에 동적 쿼리 보내는 곳
     const fetchFilteredPosts = async () => {
@@ -368,9 +374,9 @@ function GroupPage() {
     //               )
     //               }
     //             </div>
-    //           </div>
+    //           </div
     //         ) : (
-    //           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+    //           <div style={{ display: 'flex', justifyContent: 'space-between' }}
     //             <div>
     //               <div>
     //                 작성자
@@ -475,21 +481,31 @@ function GroupPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <strong style={{ display: 'flex' }}>
+                                    <div style={{display:'flex', alignItems: 'center', marginBottom:'15px'}}>
+                                        <div>
+                                            <img
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                            />
+                                        </div>
+                                        <div >
+                                            <strong className="nickname">{item.nickName}</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style={{ display: 'flex' }}>
+                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                    </div>
+                                    
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
+                                        {truncateString(item.briefContent, 50)}
+                                    </div>
+                                    <strong style={{ display: 'flex',marginTop:'10px' }}>
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
                                         {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
                                     </strong>
-                                    <div style={{ display: 'flex' }}>
-                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-                                    </div>
-                                    <div>
-                                        <div><strong className="nickname">{item.nickName}</strong></div>
-                                    </div>
-                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
-                                        {truncateString(item.briefContent, 50)}
-                                    </div>
                                 </div>
                                 <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                     <div>
@@ -507,7 +523,7 @@ function GroupPage() {
     }
 
     return (
-        <div>
+        <div style={{width:'100%'}}>
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Row>
                     {/** 버튼들을 중앙과 오른쪽 두 경우에만 위치시키기 위해 만든 좌측의 더미 공간 */}

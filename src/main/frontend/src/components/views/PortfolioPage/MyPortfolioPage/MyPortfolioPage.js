@@ -292,34 +292,31 @@ function MyPortfolioPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
-                        <div>
-                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
-                                    <img
-                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                    />
+                    <div style={{ display:'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between'}}>
+                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '100px', height: '100px' }}>
+                                <img
+                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px', border: '5px solid lightblue' }}
+                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                />
                             </div>
-                            <div style={{ fontSize: '35px' }}>
-                                <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
-                                {/* 
-                                        == 변경사항 ==
-                                        상단 <Divider> 제거, 선이 너무 많음
-                                        하단 <hr> 제거, 같은 이유
-                                    
-                                */}
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ fontSize: '12px' }}>
-                                    <strong>CONTACT : </strong>
-                                    {data && data.email}
+                            <div style={{ marginTop: '30px', marginRight: '30%', fontSize: '30px', display:'grid' }}>
+                                <div>
+                                    <i>{data && data.nickName}</i><b>'s portfolio page</b>
                                 </div>
-                                <div style={{ fontSize: '12px' }}>
-                                    <strong>조회수 : </strong>
-                                    {data && data.viewCount}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginRight: '-70%' }}>
+                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
+                                            <strong>CONTACT : </strong>
+                                            {data && data.email}
+                                        </div>
+                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
+                                        <strong> 조회수 : </strong>
+                                        {data && data.viewCount}
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}

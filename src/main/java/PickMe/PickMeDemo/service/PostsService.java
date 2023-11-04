@@ -2233,6 +2233,9 @@ public class PostsService {
                 .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 정렬 옵션에 따라 정렬 방식 지정
                 .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
+        User user = userRepository.findByEmail(userEmail).get(); //null 검사하나?
+        String url = user.getImageUrl();
+
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴
 
@@ -2240,7 +2243,7 @@ public class PostsService {
 
         for (Posts post : filteredPosts) { // 가져온 게시물을 순회
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
-            User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
+            //User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
 
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
@@ -2300,6 +2303,7 @@ public class PostsService {
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
                     .nickName(post.getUser().getNickName())
+                    .imageUrl(url)
                     .build(); // GroupPostsDto 객체 생성 및 초기화
 
             groupPostsDtosList.add(groupPostsDto); // 생성한 GroupPostsListDto를 리스트에 추가

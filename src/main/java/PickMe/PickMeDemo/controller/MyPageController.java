@@ -1,16 +1,15 @@
 package PickMe.PickMeDemo.controller;
 
-import PickMe.PickMeDemo.dto.SignOutDto;
-import PickMe.PickMeDemo.dto.UserBaseInfoUpdateDto;
-import PickMe.PickMeDemo.dto.UserDto;
-import PickMe.PickMeDemo.dto.UserPasswordUpdateDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -42,6 +41,30 @@ public class MyPageController {
         }
     }
 
+    @GetMapping("/userProfileImage") // Use path variable to get project ID from URL
+    private ResponseEntity<ProfileImageUrlDto> getUserProfileImage(Principal principal) {
+
+        String email = principal.getName();
+        System.out.println("프사 컨트롤러");
+        ProfileImageUrlDto userDto = userService.getUserProfileImageByEmail(email);
+        System.out.println("프사 컨트롤러 끝");
+
+
+        return ResponseEntity.ok(userDto);
+    }
+    @PostMapping("/updateProfileImage")
+    public ResponseEntity<String> updateProfileImage(@Valid ProfileImageUploadDTO FormDto, Principal principal)throws IOException {
+        try{
+            System.out.println("업로드 드드");
+            userService.updateProfileImage(FormDto, principal);
+            System.out.println("성공했어요");
+            return ResponseEntity.ok("success");
+        }catch (IllegalArgumentException ex) {
+            // Handle the exception and send an appropriate HTTP response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+
+    }
 
     //user의 비밀번호 변경 관련
     @PutMapping("/updatePassword")

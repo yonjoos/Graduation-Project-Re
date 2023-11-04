@@ -208,10 +208,14 @@ function LandingPage() {
     };
 
 
+    const handleAbout = () => {
+        navigate('/about');
+    }
+
 
 
     return (
-        <div>
+        <div style={{width:'100%'}}>
             {/* Conditional rendering based on authentication status */}
             {(!isAuthenticated || isAuthenticated && userRole === 'USER') && ( //비회원과 회원이 볼 수 있는 화면
                 // Row, Col : 그리드(창의 크기에 맞춘 반응형)를 위해 사용되는 애.
@@ -241,9 +245,9 @@ function LandingPage() {
                     <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
-                            <Col span={24}>
+                            {/* <Col span={24}>
                                 <SearchInLandingPage onSearch={handleSearch} />
-                            </Col>
+                            </Col> */}
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
                                 <div style={{ position: 'absolute', zIndex: 2 }}>
@@ -255,7 +259,8 @@ function LandingPage() {
                                 </div>
 
                             </Col>
-                            <Col span={24}>
+    
+                            {/* <Col span={24}>
                                 <br />
                                 <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
                                 <br />
@@ -299,10 +304,14 @@ function LandingPage() {
                                 </Carousel>
                                 <br />
                                 <br />
-                            </Col>
-                            <Col span={24}>
-                                <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
-                                <br />
+                            </Col> */}
+                            <Col span={24} >
+                                <div style={{ textAlign: 'center' }}>
+                                    <b style={{ fontSize: '20px' }}>Enjoy your projects with P!ck Me</b>
+                                    <br />
+
+                                </div>
+                                
                             </Col>
                             <Col xs={24} sm={8}>
                                 <PortfolioCard />
@@ -345,9 +354,9 @@ function LandingPage() {
                     <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
-                            <Col span={24}>
+                            {/* <Col span={24}>
                                 <SearchInLandingPage onSearch={handleSearch} />
-                            </Col>
+                            </Col> */}
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
                                 <div style={{ position: 'absolute', zIndex: 2 }}>
@@ -359,7 +368,7 @@ function LandingPage() {
                                 </div>
 
                             </Col>
-                            <Col span={24}>
+                            {/* <Col span={24}>
                                 <br />
                                 <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
                                 <br />
@@ -404,7 +413,7 @@ function LandingPage() {
                                 </Carousel>
                                 <br />
                                 <br />
-                            </Col>
+                            </Col> */}
                             <Col span={24}>
                                 <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
                                 <br />

@@ -22,6 +22,7 @@ public class PortfolioCardDto {
     private Integer ai;
     private String shortIntroduce;
     private Integer viewCount;
+    private String imageUrl;
 
 }
 

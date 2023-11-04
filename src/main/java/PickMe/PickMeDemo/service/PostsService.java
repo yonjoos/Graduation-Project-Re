@@ -238,6 +238,7 @@ public class PostsService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("유저를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
+
         // 게시물의 db에의 존재 여부 확인
         Optional<Posts> optionalPosts = postsRepository.findByIdAndPostType(projectId, PostType.PROJECT);
 
@@ -249,6 +250,9 @@ public class PostsService {
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
             Integer applyCount;
+
+            User u = posts.getUser();
+            String url = u.getImageUrl();
 
             // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
             // null이라면, 인원 = 1(본인)
@@ -309,6 +313,7 @@ public class PostsService {
                         .endDate(posts.getEndDate())
                         .viewCount(viewCount)
                         .finalUpdatedTime(posts.getLastModifiedDate())
+                        .imageUrl(url)
                         .build();
             }
             // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
@@ -358,6 +363,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -382,6 +388,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                 }
@@ -409,6 +416,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -433,6 +441,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                 }
@@ -460,6 +469,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -484,6 +494,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                 }
@@ -534,6 +545,9 @@ public class PostsService {
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(posts);
             Integer applyCount;
+
+            User u = posts.getUser();
+            String url = u.getImageUrl();
 
             // applyCountOptional에 값이 존재한다면, 인원 = 현재까지 게시물에 모집된 인원 + 1 (본인)
             // null이라면, 인원 = 1(본인)
@@ -593,6 +607,7 @@ public class PostsService {
                         .endDate(posts.getEndDate())
                         .viewCount(viewCount)
                         .finalUpdatedTime(posts.getLastModifiedDate())
+                        .imageUrl(url)
                         .build();
             }
             // 현재 조회한 사람(userEmail)이 게시물 작성자(posts.getUser().getEmail())가 아니라면
@@ -642,6 +657,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -666,6 +682,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                 }
@@ -693,6 +710,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -717,6 +735,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                 }
@@ -744,6 +763,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                     // 스크랩 안한 사람
@@ -768,6 +788,7 @@ public class PostsService {
                                 .endDate(posts.getEndDate())
                                 .viewCount(viewCount)
                                 .finalUpdatedTime(posts.getLastModifiedDate())
+                                .imageUrl(url)
                                 .build();
                     }
                 }
@@ -1878,6 +1899,7 @@ public class PostsService {
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
+            String url = user.getImageUrl();
 
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
@@ -1918,6 +1940,7 @@ public class PostsService {
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
                     .finalUpdatedTime(post.getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가
@@ -2087,6 +2110,7 @@ public class PostsService {
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
+            String url = user.getImageUrl();
 
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
@@ -2127,6 +2151,7 @@ public class PostsService {
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
                     .finalUpdatedTime(post.getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가
@@ -2208,6 +2233,9 @@ public class PostsService {
                 .orderBy(sortOption.equals("nearDeadline") ? posts.endDate.asc() : posts.createdDate.desc()) // 정렬 옵션에 따라 정렬 방식 지정
                 .orderBy(userApplyPosts.createdDate.asc());      // 게시물에 지원한 유저를 선착순으로 보여주기
 
+        User user = userRepository.findByEmail(userEmail).get(); //null 검사하나?
+        String url = user.getImageUrl();
+
         List<Posts> filteredPosts = query
                 .fetch(); // 게시물 데이터를 가져옴
 
@@ -2215,7 +2243,7 @@ public class PostsService {
 
         for (Posts post : filteredPosts) { // 가져온 게시물을 순회
             Category postCategory = post.getCategory();        // post를 통해 카테고리로 접근한 것을 postCategory로 명명
-            User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
+            //User user = post.getUser();                         // post를 통해 유저 접근한 것을 user로 명명
 
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
@@ -2275,6 +2303,7 @@ public class PostsService {
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
                     .nickName(post.getUser().getNickName())
+                    .imageUrl(url)
                     .build(); // GroupPostsDto 객체 생성 및 초기화
 
             groupPostsDtosList.add(groupPostsDto); // 생성한 GroupPostsListDto를 리스트에 추가
@@ -2345,6 +2374,9 @@ public class PostsService {
             Posts post = userApplyPost.getPosts();          // userApplyPost를 통해 posts에 접근한 것을 post로 명명
             Category postCategory = userApplyPost.getPosts().getCategory();        // userApplyPost에서 posts를 통해 카테고리로 접근한 것을 postCategory로 명명
 
+            User user = post.getUser();
+            String url = user.getImageUrl(); //프사
+
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
             Integer applyCount;
@@ -2371,7 +2403,7 @@ public class PostsService {
 
             GroupPostsDto groupPostsDto = GroupPostsDto.builder()
                     .id(post.getId())
-                    .writerNickName(post.getUser().getNickName())   // post = userApplyPost.getPosts()
+                    .writerNickName(user.getNickName())   // post = userApplyPost.getPosts()
                     .applyNickNames(null)                       // 지원한 게시물을 찾는 것이므로, 지원자는 없음. null로 반환.
                     .postType(post.getPostType().toString())    // postType은 Enum 타입이므로, toString() 해주기
                     .title(post.getTitle())
@@ -2390,6 +2422,7 @@ public class PostsService {
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
                     .nickName(post.getUser().getNickName())
+                    .imageUrl(url)
                     .build();
 
             groupPostsDtosList.add(groupPostsDto);     // 컬렉션에 추가
@@ -3618,6 +3651,8 @@ public class PostsService {
 
             Posts post = scrapPost.getPosts();
             Category postCategory = post.getCategory();
+            User user = post.getUser();
+            String url = user.getImageUrl();
 
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
@@ -3662,6 +3697,7 @@ public class PostsService {
                     .finalUpdatedTime(post.getLastModifiedDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .imageUrl(url)
                     .build();
 
             scrapPostsDtosList.add(scrapPostsDto); // 컬렉션에 추가
@@ -3711,6 +3747,9 @@ public class PostsService {
 
             Posts post = scrapPost.getPosts();
             Category postCategory = post.getCategory();
+            User user = post.getUser();
+
+            String url = user.getImageUrl();
 
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
@@ -3755,6 +3794,7 @@ public class PostsService {
                     .finalUpdatedTime(post.getLastModifiedDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .imageUrl(url)
                     .build();
 
             scrapPostsDtosList.add(scrapPostsDto); // 컬렉션에 추가

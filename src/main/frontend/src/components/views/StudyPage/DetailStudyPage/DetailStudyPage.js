@@ -1024,87 +1024,93 @@ function DetailStudyPage() {
         return (
             <div>
                 <Card>
-                    <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'grid' }}>
-                                <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
-                                    {data.title}
+                    <div style={{display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
+                        <div >
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'grid' }}>
+                                    <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
+                                        {data.title}
+                                    </div>
+                                    <strong style={{ display: 'flex', marginTop:'10px' }}>
+
+                                        {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
+                                        {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
+                                        {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
+                                        {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
+                                    </strong>
+
+                                    <div style={{ marginTop: '25px', display:'flex' , alignItems:'center'}}>
+                                        <img
+                                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
+                                        />
+                                        <strong>{data.nickName}</strong>
+                                    </div>
+
                                 </div>
-                                <strong style={{ display: 'flex' }}>
-
-                                    {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
-                                    {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
-                                    {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
-                                    {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
-                                </strong>
-
-                                <div style={{ marginTop: '5px' }}>
-                                    <strong>{data.nickName}</strong>
+                                <div style={{ alignItems: 'center' }}>
+                                    <br />
+                                    {data.viewCount} views
+                                    <br />
+                                    <div style={{ color: 'gray' }}>{formatDateTime(data.finalUpdatedTime)}</div>
                                 </div>
-
                             </div>
-                            <div style={{ alignItems: 'center' }}>
-                                <br />
-                                {data.viewCount} views
-                                <br />
-                                <div style={{ color: 'gray' }}>{formatDateTime(data.finalUpdatedTime)}</div>
-                            </div>
-                        </div>
-                        <hr></hr>
-                        <div>
+                            <hr></hr>
+                            <div>
 
-                            {data.fileUrl && data.fileUrl.length >= 1 ? (
-                                <Card size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
-                                    {
-                                        data.fileUrl ? (
-                                            data.fileUrl.map((file, index) => (
-                                                <div style={{ display: 'flex', justifyContent: 'left', width: '100%' }} key={index}>
-                                                    <Button type='text' style={{ width: '100%', textAlign: 'left' }}
-                                                        onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
-                                                    >
-                                                        {file.fileName} {/* 파일 이름 표시 */}
-                                                    </Button>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            null
-                                        )}
-                                </Card>
-                            ) : null}
-
-
-                        </div>
-
-                        <div style={{ display: 'grid', marginTop: '20px' }}>
-                            <Card size='small' title={`스터디 소개`} headStyle={{ background: '#ddeeff' }} bodyStyle={{ paddingTop: '0px', paddingBottom: '10px' }} >
-                                <div style={{ marginTop: '20px' }}>
-                                    {insertLineBreaks(data.content, 45)}
-                                </div>
-                            </Card>
-
-                            <div style={{ marginTop: '20px' }} >
-                                {data.promoteImageUrl && data.promoteImageUrl.length >= 1 ? (
-                                    <Card size='small' title={`홍보 사진`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
-
-                                        {data.promoteImageUrl ?
-                                            (
-                                                data.promoteImageUrl.map((imageUrl, index) => (
-                                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                                        <Image
-                                                            key={index}
-                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                                            alt={`홍보 사진 ${index + 1}`}
-                                                            style={{ margin: '10px', width: 300 }}
-                                                        />
+                                {data.fileUrl && data.fileUrl.length >= 1 ? (
+                                    <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ borderRadius: '0px', background: '#fee5eb'}}>
+                                        {
+                                            data.fileUrl ? (
+                                                data.fileUrl.map((file, index) => (
+                                                    <div style={{ display: 'flex', justifyContent: 'left', width: '100%' }} key={index}>
+                                                        <Button type='text' style={{ width: '100%', textAlign: 'left' }}
+                                                            onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                        >
+                                                            {file.fileName} {/* 파일 이름 표시 */}
+                                                        </Button>
                                                     </div>
                                                 ))
                                             ) : (
-                                                <p>이미지가 없습니다</p>
+                                                null
                                             )}
-                                    </Card>) : null}
+                                    </Card>
+                                ) : null}
+
 
                             </div>
-                            <hr></hr>
+
+                            <div style={{ display: 'grid', marginTop: '20px' }}>
+                                <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`스터디 소개`} headStyle={{ borderRadius: '0px', background: '#fee5eb' }} bodyStyle={{ minHeight: '250px', paddingTop: '0px', paddingBottom: '10px' }} >
+                                    <div style={{ marginTop: '20px' }}>
+                                        {insertLineBreaks(data.content, 45)}
+                                    </div>
+                                </Card>
+
+                                <div style={{ marginTop: '20px' }} >
+                                    {data.promoteImageUrl && data.promoteImageUrl.length >= 1 ? (
+                                        <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`홍보 사진`} bodyStyle={{ borderRadius: '0px', paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{borderRadius: '0px',  background: '#fee5eb' }}>
+
+                                            {data.promoteImageUrl ?
+                                                (
+                                                    data.promoteImageUrl.map((imageUrl, index) => (
+                                                        <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                                            <Image
+                                                                key={index}
+                                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                                alt={`홍보 사진 ${index + 1}`}
+                                                                style={{ margin: '10px', width: 300 }}
+                                                            />
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p>이미지가 없습니다</p>
+                                                )}
+                                        </Card>) : null}
+
+                                </div>
+                                <hr></hr>
+                            </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ marginBottom: '30px' }}>

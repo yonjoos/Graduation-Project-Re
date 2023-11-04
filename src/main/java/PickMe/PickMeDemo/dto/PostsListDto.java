@@ -31,7 +31,7 @@ public class PostsListDto {
 
     public String getImageUrl(){
         if(this.imageUrl == null){
-            return "conmgongWow.png";
+            return "comgongWow.png";
         }
         else return this.imageUrl;
     }

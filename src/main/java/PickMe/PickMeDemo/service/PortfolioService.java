@@ -908,6 +908,7 @@ public class PortfolioService {
         for (Portfolio portfolio : filteredPortfolios) {
             //User portfolioUser = portfolio.getUser();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = portfolio.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
+            String url = user.getImageUrl();
 
             Optional<Integer> viewCountOptional = viewCountPortfolioRepository.countByPortfolio_Id(portfolio.getId());
 
@@ -921,6 +922,7 @@ public class PortfolioService {
                     .ai(portfolio.getAi())
                     .shortIntroduce(portfolio.getShortIntroduce())
                     .viewCount(viewCount)
+                    .imageUrl(url)
                     .build();
 
             portfolioCardDtos.add(cardDto);     // 컬렉션에 추가

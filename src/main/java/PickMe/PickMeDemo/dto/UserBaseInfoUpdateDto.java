@@ -1,6 +1,7 @@
 package PickMe.PickMeDemo.dto;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor

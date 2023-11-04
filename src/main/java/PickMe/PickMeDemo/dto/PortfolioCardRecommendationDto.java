@@ -20,5 +20,6 @@ public class PortfolioCardRecommendationDto {
     private String shortIntroduce;
     private Integer viewCount;
     private Double cosineSimilarity;
+    private String imageUrl;
 
 }

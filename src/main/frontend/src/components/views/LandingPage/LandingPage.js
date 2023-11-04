@@ -208,10 +208,14 @@ function LandingPage() {
     };
 
 
+    const handleAbout = () => {
+        navigate('/about');
+    }
+
 
 
     return (
-        <div>
+        <div style={{width:'100%'}}>
             {/* Conditional rendering based on authentication status */}
             {(!isAuthenticated || isAuthenticated && userRole === 'USER') && ( //비회원과 회원이 볼 수 있는 화면
                 // Row, Col : 그리드(창의 크기에 맞춘 반응형)를 위해 사용되는 애.
@@ -254,6 +258,12 @@ function LandingPage() {
 
                                 </div>
 
+                            </Col>
+                            <Col span={24}>
+                                <div onClick={handleAbout}>
+                                    <b>ABOUT US</b>
+                                </div>
+                                
                             </Col>
                             <Col span={24}>
                                 <br />

@@ -71,6 +71,11 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
     @Column
     private LocalDateTime lastAccessDate; //마지막 로그인 성공 날짜
 
+    @Column
+    private String imageUrl; // 구글 드라이브에 저장되는 파일의 uuid값
+
+    //private String fileName;
+
     public void modifyLastLoginDate(LocalDateTime now) {
         lastAccessDate=now;
     }
@@ -89,4 +94,13 @@ public class User extends BaseTimeEntity{ //생성일, 수정일 다루는 클�
         this.role = role;
         this.lastAccessDate = lastAccessDate;
     }
+
+    //imageUrl(프사) 없으면 ㅂ본 프사 주소 반환
+    public String getImageUrl(){
+        if(this.imageUrl == null){
+            return "comgongWow.png";
+        }
+        else return this.imageUrl;
+    }
+
 }

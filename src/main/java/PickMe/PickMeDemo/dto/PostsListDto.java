@@ -27,5 +27,13 @@ public class PostsListDto {
     private String briefContent;
     private Integer viewCount;
     private LocalDateTime finalUpdatedTime; // 최종 게시물 수정 등록 시간
+    private String imageUrl;
+
+    public String getImageUrl(){
+        if(this.imageUrl == null){
+            return "conmgongWow.png";
+        }
+        else return this.imageUrl;
+    }
 
 }

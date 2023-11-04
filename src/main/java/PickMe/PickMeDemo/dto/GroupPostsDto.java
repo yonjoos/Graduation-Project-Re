@@ -34,5 +34,13 @@ public class GroupPostsDto {
     private String briefContent;
     private Integer viewCount;
     private String nickName;
+    private String imageUrl;
+
+    public String getImageUrl(){
+        if(this.imageUrl == null){
+            return "comgongWow.png";
+        }
+        else return this.imageUrl;
+    }
 
 }

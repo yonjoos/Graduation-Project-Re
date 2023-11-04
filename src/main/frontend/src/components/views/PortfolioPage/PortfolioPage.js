@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 //import { useSelector } from "react-redux";
-import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
+import { Button, Card, Row, Col, Radio, Progress, Divider, Modal, Image } from 'antd';
+
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
 
@@ -13,8 +14,10 @@ function PortfolioPage() {
 
     const [postData, setPostData] = useState([]);
     const [loadPosts, setloadPosts] = useState("more");
+    const [profileImage, setProfileImage] = useState(null); //프사 띄우는 용도
 
-    const [data, setData] = useState(null);
+
+    const [data, setData] = useState({});
     const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingPreferences, setExistingPreferences] = useState({
         web: 0,
@@ -45,7 +48,23 @@ function PortfolioPage() {
             .catch((error) => {
                 console.error("Error fetching data:", error);
             });
+
+        
     }, [nickName]);
+
+    useEffect(()=>{
+
+
+        request('GET', `/getOtherUsersProfileImage?nickName=${nickName}`)
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
+
+    }, [profileImage])
 
     // 아무런 정보도 없는 유저의 포트폴리오에 접근 시 (존재하지 않는 유저의 포트폴리오에 접근 시) visitedEndpoint로 강제로 이동
     useEffect(() => {
@@ -258,7 +277,7 @@ function PortfolioPage() {
 
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
-        <div>
+        <div style={{width:'100%'}}>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                 {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
                 {/* <Button type="primary" onClick={handleGoBackClick}>
@@ -279,10 +298,13 @@ function PortfolioPage() {
                 <div>
                     <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div>
-
+                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
+                                    <img
+                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                    />
+                            </div>
                             <div style={{ fontSize: '35px' }}>
-
-
                                 <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
                                 {/* 
                                         == 변경사항 ==
@@ -307,10 +329,35 @@ function PortfolioPage() {
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
                     <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '0.1px solid black' }} />
 
-                    <div style={{ marginLeft: '20%', fontSize: '12px' }}>
-                        <strong>첨부 파일:</strong>
-                        {data && data.fileUrl}
-                    </div>
+
+                    <Row justify="center">
+                        <Col span={16}>
+                            <div>
+
+                                {data.fileUrl && data.fileUrl.length >= 1 ? (
+                                    <Card size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
+                                        {
+                                            data.fileUrl ? (
+                                                data.fileUrl.map((file, index) => (
+                                                    <div style={{ display: 'flex', justifyContent: 'left', width: '100%' }} key={index}>
+                                                        <Button type='text' style={{ width: '100%', textAlign: 'left' }}
+                                                            onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                        >
+                                                            {file.fileName} {/* 파일 이름 표시 */}
+                                                        </Button>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                null
+                                            )}
+                                    </Card>
+                                ) : null}
+
+
+                            </div>
+                        </Col>
+                    </Row>
+
 
                     <Row justify="center" style={{ marginTop: '20px' }}>
                         <Col span={16}>
@@ -381,8 +428,33 @@ function PortfolioPage() {
                         </Col>
                     </Row>
 
-                    <br />
-                    <br />
+                    <Row justify="center">
+                        <Col span={16}>
+                            <div style={{ marginTop: '20px' }} >
+                                {data.promoteImageUrl && data.promoteImageUrl.length >= 1 ? (
+                                    <Card size='small' title={`홍보 사진`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
+
+                                        {data.promoteImageUrl ?
+                                            (
+                                                data.promoteImageUrl.map((imageUrl, index) => (
+                                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                                        <Image
+                                                            key={index}
+                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                            alt={`홍보 사진 ${index + 1}`}
+                                                            style={{ margin: '10px', width: 300 }}
+                                                        />
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p>이미지가 없습니다</p>
+                                            )}
+                                    </Card>) : null}
+
+                            </div>
+                        </Col>
+                    </Row>
+                    <br></br>
 
                     {/* >> Posts Lists << */}
                     <Row justify="center">

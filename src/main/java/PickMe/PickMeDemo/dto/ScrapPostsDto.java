@@ -30,5 +30,13 @@ public class ScrapPostsDto {
     private LocalDateTime finalUpdatedTime; // 최종 게시물 수정 등록 시간
     private String briefContent;
     private Integer viewCount;
+    private String imageUrl;
+
+    public String getImageUrl(){
+        if(this.imageUrl == null){
+            return "comgongWow.png";
+        }
+        else return this.imageUrl;
+    }
 
 }

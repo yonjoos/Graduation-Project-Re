@@ -39,14 +39,13 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
     @Column(name = "ai", nullable = false)
     private Integer ai; //추천 시스템 - 선호도 관련
 
-
-
     private String shortIntroduce; //한줄 소개
 
     @Column(columnDefinition = "TEXT") // @Lob 대신 Text로 변경 -> 1gb까지 저장 가능
     private String introduce; //소개
 
-    private String fileUrl; //첨부 파일
+    @OneToMany(mappedBy = "portfolio")
+    private List<PortfolioFiles> portfolioFiles = new ArrayList<>(); // 연관관계의 거울로 작용, 파일 table과 엮임(db필드에 안들어감)
 
 
 
@@ -58,7 +57,7 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
         this.ai = ai;
         this.shortIntroduce = shortIntroduce;
         this.introduce = introduce;
-        this.fileUrl = fileUrl;
+
     }
 
     public Integer[] getVector(){

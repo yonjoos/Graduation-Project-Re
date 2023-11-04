@@ -229,8 +229,7 @@ function LandingPage() {
                 // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <div>
-                    <br />
-                    <Carousel autoplay style={{ marginTop: '-2.5%', marginLeft: '-2.0%', marginRight: '-2.0%' }}>
+                    <Carousel autoplay>
                         {images.map((imageUrl, index) => (
                             <div key={index} style={{ display: 'flex', justifyContent: 'center' }}>
                                 <img
@@ -338,8 +337,7 @@ function LandingPage() {
                 // 그리드 레이아웃의 총 열 수는 일반적으로 24개.
                 // 따라서 span={8}을 설정하면 열이 사용 가능한 너비의 1/3 (8/24)을 차지한다는 의미
                 <div>
-                    <br />
-                    <Carousel autoplay style={{ marginTop: '-2.5%', marginLeft: '-2.0%', marginRight: '-2.0%' }}>
+                    <Carousel autoplay>
                         {images.map((imageUrl, index) => (
                             <div key={index} style={{ display: 'flex', justifyContent: 'center' }}>
                                 <img

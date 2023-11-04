@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router";
 //import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
@@ -115,9 +116,18 @@ function DetailStudyPage() {
                 chunks.push(' ')
                 j = 0;
             }
+
+            if (text[i] === '\n' || (text[i] === '\r' && text[i + 1] === '\n')) {
+                chunks.push('\n');
+                j = 0;
+    
+                if (text[i] === '\r') {
+                    i++; // Skip the next character ('\n')
+                }
+            }
         }
 
-        return chunks;
+        return chunks.join('');
     }
 
 
@@ -728,7 +738,14 @@ function DetailStudyPage() {
                     </>
                 ) : (
                     // 수정 중이 아닐 때, <p>로 표시
-                    <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>{insertLineBreaks(comment.content, 45)}</p>
+                    <p style={{ marginTop: '5px', whiteSpace: 'pre-wrap' }}>
+                        {comment.content && comment.content.split('\n').map((line, index) => (
+                            <React.Fragment key={index}>
+                                {insertLineBreaks(line, 45)}
+                                {index < comment.content.split('\n').length - 1 && <br />}
+                            </React.Fragment>
+                        ))}
+                    </p>
                 )}
 
                 <div style={{ textAlign: 'right', marginTop: '5px', fontSize: '12px', color: 'gray', marginRight: '10px' }}>
@@ -770,7 +787,7 @@ function DetailStudyPage() {
     const renderApplicantButton = () => {
         return (
             <div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '5%' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '5%', marginTop: '10px' }}>
                     <Button onClick={toggleContent}>
                         {isApplicantOpen ? '지원자 목록 닫기' : '지원자 목록 열기'}
                     </Button>
@@ -870,7 +887,7 @@ function DetailStudyPage() {
                 <Col span={12} style={{ textAlign: 'right' }}>
                     {/** isWriter와 일반 유저가 보이는 버튼이 다르도록 설정 */}
                     {isWriter && (
-                        <div style={{ marginBottom: '10px' }}>
+                        <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => navigate(`/study/update/${studyId}`)} style={{ marginRight: '5px' }}>
                                 게시물 수정
                             </Button>
@@ -883,7 +900,7 @@ function DetailStudyPage() {
                     {!isWriter && !isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -893,7 +910,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -907,7 +924,7 @@ function DetailStudyPage() {
                     {!isWriter && isScrapped && !isApplying && !isApplied && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -917,7 +934,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 근데 만약, 정원이 안찼다면 지원하기 버튼 클릭 가능
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -931,7 +948,7 @@ function DetailStudyPage() {
                     {!isWriter && !isScrapped && isApplying && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -944,7 +961,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                     게시물 스크랩
                                 </Button>
@@ -961,7 +978,7 @@ function DetailStudyPage() {
                     {!isWriter && isScrapped && isApplying && (
                         data.counts === data.recruitmentCount ? (
                             // 근데 만약, 정원이 다 찼다면 모집 마감을 보여줌
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -974,7 +991,7 @@ function DetailStudyPage() {
                             </div>
                         ) : (
                             // 정원이 아직 다 안찼다면, 승인 대기 중을 보여줌
-                            <div style={{ marginBottom: '10px' }}>
+                            <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                                 <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                     스크랩 취소
                                 </Button>
@@ -989,7 +1006,7 @@ function DetailStudyPage() {
                     )}
                     {/** 승인 허가된 사람 + 스크랩 안한 사람 */}
                     {!isWriter && !isScrapped && isApplied && (
-                        <div style={{ marginBottom: '10px' }}>
+                        <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => showScrapModal('scrap')} style={{ marginRight: '5px' }}>
                                 게시물 스크랩
                             </Button>
@@ -1003,7 +1020,7 @@ function DetailStudyPage() {
                     )}
                     {/** 승인 허가된 사람 + 스크랩 한 사람 */}
                     {!isWriter && isScrapped && isApplied && (
-                        <div style={{ marginBottom: '10px' }}>
+                        <div style={{ marginTop: '10px', marginBottom: '10px' }}>
                             <Button type="primary" onClick={() => showScrapModal('cancelScrap')} style={{ marginRight: '5px' }}>
                                 스크랩 취소
                             </Button>
@@ -1024,91 +1041,103 @@ function DetailStudyPage() {
         return (
             <div>
                 <Card>
-                    <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'grid' }}>
-                                <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
-                                    {data.title}
+                    <div style={{display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
+                        <div >
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'grid' }}>
+                                    <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
+                                        {data.title}
+                                    </div>
+                                    <strong style={{ display: 'flex', marginTop:'10px' }}>
+
+                                        {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
+                                        {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
+                                        {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
+                                        {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
+                                    </strong>
+
+                                    <div style={{ marginTop: '25px', display:'flex' , alignItems:'center'}}>
+                                        <img
+                                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
+                                        />
+                                        <strong>{data.nickName}</strong>
+                                    </div>
+
                                 </div>
-                                <strong style={{ display: 'flex' , marginTop:'10px'}}>
-
-                                    {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
-                                    {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
-                                    {data.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
-                                    {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
-                                </strong>
-
-                                <div style={{ marginTop: '25px', display:'flex' , alignItems:'center'}}>
-                                    <img
-                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
-                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
-                                    />
-                                    <strong>{data.nickName}</strong>
+                                <div style={{ alignItems: 'center' }}>
+                                    👀 조회 수 : {data.viewCount}
+                                    <br />
+                                    모집 인원 : {data.counts} / {data.recruitmentCount}
+                                    <br />
+                                    모집 기한 : {formatDate(data.endDate)}
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <div style={{ color: 'gray' }}>{formatDateTime(data.finalUpdatedTime)}</div>
                                 </div>
-
                             </div>
-                            <div style={{ alignItems: 'center' }}>
-                                <br />
-                                {data.viewCount} views
-                                <br />
-                                <div style={{ color: 'gray' }}>{formatDateTime(data.finalUpdatedTime)}</div>
-                            </div>
-                        </div>
-                        <hr></hr>
-                        <div>
+                            <hr></hr>
+                            <div>
 
-                            {data.fileUrl && data.fileUrl.length >= 1 ? (
-                                <Card size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
-                                    {
-                                        data.fileUrl ? (
-                                            data.fileUrl.map((file, index) => (
-                                                <div style={{ display: 'flex', justifyContent: 'left', width: '100%' }} key={index}>
-                                                    <Button type='text' style={{ width: '100%', textAlign: 'left' }}
-                                                        onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
-                                                    >
-                                                        {file.fileName} {/* 파일 이름 표시 */}
-                                                    </Button>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            null
-                                        )}
-                                </Card>
-                            ) : null}
-
-
-                        </div>
-
-                        <div style={{ display: 'grid', marginTop: '20px' }}>
-                            <Card size='small' title={`스터디 소개`} headStyle={{ background: '#ddeeff' }} bodyStyle={{ paddingTop: '0px', paddingBottom: '10px' }} >
-                                <div style={{ marginTop: '20px' }}>
-                                    {insertLineBreaks(data.content, 45)}
-                                </div>
-                            </Card>
-
-                            <div style={{ marginTop: '20px' }} >
-                                {data.promoteImageUrl && data.promoteImageUrl.length >= 1 ? (
-                                    <Card size='small' title={`홍보 사진`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ background: '#ddeeff' }}>
-
-                                        {data.promoteImageUrl ?
-                                            (
-                                                data.promoteImageUrl.map((imageUrl, index) => (
-                                                    <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-                                                        <Image
-                                                            key={index}
-                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                                            alt={`홍보 사진 ${index + 1}`}
-                                                            style={{ margin: '10px', width: 300 }}
-                                                        />
+                                {data.fileUrl && data.fileUrl.length >= 1 ? (
+                                    <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ borderRadius: '0px', background: '#fee5eb'}}>
+                                        {
+                                            data.fileUrl ? (
+                                                data.fileUrl.map((file, index) => (
+                                                    <div style={{ display: 'flex', justifyContent: 'left', width: '100%' }} key={index}>
+                                                        <Button type='text' style={{ width: '100%', textAlign: 'left' }}
+                                                            onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                        >
+                                                            {file.fileName} {/* 파일 이름 표시 */}
+                                                        </Button>
                                                     </div>
                                                 ))
                                             ) : (
-                                                <p>이미지가 없습니다</p>
+                                                null
                                             )}
-                                    </Card>) : null}
+                                    </Card>
+                                ) : null}
+
 
                             </div>
-                            <hr></hr>
+
+                            <div style={{ display: 'grid', marginTop: '20px' }}>
+                                <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`스터디 소개`} headStyle={{ borderRadius: '0px', background: '#fee5eb' }} bodyStyle={{ minHeight: '250px', paddingTop: '0px', paddingBottom: '10px' }} >
+                                    <div style={{ marginTop: '20px' }}>
+                                        {data.content && data.content.split('\n').map((line, index) => (
+                                            <React.Fragment key={index}>
+                                                {insertLineBreaks(line, 45)}
+                                                {index < data.content.split('\n').length - 1 && <br />}
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </Card>
+
+                                <div style={{ marginTop: '20px' }} >
+                                    {data.promoteImageUrl && data.promoteImageUrl.length >= 1 ? (
+                                        <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`홍보 사진`} bodyStyle={{ borderRadius: '0px', paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{borderRadius: '0px',  background: '#fee5eb' }}>
+
+                                            {data.promoteImageUrl ?
+                                                (
+                                                    data.promoteImageUrl.map((imageUrl, index) => (
+                                                        <div style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+                                                            <Image
+                                                                key={index}
+                                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                                alt={`홍보 사진 ${index + 1}`}
+                                                                style={{ margin: '10px', width: 300 }}
+                                                            />
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p>이미지가 없습니다</p>
+                                                )}
+                                        </Card>) : null}
+
+                                </div>
+                                <hr></hr>
+                            </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ marginBottom: '30px' }}>

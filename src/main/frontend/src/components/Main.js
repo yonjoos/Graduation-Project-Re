@@ -65,8 +65,8 @@ function Main() {
     return (
         <Layout>
             {/** 로고 모양을 인자로 넘김 */}
-            {renderHeader() && <MyHeader logoSrc={logo4} />}
-            <Content style={{ padding: '20px', width: '1500px' ,margin: '0 auto', backgroundColor:'whitesmoke'}}>
+            {renderHeader() && <MyHeader logoSrc={'https://storage.googleapis.com/hongik-pickme-bucket/P!ckMeLogo.png'} />}
+            <Content style={{ width: '100%', backgroundColor: 'whitesmoke'}}>
                 <div style={{ paddingLeft: '15%', paddingRight: '15%' }}>
                     <Routes>
                         {

@@ -38,7 +38,7 @@ public class GroupPostsDto {
 
     public String getImageUrl(){
         if(this.imageUrl == null){
-            return "%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB%E1%84%91%E1%85%B3%E1%84%89%E1%85%A1.png";
+            return "comgongWow.png";
         }
         else return this.imageUrl;
     }

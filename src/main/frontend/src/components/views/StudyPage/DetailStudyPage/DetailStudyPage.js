@@ -1030,7 +1030,7 @@ function DetailStudyPage() {
                                 <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
                                     {data.title}
                                 </div>
-                                <strong style={{ display: 'flex' }}>
+                                <strong style={{ display: 'flex' , marginTop:'10px'}}>
 
                                     {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
                                     {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
@@ -1038,7 +1038,11 @@ function DetailStudyPage() {
                                     {data.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
                                 </strong>
 
-                                <div style={{ marginTop: '5px' }}>
+                                <div style={{ marginTop: '25px', display:'flex' , alignItems:'center'}}>
+                                    <img
+                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
+                                    />
                                     <strong>{data.nickName}</strong>
                                 </div>
 

@@ -287,8 +287,16 @@ function ScrapPage() {
                                     <div style={{ display: 'flex' }}>
                                         <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                     </div>
-                                    <div>
-                                        <div><strong className="nickname">{item.nickName}</strong></div>
+                                    <div style={{display:'flex'}}>
+                                        <div>
+                                            <img
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                    />
+                                        </div>
+                                        <div>
+                                            <strong className="nickname">{item.nickName}</strong>
+                                        </div>
                                     </div>
                                     <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
                                         {truncateString(item.briefContent, 50)}

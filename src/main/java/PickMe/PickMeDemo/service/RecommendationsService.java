@@ -110,6 +110,7 @@ public class RecommendationsService {
 
                 User u = pair.portfolio.getUser();
                 String nickName = u.getNickName();
+                String url = u.getImageUrl(); // 프사 주소
 
                 Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.portfolio.getId()).orElse(null);
                 Double cosine = pair.similarity;
@@ -123,6 +124,7 @@ public class RecommendationsService {
                         .shortIntroduce(pair.portfolio.getShortIntroduce())
                         .viewCount(views)
                         .cosineSimilarity(cosine)
+                        .imageUrl(url)
                         .build();
 
                 dtos.add(cardDto);

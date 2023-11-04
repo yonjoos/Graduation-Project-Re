@@ -302,7 +302,7 @@ function ProjectPage() {
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
-            <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
+            <div style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
                 <Card title={`PROJECTS`} headStyle={{ background: '#fffec1', color: '#ff8400' }}>
                     {posts.map((item, index) => (
                         <div key={index} style={{ display: 'grid' }} onClick={(e) => {
@@ -314,6 +314,29 @@ function ProjectPage() {
                         }}>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
+                                    <div>
+                                            <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
+                                                <div >
+                                                    <img
+                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                    />
+                                    
+                                                </div>
+                                                <div>
+                                                    <strong className="nickname">{item.nickName}</strong>
+                                                </div>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    <div style={{ display: 'flex' }}>
+                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                    </div>
+                                    
+                                    <div style={{ marginTop: '10px',marginBottom:'10px', marginRight: '20px', textAlign: 'left' }}>
+                                        {truncateString(item.briefContent, 50)}
+                                    </div>
                                     <strong style={{ display: 'flex' }}>
 
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
@@ -321,15 +344,6 @@ function ProjectPage() {
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}
                                         {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#AI</span>}
                                     </strong>
-                                    <div style={{ display: 'flex' }}>
-                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-                                    </div>
-                                    <div>
-                                        <div><strong className="nickname">{item.nickName}</strong></div>
-                                    </div>
-                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
-                                        {truncateString(item.briefContent, 50)}
-                                    </div>
                                 </div>
 
 
@@ -352,7 +366,7 @@ function ProjectPage() {
     }
 
     return (
-        <div>
+        <div style={{width:'100%'}}>
             {/* 
                 검색어 입력 후 엔터/클릭 , 검색어 입력을 할 때마다 바뀌는 이벤트를 별도로 보냄
                 handleSearch: 엔터/클릭 관련

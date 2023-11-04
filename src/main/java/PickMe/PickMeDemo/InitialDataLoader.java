@@ -57,7 +57,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(ai)
                 .shortIntroduce(shortIntroduce)
                 .introduce(introduce)
-                .fileUrl(fileUrl)
+                //.fileUrl(fileUrl)
                 .build();
 
         portfolioRepository.save(portfolio);
@@ -232,7 +232,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .shortIntroduce("안녕하세요, 웹과 앱에 관심있는 코딩 꿈나무입니다.")
                 .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js)" +
                         "\n- 픽미 프로젝트 (React + SpringBoot + JPA)")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
 
@@ -273,7 +273,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(1)
                 .shortIntroduce("안녕하세요, 웹과 앱에 관심있는 코딩 꿈나무입니다.")
                 .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js) \n- 픽미 프로젝트 (React + SpringBoot + JPA) \n- 코로나 보드 크롤링 프로젝트(Node.js + Express.js)")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user2Portfolio);
@@ -386,7 +386,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(0)
                 .shortIntroduce("풀스택 개발자 그 자체, 홍시입니다.")
                 .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js) \n- 픽미 프로젝트 (React + SpringBoot + JPA) \n- 코로나 보드 크롤링 프로젝트(Node.js + Express.js)")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user3Portfolio);
@@ -510,7 +510,7 @@ public class InitialDataLoader implements CommandLineRunner {
                         "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
                         "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까..." +
                         "나는악성유저ㅋㅋㅋㅋ.띄어쓰기없다.일부러없앴다.사이트에오류를만들거다.아무도날막을수없다.경력도길게쓴다.왜냐면난악성유저니까...")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user4Portfolio);
@@ -657,7 +657,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(3)
                 .shortIntroduce("아버지를 아버지라 부르지 못하고..")
                 .introduce("- 둘리 프로젝트 (주연) \n- 최초의 한글소설 프로젝트 (주연)")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user5Portfolio);
@@ -772,7 +772,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(0)
                 .shortIntroduce("웹 장인")
                 .introduce("- 스타트업 인턴 \n- 개인 토이 프로젝트 \n- 기타 등등")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user6Portfolio);
@@ -887,7 +887,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(3)
                 .shortIntroduce("시각디자인과에서의 경험을 바탕으로 미적 감각이 뛰어납니다. 하지만 백엔드를 희망합니다.")
                 .introduce("- 맛있홍 프로젝트 (React + Node.js + Express.js \n- 픽미 프로젝트 (React + SpringBoot + JPA) \n- 졸업 프로젝트 (Unity)")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user7Portfolio);
@@ -1031,7 +1031,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(0)
                 .shortIntroduce("앱 전문가")
                 .introduce("- 스타트업 인턴 \n- 학점 4.5 \n- 기타 등등")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user8Portfolio);
@@ -1146,7 +1146,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .ai(0)
                 .shortIntroduce("게임 개발 장인")
                 .introduce("- 대기업 개발자 \n- 학점 4.5 \n- 홍대 폰노이만 \n- 홍대 앨런 튜링")
-                .fileUrl("")
+                //.fileUrl("")
                 .build();
 
         portfolioRepository.save(user9Portfolio);

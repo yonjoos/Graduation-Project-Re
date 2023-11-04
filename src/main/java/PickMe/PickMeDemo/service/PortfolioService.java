@@ -3,14 +3,19 @@ package PickMe.PickMeDemo.service;
 import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.exception.AppException;
+import PickMe.PickMeDemo.repository.PortfolioFilesRepository;
 import PickMe.PickMeDemo.repository.PortfolioRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
 import PickMe.PickMeDemo.repository.ViewCountPortfolioRepository;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +23,9 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,10 +40,14 @@ public class PortfolioService {
     private final UserRepository userRepository; // Add this if not already defined
     // Portfolio Mapper를 사용하고자 했으나, 이상하게 스프링 빈으로 등록이 안되어서, private final 변수로 사용할 수 없었음.
     private final ViewCountPortfolioRepository viewCountPortfolioRepository;
-    
+    private final PortfolioFilesRepository portfolioFilesRepository;
+    private final Storage storage;
+
+    @Value("${spring.cloud.gcp.storage.bucket}") // application.yml에 써둔 bucket 이름
+    private String bucketName;
     
     // 포트폴리오 등록
-    public PortfolioDto uploadPortfolio(PortfolioFormDto portfolioFormDto, String userEmail) {
+    public PortfolioDto uploadPortfolio(PortfolioFormDto portfolioFormDto, String userEmail) throws IOException {
 
         // Optional이므로, 해당 유저가 발견되면 유저를 반환, 해당 유저가 없으면 null 반환
         Optional<User> findUser = userRepository.findByEmail(userEmail);
@@ -46,7 +57,7 @@ public class PortfolioService {
         // 이 경우 Optional이 비어있는 경우(사용자를 찾지 못한 경우) "사용자를 찾을 수 없습니다"라는 메시지와 BAD_REQUEST (400) HTTP 상태 코드를 가진 AppException이 생성됩니다.
         User user = findUser.orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        // Setter대신 생성자를 사용하여 Portfolio 테이블을 채움
+        // Setter대신 생성자를 사용하여 Portfolio 테이블을 채움(이미지, 파일은 제외)
         Portfolio registerPortfolio = Portfolio.builder()
                 .user(user)
                 .web(portfolioFormDto.getWeb())
@@ -55,15 +66,100 @@ public class PortfolioService {
                 .ai(portfolioFormDto.getAi())
                 .shortIntroduce(portfolioFormDto.getShortIntroduce())
                 .introduce(portfolioFormDto.getIntroduce().replace("<br>", "\n"))
-                .fileUrl(portfolioFormDto.getFileUrl())
                 .build();
 
-        // 포트폴리오 디비에 저장
+        // 포트폴리오 디비에 저장(텍스트 형태로 들어가는 것들)
         Portfolio portfolio = portfolioRepository.save(registerPortfolio);
+
+        // 이미지 파일 정보는 db에 저장, 실제 파일은 클라우드에 저장
+        if(portfolioFormDto.getPromoteImageUrl() != null && !portfolioFormDto.getPromoteImageUrl().isEmpty()) // 클라이언트가 이미지를 첨부했다면
+        {
+            // 프론트에서 넘어온 이미지 리스트를 클라우드에 저장하고, 생성된 post를 외래키로 하는 tuple을 posts_files 테이블에 생성해서 저장
+            List<PortfolioFiles> portfolioFilesList = new ArrayList<>(); // 이미지를 저장할 리스트
+
+            for (MultipartFile image : portfolioFormDto.getPromoteImageUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = image.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        image.getInputStream()
+                );
+
+                // PortfolioFiles 엔티티 생성 및 저장할 리스트에 추가
+                PortfolioFiles portfolioFiles = PortfolioFiles.builder()
+                        .portfolio(portfolio) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(uuid) // 이미지 파일의 UUID
+                        .build();
+
+                portfolioFilesList.add(portfolioFiles);
+            }
+
+            // 이미지 리스트를 한번에 portfolio_files 테이블에 저장
+            portfolioFilesRepository.saveAll(portfolioFilesList);
+        }
+
+        // 첨부 파일 정보는 db에 저장, 파일은 클라우드에도 저장
+        if(portfolioFormDto.getFileUrl() != null && !portfolioFormDto.getFileUrl().isEmpty()) // 클라이언트가 첨부파일을 첨부했다면
+        {
+            // 프론트에서 넘어온 첨부파일 리스트를 클라우드에 저장하고, 생성된 post를 외래키로 하는 tuple을 posts_files 테이블에 생성해서 저장
+            List<PortfolioFiles> portfolioFilesList = new ArrayList<>(); // 첨부파일을 저장할 리스트
+
+            for (MultipartFile file : portfolioFormDto.getFileUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = file.getContentType(); // 파일의 형식
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        file.getInputStream()
+                );
+
+                // PortfolioFiles 엔티티 생성 및 저장할 리스트에 추가
+                PortfolioFiles portfolioFiles = PortfolioFiles.builder()
+                        .portfolio(portfolio) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(uuid) // 첨부 파일의 UUID
+                        .fileName(file.getOriginalFilename()) // 첨부파일의 원본 이름
+                        .build();
+
+                portfolioFilesList.add(portfolioFiles);
+            }
+
+            // 첨부파일 리스트를 한번에 portfolio_files 테이블에 저장
+            portfolioFilesRepository.saveAll(portfolioFilesList);
+
+        }
+
 
         // 디비에 저장과는 별개로, 화면에 다시 데이터를 뿌려줄 PortfolioDto를 생성해서 반환
         // portfolioDto의 필드 : isCreated, nickName, email, web, app, game, ai, shortIntroduce, introduce, fileUrl
         // 포트폴리오를 생성하는 것이므로, isCreated를 true로 바로 저장
+
+//        // portfolioFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+//        List<String> imageUrls = portfolio.getPortfolioFiles().stream()
+//                .filter(portfolioFile -> portfolioFile.isImage()) // isImage가 true인 경우만 선택
+//                .map(PortfolioFiles::getFileUrl)
+//                .collect(Collectors.toList());
+//
+//        // portfolioFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+//        List<FileUrlNameMapperDto> fileUrls = portfolio.getPortfolioFiles().stream()
+//                .filter(portfolioFile -> !portfolioFile.isImage()) // isImage가 false인 경우만 선택
+//                .map(portfolioFile -> new FileUrlNameMapperDto(portfolioFile.getFileUrl(), portfolioFile.getFileName()))
+//                .collect(Collectors.toList());
+
         PortfolioDto portfolioDto = PortfolioDto.builder()
                 .isCreated(true)
                 .nickName(user.getNickName())
@@ -74,7 +170,8 @@ public class PortfolioService {
                 .ai(portfolio.getAi())
                 .shortIntroduce(portfolio.getShortIntroduce())
                 .introduce(portfolio.getIntroduce())
-                .fileUrl(portfolio.getFileUrl())
+                .promoteImageUrl(null)
+                .fileUrl(null)
                 .build();
 
         return portfolioDto;
@@ -97,9 +194,22 @@ public class PortfolioService {
         PortfolioReturnDto portfolioReturnDto;
 
         if (findPortfolio.isPresent()) {
+
             Optional<Integer> viewCountOptional = viewCountPortfolioRepository.countByPortfolio_Id(findPortfolio.get().getId());
 
             Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
+
+            // portfolioFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+            List<String> imageUrls = findPortfolio.get().getPortfolioFiles().stream()
+                    .filter(portfolioFile -> portfolioFile.isImage()) // isImage가 true인 경우만 선택
+                    .map(PortfolioFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            // portfolioFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+            List<FileUrlNameMapperDto> fileUrls = findPortfolio.get().getPortfolioFiles().stream()
+                    .filter(portfolioFile -> !portfolioFile.isImage()) // isImage가 false인 경우만 선택
+                    .map(portfolioFile -> new FileUrlNameMapperDto(portfolioFile.getFileUrl(), portfolioFile.getFileName()))
+                    .collect(Collectors.toList());
 
             // portfolioReturnDto를 빌더를 통해 생성
             portfolioReturnDto = PortfolioReturnDto.builder()
@@ -112,7 +222,8 @@ public class PortfolioService {
                     .ai(findPortfolio.get().getAi())
                     .shortIntroduce(findPortfolio.get().getShortIntroduce())
                     .introduce(findPortfolio.get().getIntroduce())
-                    .fileUrl(findPortfolio.get().getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     .viewCount(viewCount)
                     .build();
         }
@@ -127,6 +238,7 @@ public class PortfolioService {
                     .ai(null)
                     .shortIntroduce(null)
                     .introduce(null)
+                    .promoteImageUrl(null)
                     .fileUrl(null)
                     .viewCount(null)
                     .build();
@@ -139,7 +251,7 @@ public class PortfolioService {
     // 포트폴리오 폼 조회
     @Transactional(readOnly = true)
     @EntityGraph(attributePaths = "user")
-    public PortfolioFormDto getPortfolioForm(String userEmail) {
+    public PortfolioUpdateFormDto getPortfolioForm(String userEmail) {
         // UserEmail을 통해 해당 User 찾기
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
@@ -147,10 +259,24 @@ public class PortfolioService {
         // User를 통해 User가 갖고 있는 포트폴리오 찾기
         Optional<Portfolio> portfolio = portfolioRepository.findByUser(user);
 
-        PortfolioFormDto portfolioFormDto;
+        PortfolioUpdateFormDto portfolioUpdateForm;
 
         if (portfolio.isPresent()) {
-            portfolioFormDto = PortfolioFormDto.builder()
+
+            // portfolioFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+            List<String> imageUrls = portfolio.get().getPortfolioFiles().stream()
+                    .filter(portfolioFile -> portfolioFile.isImage()) // isImage가 true인 경우만 선택
+                    .map(PortfolioFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            // portfolioFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+            List<FileUrlNameMapperDto> fileUrls = portfolio.get().getPortfolioFiles().stream()
+                    .filter(portfolioFile -> !portfolioFile.isImage()) // isImage가 false인 경우만 선택
+                    .map(portfolioFile -> new FileUrlNameMapperDto(portfolioFile.getFileUrl(), portfolioFile.getFileName()))
+                    .collect(Collectors.toList());
+
+
+            portfolioUpdateForm = PortfolioUpdateFormDto.builder()
                     .hasPortfolio(true)
                     .web(user.getPortfolio().getWeb())
                     .app(user.getPortfolio().getApp())
@@ -158,11 +284,25 @@ public class PortfolioService {
                     .ai(user.getPortfolio().getAi())
                     .shortIntroduce(user.getPortfolio().getShortIntroduce())
                     .introduce(user.getPortfolio().getIntroduce())
-                    .fileUrl(user.getPortfolio().getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     .build();
         }
         else {
-            portfolioFormDto = PortfolioFormDto.builder()
+
+            // portfolioFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+            List<String> imageUrls = portfolio.get().getPortfolioFiles().stream()
+                    .filter(portfolioFile -> portfolioFile.isImage()) // isImage가 true인 경우만 선택
+                    .map(PortfolioFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            // portfolioFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+            List<FileUrlNameMapperDto> fileUrls = portfolio.get().getPortfolioFiles().stream()
+                    .filter(portfolioFile -> !portfolioFile.isImage()) // isImage가 false인 경우만 선택
+                    .map(portfolioFile -> new FileUrlNameMapperDto(portfolioFile.getFileUrl(), portfolioFile.getFileName()))
+                    .collect(Collectors.toList());
+
+            portfolioUpdateForm = PortfolioUpdateFormDto.builder()
                     .hasPortfolio(false)
                     .web(user.getPortfolio().getWeb())
                     .app(user.getPortfolio().getApp())
@@ -170,13 +310,14 @@ public class PortfolioService {
                     .ai(user.getPortfolio().getAi())
                     .shortIntroduce(user.getPortfolio().getShortIntroduce())
                     .introduce(user.getPortfolio().getIntroduce())
-                    .fileUrl(user.getPortfolio().getFileUrl())
+                    .promoteImageUrl(imageUrls)
+                    .fileUrl(fileUrls)
                     .build();
         }
         // PortfolioDto를 빌더를 통해 생성
 
 
-        return portfolioFormDto;
+        return portfolioUpdateForm;
     }
 
 
@@ -195,7 +336,7 @@ public class PortfolioService {
 
     // 포트폴리오 업데이트
     @EntityGraph(attributePaths = "user")
-    public void updatePortfolio(String userEmail, PortfolioFormDto portfolioFormDto) {
+    public void updatePortfolio(String userEmail, PortfolioUpdateRequestFormDto portfolioUpdateRequestFormDto) throws IOException {
 
         // UserEmail을 통해 해당 User 찾기
         User user = userRepository.findByEmail(userEmail)
@@ -205,15 +346,250 @@ public class PortfolioService {
         Portfolio portfolio = portfolioRepository.findByUser(user)
                 .orElseThrow(() -> new AppException("포트폴리오를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        portfolio.setWeb(portfolioFormDto.getWeb());
-        portfolio.setApp(portfolioFormDto.getApp());
-        portfolio.setGame(portfolioFormDto.getGame());
-        portfolio.setAi(portfolioFormDto.getAi());
-        portfolio.setShortIntroduce(portfolioFormDto.getShortIntroduce());
-        portfolio.setIntroduce(portfolioFormDto.getIntroduce());
-        portfolio.setFileUrl(portfolioFormDto.getFileUrl());
+        portfolio.setWeb(portfolioUpdateRequestFormDto.getWeb());
+        portfolio.setApp(portfolioUpdateRequestFormDto.getApp());
+        portfolio.setGame(portfolioUpdateRequestFormDto.getGame());
+        portfolio.setAi(portfolioUpdateRequestFormDto.getAi());
+        portfolio.setShortIntroduce(portfolioUpdateRequestFormDto.getShortIntroduce());
+        portfolio.setIntroduce(portfolioUpdateRequestFormDto.getIntroduce());
+        //portfolio.setFileUrl(portfolioFormDto.getFileUrl());
 
-        portfolioRepository.save(portfolio);
+        Portfolio savedPortfolio = portfolioRepository.save(portfolio);
+
+        // 현재 포폴과 연관된 포폴 이미지 파일 엔티티를 찾아옴
+        List<PortfolioFiles> existingImageFiles = portfolioFilesRepository.findByPortfolioAndIsImageTrue(savedPortfolio);
+        // 현재 포폴과 연관된 포폴 첨부파일 엔티티를 찾아옴
+        List<PortfolioFiles> existingOtherFiles = portfolioFilesRepository.findByPortfolioAndIsImageFalse(savedPortfolio);
+
+        // 현재 포폴과 연관된 포폴 이미지를 db에서 지움
+        portfolioFilesRepository.deleteAll(existingImageFiles);
+        // 현재 포폴과 연관된 포폴 첨부파일을 db에서 지움
+        portfolioFilesRepository.deleteAll(existingOtherFiles);
+
+        // 새로 바뀐 기존의 이미지들을 세팅해서 db에 다시 저장하는 로직
+        List<String> promoteImageUrl = portfolioUpdateRequestFormDto.getPromoteImageUrl();
+        List<PortfolioFiles> updateImageFiles = new ArrayList<>();
+
+        if(portfolioUpdateRequestFormDto.getPromoteImageUrl()!=null && !portfolioUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            for(String imageUrl: promoteImageUrl)
+            {
+                // PortfolioFiles 엔티티 생성 및 저장할 리스트에 추가
+                PortfolioFiles portfolioFiles = PortfolioFiles.builder()
+                        .portfolio(savedPortfolio) // 해당 이미지가 어떤 포폴에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(imageUrl) // 이미지 파일의 UUID
+                        .build();
+
+                updateImageFiles.add(portfolioFiles);
+
+            }
+
+            portfolioFilesRepository.saveAll(updateImageFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 사진을 구하고, 지우기
+        // existingImageFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // portfolioUpdateRequestFormDto.getPromoteImageUrl()가 비어있지 않으면, 지워질 이미지를 구한 후 클라우드에서 삭제,
+        // portfolioUpdateRequestFormDto.getPromoteImageUrl()가 비어있으면 구해놓은 existingImageFiles에 해당하는 이미지을 클라우드에서 삭제하면 된다
+        if(portfolioUpdateRequestFormDto.getPromoteImageUrl()!=null && !portfolioUpdateRequestFormDto.getPromoteImageUrl().isEmpty())
+        {
+            // existingImageFiles에 존재하는 PortfolioFiles의 fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PortfolioFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingImageFileUrls 중에,  portfolioUpdateRequestFormDto.getPromoteImageUrl에 없는 url을 모아서 리스트로 만듦 -> 삭제 대상이 되는 url값
+            List<String> imageUrlsToDelete = existingImageFileUrls.stream()
+                    .filter(existingImageFileUrl -> !portfolioUpdateRequestFormDto.getPromoteImageUrl().contains(existingImageFileUrl))
+                    .collect(Collectors.toList());
+
+            // 삭제 대상이 되는 url을 클라우드에서 삭제 진행(이미지)
+            for (String fileUrl : imageUrlsToDelete) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+        }
+        else { // portfolioUpdateRequestFormDto.getPromoteImageUrl가 null이라면 existingImageFileUrls에 있는 모든 url에 해당하는 이미지 파일을 클라우드에서 삭제해야함
+
+            List<String> existingImageFileUrls = existingImageFiles.stream()
+                    .map(PortfolioFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String fileUrl : existingImageFileUrls) {
+                System.out.println("fileUrl = " + fileUrl);
+                BlobId blobId = BlobId.of(bucketName, fileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+                }
+            }
+
+        }
+
+
+
+        // 새로 추가된 사진 구글 클라우드에 저장하고, portfolio_file 레포지토리에 추가.
+        // 즉, 클라이언트가 기존에 없던 이미지를 새로 추가해서 올렸다면, 이 사진들은 db와 클라우드에 모두 저장되어야함
+        if(portfolioUpdateRequestFormDto.getNewPromoteImageUrl() != null && !portfolioUpdateRequestFormDto.getNewPromoteImageUrl().isEmpty())
+        {
+            List<PortfolioFiles> newImageFiles = new ArrayList<>(); // 이미지를 저장할 리스트
+
+            for (MultipartFile image : portfolioUpdateRequestFormDto.getNewPromoteImageUrl()) {
+                // 각 이미지를 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = image.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        image.getInputStream()
+                );
+
+                // PortfolioFiles 엔티티 생성 및 저장할 리스트에 추가
+                PortfolioFiles portfolioFiles = PortfolioFiles.builder()
+                        .portfolio(savedPortfolio) // 해당 이미지가 어떤 포폴에 속하는지 설정! (중요)
+                        .isImage(true) // 이미지 여부
+                        .fileUrl(uuid) // 이미지 파일의 UUID
+                        .build();
+
+                newImageFiles.add(portfolioFiles);
+            }
+
+            // 이미지 리스트를 한번에 portfolio_files 테이블에 저장
+            portfolioFilesRepository.saveAll(newImageFiles);
+        }
+
+        // 새로 바뀐 기존의 첨부파일들을 세팅해서 db에 다시 저장하는 로직
+        List<FileUrlNameMapperDto> fileUrl = portfolioUpdateRequestFormDto.getFileUrl();
+        List<PortfolioFiles> updateOtherFiles = new ArrayList<>();
+
+        if(portfolioUpdateRequestFormDto.getFileUrl()!=null && !portfolioUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            for(FileUrlNameMapperDto fileUrlAndName: fileUrl)
+            {
+                // PortfolioFiles 엔티티 생성 및 저장할 리스트에 추가
+                PortfolioFiles portfolioFiles = PortfolioFiles.builder()
+                        .portfolio(savedPortfolio) // 해당 첨부파일이 어떤 포폴에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(fileUrlAndName.getFileUrl()) // 첨부 파일의 UUID
+                        .fileName(fileUrlAndName.getFileName()) // 첨부 파일의 원본 이름
+                        .build();
+
+                updateOtherFiles.add(portfolioFiles);
+
+            }
+
+            portfolioFilesRepository.saveAll(updateOtherFiles);
+        }
+
+
+        // 구글 클라우드에서 지워질 첨부파일을 구하고, 지우기
+        // existingOtherFiles의 fileUrl 값을 추출하여 Set에 저장(비교 위해)
+        // portfolioUpdateRequestFormDto.getFileUrl()가 비어있지 않으면, 지워질 첨부파일을 구한 후 클라우드에서 삭제,
+        // portfolioUpdateRequestFormDto.getFileUrl()가 비어있으면 구해놓은 existingOtherFiles 해당하는 첨부파일을 클라우드에서 삭제하면 된다
+        if(portfolioUpdateRequestFormDto.getFileUrl()!=null && !portfolioUpdateRequestFormDto.getFileUrl().isEmpty())
+        {
+            // existingOtherFiles 존재하는 PortfolioFiles fileUrl값을 모아서 집합으로 만듦
+            Set<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PortfolioFiles::getFileUrl)
+                    .collect(Collectors.toSet());
+
+            // existingOtherFileUrls 중에, portfolioUpdateRequestFormDto.getFileUrl안에 있는 FileUrlNameMapperDto의 fileUrl들의 집합에 포함되지 않는 url을 모아서 리스트로 만듦
+            // -> 삭제 대상이 되는 url값
+            List<String> otherFileUrlsToDelete = existingOtherFileUrls.stream()
+                    .filter(existingFileUrl -> portfolioUpdateRequestFormDto.getFileUrl().stream()
+                            .noneMatch(requestedFileUrl -> requestedFileUrl.getFileUrl().equals(existingFileUrl)))
+                    .collect(Collectors.toList());
+
+            // 클라우드에서 otherFileUrlsToDelete과 관련된 첨부파일 삭제
+            for (String otherFileUrl : otherFileUrlsToDelete) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+        }
+        else // portfolioUpdateRequestFormDto.getFileUrl null이라면 existingOtherFiles 있는 모든 url에 해당하는 첨부 파일을 클라우드에서 삭제해야함
+        {
+            List<String> existingOtherFileUrls = existingOtherFiles.stream()
+                    .map(PortfolioFiles::getFileUrl)
+                    .collect(Collectors.toList());
+
+            for (String otherFileUrl : existingOtherFileUrls) {
+                System.out.println("otherFileUrl = " + otherFileUrl);
+                BlobId blobId = BlobId.of(bucketName, otherFileUrl);
+                boolean deleted = storage.delete(blobId);
+
+                if (deleted) {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 성공: " + otherFileUrl);
+                } else {
+                    System.out.println("구글 클라우드 Storage에서 파일(첨부) 삭제 실패: " + otherFileUrl);
+                }
+            }
+
+
+        }
+
+
+
+        // 새로 추가된 첨부파일 구글 클라우드에 저장하고, portfolio_file 레포지토리에 추가
+        // 즉, 클라이언트가 기존에 없던 첨부파일을 새로 추가해서 올렸다면, 이 첨부파일들은 db와 클라우드에 모두 저장되어야함
+        if(portfolioUpdateRequestFormDto.getNewFileUrl() != null && !portfolioUpdateRequestFormDto.getNewFileUrl().isEmpty())
+        {
+            List<PortfolioFiles> newOtherFiles = new ArrayList<>(); // 첨부파일을 저장할 리스트
+
+            for (MultipartFile file : portfolioUpdateRequestFormDto.getNewFileUrl()) {
+                // 각 첨부파일을 저장
+                String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+                System.out.println("uuid = " + uuid);
+                String ext = file.getContentType(); // 파일의 형식 ex) JPG
+                System.out.println("ext = " + ext);
+
+                // Cloud에 이미지 업로드
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType(ext)
+                                .build(),
+                        file.getInputStream()
+                );
+
+
+                // PortfolioFiles 엔티티 생성 및 저장할 리스트에 추가
+                PortfolioFiles portfolioFiles = PortfolioFiles.builder()
+                        .portfolio(savedPortfolio) // 해당 첨부파일이 어떤 포폴에 속하는지 설정! (중요)
+                        .isImage(false) // 이미지 여부
+                        .fileUrl(uuid) // 첨부 파일의 UUID
+                        .fileName(file.getOriginalFilename())
+                        .build();
+
+                newOtherFiles.add(portfolioFiles);
+            }
+
+            // 이미지 리스트를 한번에 portfolio_files 테이블에 저장
+            portfolioFilesRepository.saveAll(newOtherFiles);
+        }
+
     }
 
 
@@ -232,6 +608,31 @@ public class PortfolioService {
         if (!portfolio.getViewCountPortfolios().isEmpty()) {
             viewCountPortfolioRepository.deleteAll(portfolio.getViewCountPortfolios());
         }
+
+        // portfolioFiles의 파일들 전부 삭제
+        List<PortfolioFiles> findFiles = portfolioFilesRepository.findByPortfolio(portfolio);
+
+        // 삭제 대상 파일 URL 리스트
+        List<String> fileUrlsToDelete = findFiles.stream()
+                .map(PortfolioFiles::getFileUrl)
+                .collect(Collectors.toList());
+
+        // 구글 클라우드에서 게시물의 파일들 삭제
+        for (String fileUrl : fileUrlsToDelete) {
+            System.out.println("fileUrl = " + fileUrl);
+            BlobId blobId = BlobId.of(bucketName, fileUrl);
+            boolean deleted = storage.delete(blobId);
+
+            if (deleted) {
+                System.out.println("구글 클라우드 Storage에서 파일 삭제 성공: " + fileUrl);
+            } else {
+                System.out.println("구글 클라우드 Storage에서 파일 삭제 실패: " + fileUrl);
+            }
+        }
+        // db에서 관련 이미지 uuid값들 삭제
+        portfolioFilesRepository.deleteAll(findFiles);
+
+
 
         portfolioRepository.delete(portfolio);
     }
@@ -258,6 +659,7 @@ public class PortfolioService {
                 .ai(null)
                 .shortIntroduce(null)
                 .introduce(null)
+                .promoteImageUrl(null)
                 .fileUrl(null)
                 .viewCount(null)
                 .build();
@@ -287,6 +689,18 @@ public class PortfolioService {
 
                 Integer viewCount = viewCountOptional.orElse(0); // 조회수 값이 없으면 0을 사용
 
+                // portfolioFiles db에 있는 사진 파일들을 가져와서 리스트 형태로 만들어줌
+                List<String> imageUrls = findUserPortfolio.get().getPortfolioFiles().stream()
+                        .filter(portfolioFile -> portfolioFile.isImage()) // isImage가 true인 경우만 선택
+                        .map(PortfolioFiles::getFileUrl)
+                        .collect(Collectors.toList());
+
+                // portfolioFiles db에 있는 첨부 파일들 중에서 이미지가 아닌 것만 가져와서 리스트 형태(url,파일이름의 pair형태)로 만들어줌
+                List<FileUrlNameMapperDto> fileUrls = findUserPortfolio.get().getPortfolioFiles().stream()
+                        .filter(portfolioFile -> !portfolioFile.isImage()) // isImage가 false인 경우만 선택
+                        .map(portfolioFile -> new FileUrlNameMapperDto(portfolioFile.getFileUrl(), portfolioFile.getFileName()))
+                        .collect(Collectors.toList());
+
                 // PortfolioReturnDto를 빌더를 통해 생성
                 portfolioReturnDto = PortfolioReturnDto.builder()
                         .isCreated(true)
@@ -298,7 +712,8 @@ public class PortfolioService {
                         .ai(findUserPortfolio.get().getAi())
                         .shortIntroduce(findUserPortfolio.get().getShortIntroduce())
                         .introduce(findUserPortfolio.get().getIntroduce())
-                        .fileUrl(findUserPortfolio.get().getFileUrl())
+                        .promoteImageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         .viewCount(viewCount)
                         .build();
             }
@@ -314,6 +729,7 @@ public class PortfolioService {
                         .ai(null)
                         .shortIntroduce(null)
                         .introduce(null)
+                        .promoteImageUrl(null)
                         .fileUrl(null)
                         .viewCount(null)
                         .build();

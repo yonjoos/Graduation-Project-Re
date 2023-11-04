@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +23,7 @@ public class PortfolioDto {
     private Integer ai;
     private String shortIntroduce;
     private String introduce;
-    private String fileUrl;
+    private List<String> promoteImageUrl;
+    private List<FileUrlNameMapperDto> fileUrl;
 
 }

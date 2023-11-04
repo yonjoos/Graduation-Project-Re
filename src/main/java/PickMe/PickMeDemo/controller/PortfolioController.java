@@ -1,8 +1,6 @@
 package PickMe.PickMeDemo.controller;
 
-import PickMe.PickMeDemo.dto.PortfolioDto;
-import PickMe.PickMeDemo.dto.PortfolioFormDto;
-import PickMe.PickMeDemo.dto.PortfolioReturnDto;
+import PickMe.PickMeDemo.dto.*;
 import PickMe.PickMeDemo.service.PortfolioService;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
@@ -11,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 
 
@@ -24,7 +23,7 @@ public class PortfolioController {
 
     // 포트폴리오 생성하기
     @PostMapping("/uploadPortfolio")
-    public ResponseEntity<PortfolioDto> uploadPortfolio(@RequestBody @Valid PortfolioFormDto portfolioFormDto, Principal principal) {
+    public ResponseEntity<PortfolioDto> uploadPortfolio(@Valid PortfolioFormDto portfolioFormDto, Principal principal) throws IOException {
         String userEmail = principal.getName(); // Get the email from the JWT token
 
         // portfolioFormDto : Portfolio 테이블에 저장하기 위해 필요
@@ -48,23 +47,23 @@ public class PortfolioController {
 
     // 포트폴리오 수정 시 사용할 포트폴리오 폼 정보만 가져오기
     @GetMapping("/getPortfolioForm")
-    public ResponseEntity<PortfolioFormDto> getPortfolioForm(Principal principal) {
+    public ResponseEntity<PortfolioUpdateFormDto> getPortfolioForm(Principal principal) {
         String userEmail = principal.getName(); // JWT 토큰에서 이메일 가져오기
 
         // getPortfolio : 이메일을 통해 포트폴리오를 가져오는 함수
-        PortfolioFormDto portfolioForm = portfolioService.getPortfolioForm(userEmail);
+        PortfolioUpdateFormDto portfolioUpdateForm = portfolioService.getPortfolioForm(userEmail);
 
-        return ResponseEntity.ok(portfolioForm);
+        return ResponseEntity.ok(portfolioUpdateForm);
     }
 
 
     // 포트폴리오 수정
     @PutMapping("/updatePortfolio")
-    public ResponseEntity<String> updatePortfolioInfo(@RequestBody PortfolioFormDto portfolioFormDto, Principal principal) {
+    public ResponseEntity<String> updatePortfolioInfo(@Valid PortfolioUpdateRequestFormDto portfolioUpdateRequestFormDto, Principal principal) {
         String userEmail = principal.getName();         // JWT 토큰으로부터 이메일 파싱
 
         try {
-            portfolioService.updatePortfolio(userEmail, portfolioFormDto);          // userEmail을 가지고 업데이트 로직 진행
+            portfolioService.updatePortfolio(userEmail, portfolioUpdateRequestFormDto);          // userEmail을 가지고 업데이트 로직 진행
             return ResponseEntity.ok("Portfolio information has been successfully updated.");
         } catch (Exception e) {
             e.printStackTrace();

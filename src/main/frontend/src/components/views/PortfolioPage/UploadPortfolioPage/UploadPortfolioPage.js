@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Row, Col, Input, Button, Radio, message } from 'antd';
+import { Row, Col, Input, Button, Radio, message, Upload, Modal } from 'antd';
 import { request, setHasPortfolio } from '../../../../hoc/request';
+import { UploadOutlined } from '@ant-design/icons';
+import { getAuthToken } from '../../../../hoc/request';
+import axios from 'axios';
 import { uploadPortfolioSuccess } from '../../../../_actions/actions';
 
 const { TextArea } = Input;
@@ -10,29 +13,32 @@ const { TextArea } = Input;
 function UploadPortfolioPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
+
     // 포트폴리오 폼의 상태를 관리할 state 변수들
     const [shortIntroduce, setShortIntroduce] = useState(''); // 한 줄 소개
     const [introduce, setIntoduce] = useState(''); // 소개 및 커리어
-    const [fileUrl, setFileUrl] = useState('');   // 파일 경로
     const [preferences, setPreferences] = useState({    // 각 분야의 선호도
         web: 0,
         app: 0,
         game: 0,
         ai: 0
     });
-    
+    const [promoteImageUrl, setPromoteImageUrl] = useState([]); // 올릴 이미지 파일 리스트
+    const [fileUrl, setFileUrl] = useState([]); // 올림 첨부 파일 리스트
+    const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
+    const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
+
 
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
     const onChangeHandler = (event) => {
         const name = event.target.name;
         const value = event.target.value;
-        
+
         // 입력 필드(Input)마다 name에 해당하는 이름을 찾고, 해당하는 state 변수를 업데이트
         if (name === 'shortIntroduce') setShortIntroduce(value);
         else if (name === 'introduce') setIntoduce(value);
-        else if (name === 'fileUrl') setFileUrl(value);
+
     };
 
     // field 값으로는 web, app, game, ai가 들어옴.
@@ -74,33 +80,93 @@ function UploadPortfolioPage() {
         }
 
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
-        submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, fileUrl);
+        submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, promoteImageUrl, fileUrl);
     };
 
 
     // 작성한 폼 제출
-    const submitPortfolio = (event, web, app, game, ai, shortIntroduce, introduce, fileUrl) => {
-        event.preventDefault();
+    const submitPortfolio = (event, web, app, game, ai, shortIntroduce, introduce, promoteImageUrl, fileUrl) => {
+        //event.preventDefault();
 
-        // body에 내용을 채워서 백에 전송
-        request('POST', '/uploadPortfolio', {
-            web: web,
-            app: app,
-            game: game,
-            ai: ai,
-            shortIntroduce: shortIntroduce,
-            introduce: introduce,
-            fileUrl: fileUrl
-        })
+        const formData = new FormData();
+        formData.append('web', web);
+        formData.append('app', app);
+        formData.append('game', game);
+        formData.append('ai', ai);
+        formData.append('shortIntroduce', shortIntroduce);
+        formData.append('introduce', introduce);
+        promoteImageUrl.forEach((image, index) => {
+            formData.append(`promoteImageUrl[${index}]`, image);
+        });
+        fileUrl.forEach((file, index) => {
+            formData.append(`fileUrl[${index}]`, file);
+        });
+
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+            },
+        };
+
+        axios
+            .post('/uploadPortfolio', formData, config)
             .then((response) => {
-                dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess을 디스패치
+                // Handle the response
+                dispatch(uploadPortfolioSuccess(response.data.isCreated));
                 setHasPortfolio(response.data.isCreated);   // 포트폴리오 생성 상태를 로컬 스토리지에 세팅
                 alert('포트폴리오가 성공적으로 생성되었습니다.');
                 navigate('/portfolio');
             })
             .catch((error) => {
+                // Handle errors
+                console.error('Failed to upload post:', error);
                 alert('포트폴리오 생성에 실패하였습니다.');
             });
+
+
+        // // body에 내용을 채워서 백에 전송
+        // request('POST', '/uploadPortfolio', {
+        //     web: web,
+        //     app: app,
+        //     game: game,
+        //     ai: ai,
+        //     shortIntroduce: shortIntroduce,
+        //     introduce: introduce,
+        //     fileUrl: fileUrl
+        // })
+        //     .then((response) => {
+        //         dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess을 디스패치
+        //         setHasPortfolio(response.data.isCreated);   // 포트폴리오 생성 상태를 로컬 스토리지에 세팅
+        //         alert('포트폴리오가 성공적으로 생성되었습니다.');
+        //         navigate('/portfolio');
+        //     })
+        //     .catch((error) => {
+        //         alert('포트폴리오 생성에 실패하였습니다.');
+        //     });
+    };
+
+    const removePromoteImage = (index) => {
+        const updatedPromoteImageUrl = [...promoteImageUrl];
+        updatedPromoteImageUrl.splice(index, 1);
+        setPromoteImageUrl(updatedPromoteImageUrl);
+    };
+
+    const removeFile = (index) => {
+        const updatedFileList = [...fileUrl];
+        updatedFileList.splice(index, 1);
+        setFileUrl(updatedFileList);
+    };
+
+
+    // Open the modal to preview the clicked image
+    const handlePreview = (image) => {
+        setPreviewImage(image);
+        setPreviewVisible(true);
+    };
+
+    const handleClosePreview = () => {
+        setPreviewVisible(false);
     };
 
 
@@ -156,15 +222,59 @@ function UploadPortfolioPage() {
                         />
                     </div>
                     <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                        Photos
+                    </div>
+                    <div className="form-outline mb-4">
+                        <Upload
+                            accept="image/*"
+                            showUploadList={false}
+                            beforeUpload={(image) => {
+                                setPromoteImageUrl([...promoteImageUrl, image]);
+                                return false; // Stops the upload action
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
+                        </Upload>
+                        {promoteImageUrl.map((image, index) => (
+                            <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
+                                <img
+                                    src={URL.createObjectURL(image)}
+                                    alt="홍보 사진"
+                                    style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                    onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                />
+                                <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                            </div>
+                        ))}
+                    </div>
+                    {/* Preview Modal */}
+                    <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
+                        <img alt="프로젝트 이미지" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
+                    <div style={{ marginTop: '5px', marginBottom: '5px' }}>
                         첨부파일
                     </div>
                     <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            name="fileUrl"
-                            placeholder="첨부 파일을 넣어주세요."
-                            onChange={onChangeHandler}
-                        />
+                        <Upload
+                            accept=".pdf,.doc,.docx"
+                            showUploadList={false}
+                            beforeUpload={(file) => {
+                                setFileUrl([...fileUrl, file]);
+                                return false;
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
+                        </Upload>
+                        {fileUrl.map((file, index) => (
+                            <div key={index} style={{ display: 'flex', marginBottom: '8px', alignItems: 'center', marginBottom: '8px' }}>
+
+                                <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
+                                    {file.name}
+                                </Button>
+
+                                <Button onClick={() => removeFile(index)}>Remove</Button>
+                            </div>
+                        ))}
                     </div>
                     <Button type="primary" block htmlType="submit">
                         Create Portfolio

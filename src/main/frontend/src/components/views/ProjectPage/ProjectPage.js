@@ -315,48 +315,38 @@ function ProjectPage() {
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
                                     <div>
-                                            <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
-                                                <div >
-                                                    <img
-                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
-                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                    />
-                                    
-                                                </div>
-                                                <div>
-                                                    <strong className="nickname">{item.nickName}</strong>
-                                                </div>
+                                        <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
+                                            <div >
+                                                <img
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                />
+                                            </div>
+                                            <div>
+                                                <strong className="nickname">{item.nickName}</strong>
+                                            </div>
                                         </div>
-                                        
                                     </div>
-                                    
                                     <div style={{ display: 'flex' }}>
                                         <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                     </div>
-                                    
                                     <div style={{ marginTop: '10px',marginBottom:'10px', marginRight: '20px', textAlign: 'left' }}>
                                         {truncateString(item.briefContent, 50)}
                                     </div>
                                     <strong style={{ display: 'flex' }}>
-
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}
                                         {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#AI</span>}
                                     </strong>
                                 </div>
-
-
                                 <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                     <div>
                                         인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
                                         <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
                                     </div>
                                 </div>
-
                             </div>
-
-
                             <Divider />
                         </div>
                     ))}
@@ -372,6 +362,7 @@ function ProjectPage() {
                 handleSearch: 엔터/클릭 관련
                 onChange: 동적 타이핑 관련 
             */}
+            <br />
             <SearchInProjectPage onSearch={handleSearch} onChange={handleSearchTerm} />
 
             {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}

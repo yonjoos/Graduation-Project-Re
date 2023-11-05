@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Row, Col, Button, Card, Pagination, Dropdown, Menu, Divider } from 'antd';
 import { request } from '../../../hoc/request';
@@ -299,38 +299,75 @@ function ProjectPage() {
         marginRight: '5px'
     };
 
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+      };
+    
+      const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      };
+    
+      const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
+
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
             <div style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
                 <Card title={`PROJECTS`} headStyle={{ background: '#fffec1', color: '#ff8400' }}>
                     {posts.map((item, index) => (
-                        <div key={index} style={{ display: 'grid' }} onClick={(e) => {
-                            if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
-                                handleNicknameClick(item.nickName);
-                            } else {
-                                handleRowClick(item.id, item.postType);
-                            }
-                        }}>
+                        <div>
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
                                     <div>
                                         <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
                                             <div >
-                                                <img
-                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                />
+                                                <Link
+                                                    to={`/portfolio/${item.nickName}`} 
+                                                    key={index}
+                                                    className="hoverable-item"
+                                                    onMouseEnter={handleMouseEnter}
+                                                    onMouseLeave={handleMouseLeave}
+                                                    style={linkStyle}
+                                                >
+                                                    <img
+                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                    />
+                                                </Link>
                                             </div>
                                             <div>
+                                            <Link
+                                                    to={`/portfolio/${item.nickName}`} 
+                                                    key={index}
+                                                    className="hoverable-item"
+                                                    onMouseEnter={handleMouseEnter}
+                                                    onMouseLeave={handleMouseLeave}
+                                                    style={linkStyle}
+                                            >
                                                 <strong className="nickname">{item.nickName}</strong>
+                                            </Link>
                                             </div>
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex' }}>
-                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        <Link
+                                            to={`/project/detail/${item.id}`} 
+                                            key={index}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        </Link>
                                     </div>
-                                    <div style={{ marginTop: '10px',marginBottom:'10px', marginRight: '20px', textAlign: 'left' }}>
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
+                                        onMouseUp={()=>handleRowClick(item.id, item.postType)}
+                                    >
                                         {truncateString(item.briefContent, 50)}
                                     </div>
                                     <strong style={{ display: 'flex' }}>

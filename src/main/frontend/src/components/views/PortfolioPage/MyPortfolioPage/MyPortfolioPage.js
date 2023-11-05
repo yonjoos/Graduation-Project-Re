@@ -300,11 +300,11 @@ function MyPortfolioPage() {
                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                 />
                             </div>
-                            <div style={{ marginTop: '30px', marginRight: '30%', fontSize: '30px', display:'grid' }}>
+                            <div style={{ marginTop: '30px', marginRight: '40%', fontSize: '30px', display:'grid' }}>
                                 <div>
                                     <i>{data && data.nickName}</i><b>'s portfolio page</b>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginRight: '-70%' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginRight: '-95%' }}>
                                     <div style={{ fontSize: '12px', marginTop:'10px' }}>
                                             <strong>CONTACT : </strong>
                                             {data && data.email}

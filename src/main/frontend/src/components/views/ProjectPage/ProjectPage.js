@@ -366,7 +366,7 @@ function ProjectPage() {
                                         </Link>
                                     </div>
                                     <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
-                                        onMouseUp={()=>handleRowClick(item.id, item.postType)}
+                                        onMouseUp={()=>handleRowClick(item.id)}
                                     >
                                         {truncateString(item.briefContent, 50)}
                                     </div>

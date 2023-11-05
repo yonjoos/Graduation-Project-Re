@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Row, Col, Button, Card, Carousel } from 'antd';
 import { useSelector/*, useDispatch*/ } from 'react-redux';
 import { useState, useEffect } from "react";
-import WelcomeContent from './Sections/WelcomeContent';
 import PortfolioCard from './Sections/PortfolioCard';
 import ProjectCard from './Sections/ProjectCard';
 import StudyCard from './Sections/StudyCard';
@@ -244,9 +243,9 @@ function LandingPage() {
                     <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
-                            {/* <Col span={24}>
+                            <Col span={24}>
                                 <SearchInLandingPage onSearch={handleSearch} />
-                            </Col> */}
+                            </Col>
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
                                 <div style={{ position: 'absolute', zIndex: 2 }}>
@@ -259,7 +258,7 @@ function LandingPage() {
 
                             </Col>
     
-                            {/* <Col span={24}>
+                            <Col span={24}>
                                 <br />
                                 <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
                                 <br />
@@ -303,14 +302,17 @@ function LandingPage() {
                                 </Carousel>
                                 <br />
                                 <br />
-                            </Col> */}
-                            <Col span={24} >
+                            </Col>
+                            {/* <Col span={24} >
                                 <div style={{ textAlign: 'center' }}>
                                     <b style={{ fontSize: '20px' }}>Enjoy your projects with P!ck Me</b>
                                     <br />
 
                                 </div>
-                                
+                            </Col> */}
+                            <Col span={24}>
+                                <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
+                                <br />
                             </Col>
                             <Col xs={24} sm={8}>
                                 <PortfolioCard />
@@ -352,9 +354,9 @@ function LandingPage() {
                     <br />
                     <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                         <Row gutter={[16, 16]}>
-                            {/* <Col span={24}>
+                            <Col span={24}>
                                 <SearchInLandingPage onSearch={handleSearch} />
-                            </Col> */}
+                            </Col>
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
                                 <div style={{ position: 'absolute', zIndex: 2 }}>
@@ -366,7 +368,7 @@ function LandingPage() {
                                 </div>
 
                             </Col>
-                            {/* <Col span={24}>
+                            <Col span={24}>
                                 <br />
                                 <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
                                 <br />
@@ -411,7 +413,7 @@ function LandingPage() {
                                 </Carousel>
                                 <br />
                                 <br />
-                            </Col> */}
+                            </Col>
                             <Col span={24}>
                                 <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
                                 <br />

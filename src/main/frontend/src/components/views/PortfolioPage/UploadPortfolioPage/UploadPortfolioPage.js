@@ -210,13 +210,17 @@ function UploadPortfolioPage() {
             <Col span={12}>
                 <form onSubmit={onSubmitPortfolio}>
                     <div style={{ display: 'flex', marginBottom: '8px' }}>
+                        {/* 기존 프사가 있으면 띄우고 */}
+                        {/* 바꿀 이미지를 선택했으면 기존 프사 대신 그걸 띄움 */}
                         {selectedImage ? (
+                            //바꿀 프사
                             <img
                             src={URL.createObjectURL(selectedImage)}
                             style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
                             onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
                             />
                         ):(
+                            //기존 프사
                             <img
                                 style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
                                 src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}

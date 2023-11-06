@@ -85,6 +85,8 @@ function MyPage() {
         setIsSignOutButtonEnabled(signOutPasswordFieldFilled); //만약 하나라도 입력되지 않으면 버튼 활성화되지 않음
     }, [currentPasswordForSignOut])
 
+
+    //프로필 사진 백에서 가져오기
     useEffect(()=>{
 
         request('GET', '/userProfileImage')
@@ -117,13 +119,18 @@ function MyPage() {
     };
 
 
+    //수정하기 버튼 누면 일어나는 액션
+    //백으로 닉네임, 이름, 비밀번호, 프사 전달
     const updateInfo = (updatedData) => {
-        if (updatedData.nickName && updatedData.userName && updatedData.password) {
+        if (updatedData.nickName && updatedData.userName && updatedData.password) { //기본정보 필수로 다 입력해야 작동
             request('PUT', '/updateUserInfo', updatedData)
                 .then((response) => {
                     if (response.data === "User information has been successfully updated.") {
                         alert('정보가 업데이트되었습니다.');
                         setUserBaseInfo((prevData) => ({ ...prevData, ...updatedData, password: '' }));
+
+                        //기본정보가 백으로 전달되고 나면
+                        //프로필 사진 업데이트 시작
                         return handleSubmit(); 
                     } else {
                         console.error('Unknown response:', response.data);
@@ -131,7 +138,7 @@ function MyPage() {
                     }
                 })
                 .then((secondResponse) => {
-                    if (secondResponse === 'success') {
+                    if (secondResponse === 'success') { //프사 업데이트(secondResponse)가 성공하면
                     } else {
                     }
                 })
@@ -139,9 +146,13 @@ function MyPage() {
                     console.error('Error updating information:', error);
                     message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
                 });
+        }else{
+            //모든 필수정보 다 입력하지 않으면
+            message.warning('모든 필수 정보를 입력하세요.');
         }
     };
     
+    //프사 업데이트 함수, 따로 매개변수는 없고 useState를 static하게 바로 사용
     const handleSubmit = () => {
         return new Promise((resolve, reject) => {
             if (selectedImage) {
@@ -394,21 +405,17 @@ function MyPage() {
                                         </div>
                                         <div style={{marginRight:'30px'}}>
                                             {/* 이미 있는 프사 있으면 띄움 */}
-                                            {/* <div style={{ borderRadius: '50%', backgroundColor: 'skyblue', width: '200px', height: '200px' }}>
-                                                <Image
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                                    style={{ borderRadius: '50%', width: '200px', height: '200px', objectFit: 'cover' }}
-                                                />
-                                            </div> */}
-                                            {/* 미리보기 */}
+                                            {/* 로컬에서 선택한 이미지가 있으면 그걸 띄우고 기존 프사는 띄우지 않음 */}
                                             <div style={{ display: 'flex', marginBottom: '8px' }}>
                                                     {selectedImage ? (
+                                                        //새로 바꿀 이미지
                                                         <img
                                                         src={URL.createObjectURL(selectedImage)}
                                                         style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
                                                         onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
                                                         />
                                                     ):(
+                                                        //기존 프사
                                                         <img
                                                             style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
                                                             src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}

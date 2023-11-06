@@ -117,39 +117,64 @@ function MyPage() {
     };
 
 
-    const handleSubmit = () => {
-        if (selectedImage) {
-            const formData = new FormData();
-            formData.append('imageUrl', selectedImage);
-            console.log(selectedImage);
-            console.log(formData);
-    
-            // Include the authentication token (replace 'yourAuthToken' with the actual token)
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-                    'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
-                },
-            };
-            console.log("왜안돼");
-    
-            axios
-            .post('/updateProfileImage', formData, config) 
-            .then((response) => {
-                if (response.data === 'success') {
-                    setSelectedImage(null);
-                    setProfileUploaded(true);
-
-                    navigate('/myPage');
-
-                } else {
-                    console.error('Unknown response:', response.data);
-                    message.error('Failed to update information.');
-                }
-            })
-            .catch((error) => {
-            });
+    const updateInfo = (updatedData) => {
+        if (updatedData.nickName && updatedData.userName && updatedData.password) {
+            request('PUT', '/updateUserInfo', updatedData)
+                .then((response) => {
+                    if (response.data === "User information has been successfully updated.") {
+                        alert('정보가 업데이트되었습니다.');
+                        setUserBaseInfo((prevData) => ({ ...prevData, ...updatedData, password: '' }));
+                        return handleSubmit(); 
+                    } else {
+                        console.error('Unknown response:', response.data);
+                        message.error('정보 업데이트에 실패했습니다.');
+                    }
+                })
+                .then((secondResponse) => {
+                    if (secondResponse === 'success') {
+                    } else {
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error updating information:', error);
+                    message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
+                });
         }
+    };
+    
+    const handleSubmit = () => {
+        return new Promise((resolve, reject) => {
+            if (selectedImage) {
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                
+                axios
+                    .post('/updateProfileImage', formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setSelectedImage(null);
+                            setProfileUploaded(true);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+            } else {
+                resolve('noImage'); 
+            }
+        });
     };
     
     
@@ -157,87 +182,7 @@ function MyPage() {
     
 
     // '회원 정보 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
-    const updateInfo = (updatedData) => {
-        if (updatedData.nickName && updatedData.userName && updatedData.password) { //닉네임, 이름, 패스워드가 다 입력되면, 백엔드에 요청을 보냄
-            request('PUT', '/updateUserInfo', updatedData)
-                .then((response) => {
-                    if (response.data === "User information has been successfully updated.") {
-                        alert('정보가 업데이트되었습니다.');
-                        setUserBaseInfo((prevData) => ({ ...prevData, ...updatedData, password: '' })); //업데이트가 성공적으로 되었음 - 비밀번호 필드는 다시 빈 값으로 세팅
-                        navigate('/myPage');
-                    }
-
-                    else {
-                        console.error('Unknown response:', response.data);
-                        message.error('정보 업데이트에 실패했습니다.');
-                    }
-                })
-                .catch((error) => { //백엔드에서 예외를 보냈을 경우
-                    if (error.response && error.response.data) { //예외 데이터를 파싱(문자열을 확인)
-                        const errorMessage = error.response.data;
-
-                        if (errorMessage === "Passwords do not match") {//비밀번호가 틀렸을 경우
-                            message.warning('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요.');
-
-                        } else if (errorMessage === "Nickname already in use") {//닉네임이 중복되는 경우
-                            message.error('닉네임이 이미 사용 중입니다. 다른 닉네임을 선택하세요.');
-
-                        } else {
-                            message.error('정보 업데이트에 실패했습니다.');
-                        }
-                    } else {
-                        // Handle other errors or network issues
-                        console.error('Error updating information:', error);
-                        message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
-                    }
-                });
-
-            if(selectedImage){
-                const formData = new FormData();
-                formData.append('imageUrl', selectedImage);
-                console.log(selectedImage);
-                console.log(formData);
-        
-                // Include the authentication token (replace 'yourAuthToken' with the actual token)
-                const config = {
-                    headers: {
-                        'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-                        'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
-                    },
-                };
-                console.log("왜안돼");
-        
-                axios
-                .post('/updateProfileImage', formData, config) 
-                .then((response) => {
-                    if (response.data === 'success') {
-                        alert('Information has been updated.');
-                        setSelectedImage(null);
-                        setProfileUploaded(true);
-
-                        window.location.reload();
-                        navigate('/myPage');
-
-                    } else {
-                        console.error('Unknown response:', response.data);
-                        message.error('Failed to update information.');
-                    }
-                })
-                .catch((error) => {
-                });
-
-                // Trigger a page refresh in React component
-                
-
-            } else {
-
-            }
-        }
-
-
-
-        
-    };
+    
 
     // '비밀 번호 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
     const updatePassword = () => {

@@ -97,7 +97,7 @@ function MyPage() {
                 console.error("Error fetching profile image:", error);
             });
 
-    }, [setProfileUploaded])
+    }, [profileImage])
 
 
 

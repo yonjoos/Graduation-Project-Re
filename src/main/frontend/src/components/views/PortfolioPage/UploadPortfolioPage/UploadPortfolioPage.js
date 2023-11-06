@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Row, Col, Input, Button, Radio, message, Upload, Modal } from 'antd';
@@ -28,6 +28,61 @@ function UploadPortfolioPage() {
     const [previewImage, setPreviewImage] = useState(null); // To store the image to be previewed
     const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
 
+    //프사 관련
+    const [selectedImage, setSelectedImage] = useState(null); //업로드할 이미지, 내 도큐먼트에서 선택한거
+    const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
+    const [profileUploaded, setProfileUploaded] = useState(false);
+
+
+    //프사 띄우기
+    useEffect(()=>{
+
+        request('GET', '/userProfileImage')
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+                setProfileUploaded(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
+
+    }, [profileImage])
+
+
+    //프사 업로드
+    const handleSubmit = () => {
+        return new Promise((resolve, reject) => {
+            if (selectedImage) {
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                axios
+                    .post('/updateProfileImage', formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setSelectedImage(null);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+            } else {
+                resolve('noImage'); 
+            }
+        });
+    };
 
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
@@ -86,8 +141,8 @@ function UploadPortfolioPage() {
 
     // 작성한 폼 제출
     const submitPortfolio = (event, web, app, game, ai, shortIntroduce, introduce, promoteImageUrl, fileUrl) => {
-        //event.preventDefault();
-
+        event.preventDefault();
+    
         const formData = new FormData();
         formData.append('web', web);
         formData.append('app', app);
@@ -101,49 +156,29 @@ function UploadPortfolioPage() {
         fileUrl.forEach((file, index) => {
             formData.append(`fileUrl[${index}]`, file);
         });
-
+    
         const config = {
             headers: {
-                'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-                'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${getAuthToken()}`,
             },
         };
-
+    
         axios
             .post('/uploadPortfolio', formData, config)
             .then((response) => {
                 // Handle the response
                 dispatch(uploadPortfolioSuccess(response.data.isCreated));
-                setHasPortfolio(response.data.isCreated);   // 포트폴리오 생성 상태를 로컬 스토리지에 세팅
+                setHasPortfolio(response.data.isCreated);
                 alert('포트폴리오가 성공적으로 생성되었습니다.');
-                navigate('/portfolio');
+    
+                //프사 업로드
+                handleSubmit(); 
             })
             .catch((error) => {
-                // Handle errors
                 console.error('Failed to upload post:', error);
                 alert('포트폴리오 생성에 실패하였습니다.');
             });
-
-
-        // // body에 내용을 채워서 백에 전송
-        // request('POST', '/uploadPortfolio', {
-        //     web: web,
-        //     app: app,
-        //     game: game,
-        //     ai: ai,
-        //     shortIntroduce: shortIntroduce,
-        //     introduce: introduce,
-        //     fileUrl: fileUrl
-        // })
-        //     .then((response) => {
-        //         dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess을 디스패치
-        //         setHasPortfolio(response.data.isCreated);   // 포트폴리오 생성 상태를 로컬 스토리지에 세팅
-        //         alert('포트폴리오가 성공적으로 생성되었습니다.');
-        //         navigate('/portfolio');
-        //     })
-        //     .catch((error) => {
-        //         alert('포트폴리오 생성에 실패하였습니다.');
-        //     });
     };
 
     const removePromoteImage = (index) => {
@@ -174,6 +209,35 @@ function UploadPortfolioPage() {
         <Row justify="center">
             <Col span={12}>
                 <form onSubmit={onSubmitPortfolio}>
+                    <div style={{ display: 'flex', marginBottom: '8px' }}>
+                        {selectedImage ? (
+                            <img
+                            src={URL.createObjectURL(selectedImage)}
+                            style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
+                            onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                            />
+                        ):(
+                            <img
+                                style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                            />
+
+                        )}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        {/* 업로드할 사진 */}
+                        <Upload
+                            accept="image/*"
+                            showUploadList={false}
+                            beforeUpload={(image) => {
+                                setSelectedImage(image);
+                                return false; // Stops the upload action
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
+                        </Upload>
+                        
+                    </div>
                     {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
                     <p>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 선호도는 중복해서 체크할 수 없습니다. </p>
                     <div className="form-outline mb-4">

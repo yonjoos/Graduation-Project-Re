@@ -258,7 +258,7 @@ public class InitialDataLoader implements CommandLineRunner {
         // 초기 데이터 생성 및 저장(2)
         User user2 = User.builder()
                 .userName("이윤식")
-                .nickName("rilato")
+                .nickName("다섯글자닉다섯글자닉")
                 .email("2")
                 .password(passwordEncoder.encode("2"))  // 비밀번호 해싱
                 .role(Role.USER)

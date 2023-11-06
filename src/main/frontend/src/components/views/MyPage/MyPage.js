@@ -155,10 +155,11 @@ function MyPage() {
     
     
     
+    
 
     // '회원 정보 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
     const updateInfo = (updatedData) => {
-        if (updatedData.nickName && updatedData.userName && updatedData.password && selectedImage) { //닉네임, 이름, 패스워드가 다 입력되면, 백엔드에 요청을 보냄
+        if (updatedData.nickName && updatedData.userName && updatedData.password) { //닉네임, 이름, 패스워드가 다 입력되면, 백엔드에 요청을 보냄
             request('PUT', '/updateUserInfo', updatedData)
                 .then((response) => {
                     if (response.data === "User information has been successfully updated.") {
@@ -192,45 +193,46 @@ function MyPage() {
                     }
                 });
 
+            if(selectedImage){
                 const formData = new FormData();
-            formData.append('imageUrl', selectedImage);
-            console.log(selectedImage);
-            console.log(formData);
-    
-            // Include the authentication token (replace 'yourAuthToken' with the actual token)
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-                    'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
-                },
-            };
-            console.log("왜안돼");
-    
-            axios
-            .post('/updateProfileImage', formData, config) 
-            .then((response) => {
-                if (response.data === 'success') {
-                    alert('Information has been updated.');
-                    setSelectedImage(null);
-                    setProfileUploaded(true);
+                formData.append('imageUrl', selectedImage);
+                console.log(selectedImage);
+                console.log(formData);
+        
+                // Include the authentication token (replace 'yourAuthToken' with the actual token)
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                        'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+                    },
+                };
+                console.log("왜안돼");
+        
+                axios
+                .post('/updateProfileImage', formData, config) 
+                .then((response) => {
+                    if (response.data === 'success') {
+                        alert('Information has been updated.');
+                        setSelectedImage(null);
+                        setProfileUploaded(true);
 
-                    window.location.reload();
-                    navigate('/myPage');
+                        window.location.reload();
+                        navigate('/myPage');
 
-                } else {
-                    console.error('Unknown response:', response.data);
-                    message.error('Failed to update information.');
-                }
-            })
-            .catch((error) => {
-            });
+                    } else {
+                        console.error('Unknown response:', response.data);
+                        message.error('Failed to update information.');
+                    }
+                })
+                .catch((error) => {
+                });
 
-            // Trigger a page refresh in React component
-            
+                // Trigger a page refresh in React component
+                
 
-        } else {
-            //만약 모든 필드값을 다 입력하지 않은 경우
-            message.warning('모든 필수 정보를 입력하세요.');
+            } else {
+
+            }
         }
 
 

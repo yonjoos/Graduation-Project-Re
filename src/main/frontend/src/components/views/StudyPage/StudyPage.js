@@ -316,7 +316,7 @@ function StudyPage() {
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
-            <div style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
+            <div style={{ marginTop: '10px', padding: '1px', width: '100%' }} justify="space-between" >
                 <Card title={`STUDY`} headStyle={{ background: '#fee5eb', color: '#ff4646' }}>
                     {posts.map((item, index) => (
                         <div>
@@ -365,16 +365,16 @@ function StudyPage() {
                                         <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                     </Link>
                                 </div>
-                                <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
-                                    onMouseUp={()=>handleRowClick(item.id)}
-                                >
-                                    {truncateString(item.briefContent, 50)}
-                                </div>
+                                <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left', cursor: 'pointer' }}
+                                        onMouseUp={()=>handleRowClick(item.id)}
+                                    >
+                                        {truncateString(item.briefContent, 50)}
+                                    </div>
                                 <strong style={{ display: 'flex' }}>
-                                    {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
-                                    {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#APP</span>}
-                                    {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}
-                                    {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#AI</span>}
+                                    {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
+                                    {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
+                                    {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
+                                    {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
                                 </strong>
                             </div>
                             <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>

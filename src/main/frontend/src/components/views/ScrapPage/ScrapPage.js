@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, message } from 'antd';
 import { request } from '../../../hoc/request';
@@ -269,13 +269,7 @@ function ScrapPage() {
             <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
                 <Card title={`SCRAPS`} headStyle={{ background: '#DDEEFF' }}>
                     {posts.map((item, index) => (
-                        <div key={index} style={{ display: 'grid' }} onClick={(e) => {
-                            if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
-                                handleNicknameClick(item.nickName);
-                            } else {
-                                handleRowClick(item.id, item.postType);
-                            }
-                        }}>
+                        <div >
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
                                     <strong style={{ display: 'flex' }}>
@@ -285,20 +279,49 @@ function ScrapPage() {
                                         {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
                                     </strong>
                                     <div style={{ display: 'flex' }}>
-                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        <Link
+                                            to={(item.postType === "PROJECT") ? (`/project/detail/${item.id}`) :(`/study/detail/${item.id}`)} // Use template literals
+                                            key={index}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        </Link>
                                     </div>
                                     <div style={{display:'flex'}}>
                                         <div>
-                                            <img
+                                            <Link
+                                                to={`/portfolio/${item.nickName}`} // Use template literals
+                                                key={index}
+                                                className="hoverable-item"
+                                                onMouseEnter={handleMouseEnter}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={linkStyle}
+                                            >
+                                                <img
                                                     style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                    />
+                                                />
+                                            </Link>
                                         </div>
                                         <div>
-                                            <strong className="nickname">{item.nickName}</strong>
+                                            <Link
+                                                to={`/portfolio/${item.nickName}`} // Use template literals
+                                                key={index}
+                                                className="hoverable-item"
+                                                onMouseEnter={handleMouseEnter}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={linkStyle}
+                                            >
+                                                <strong className="nickname">{item.nickName}</strong>
+                                            </Link>
                                         </div>
                                     </div>
-                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
+                                        onMouseUp={()=>handleRowClick(item.id, item.postType)}
+                                    >
                                         {truncateString(item.briefContent, 50)}
                                     </div>
                                 </div>
@@ -316,6 +339,20 @@ function ScrapPage() {
             </div>
         )
     }
+
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+      };
+    
+      const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      };
+    
+      const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
 
     return (
         <div>

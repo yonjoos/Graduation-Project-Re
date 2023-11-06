@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation , Link} from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, Dropdown, Menu } from 'antd';
 import { request } from '../../../hoc/request';
@@ -299,56 +299,93 @@ function StudyPage() {
         marginRight: '6px'
     };
 
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+      };
+    
+      const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      };
+    
+      const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
+
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
             <div style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
                 <Card title={`STUDY`} headStyle={{ background: '#fee5eb', color: '#ff4646' }}>
                     {posts.map((item, index) => (
-                        <div key={index} style={{ display: 'grid' }} onClick={(e) => {
-                            if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
-                                handleNicknameClick(item.nickName);
-                            } else {
-                                handleRowClick(item.id, item.postType);
-                            }
-                        }}>
-                            <div style={{ display: 'flex', marginTop: '0px' }}>
-                                <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <div>
-                                        <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
-                                            <div >
+                        <div>
+                        <div style={{ display: 'flex', marginTop: '0px' }}>
+                            <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
+                                <div>
+                                    <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
+                                        <div >
+                                            <Link
+                                                to={`/portfolio/${item.nickName}`} 
+                                                key={index}
+                                                className="hoverable-item"
+                                                onMouseEnter={handleMouseEnter}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={linkStyle}
+                                            >
                                                 <img
                                                     style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                 />
-                                            </div>
-                                            <div>
-                                                <strong className="nickname">{item.nickName}</strong>
-                                            </div>
+                                            </Link>
+                                        </div>
+                                        <div>
+                                        <Link
+                                                to={`/portfolio/${item.nickName}`} 
+                                                key={index}
+                                                className="hoverable-item"
+                                                onMouseEnter={handleMouseEnter}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={linkStyle}
+                                        >
+                                            <strong className="nickname">{item.nickName}</strong>
+                                        </Link>
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex' }}>
-                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-                                    </div>
-                                    <div style={{ marginTop: '10px',marginBottom:'10px', marginRight: '20px', textAlign: 'left' }}>
-                                        {truncateString(item.briefContent, 50)}
-                                    </div>
-                                    <strong style={{ display: 'flex' }}>
-                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
-                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
-                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
-                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
-                                    </strong>
                                 </div>
-                                <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
-                                    <div>
-                                        인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
-                                        <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
-                                    </div>
+                                <div style={{ display: 'flex' }}>
+                                    <Link
+                                        to={`/study/detail/${item.id}`} 
+                                        key={index}
+                                        className="hoverable-item"
+                                        onMouseEnter={handleMouseEnter}
+                                        onMouseLeave={handleMouseLeave}
+                                        style={linkStyle}
+                                    >
+                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                    </Link>
+                                </div>
+                                <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
+                                    onMouseUp={()=>handleRowClick(item.id)}
+                                >
+                                    {truncateString(item.briefContent, 50)}
+                                </div>
+                                <strong style={{ display: 'flex' }}>
+                                    {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
+                                    {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#APP</span>}
+                                    {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}
+                                    {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#AI</span>}
+                                </strong>
+                            </div>
+                            <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
+                                <div>
+                                    인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
+                                    <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
                                 </div>
                             </div>
-                            <Divider />
                         </div>
+                        <Divider />
+                    </div>
                     ))}
                 </Card>
             </div>

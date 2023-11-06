@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 //import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider, Modal, Image } from 'antd';
@@ -93,14 +93,22 @@ function PortfolioPage() {
                     <Row justify="center" key={post.id}>
                         <Col span={16}>
                             <Card headStyle={{ background: '#f0fff0' }}
-                                onClick={() => onClickPosts(post)}
                                 style={{ height: '150px', cursor: 'pointer' }}
                                 title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        <Link
+                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) :(`/study/detail/${post.id}`)}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        </Link>
                                         <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
                                     </div>
-                                }>
+                                }
+                            >
                                 <div>
                                     <strong style={{ display: 'flex' }}>
 
@@ -110,13 +118,16 @@ function PortfolioPage() {
                                         {post.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
                                     </strong>
                                 </div>
-                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
+                                    onMouseUp={()=>onClickPosts(post)}
+                                >
                                     {post.briefContent}
                                 </div>
                             </Card>
                         </Col>
                     </Row>
-                )))
+                ))
+            )
         }
         else {
             return (
@@ -267,6 +278,20 @@ function PortfolioPage() {
         color: '#677779', /* 텍스트 색상 설정 */
         marginLeft: '-0.3%',
         marginRight: '5px'
+    };
+
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+      };
+    
+      const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      };
+    
+      const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
     };
 
 

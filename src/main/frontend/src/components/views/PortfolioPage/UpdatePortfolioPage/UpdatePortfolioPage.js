@@ -32,6 +32,27 @@ function UpdatePortfolioPage() {
     const [previewImage, setPreviewImage] = useState(null); // 이미지 확대 관련
     const [previewVisible, setPreviewVisible] = useState(false); //이미지 확대 모달 관련
 
+    //프사 관련
+    const [selectedImage, setSelectedImage] = useState(null); //업로드할 이미지, 내 도큐먼트에서 선택한거
+    const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
+    const [profileUploaded, setProfileUploaded] = useState(false);
+
+
+    //프사 띄우기
+    useEffect(()=>{
+
+        request('GET', '/userProfileImage')
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+                setProfileUploaded(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
+
+    }, [profileImage])
+
     // Fetch existing portfolio data on component mount
     useEffect(() => {
         // Make an API request to fetch existing portfolio data
@@ -45,6 +66,40 @@ function UpdatePortfolioPage() {
             navigate('/portfolio');
         }
     }, [hasPortfolio]);
+
+    //프사 업로드
+    const handleSubmit = () => {
+        return new Promise((resolve, reject) => {
+            if (selectedImage) {
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                axios
+                    .post('/updateProfileImage', formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setSelectedImage(null);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+            } else {
+                resolve('noImage'); 
+            }
+        });
+    };
 
     // Function to fetch existing portfolio data - db에서 기존의 포트폴리오를 가져오기
     const fetchExistingPortfolioData = async () => {
@@ -125,7 +180,7 @@ function UpdatePortfolioPage() {
     // 작성한 폼 제출
     const submitPortfolio = async (event, web, app, game, ai, shortIntroduce, introduce, promoteImageUrl, fileUrl, newPromoteImageUrl, newFileUrl) => {
         event.preventDefault();
-
+    
         const formData = new FormData();
         formData.append('web', web);
         formData.append('app', app);
@@ -137,35 +192,35 @@ function UpdatePortfolioPage() {
         newPromoteImageUrl.forEach((image, index) => {
             formData.append(`newPromoteImageUrl[${index}]`, image);
         });
-        // 기존 첨부파일 List<파일 url, 파일 원본이름>의 자료형을 백엔드의 FileUrlNameMapperDto가 인식하려면 이러한 방식으로 백엔드에 보내야함!!!
         fileUrl.forEach((file, index) => {
             formData.append(`fileUrl[${index}].fileUrl`, file.fileUrl);
             formData.append(`fileUrl[${index}].fileName`, file.fileName);
         });
         newFileUrl.forEach((file, index) => {
             formData.append(`newFileUrl[${index}]`, file);
-        })
-
+        });
+    
         const config = {
             headers: {
-                'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-                'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${getAuthToken()}`,
             },
         };
-
+    
         axios
             .put(`/updatePortfolio`, formData, config)
-            .then((response) => {
+            .then(async (response) => {
                 // Handle the response
                 alert('포트폴리오가 성공적으로 업데이트 되었습니다.');
+                await handleSubmit(); // Call the handleSubmit function here
                 navigate('/portfolio');
             })
             .catch((error) => {
                 // Handle errors
                 alert('포트폴리오 업데이트에 실패하였습니다.');
             });
-
     };
+    
 
     // 선호도 체크
     const handlePreferenceChange = (field, value) => {
@@ -232,6 +287,34 @@ function UpdatePortfolioPage() {
             {hasPortfolio ? (
                 <Row justify="center">
                     <Col span={12}>
+                    <div style={{ display: 'flex', marginBottom: '8px' }}>
+                        {selectedImage ? (
+                            <img
+                            src={URL.createObjectURL(selectedImage)}
+                            style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
+                            onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                            />
+                        ):(
+                            <img
+                                style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                            />
+
+                        )}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        {/* 업로드할 사진 */}
+                        <Upload
+                            accept="image/*"
+                            showUploadList={false}
+                            beforeUpload={(image) => {
+                                setSelectedImage(image);
+                                return false; // Stops the upload action
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
+                        </Upload>
+                    </div>
                         {/* Existing input fields */}
                         {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
                         <p>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 선호도는 중복해서 체크할 수 없습니다. </p>

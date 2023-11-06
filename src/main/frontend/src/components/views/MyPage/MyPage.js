@@ -137,7 +137,6 @@ function MyPage() {
             .post('/updateProfileImage', formData, config) 
             .then((response) => {
                 if (response.data === 'success') {
-                    alert('Information has been updated.');
                     setSelectedImage(null);
                     setProfileUploaded(true);
 
@@ -390,7 +389,7 @@ function MyPage() {
                                                                 value={userBaseInfo.nickName}
                                                                 placeholder = "닉네임을 입력해주세요"
                                                                 onChange={(e) => handleInputChange('nickName', e.target.value)}
-                                                                style={{ backgroundColor: '#f0f0f0', width:'300px' }}
+                                                                style={{ width:'300px' }}
                                                             />
                                                     </div>
                                                     <div>
@@ -430,7 +429,7 @@ function MyPage() {
                                                                 value={userBaseInfo.userName}
                                                                 placeholder="이름을 입력해주세요"
                                                                 onChange={(e) => handleInputChange('userName', e.target.value)}
-                                                                style={{ backgroundColor: '#f0f0f0', width:'400px' }}  />
+                                                                style={{ width:'400px' }}  />
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
@@ -443,7 +442,7 @@ function MyPage() {
                                                                     value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
                                                                     placeholder="비밀번호를 입력해주세요"
                                                                     onChange={(e) => handleInputChange('password', e.target.value)}
-                                                                    style={{ backgroundColor: '#f0f0f0', width:'400px' }}  />
+                                                                    style={{ width:'400px' }}  />
                                                     </div>
                                                 </div>
                                             </div>

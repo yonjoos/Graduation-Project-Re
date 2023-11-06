@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { /*useSelector,*/ useDispatch } from 'react-redux';
 import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../../_actions/actions';
 import { useState, useEffect } from 'react';
@@ -134,6 +134,20 @@ function MyPortfolioPage() {
         return chunks;
     }
 
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+      };
+    
+      const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      };
+    
+      const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
+
     const renderPosts = (posts) => {
 
         if (loadPosts === "fold") {
@@ -143,14 +157,22 @@ function MyPortfolioPage() {
                     <Row justify="center" key={post.id}>
                         <Col span={16}>
                             <Card headStyle={{ background: '#f0fff0' }}
-                                onClick={() => onClickPosts(post)}
                                 style={{ height: '150px', cursor: 'pointer' }}
                                 title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        <Link
+                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) :(`/study/detail/${post.id}`)}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        </Link>
                                         <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
                                     </div>
-                                }>
+                                }
+                            >
                                 <div>
                                     <strong style={{ display: 'flex' }}>
 
@@ -160,7 +182,9 @@ function MyPortfolioPage() {
                                         {post.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
                                     </strong>
                                 </div>
-                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
+                                    onMouseUp={()=>onClickPosts(post)}
+                                >
                                     {post.briefContent}
                                 </div>
                             </Card>

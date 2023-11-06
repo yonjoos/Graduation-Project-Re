@@ -8,9 +8,9 @@
 ### 이윤식, 박시홍, 정연주
 
 
-#### ER Diagram
+### ER Diagram
 ![ERDiagram](ERDiagram.png)
 
 
-#### Tech Stack
+### Tech Stack
 ![TechStack](TechStack.png)

@@ -316,7 +316,7 @@ function ProjectPage() {
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
-            <div style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
+            <div style={{ marginTop: '10px', padding: '1px', width: '100%' }} justify="space-between" >
                 <Card title={`PROJECTS`} headStyle={{ background: '#fffec1', color: '#ff8400' }}>
                     {posts.map((item, index) => (
                         <div>
@@ -365,7 +365,7 @@ function ProjectPage() {
                                             <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                         </Link>
                                     </div>
-                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left', cursor: 'pointer' }}
                                         onMouseUp={()=>handleRowClick(item.id)}
                                     >
                                         {truncateString(item.briefContent, 50)}

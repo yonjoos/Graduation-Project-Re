@@ -33,6 +33,7 @@ function UploadPortfolioPage() {
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
     const [remove, setRemove] = useState(false);
+    const [showImge, setShowImage] = useState()
 
     const greetingMessage = (
         <div>
@@ -93,6 +94,13 @@ function UploadPortfolioPage() {
             }
         });
     };
+
+    useEffect(()=>{
+        if(selectedImage){
+            setRemove(null);
+        }
+
+    }, [selectedImage])
 
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
@@ -218,11 +226,23 @@ function UploadPortfolioPage() {
         setPreviewVisible(false);
     };
 
-    const handleRemoveProfileImage = () => {
+    const handleRemoveSelectedImage = () => {
         setSelectedImage(null);
-        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
         
+    };
+
+    const handleResetProfileImage = () =>{
+        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
+    };
+
+    const handleRemove = () =>{
+        selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
     }
+    
 
     const removeProfileImage = () =>{
         
@@ -291,24 +311,24 @@ function UploadPortfolioPage() {
 
                                                 ) : (null)}
 
-                                                {!remove && selectedImage ? (
-                                                    //새로 바꿀 이미지
-                                                    <img
-                                                    src={URL.createObjectURL(selectedImage)}
-                                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
-                                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                                    />
-                                                ):(
-                                                    //기존 프사
-                                                    null
-
-                                                )}
-                                                {!remove && !selectedImage ? (
-                                                    <img
-                                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                            {!remove && selectedImage ? (
+                                                //새로 바꿀 이미지
+                                                <img
+                                                src={URL.createObjectURL(selectedImage)}
+                                                style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
+                                                onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
                                                 />
-                                                ):(null)}
+                                            ):(
+                                                //기존 프사
+                                                null
+
+                                            )}
+                                            {!remove && !selectedImage ? (
+                                                <img
+                                                style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                            />
+                                            ):(null)}
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
@@ -322,12 +342,14 @@ function UploadPortfolioPage() {
                                                     style={{ display: 'none' }}
                                                     onChange={(event) => {
                                                         setSelectedImage(event.target.files[0]);
+                                                        console.log("selected " , selectedImage);
                                                         // Handle the selected image as needed
+                                                        setRemove(false);
                                                     }}
                                                 />
                                                 <span 
                                                     style={{marginLeft:'30px', cursor:'pointer'}}
-                                                    onMouseUp={handleRemoveProfileImage}
+                                                    onMouseUp={()=>handleRemove()}
                                                 >
                                                     remove
                                                 </span>

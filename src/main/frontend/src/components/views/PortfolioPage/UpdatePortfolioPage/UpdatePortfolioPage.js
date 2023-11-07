@@ -247,10 +247,10 @@ function UpdatePortfolioPage() {
                 //포트폴리외 정보 업데이트가 완료되면
                 //프사 업데이트 시작
                 if(remove){
-                    return removeProfileImage();
+                    removeProfileImage();
                     
 
-                }else{return handleSubmit(); }
+                }else{ handleSubmit(); }
                 navigate('/portfolio');
             })
             .catch((error) => {
@@ -355,10 +355,21 @@ function UpdatePortfolioPage() {
         setPreviewVisible(false);
     };
 
-    const handleRemoveProfileImage = () => {
+    const handleRemoveSelectedImage = () => {
         setSelectedImage(null);
-        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
         
+    };
+
+    const handleResetProfileImage = () =>{
+        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
+    };
+
+    const handleRemove = () =>{
+        selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
     }
 
     return (
@@ -424,12 +435,14 @@ function UpdatePortfolioPage() {
                                                     style={{ display: 'none' }}
                                                     onChange={(event) => {
                                                         setSelectedImage(event.target.files[0]);
+                                                        console.log("selected " , selectedImage);
                                                         // Handle the selected image as needed
+                                                        setRemove(false);
                                                     }}
                                                 />
                                                 <span 
                                                     style={{marginLeft:'30px', cursor:'pointer'}}
-                                                    onMouseUp={handleRemoveProfileImage}
+                                                    onMouseUp={()=>handleRemove()}
                                                 >
                                                     remove
                                                 </span>

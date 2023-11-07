@@ -36,6 +36,7 @@ function UpdatePortfolioPage() {
     const [selectedImage, setSelectedImage] = useState(null); //업로드할 이미지, 내 도큐먼트에서 선택한거
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
+    const [remove, setRemove] = useState(null);
 
     const greetingMessage = (
         <div>
@@ -245,13 +246,53 @@ function UpdatePortfolioPage() {
 
                 //포트폴리외 정보 업데이트가 완료되면
                 //프사 업데이트 시작
-                await handleSubmit();
+                if(remove){
+                    return removeProfileImage();
+                    
+
+                }else{return handleSubmit(); }
                 navigate('/portfolio');
             })
             .catch((error) => {
                 alert('포트폴리오 업데이트에 실패하였습니다.');
             });
     };
+
+    const removeProfileImage = () =>{
+        
+        return new Promise((resolve, reject) => {
+                
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                
+                axios
+                    .put(`/removeProfileImage`, formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setProfileUploaded(true);
+                            setProfileImage(null);
+                            setRemove(false);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+       
+        });
+
+    }
     
 
     // 선호도 체크
@@ -314,6 +355,12 @@ function UpdatePortfolioPage() {
         setPreviewVisible(false);
     };
 
+    const handleRemoveProfileImage = () => {
+        setSelectedImage(null);
+        setRemove(true);
+        
+    }
+
     return (
         <div>
             {hasPortfolio ? (
@@ -335,35 +382,59 @@ function UpdatePortfolioPage() {
                                             borderRadius: '50%',
                                             border: '5px solid lightblue',
                                             overflow: 'hidden',
-                                            marginTop:'20px'
+                                            marginTop:'20px',
+                                            marginBottom:'10px'
                                         }}>
-                                            {selectedImage ? (
-                                                <img
-                                                src={URL.createObjectURL(selectedImage)}
-                                                style={{ width: '100%', height: '100%', marginBottom: '15px' }}
-                                                onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                                />
-                                            ):(
-                                                <img
-                                                style={{ width: '100%', height: '100%', marginBottom: '15px' }}
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                            {(remove) ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px',  }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
                                                 />
 
-                                            )}
+                                                ) : (null)}
+
+                                                {!remove && selectedImage ? (
+                                                    //새로 바꿀 이미지
+                                                    <img
+                                                    src={URL.createObjectURL(selectedImage)}
+                                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
+                                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                    />
+                                                ):(
+                                                    //기존 프사
+                                                    null
+
+                                                )}
+                                                {!remove && !selectedImage ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                                />
+                                                ):(null)}
                                         </div>
-                                        <div >
-                                            {/* 업로드할 사진 */}
-                                            <Upload
-                                                accept="image/*"
-                                                showUploadList={false}
-                                                beforeUpload={(image) => {
-                                                    setSelectedImage(image);
-                                                    return false; // Stops the upload action
-                                                }}
-                                            >
-                                                <Button icon={<UploadOutlined />} style={{ marginTop : '10px', marginBottom: '10px' }}>profile image</Button>
-                                            </Upload>
-                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                {/* 업로드할 사진 */}
+                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer',}}>
+                                                    ⚙️ set
+                                                    </label>
+                                                    <input
+                                                    type="file"
+                                                    id="fileInput"
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    onChange={(event) => {
+                                                        setSelectedImage(event.target.files[0]);
+                                                        // Handle the selected image as needed
+                                                    }}
+                                                />
+                                                <span 
+                                                    style={{marginLeft:'30px', cursor:'pointer'}}
+                                                    onMouseUp={handleRemoveProfileImage}
+                                                >
+                                                    remove
+                                                </span>
+                                                
+                                            </div>
                                     </div>
                                     <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>
                                         <p>

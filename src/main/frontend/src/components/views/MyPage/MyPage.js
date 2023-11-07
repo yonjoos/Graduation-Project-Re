@@ -367,9 +367,9 @@ function MyPage() {
                                 <Form>
                                     <div style={{display:'flex', paddingLeft:'20px', paddingRight:'20px',alignItems: 'center' }}>
                                         <div style={{display:'grid', width :'1200px'}}>
-                                            <div >
+                                            <div style={{marginTop:'20px'}}>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         이메일
                                                     </div>
                                                     <div>
@@ -383,7 +383,7 @@ function MyPage() {
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         닉네임
                                                     </div>
                                                     <div>
@@ -423,7 +423,7 @@ function MyPage() {
                                                     )}
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         성명
                                                     </div>
                                                     <div>
@@ -436,7 +436,7 @@ function MyPage() {
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         비밀번호
                                                     </div>
                                                     <div>
@@ -525,45 +525,63 @@ function MyPage() {
                     {selectedOption === 'password' && (
                         <Card title="비밀번호 변경" style={{ width: '100%' }}>
                             <Form>
-                                <div>
-                                    <Item label="이메일">
-                                        <Input
-                                            type="email"
-                                            value={userBaseInfo.email} //이메일은 화면에 보여주되, 변경 불가능하게 disable설정
-                                            readOnly
-                                            disabled
-                                            style={{ backgroundColor: '#f0f0f0' }}
-                                        />
-                                    </Item>
-                                </div>
-                                <div>
-                                    <Item label="기존 비밀번호">
-                                        <Input
-                                            type="password"
-                                            value={currentPassword}
-                                            placeholder="기존에 사용하던 비밀번호를 입력해주세요"
-                                            onChange={(e) => setCurrentPassword(e.target.value)}
-                                        />
-                                    </Item>
-                                </div>
-                                <div>
-                                    <Item label="새로운 비밀번호">
-                                        <Input
-                                            type="password"
-                                            value={newPassword}
-                                            placeholder = "기존 비밀번호와 다른 비밀번호를 입력해주세요"
-                                            onChange={(e) => setNewPassword(e.target.value)}
-                                        />
-                                    </Item>
-                                </div>
-                                <div>
-                                    <Item label="새로운 비밀번호 확인">
-                                        <Input
-                                            type="password"
-                                            value={confirmNewPassword}
-                                            onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                        />
-                                    </Item>
+                                <div style={{marginTop:'15px', display:'grid', width :'1200px', paddingLeft:'20px', paddingRight:'20px'}}>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            이메일
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="email"
+                                                value={userBaseInfo.email} //이메일은 화면에 보여주되, 변경 불가능하게 disable설정
+                                                readOnly
+                                                disabled
+                                                style={{ backgroundColor: '#f0f0f0', width:'400px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            기존 비밀번호
+                                        </div>
+                                        <div>
+                                            <Input
+                                                    type="password"
+                                                    value={currentPassword}
+                                                    placeholder="기존에 사용하던 비밀번호를 입력해주세요"
+                                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                                    style={{  width:'400px' }}
+                                                />
+                                        </div>
+                                    </div>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            새로운 비밀번호
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="password"
+                                                value={newPassword}
+                                                placeholder = "기존 비밀번호와 다른 비밀번호를 입력해주세요"
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                style={{  width:'400px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            비밀번호 확인
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="password"
+                                                value={confirmNewPassword}
+                                                placeholder = "새로운 비밀번호를 다시 입력해주세요"
+                                                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                                style={{  width:'400px' }}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                                 <Button
                                     type="primary"

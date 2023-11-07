@@ -32,6 +32,7 @@ function UploadPortfolioPage() {
     const [selectedImage, setSelectedImage] = useState(null); //업로드할 이미지, 내 도큐먼트에서 선택한거
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
+    const [remove, setRemove] = useState(false);
 
     const greetingMessage = (
         <div>
@@ -57,7 +58,7 @@ function UploadPortfolioPage() {
             });
 
     }, [profileImage])
-
+ 
 
     //프사 업로드
     const handleSubmit = () => {
@@ -182,7 +183,11 @@ function UploadPortfolioPage() {
                 alert('포트폴리오가 성공적으로 생성되었습니다.');
     
                 //프사 업로드
-                handleSubmit(); 
+                if(remove){
+                    return removeProfileImage();
+                    
+
+                }else{return handleSubmit(); }
             })
             .catch((error) => {
                 console.error('Failed to upload post:', error);
@@ -213,6 +218,48 @@ function UploadPortfolioPage() {
         setPreviewVisible(false);
     };
 
+    const handleRemoveProfileImage = () => {
+        setSelectedImage(null);
+        setRemove(true);
+        
+    }
+
+    const removeProfileImage = () =>{
+        
+        return new Promise((resolve, reject) => {
+                
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                
+                axios
+                    .put(`/removeProfileImage`, formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setProfileUploaded(true);
+                            setProfileImage(null);
+                            setRemove(false);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+       
+        });
+
+    }
+
 
     return (
         <Row justify="center">
@@ -220,53 +267,73 @@ function UploadPortfolioPage() {
                 <Card title = {'Write down your information'} style={{marginTop:'20px'}} headStyle={{ background: '#ddeeff' }}>
                 <form onSubmit={onSubmitPortfolio} style={{paddingLeft:'45px', paddingRight:'45px'}}>
                     <div style={{display:'flex', alignItems:'center', borderRadius:'10px', border: '1px solid lightgray'}}> 
-                        <div style={{display:'grid',
-                         justifyContent:'center', 
-                         marginLeft:'30px',
-                         marginBottom:'20px',
-                         }}>
-                            <div style={{
-                                width: '140px',  
-                                height: '140px',  
-                                borderRadius: '50%',
-                                border: '5px solid lightblue',
-                                overflow: 'hidden',
-                                marginTop:'20px'
-                                
-                            }}>
-                            {/* 기존 프사가 있으면 띄우고 */}
-                            {/* 바꿀 이미지를 선택했으면 기존 프사 대신 그걸 띄움 */}
-                                {selectedImage ? (
-                                    <img
-                                    src={URL.createObjectURL(selectedImage)}
-                                    style={{ width: '100%', height: '100%', marginBottom: '15px' }}
-                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                    />
-                                ):(
-                                    <img
-                                    style={{ width: '100%', height: '100%', marginBottom: '15px' }}
-                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                    />
+                    <div 
+                                        style={{display:'grid',
+                                        justifyContent:'center', 
+                                        marginLeft:'30px',
+                                        marginBottom:'20px',
+                                    }}>
+                                        <div 
+                                            style={{
+                                            width: '140px',  
+                                            height: '140px',  
+                                            borderRadius: '50%',
+                                            border: '5px solid lightblue',
+                                            overflow: 'hidden',
+                                            marginTop:'20px',
+                                            marginBottom:'10px'
+                                        }}>
+                                            {(remove) ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px',  }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
+                                                />
 
+                                                ) : (null)}
 
-                                )}
-                            </div>
-                            <div >
-                                {/* 업로드할 사진 */}
-                                <Upload
-                                    accept="image/*"
-                                    showUploadList={false}
-                                    beforeUpload={(image) => {
-                                        setSelectedImage(image);
-                                        return false; // Stops the upload action
-                                    }}
-                                >
-                                    <Button icon={<UploadOutlined />} style={{ marginTop : '10px', marginBottom: '10px' }}>profile image</Button>
-                                </Upload>
-                                
-                            </div>
+                                                {!remove && selectedImage ? (
+                                                    //새로 바꿀 이미지
+                                                    <img
+                                                    src={URL.createObjectURL(selectedImage)}
+                                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
+                                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                    />
+                                                ):(
+                                                    //기존 프사
+                                                    null
 
-                        </div>
+                                                )}
+                                                {!remove && !selectedImage ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                                />
+                                                ):(null)}
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                {/* 업로드할 사진 */}
+                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer',}}>
+                                                    ⚙️ set
+                                                    </label>
+                                                    <input
+                                                    type="file"
+                                                    id="fileInput"
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    onChange={(event) => {
+                                                        setSelectedImage(event.target.files[0]);
+                                                        // Handle the selected image as needed
+                                                    }}
+                                                />
+                                                <span 
+                                                    style={{marginLeft:'30px', cursor:'pointer'}}
+                                                    onMouseUp={handleRemoveProfileImage}
+                                                >
+                                                    remove
+                                                </span>
+                                                
+                                            </div>
+                                    </div>
                         <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>
                             <p>
                                 {greetingMessage}

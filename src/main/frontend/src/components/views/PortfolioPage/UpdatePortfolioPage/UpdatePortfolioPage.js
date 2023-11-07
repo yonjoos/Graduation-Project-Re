@@ -175,6 +175,26 @@ function UpdatePortfolioPage() {
         } catch (error) {
             console.error('Error submitting portfolio:', error);
         }
+
+        // // body에 내용을 채워서 백에 전송
+        // request('POST', '/uploadPortfolio', {
+        //     web: web,
+        //     app: app,
+        //     game: game,
+        //     ai: ai,
+        //     shortIntroduce: shortIntroduce,
+        //     introduce: introduce,
+        //     fileUrl: fileUrl
+        // })
+        //     .then((response) => {
+        //         dispatch(uploadPortfolioSuccess(response.data.isCreated)); // uploadPortfolioSuccess을 디스패치
+        //         setHasPortfolio(response.data.isCreated);   // 포트폴리오 생성 상태를 로컬 스토리지에 세팅
+        //         alert('포트폴리오가 성공적으로 생성되었습니다.');
+        //         navigate('/portfolio');
+        //     })
+        //     .catch((error) => {
+        //         alert('포트폴리오 생성에 실패하였습니다.');
+        //     });
     };
 
     // 작성한 폼 제출
@@ -192,6 +212,7 @@ function UpdatePortfolioPage() {
         newPromoteImageUrl.forEach((image, index) => {
             formData.append(`newPromoteImageUrl[${index}]`, image);
         });
+        // 기존 첨부파일 List<파일 url, 파일 원본이름>의 자료형을 백엔드의 FileUrlNameMapperDto가 인식하려면 이러한 방식으로 백엔드에 보내야함!!!
         fileUrl.forEach((file, index) => {
             formData.append(`fileUrl[${index}].fileUrl`, file.fileUrl);
             formData.append(`fileUrl[${index}].fileName`, file.fileName);
@@ -210,13 +231,14 @@ function UpdatePortfolioPage() {
         axios
             .put(`/updatePortfolio`, formData, config)
             .then(async (response) => {
-                // Handle the response
                 alert('포트폴리오가 성공적으로 업데이트 되었습니다.');
-                await handleSubmit(); // Call the handleSubmit function here
+
+                //포트폴리외 정보 업데이트가 완료되면
+                //프사 업데이트 시작
+                await handleSubmit();
                 navigate('/portfolio');
             })
             .catch((error) => {
-                // Handle errors
                 alert('포트폴리오 업데이트에 실패하였습니다.');
             });
     };

@@ -248,6 +248,7 @@ function UploadPortfolioPage() {
                                         src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                     />
 
+
                                 )}
                             </div>
                             <div >

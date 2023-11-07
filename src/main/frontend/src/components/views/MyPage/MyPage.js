@@ -119,10 +119,22 @@ function MyPage() {
         setUserBaseInfo((prevData) => ({ ...prevData, [fieldName]: value }));
     };
 
-    const handleRemoveProfileImage = () => {
+    const handleRemoveSelectedImage = () => {
         setSelectedImage(null);
-        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
         
+    };
+
+    const handleResetProfileImage = () =>{
+        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
+    };
+
+    const handleRemove = () =>{
+        console.log("haneldRemove🩸");
+        selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
     }
 
 
@@ -495,12 +507,14 @@ function MyPage() {
                                                     style={{ display: 'none' }}
                                                     onChange={(event) => {
                                                         setSelectedImage(event.target.files[0]);
+                                                        console.log("selected " , selectedImage);
                                                         // Handle the selected image as needed
+                                                        setRemove(false);
                                                     }}
                                                 />
                                                 <span 
                                                     style={{marginLeft:'30px', cursor:'pointer'}}
-                                                    onMouseUp={handleRemoveProfileImage}
+                                                    onMouseUp={()=>handleRemove()}
                                                 >
                                                     remove
                                                 </span>

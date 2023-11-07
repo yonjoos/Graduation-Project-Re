@@ -33,7 +33,6 @@ function UploadPortfolioPage() {
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
     const [remove, setRemove] = useState(false);
-    const [showImge, setShowImage] = useState()
 
     const greetingMessage = (
         <div>

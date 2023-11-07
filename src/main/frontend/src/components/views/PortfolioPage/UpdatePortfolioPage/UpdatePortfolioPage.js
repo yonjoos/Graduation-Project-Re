@@ -139,11 +139,11 @@ function UpdatePortfolioPage() {
             value={existingPreferences[field]}
             onChange={(e) => handlePreferenceChange(field, e.target.value)}
         >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
+            <Radio value={0}>매우 싫음</Radio>
+            <Radio value={1}>싫음</Radio>
+            <Radio value={2}>보통</Radio>
+            <Radio value={3}>좋음</Radio>
+            <Radio value={4}>매우 좋음</Radio>
         </Radio.Group>
     );
 

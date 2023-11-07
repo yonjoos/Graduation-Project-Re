@@ -279,7 +279,11 @@ function UploadPortfolioPage() {
                     <div className="form-outline mb-4" style={{marginTop:'50px'}}>
                         <strong style={{fontSize:'20px'}}> Fields of Interests</strong>
                         <hr></hr>
-                        <p style={{marginLeft:'15px', marginRight:'15px'}}>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 <b>* 선호도는 중복해서 체크할 수 없습니다. * </b></p>
+                        <p style={{marginLeft:'15px', marginRight:'15px'}}>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 
+                        <b>* 선호도는 중복해서 체크할 수 없습니다. * </b></p>
+                        <p style={{marginLeft:'15px', marginRight:'15px', color:'gray'}}>
+                            * 다양한 선호도 분포는 포트폴리오 추천에 도움이 됩니다
+                        </p>
                         <table style={{ marginLeft:'15px', marginRight:'15px', marginTop:'40px', display:'flex', justifyContent:'center'}}>
                             <tbody > 
                                 <tr >
@@ -326,7 +330,7 @@ function UploadPortfolioPage() {
                             />
                         </div>
                     <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                        Photos
+                        <strong>Photos</strong>
                     </div>
                     <div className="form-outline mb-4">
                         <Upload
@@ -356,7 +360,7 @@ function UploadPortfolioPage() {
                         <img alt="프로젝트 이미지" style={{ width: '100%' }} src={previewImage} />
                     </Modal>
                     <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                        Attatchment
+                        <strong>Attatchment</strong>
                     </div>
                     <div className="form-outline mb-4">
                         <Upload

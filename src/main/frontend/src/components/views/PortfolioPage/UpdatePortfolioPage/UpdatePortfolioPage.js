@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
-import { Row, Col, Input, Button, Radio, message, Upload, Modal } from 'antd';
+import { Row, Col, Input, Button, Radio, message, Upload, Modal, Card } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { getAuthToken } from '../../../../hoc/request';
 import axios from 'axios';
@@ -36,6 +36,16 @@ function UpdatePortfolioPage() {
     const [selectedImage, setSelectedImage] = useState(null); //업로드할 이미지, 내 도큐먼트에서 선택한거
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
+
+    const greetingMessage = (
+        <div>
+         <strong>포트폴리오를 작성하여 자신의 관심사와 경력을 자유롭게 표현할 수 있습니다.</strong>
+         <br></br>
+          <br />개성있는 포트폴리오를 작성하여 다른 유저들에게 능력을 어필해 보세요! 뭐라고 더 적고싶은데 쓸 말이 없다. 허전하네
+          <br />얼어붙은 달그림자 물결위에 차고 한겨울에 거센 파도 어쩌고 저쩌고 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 어떻게든 되겠지...
+          <br />그럼 건투를 빕니당 🍭🍬
+        </div>
+    );
 
 
     //프사 띄우기
@@ -308,199 +318,232 @@ function UpdatePortfolioPage() {
         <div>
             {hasPortfolio ? (
                 <Row justify="center">
-                    <Col span={12}>
-                    <div style={{ display: 'flex', marginBottom: '8px' }}>
-                        {selectedImage ? (
-                            <img
-                            src={URL.createObjectURL(selectedImage)}
-                            style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
-                            onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                            />
-                        ):(
-                            <img
-                                style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                            />
-
-                        )}
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        {/* 업로드할 사진 */}
-                        <Upload
-                            accept="image/*"
-                            showUploadList={false}
-                            beforeUpload={(image) => {
-                                setSelectedImage(image);
-                                return false; // Stops the upload action
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
-                        </Upload>
-                    </div>
-                        {/* Existing input fields */}
-                        {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
-                        <p>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 선호도는 중복해서 체크할 수 없습니다. </p>
-                        <div className="form-outline mb-4">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>Web</td>
-                                        <td>{renderRadioGroup('web')}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>App</td>
-                                        <td>{renderRadioGroup('app')}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Game</td>
-                                        <td>{renderRadioGroup('game')}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>AI</td>
-                                        <td>{renderRadioGroup('ai')}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <form onSubmit={onSubmitPortfolio}>
-                            {/* Short Introduce */}
-                            <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                한 줄 소개
-                            </div>
-                            <div className="form-outline mb-4">
-                                <Input
-                                    type="text"
-                                    name="shortIntroduce"
-                                    placeholder="Edit Short Introduce"
-                                    value={existingShortIntroduce}
-                                    onChange={onChangeHandler}
-                                />
-                            </div>
-                            {/* Introduce */}
-                            <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                경력
-                            </div>
-                            <div className="form-outline mb-4">
-                                <TextArea
-                                    type="text"
-                                    name="introduce"
-                                    placeholder="Edit Introduce"
-                                    value={existingIntroduce}
-                                    onChange={onChangeHandler}
-                                    autoSize={{ minRows: 20 }}
-                                />
-                            </div>
-                            {/* File URL */}
-                            <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                Photos
-                            </div>
-                            <div className="form-outline mb-4">
-                                <div>
-                                    <Upload
-                                        accept="image/*"
-                                        showUploadList={false}
-                                        beforeUpload={(image) => {
-                                            setNewPromoteImageUrl([...newPromoteImageUrl, image]);
-                                            return false; // Stops the upload action
-                                        }}
-                                    >
-                                        <Button icon={<UploadOutlined />}>Upload Photo</Button>
-                                    </Upload>
-
-                                    {/* 기존에 올려놨던 이미지 세팅 */}
-                                    {promoteImageUrl ? (
-                                        promoteImageUrl.map((imageUrl, index) => (
-                                            <div key={index} >
+                    <Col span={24} >
+                        <Card title = {'Write down your information'} style={{marginTop:'20px'}} headStyle={{ background: '#ddeeff' }}>
+                            <div style={{paddingLeft:'45px', paddingRight:'45px'}}> 
+                                <div style={{display:'flex', alignItems:'center', borderRadius:'10px', border: '1px solid lightgray' }}>
+                                    <div 
+                                        style={{display:'grid',
+                                        justifyContent:'center', 
+                                        marginLeft:'30px',
+                                        marginBottom:'20px',
+                                    }}>
+                                        <div 
+                                            style={{
+                                            width: '140px',  
+                                            height: '140px',  
+                                            borderRadius: '50%',
+                                            border: '5px solid lightblue',
+                                            overflow: 'hidden',
+                                            marginTop:'20px'
+                                        }}>
+                                            {selectedImage ? (
                                                 <img
-                                                    key={index}
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                                    alt={`홍보 사진 ${index + 1}`}
-                                                    style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
-                                                    onClick={() => handlePreview(`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`)
-                                                    }
+                                                src={URL.createObjectURL(selectedImage)}
+                                                style={{ width: '100%', height: '100%', marginBottom: '15px' }}
+                                                onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
                                                 />
-                                                <Button onClick={() => removePromoteImage(index)}>Remove</Button>
-                                            </div>
-
-                                        ))
-                                    ) : (
-                                        <p>이미지가 없습니다</p>
-                                    )}
-
-                                    {/* 새로 올릴 이미지 세팅 */}
-                                    {newPromoteImageUrl ?
-                                        (newPromoteImageUrl.map((image, index) => (
-                                            <div key={index} >
+                                            ):(
                                                 <img
-                                                    src={URL.createObjectURL(image)}
-                                                    alt="홍보 사진"
-                                                    style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
-                                                    onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                                style={{ width: '100%', height: '100%', marginBottom: '15px' }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                                 />
-                                                <Button onClick={() => removeNewPromoteImage(index)}>Remove</Button>
-                                            </div>
-                                        )))
-                                        : (
-                                            null
-                                        )}
-                                </div>
-                            </div>
-                            <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
-                                <img alt="포트폴리오 이미지" style={{ width: '100%' }} src={previewImage} />
-                            </Modal>
-                            <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                첨부파일
-                            </div>
-                            <div className="form-outline mb-4">
-                                <Upload
-                                    accept=".pdf,.doc,.docx"
-                                    showUploadList={false}
-                                    beforeUpload={(file) => {
-                                        setNewFileUrl([...newFileUrl, file]);
-                                        return false;
-                                    }}
-                                >
-                                    <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
-                                </Upload>
 
-                                {/* 기존에 올려놨던 첨부파일 세팅 */}
-                                {fileUrl ? (
-                                    fileUrl.map((file, index) => (
-
-                                        <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
-                                            <Button
-                                                onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                            )}
+                                        </div>
+                                        <div >
+                                            {/* 업로드할 사진 */}
+                                            <Upload
+                                                accept="image/*"
+                                                showUploadList={false}
+                                                beforeUpload={(image) => {
+                                                    setSelectedImage(image);
+                                                    return false; // Stops the upload action
+                                                }}
                                             >
-                                                {file.fileName} {/* 파일 이름 표시 */}
-                                            </Button>
-                                            <Button onClick={() => removeFile(index)}>Remove</Button>
+                                                <Button icon={<UploadOutlined />} style={{ marginTop : '10px', marginBottom: '10px' }}>profile image</Button>
+                                            </Upload>
                                         </div>
+                                    </div>
+                                    <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>
+                                        <p>
+                                            {greetingMessage}
+                                        </p>
+                                    </div>
+                                </div>
 
-
-
-                                    ))
-                                ) : (
-                                    <p>첨부파일이 없습니다</p>
-                                )}
-
-                                {/* 새로 올릴 첨부파일 세팅 */}
-                                {newFileUrl ?
-                                    (newFileUrl.map((file, index) => (
-                                        <div key={index} >
-
-                                            <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
-                                                {file.name}
-                                            </Button>
-                                            <Button onClick={() => removeNewFile(index)}>Remove</Button>
+                                    {/* Existing input fields */}
+                                    {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
+                                    <div className="form-outline mb-4" style={{marginTop:'50px'}}>
+                                        <strong style={{fontSize:'20px'}}> Fields of Interests</strong>
+                                        <hr></hr>
+                                        <p style={{marginLeft:'15px', marginRight:'15px'}}>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 
+                                        <b>* 선호도는 중복해서 체크할 수 없습니다. * </b></p>
+                                        <p style={{marginLeft:'15px', marginRight:'15px', color:'gray'}}>
+                                            * 다양한 선호도 분포는 포트폴리오 추천에 도움이 됩니다
+                                        </p>
+                                        <table style={{ marginLeft:'15px', marginRight:'15px', marginTop:'40px', display:'flex', justifyContent:'center'}}>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Web</td>
+                                                    <td>{renderRadioGroup('web')}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>App</td>
+                                                    <td>{renderRadioGroup('app')}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Game</td>
+                                                    <td>{renderRadioGroup('game')}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>AI</td>
+                                                    <td>{renderRadioGroup('ai')}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <form onSubmit={onSubmitPortfolio}>
+                                        {/* Short Introduce */}
+                                        <div className="form-outline mb-4" style={{marginTop:'120px'}}>
+                                            <strong style={{fontSize:'20px'}}> Brief Introduction</strong>
+                                            <hr></hr>
+                                            <p style={{marginLeft:'15px', marginRight:'15px', marginBottom:'40px'}}>프로필과 함께 유저들에게 가장 먼저 보이는 한 줄 소개입니다. 강렬한 문장으로 다른 유저들에게 자신을 소개해 보세요!</p>
+                                            <Input
+                                                type="text"
+                                                name="shortIntroduce"
+                                                placeholder="Edit Short Introduce"
+                                                value={existingShortIntroduce}
+                                                onChange={onChangeHandler}
+                                            />
                                         </div>
-                                    )))
-                                    : (
-                                        null
-                                    )}
+                                        {/* Introduce */}
+                                        <div className="form-outline mb-4" style={{marginTop:'120px'}}>
+                                            <strong style={{fontSize:'20px'}}> Experience </strong>
+                                            <hr></hr>
+                                            <TextArea
+                                                type="text"
+                                                name="introduce"
+                                                placeholder="Edit Introduce"
+                                                value={existingIntroduce}
+                                                onChange={onChangeHandler}
+                                                autoSize={{ minRows: 20 }}
+                                            />
+                                        </div>
+                                        {/* File URL */}
+                                        <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                                            <strong>Photos</strong>
+                                        </div>
+                                        <div className="form-outline mb-4">
+                                            <div>
+                                                <Upload
+                                                    accept="image/*"
+                                                    showUploadList={false}
+                                                    beforeUpload={(image) => {
+                                                        setNewPromoteImageUrl([...newPromoteImageUrl, image]);
+                                                        return false; // Stops the upload action
+                                                    }}
+                                                >
+                                                    <Button icon={<UploadOutlined />}>Upload Photo</Button>
+                                                </Upload>
+
+                                                {/* 기존에 올려놨던 이미지 세팅 */}
+                                                {promoteImageUrl ? (
+                                                    promoteImageUrl.map((imageUrl, index) => (
+                                                        <div key={index} >
+                                                            <img
+                                                                key={index}
+                                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                                                alt={`홍보 사진 ${index + 1}`}
+                                                                style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
+                                                                onClick={() => handlePreview(`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`)
+                                                                }
+                                                            />
+                                                            <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                                                        </div>
+
+                                                    ))
+                                                ) : (
+                                                    <p>이미지가 없습니다</p>
+                                                )}
+
+                                                {/* 새로 올릴 이미지 세팅 */}
+                                                {newPromoteImageUrl ?
+                                                    (newPromoteImageUrl.map((image, index) => (
+                                                        <div key={index} >
+                                                            <img
+                                                                src={URL.createObjectURL(image)}
+                                                                alt="홍보 사진"
+                                                                style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
+                                                                onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                                            />
+                                                            <Button onClick={() => removeNewPromoteImage(index)}>Remove</Button>
+                                                        </div>
+                                                    )))
+                                                    : (
+                                                        null
+                                                    )}
+                                            </div>
+                                        </div>
+                                        <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
+                                            <img alt="포트폴리오 이미지" style={{ width: '100%' }} src={previewImage} />
+                                        </Modal>
+                                        <div style={{ marginTop: '5px', marginBottom: '5px' }}>
+                                            <strong>Attatchment</strong>
+                                        </div>
+                                        <div className="form-outline mb-4">
+                                            <Upload
+                                                accept=".pdf,.doc,.docx"
+                                                showUploadList={false}
+                                                beforeUpload={(file) => {
+                                                    setNewFileUrl([...newFileUrl, file]);
+                                                    return false;
+                                                }}
+                                            >
+                                                <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
+                                            </Upload>
+
+                                            {/* 기존에 올려놨던 첨부파일 세팅 */}
+                                            {fileUrl ? (
+                                                fileUrl.map((file, index) => (
+
+                                                    <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                                        <Button
+                                                            onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                                        >
+                                                            {file.fileName} {/* 파일 이름 표시 */}
+                                                        </Button>
+                                                        <Button onClick={() => removeFile(index)}>Remove</Button>
+                                                    </div>
+
+
+
+                                                ))
+                                            ) : (
+                                                <p>첨부파일이 없습니다</p>
+                                            )}
+
+                                            {/* 새로 올릴 첨부파일 세팅 */}
+                                            {newFileUrl ?
+                                                (newFileUrl.map((file, index) => (
+                                                    <div key={index} >
+
+                                                        <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
+                                                            {file.name}
+                                                        </Button>
+                                                        <Button onClick={() => removeNewFile(index)}>Remove</Button>
+                                                    </div>
+                                                )))
+                                                : (
+                                                    null
+                                                )}
+                                        </div>
+                                        {/* Submit button */}
+                                        <Button type="primary" block htmlType="submit">Update Portfolio</Button>
+                                    </form>
+
                             </div>
-                            {/* Submit button */}
-                            <Button type="primary" block htmlType="submit">Update Portfolio</Button>
-                        </form>
+                        </Card>
                     </Col>
                 </Row>
             ) : (

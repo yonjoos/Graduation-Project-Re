@@ -49,6 +49,7 @@ function MyPage() {
     const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
+    const [remove, setRemove] = useState(null);
 
 
     // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅 -> userDto값이 세팅되어짐
@@ -118,6 +119,12 @@ function MyPage() {
         setUserBaseInfo((prevData) => ({ ...prevData, [fieldName]: value }));
     };
 
+    const handleRemoveProfileImage = () => {
+        setSelectedImage(null);
+        setRemove(true);
+        
+    }
+
 
     //수정하기 버튼 누면 일어나는 액션
     //백으로 닉네임, 이름, 비밀번호, 프사 전달
@@ -131,7 +138,12 @@ function MyPage() {
 
                         //기본정보가 백으로 전달되고 나면
                         //프로필 사진 업데이트 시작
-                        return handleSubmit(); 
+                        if(remove){
+                            return removeProfileImage();
+                            
+
+                        }else{return handleSubmit(); }
+                        
                     } else {
                         console.error('Unknown response:', response.data);
                         message.error('정보 업데이트에 실패했습니다.');
@@ -152,6 +164,41 @@ function MyPage() {
         }
     };
     
+    const removeProfileImage = () =>{
+        
+        return new Promise((resolve, reject) => {
+                
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                
+                axios
+                    .put(`/removeProfileImage`, formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setProfileUploaded(true);
+                            setProfileImage(null);
+                            setRemove(false);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+       
+        });
+
+    }
     //프사 업데이트 함수, 따로 매개변수는 없고 useState를 static하게 바로 사용
     const handleSubmit = () => {
         return new Promise((resolve, reject) => {
@@ -305,7 +352,7 @@ function MyPage() {
 
     return (
         <div style={{width:'1200px'}}>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ marginTop:'10px', display: 'flex', flexDirection: 'row' }}>
                 <div style={{ width: '18%' }}>
                     <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
                         <Menu.Item key="info">정보 수정</Menu.Item>
@@ -407,34 +454,56 @@ function MyPage() {
                                             {/* 이미 있는 프사 있으면 띄움 */}
                                             {/* 로컬에서 선택한 이미지가 있으면 그걸 띄우고 기존 프사는 띄우지 않음 */}
                                             <div style={{ display: 'flex', marginBottom: '8px' }}>
-                                                    {selectedImage ? (
-                                                        //새로 바꿀 이미지
-                                                        <img
-                                                        src={URL.createObjectURL(selectedImage)}
-                                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                                        onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                                        />
-                                                    ):(
-                                                        //기존 프사
-                                                        <img
-                                                            style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                                        />
+                                                {(remove) ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 1 }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
+                                                />
 
-                                                    )}
+                                                ) : (null)}
+
+                                                {!remove && selectedImage ? (
+                                                    //새로 바꿀 이미지
+                                                    <img
+                                                    src={URL.createObjectURL(selectedImage)}
+                                                    style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
+                                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                    />
+                                                ):(
+                                                    //기존 프사
+                                                    null
+
+                                                )}
+                                                {!remove && !selectedImage ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                                />
+                                                ):(null)}
+                                                    
+                                                    
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
-                                                <Upload
+                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer'}}>
+                                                    ⚙️ set image
+                                                    </label>
+                                                    <input
+                                                    type="file"
+                                                    id="fileInput"
                                                     accept="image/*"
-                                                    showUploadList={false}
-                                                    beforeUpload={(image) => {
-                                                        setSelectedImage(image);
-                                                        return false; // Stops the upload action
+                                                    style={{ display: 'none' }}
+                                                    onChange={(event) => {
+                                                        setSelectedImage(event.target.files[0]);
+                                                        // Handle the selected image as needed
                                                     }}
+                                                />
+                                                <span 
+                                                    style={{marginLeft:'30px', cursor:'pointer'}}
+                                                    onMouseUp={handleRemoveProfileImage}
                                                 >
-                                                    <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
-                                                </Upload>
+                                                    remove
+                                                </span>
                                                 
                                             </div>
                                         </div>

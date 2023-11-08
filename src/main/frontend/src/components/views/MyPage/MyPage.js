@@ -49,6 +49,7 @@ function MyPage() {
     const [previewVisible, setPreviewVisible] = useState(false); // To control the visibility of the preview modal
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
+    const [remove, setRemove] = useState(null);
 
 
     // MyPage가 마운트 될 때 /userInfo에서 데이터를 가져와 data에 세팅 -> userDto값이 세팅되어짐
@@ -85,6 +86,8 @@ function MyPage() {
         setIsSignOutButtonEnabled(signOutPasswordFieldFilled); //만약 하나라도 입력되지 않으면 버튼 활성화되지 않음
     }, [currentPasswordForSignOut])
 
+
+    //프로필 사진 백에서 가져오기
     useEffect(()=>{
 
         request('GET', '/userProfileImage')
@@ -97,7 +100,7 @@ function MyPage() {
                 console.error("Error fetching profile image:", error);
             });
 
-    }, [setProfileUploaded])
+    }, [profileImage])
 
 
 
@@ -116,127 +119,140 @@ function MyPage() {
         setUserBaseInfo((prevData) => ({ ...prevData, [fieldName]: value }));
     };
 
+    const handleRemoveSelectedImage = () => {
+        setSelectedImage(null);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
+        
+    };
 
-    const handleSubmit = () => {
-        if (selectedImage) {
-            const formData = new FormData();
-            formData.append('imageUrl', selectedImage);
-            console.log(selectedImage);
-            console.log(formData);
-    
-            // Include the authentication token (replace 'yourAuthToken' with the actual token)
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-                    'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
-                },
-            };
-            console.log("왜안돼");
-    
-            axios
-            .post('/updateProfileImage', formData, config) 
-            .then((response) => {
-                if (response.data === 'success') {
-                    alert('Information has been updated.');
-                    setSelectedImage(null);
-                    setProfileUploaded(true);
+    const handleResetProfileImage = () =>{
+        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
+    };
 
-                    navigate('/myPage');
+    const handleRemove = () =>{
+        console.log("haneldRemove🩸");
+        selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
+    }
 
-                } else {
-                    console.error('Unknown response:', response.data);
-                    message.error('Failed to update information.');
-                }
-            })
-            .catch((error) => {
-            });
+
+    //수정하기 버튼 누면 일어나는 액션
+    //백으로 닉네임, 이름, 비밀번호, 프사 전달
+    const updateInfo = (updatedData) => {
+        if (updatedData.nickName && updatedData.userName && updatedData.password) { //기본정보 필수로 다 입력해야 작동
+            request('PUT', '/updateUserInfo', updatedData)
+                .then((response) => {
+                    if (response.data === "User information has been successfully updated.") {
+                        alert('정보가 업데이트되었습니다.');
+                        setUserBaseInfo((prevData) => ({ ...prevData, ...updatedData, password: '' }));
+
+                        //기본정보가 백으로 전달되고 나면
+                        //프로필 사진 업데이트 시작
+                        if(remove){
+                            return removeProfileImage();
+                            
+
+                        }else{return handleSubmit(); }
+                        
+                    } else {
+                        console.error('Unknown response:', response.data);
+                        message.error('정보 업데이트에 실패했습니다.');
+                    }
+                })
+                .then((secondResponse) => {
+                    if (secondResponse === 'success') { //프사 업데이트(secondResponse)가 성공하면
+                    } else {
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error updating information:', error);
+                    message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
+                });
+        }else{
+            //모든 필수정보 다 입력하지 않으면
+            message.warning('모든 필수 정보를 입력하세요.');
         }
     };
+    
+    const removeProfileImage = () =>{
+        
+        return new Promise((resolve, reject) => {
+                
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                
+                axios
+                    .put(`/removeProfileImage`, formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setProfileUploaded(true);
+                            setProfileImage(null);
+                            setRemove(false);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+       
+        });
+
+    }
+    //프사 업데이트 함수, 따로 매개변수는 없고 useState를 static하게 바로 사용
+    const handleSubmit = () => {
+        return new Promise((resolve, reject) => {
+            if (selectedImage) {
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                
+                axios
+                    .post('/updateProfileImage', formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setSelectedImage(null);
+                            setProfileUploaded(true);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+            } else {
+                resolve('noImage'); 
+            }
+        });
+    };
+    
     
     
     
 
     // '회원 정보 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
-    const updateInfo = (updatedData) => {
-        if (updatedData.nickName && updatedData.userName && updatedData.password && selectedImage) { //닉네임, 이름, 패스워드가 다 입력되면, 백엔드에 요청을 보냄
-            request('PUT', '/updateUserInfo', updatedData)
-                .then((response) => {
-                    if (response.data === "User information has been successfully updated.") {
-                        alert('정보가 업데이트되었습니다.');
-                        setUserBaseInfo((prevData) => ({ ...prevData, ...updatedData, password: '' })); //업데이트가 성공적으로 되었음 - 비밀번호 필드는 다시 빈 값으로 세팅
-                        navigate('/myPage');
-                    }
-
-                    else {
-                        console.error('Unknown response:', response.data);
-                        message.error('정보 업데이트에 실패했습니다.');
-                    }
-                })
-                .catch((error) => { //백엔드에서 예외를 보냈을 경우
-                    if (error.response && error.response.data) { //예외 데이터를 파싱(문자열을 확인)
-                        const errorMessage = error.response.data;
-
-                        if (errorMessage === "Passwords do not match") {//비밀번호가 틀렸을 경우
-                            message.warning('정보 업데이트에 실패했습니다. 기존의 비밀번호를 올바르게 입력하세요.');
-
-                        } else if (errorMessage === "Nickname already in use") {//닉네임이 중복되는 경우
-                            message.error('닉네임이 이미 사용 중입니다. 다른 닉네임을 선택하세요.');
-
-                        } else {
-                            message.error('정보 업데이트에 실패했습니다.');
-                        }
-                    } else {
-                        // Handle other errors or network issues
-                        console.error('Error updating information:', error);
-                        message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
-                    }
-                });
-
-                const formData = new FormData();
-            formData.append('imageUrl', selectedImage);
-            console.log(selectedImage);
-            console.log(formData);
     
-            // Include the authentication token (replace 'yourAuthToken' with the actual token)
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-                    'Authorization': `Bearer ${getAuthToken()}`, // Include your authorization header if needed
-                },
-            };
-            console.log("왜안돼");
-    
-            axios
-            .post('/updateProfileImage', formData, config) 
-            .then((response) => {
-                if (response.data === 'success') {
-                    alert('Information has been updated.');
-                    setSelectedImage(null);
-                    setProfileUploaded(true);
-
-                    window.location.reload();
-                    navigate('/myPage');
-
-                } else {
-                    console.error('Unknown response:', response.data);
-                    message.error('Failed to update information.');
-                }
-            })
-            .catch((error) => {
-            });
-
-            // Trigger a page refresh in React component
-            
-
-        } else {
-            //만약 모든 필드값을 다 입력하지 않은 경우
-            message.warning('모든 필수 정보를 입력하세요.');
-        }
-
-
-
-        
-    };
 
     // '비밀 번호 변경'과 관련하여 백엔드에 request를 보내고, 그에 대한 response 처리를 하는 곳
     const updatePassword = () => {
@@ -348,7 +364,7 @@ function MyPage() {
 
     return (
         <div style={{width:'1200px'}}>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ marginTop:'10px', display: 'flex', flexDirection: 'row' }}>
                 <div style={{ width: '18%' }}>
                     <Menu mode="vertical" selectedKeys={[selectedOption]} onClick={handleMenuClick}>
                         <Menu.Item key="info">정보 수정</Menu.Item>
@@ -363,9 +379,9 @@ function MyPage() {
                                 <Form>
                                     <div style={{display:'flex', paddingLeft:'20px', paddingRight:'20px',alignItems: 'center' }}>
                                         <div style={{display:'grid', width :'1200px'}}>
-                                            <div >
+                                            <div style={{marginTop:'20px'}}>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         이메일
                                                     </div>
                                                     <div>
@@ -379,7 +395,7 @@ function MyPage() {
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         닉네임
                                                     </div>
                                                     <div>
@@ -388,7 +404,7 @@ function MyPage() {
                                                                 value={userBaseInfo.nickName}
                                                                 placeholder = "닉네임을 입력해주세요"
                                                                 onChange={(e) => handleInputChange('nickName', e.target.value)}
-                                                                style={{ backgroundColor: '#f0f0f0', width:'300px' }}
+                                                                style={{ width:'300px' }}
                                                             />
                                                     </div>
                                                     <div>
@@ -419,7 +435,7 @@ function MyPage() {
                                                     )}
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         성명
                                                     </div>
                                                     <div>
@@ -428,11 +444,11 @@ function MyPage() {
                                                                 value={userBaseInfo.userName}
                                                                 placeholder="이름을 입력해주세요"
                                                                 onChange={(e) => handleInputChange('userName', e.target.value)}
-                                                                style={{ backgroundColor: '#f0f0f0', width:'400px' }}  />
+                                                                style={{ width:'400px' }}  />
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}}>
-                                                    <div style={{marginRight:'10px', width:'50px'}}>
+                                                    <div style={{marginRight:'10px', width:'90px'}}>
                                                         비밀번호
                                                     </div>
                                                     <div>
@@ -441,47 +457,67 @@ function MyPage() {
                                                                     value={userBaseInfo.password || ''} //비밀번호는 백엔드에서 가져오지 못했으므로 빈칸으로 세팅
                                                                     placeholder="비밀번호를 입력해주세요"
                                                                     onChange={(e) => handleInputChange('password', e.target.value)}
-                                                                    style={{ backgroundColor: '#f0f0f0', width:'400px' }}  />
+                                                                    style={{ width:'400px' }}  />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div style={{marginRight:'30px'}}>
                                             {/* 이미 있는 프사 있으면 띄움 */}
-                                            {/* <div style={{ borderRadius: '50%', backgroundColor: 'skyblue', width: '200px', height: '200px' }}>
-                                                <Image
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                                    style={{ borderRadius: '50%', width: '200px', height: '200px', objectFit: 'cover' }}
-                                                />
-                                            </div> */}
-                                            {/* 미리보기 */}
+                                            {/* 로컬에서 선택한 이미지가 있으면 그걸 띄우고 기존 프사는 띄우지 않음 */}
                                             <div style={{ display: 'flex', marginBottom: '8px' }}>
-                                                    {selectedImage ? (
-                                                        <img
-                                                        src={URL.createObjectURL(selectedImage)}
-                                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                                        onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                                        />
-                                                    ):(
-                                                        <img
-                                                            style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                                        />
+                                                {(remove) ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 1 }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
+                                                />
 
-                                                    )}
+                                                ) : (null)}
+
+                                                {!remove && selectedImage ? (
+                                                    //새로 바꿀 이미지
+                                                    <img
+                                                    src={URL.createObjectURL(selectedImage)}
+                                                    style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
+                                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                    />
+                                                ):(
+                                                    //기존 프사
+                                                    null
+
+                                                )}
+                                                {!remove && !selectedImage ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                                />
+                                                ):(null)}
+                                                    
+                                                    
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
-                                                <Upload
+                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer'}}>
+                                                    ⚙️ set image
+                                                    </label>
+                                                    <input
+                                                    type="file"
+                                                    id="fileInput"
                                                     accept="image/*"
-                                                    showUploadList={false}
-                                                    beforeUpload={(image) => {
-                                                        setSelectedImage(image);
-                                                        return false; // Stops the upload action
+                                                    style={{ display: 'none' }}
+                                                    onChange={(event) => {
+                                                        setSelectedImage(event.target.files[0]);
+                                                        console.log("selected " , selectedImage);
+                                                        // Handle the selected image as needed
+                                                        setRemove(false);
                                                     }}
+                                                />
+                                                <span 
+                                                    style={{marginLeft:'30px', cursor:'pointer'}}
+                                                    onMouseUp={()=>handleRemove()}
                                                 >
-                                                    <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
-                                                </Upload>
+                                                    remove
+                                                </span>
                                                 
                                             </div>
                                         </div>
@@ -503,45 +539,63 @@ function MyPage() {
                     {selectedOption === 'password' && (
                         <Card title="비밀번호 변경" style={{ width: '100%' }}>
                             <Form>
-                                <div>
-                                    <Item label="이메일">
-                                        <Input
-                                            type="email"
-                                            value={userBaseInfo.email} //이메일은 화면에 보여주되, 변경 불가능하게 disable설정
-                                            readOnly
-                                            disabled
-                                            style={{ backgroundColor: '#f0f0f0' }}
-                                        />
-                                    </Item>
-                                </div>
-                                <div>
-                                    <Item label="기존 비밀번호">
-                                        <Input
-                                            type="password"
-                                            value={currentPassword}
-                                            placeholder="기존에 사용하던 비밀번호를 입력해주세요"
-                                            onChange={(e) => setCurrentPassword(e.target.value)}
-                                        />
-                                    </Item>
-                                </div>
-                                <div>
-                                    <Item label="새로운 비밀번호">
-                                        <Input
-                                            type="password"
-                                            value={newPassword}
-                                            placeholder = "기존 비밀번호와 다른 비밀번호를 입력해주세요"
-                                            onChange={(e) => setNewPassword(e.target.value)}
-                                        />
-                                    </Item>
-                                </div>
-                                <div>
-                                    <Item label="새로운 비밀번호 확인">
-                                        <Input
-                                            type="password"
-                                            value={confirmNewPassword}
-                                            onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                        />
-                                    </Item>
+                                <div style={{marginTop:'15px', display:'grid', width :'1200px', paddingLeft:'20px', paddingRight:'20px'}}>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            이메일
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="email"
+                                                value={userBaseInfo.email} //이메일은 화면에 보여주되, 변경 불가능하게 disable설정
+                                                readOnly
+                                                disabled
+                                                style={{ backgroundColor: '#f0f0f0', width:'400px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            기존 비밀번호
+                                        </div>
+                                        <div>
+                                            <Input
+                                                    type="password"
+                                                    value={currentPassword}
+                                                    placeholder="기존에 사용하던 비밀번호를 입력해주세요"
+                                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                                    style={{  width:'400px' }}
+                                                />
+                                        </div>
+                                    </div>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            새로운 비밀번호
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="password"
+                                                value={newPassword}
+                                                placeholder = "기존 비밀번호와 다른 비밀번호를 입력해주세요"
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                style={{  width:'400px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{display:'flex', marginRight:'10px', marginBottom:'10px', }}>
+                                        <div style={{marginRight:'10px', width:'90px'}}>
+                                            비밀번호 확인
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="password"
+                                                value={confirmNewPassword}
+                                                placeholder = "새로운 비밀번호를 다시 입력해주세요"
+                                                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                                style={{  width:'400px' }}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                                 <Button
                                     type="primary"

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 //import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider, Modal, Image } from 'antd';
@@ -52,6 +52,7 @@ function PortfolioPage() {
         
     }, [nickName]);
 
+    //프사 띄우는 용도
     useEffect(()=>{
 
 
@@ -93,15 +94,25 @@ function PortfolioPage() {
                     <Row justify="center" key={post.id}>
                         <Col span={16}>
                             <Card headStyle={{ background: '#f0fff0' }}
-                                onClick={() => onClickPosts(post)}
                                 style={{ height: '150px', cursor: 'pointer' }}
                                 title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        {/* 게시물 제목 */}
+                                        <Link
+                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) :(`/study/detail/${post.id}`)}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        </Link>
                                         <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
                                     </div>
-                                }>
+                                }
+                            >
                                 <div>
+                                    {/* 카테고리 태그 */}
                                     <strong style={{ display: 'flex' }}>
 
                                         {post.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
@@ -110,13 +121,17 @@ function PortfolioPage() {
                                         {post.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
                                     </strong>
                                 </div>
-                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
+                                    onMouseUp={()=>onClickPosts(post)}
+                                >
+                                    {/* 한 줄 소개 */}
                                     {post.briefContent}
                                 </div>
                             </Card>
                         </Col>
                     </Row>
-                )))
+                ))
+            )
         }
         else {
             return (
@@ -270,6 +285,24 @@ function PortfolioPage() {
     };
 
 
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+    };
+    
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseEnter = (e) => {
+    e.currentTarget.style.textDecoration = 'underline';
+    };
+
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
+
+
     /*
     RETURN #####################################################################################################################
     RETURN #####################################################################################################################
@@ -296,31 +329,27 @@ function PortfolioPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
-                        <div>
-                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '200px', height: '200px' }}>
-                                    <img
-                                        style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                    />
+                    <div style={{ display:'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '100px', height: '100px' }}>
+                                <img
+                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px', border: '5px solid lightblue' }}
+                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                />
                             </div>
-                            <div style={{ fontSize: '35px' }}>
-                                <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
-                                {/* 
-                                        == 변경사항 ==
-                                        상단 <Divider> 제거, 선이 너무 많음
-                                        하단 <hr> 제거, 같은 이유
-                                    
-                                */}
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ fontSize: '12px' }}>
-                                    <strong>CONTACT : </strong>
-                                    {data && data.email}
+                            <div style={{ width: '90%', marginTop: '30px', fontSize: '30px', display:'grid' }}>
+                                <div>
+                                    <i>{data && data.nickName}</i><b>'s portfolio page</b>
                                 </div>
-                                <div style={{ fontSize: '12px' }}>
-                                    <strong>조회수 : </strong>
-                                    {data && data.viewCount}
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
+                                            <strong>CONTACT : </strong>
+                                            {data && data.email}
+                                        </div>
+                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
+                                            <strong> 조회수 : </strong>
+                                            {data && data.viewCount}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -364,12 +393,6 @@ function PortfolioPage() {
                             <Row>
                                 <Col span={14}>
                                     <Card title="ABOUT" style={{ height: '100%' }} headStyle={{ background: '#ddeeff' }}>
-                                        {/* 
-                                            == 변경사항 ==
-                                            1) 라디오 카드, 한 줄 소개 카드 없애고
-                                            2) 그 두 개를 하나의 카드 안에 넣음
-                                        */}
-
                                         <h6>Nick Name</h6>
                                         {nickName}
                                         <br />
@@ -384,10 +407,6 @@ function PortfolioPage() {
                                 </Col>
                                 <Col span={10}>
                                     <Card title="관심 분야 선호도" style={{ height: '100%' }} headStyle={{ background: '#ddeeff' }}>
-                                        {/* 
-                                        == 변경사항 ==
-                                        관심 분야 선호도 "그래프" -> 관심분야 선호도 그래프 
-                                    */}
                                         {renderPreferenceBar('web')}
                                         {renderPreferenceBar('app')}
                                         {renderPreferenceBar('game')}

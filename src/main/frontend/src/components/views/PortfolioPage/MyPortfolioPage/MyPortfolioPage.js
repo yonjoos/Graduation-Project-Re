@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { /*useSelector,*/ useDispatch } from 'react-redux';
 import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../../_actions/actions';
 import { useState, useEffect } from 'react';
@@ -134,6 +134,20 @@ function MyPortfolioPage() {
         return chunks;
     }
 
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+      };
+    
+      const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      };
+    
+      const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
+
     const renderPosts = (posts) => {
 
         if (loadPosts === "fold") {
@@ -143,14 +157,22 @@ function MyPortfolioPage() {
                     <Row justify="center" key={post.id}>
                         <Col span={16}>
                             <Card headStyle={{ background: '#f0fff0' }}
-                                onClick={() => onClickPosts(post)}
                                 style={{ height: '150px', cursor: 'pointer' }}
                                 title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        <Link
+                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) :(`/study/detail/${post.id}`)}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <div style={{ fontWeight: 'bold' }}>{post.title}</div>
+                                        </Link>
                                         <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
                                     </div>
-                                }>
+                                }
+                            >
                                 <div>
                                     <strong style={{ display: 'flex' }}>
 
@@ -160,7 +182,9 @@ function MyPortfolioPage() {
                                         {post.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
                                     </strong>
                                 </div>
-                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
+                                    onMouseUp={()=>onClickPosts(post)}
+                                >
                                     {post.briefContent}
                                 </div>
                             </Card>
@@ -293,30 +317,38 @@ function MyPortfolioPage() {
             ) : (
                 <div>
                     <div style={{ display:'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between'}}>
-                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '100px', height: '100px' }}>
-                                <img
-                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px', border: '5px solid lightblue' }}
-                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                />
+                        <div style={{ display: 'flex' }}>
+                        <div style={{
+                            width: '110px',  
+                            height: '110px',  
+                            borderRadius: '50%',
+                            border: '5px solid lightblue',
+                            overflow: 'hidden',
+                        }}>
+                            <img
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                            />
                             </div>
-                            <div style={{ marginTop: '30px', marginRight: '30%', fontSize: '30px', display:'grid' }}>
+                            <div style={{ marginLeft:'20px', width: '80%', marginTop: '30px', fontSize: '30px', display:'grid' }}>
                                 <div>
                                     <i>{data && data.nickName}</i><b>'s portfolio page</b>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginRight: '-70%' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <div style={{ fontSize: '12px', marginTop:'10px' }}>
                                             <strong>CONTACT : </strong>
                                             {data && data.email}
                                         </div>
                                     <div style={{ fontSize: '12px', marginTop:'10px' }}>
-                                        <strong> 조회수 : </strong>
-                                        {data && data.viewCount}
+                                            <strong> 조회수 : </strong>
+                                            {data && data.viewCount}
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
@@ -448,7 +480,7 @@ function MyPortfolioPage() {
                             <Card >
                                 <Row justify="space-between">
                                     <Col span={8}>
-                                        <div style={{ fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
+                                        <div style={{ width : '300px', fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>

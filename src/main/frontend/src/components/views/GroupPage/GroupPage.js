@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, Modal, message } from 'antd';
 import { request/*, setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint*/ } from '../../../hoc/request';
@@ -191,272 +191,6 @@ function GroupPage() {
         return formattedDateTime;
     };
 
-    // const renderPosts = (posts) => {
-    //     return (
-    //        <div>
-    //             {posts.map((item, index) => (
-    //                 <Card key={index} style={{ margin: '0 0 10px 0' }}>
-    //                     <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-    //                         <Col span={12} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
-    //                             <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-    //                                 <strong style={{ fontSize: '18px' }}>{item.title}</strong>
-    //                             </div>
-    //                             <div style={{ marginLeft: '3px' }}>
-    //                                 게시판 이름: {item.postType} &nbsp;/&nbsp; 분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-    //                             </div>
-    //                         </Col>
-    //                         <Col span={6} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
-    //                             <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-    //                                 인원: {item.counts} / {item.recruitmentCount}
-    //                             </div>
-    //                             <div style={{ marginLeft: '3px' }}>
-    //                                 모집 마감일: {formatDate(item.endDate)}
-    //                             </div>
-    //                         </Col>
-    //                         <Col span={6}>
-    //                             <div style={{ borderRight: '1px' }}>
-    //                                 {postsOption === 'writer' ? (
-    //                                     // 내가 쓴 게시물을 눌렀을 때 보이는 화면
-    //                                     <div>
-    //                                         <div>
-    //                                             지원자
-    //                                         </div>
-    //                                         {item.applyNickNames ? (
-    //                                             <div>
-    //                                                 {item.applyNickNames.length > 0 && item.applyNickNames.map((nickName, index) => (
-    //                                                     <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
-    //                                                         <div onClick={() => handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
-    //                                                             {nickName}
-    //                                                         </div>
-    //                                                         <div>
-    //                                                             <Button size="small" onClick={() => handleNickNameClick(nickName)} style={{ marginRight: '5px' }}>
-    //                                                                 포트폴리오
-    //                                                             </Button>
-    //                                                             {item.approved[index] ? (
-    //                                                                 // 승인 취소 버튼 클릭 시 모달 열기
-    //                                                                 <Button
-    //                                                                     size="small"
-    //                                                                     onClick={() => {
-    //                                                                         setNickName(nickName); // 승인 취소 대상 유저의 닉네임 저장
-    //                                                                         setPostsId(item.id); // 게시물 ID 저장
-    //                                                                         setCancelModalVisible(true); // 모달 열기
-    //                                                                     }}
-    //                                                                     style={{ marginRight: '5px' }}
-    //                                                                 >
-    //                                                                     승인 취소
-    //                                                                 </Button>
-    //                                                             ) : (
-    //                                                                 <Button
-    //                                                                     size="small"
-    //                                                                     onClick={() => {
-    //                                                                         setNickName(nickName);
-    //                                                                         setPostsId(item.id);
-    //                                                                         setIsModalVisible(true);
-    //                                                                         if (item.isFull) {
-    //                                                                             message.warning('정원이 모두 찼습니다!');
-    //                                                                         }
-    //                                                                     }}
-    //                                                                     style={{ marginRight: '5px' }}
-    //                                                                 >
-    //                                                                     승인
-    //                                                                 </Button>
-    //                                                             )}
-    //                                                         </div>
-    //                                                     </div>
-    //                                                 ))}
-    //                                                 </div>
-    //                                         ) : (
-    //                                             <div>
-    //                                                 {/** item.applyNickNames가 null인 경우 처리. 이 부분 처리 안하면 에러 발생함!! */}
-    //                                             </div>
-    //                                         )}
-    //                                     </div>
-    //                                 ) : (
-    //                                     // 내가 지원한 게시물을 클릭했을 때 보이는 화면
-    //                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-    //                                         <div>
-    //                                             <div>
-    //                                                 작성자
-    //                                             </div>
-    //                                             <div onClick={() => handleNickNameClick(item.writerNickName)} style={{ cursor: 'pointer' }}>
-    //                                                 {item.writerNickName}
-    //                                             </div>
-    //                                         </div>
-    //                                         {/** alignItems로 상하의 가운데에 놓기 */}
-    //                                         <div style={{ display: 'flex', alignItems: 'center' }}>
-    //                                             <div>
-    //                                                 {item.isApproved ? (
-    //                                                     // 승인 완료시 보여줄 내용
-    //                                                     "승인 완료"
-    //                                                 ) : (
-    //                                                     // 승인이 완료되지 않았고
-    //                                                     item.counts === item.recruitmentCount ? (
-    //                                                         // 정원이 다 찼다면, 모집 마감을 보여줌
-    //                                                         "모집 마감"
-    //                                                     ) : (
-    //                                                         // 정원이 다 안찼다면, 승인 대기 중을 보여줌
-    //                                                         "승인 대기 중"
-    //                                                     )
-    //                                                 )}
-    //                                             </div>
-    //                                         </div>
-    //                                     </div>
-    //                                 )}
-    //                             </div>
-    //                         </Col>
-    //                     </Row>
-    //                 </Card>
-    //             ))}
-    //         </div>
-    //     );
-    // }
-
-
-
-
-    // const renderByRole = (postsOption, item) => {
-    //     return (
-    //       <div style={{width:'40px'}}>
-    //         {postsOption === 'writer' ? (
-    //           <div>
-    //             <div>
-    //               지원자
-    //             </div>
-    //             <div>
-    //               {item.applyNickNames ? (
-    //                 <div>
-    //                   {item.applyNickNames.length > 0 && item.applyNickNames.map((nickName, index) => (
-    //                     <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
-    //                       <div onClick={() => handleNickNameClick(nickName)} style={{ cursor: 'pointer' }}>
-    //                         {nickName}
-    //                       </div>
-    //                       <div>
-    //                         <Button size="small" onClick={() => handleNickNameClick(nickName)} style={{ marginRight: '5px' }}>
-    //                           포트폴리오
-    //                         </Button>
-    //                         {item.approved[index] ? (
-    //                           <Button
-    //                             size="small"
-    //                             onClick={() => {
-    //                               setNickName(nickName);
-    //                               setPostsId(item.id);
-    //                               setCancelModalVisible(true);
-    //                             }}
-    //                             style={{ marginRight: '5px' }}
-    //                           >
-    //                             승인 취소
-    //                           </Button>
-    //                         ) : (
-    //                           <Button
-    //                             size="small"
-    //                             onClick={() => {
-    //                               setNickName(nickName);
-    //                               setPostsId(item.id);
-    //                               setIsModalVisible(true);
-    //                               if (item.isFull) {
-    //                                 message.warning('정원이 모두 찼습니다!');
-    //                               }
-    //                             }}
-    //                             style={{ marginRight: '5px' }}
-    //                           >
-    //                             승인
-    //                           </Button>
-    //                         )}
-    //                       </div>
-    //                     </div>
-    //                   ))}
-    //                 </div>
-    //               ) : 
-    //               (
-    //                 <div>
-    //                   {/** item.applyNickNames가 null인 경우 처리. 이 부분 처리 안하면 에러 발생함!! */}
-    //                 </div>
-    //               )
-    //               }
-    //             </div>
-    //           </div
-    //         ) : (
-    //           <div style={{ display: 'flex', justifyContent: 'space-between' }}
-    //             <div>
-    //               <div>
-    //                 작성자
-    //               </div>
-    //               <div onClick={() => handleNickNameClick(item.writerNickName)} style={{ cursor: 'pointer' }}>
-    //                 {item.writerNickName}
-    //               </div>
-    //             </div>
-    //             {/** alignItems로 상하의 가운데에 놓기 */}
-    //             <div style={{ display: 'flex', alignItems: 'center' }}>
-    //               <div>
-    //                 {item.isApproved ? (
-    //                   "승인 완료"
-    //                 ) : (
-    //                   item.counts === item.recruitmentCount ? (
-    //                     "모집 마감"
-    //                   ) : (
-    //                     "승인 대기 중"
-    //                   )
-    //                 )}
-    //               </div>
-    //             </div>
-    //           </div>
-    //         )}
-    //       </div>
-    //     );
-    //   }
-
-
-    // const categoryTagStyle = {
-    //     display: 'inline-block',
-    //     padding: '0px 5px 0px 5px',
-    //     backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
-    //     borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-    //     marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
-    //     color: '#677779', /* 텍스트 색상 설정 */
-    //     marginLeft: '-0.3%',
-    //     marginRight: '0.6%'
-    // };
-
-    // const renderPosts = (posts) =>{
-    //     return(
-    //         <div gutter={[16, 16]} style={{ marginTop: '0px', padding: '0px', width:'100%' }} justify="space-between">
-    //             <Card title={`GROUPS`}>
-    //             {posts.map((item, index) => (
-    //                 <div key={index} style={{ display: 'grid', cursor: 'pointer' }} onClick={() => handleRowClick(item.id, item.postType)}>
-    //                     <div style={{marginLeft:'10px' }}>
-    //                         {item.postType}
-    //                     </div>
-    //                     <div style={{ display: 'flex', marginTop: '0px' }}>
-    //                         <div style={{ width: '80%', display: 'grid', marginLeft:'10px' }}>  
-    //                             <div style={{ marginTop: '5px' }}>
-    //                                 <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-    //                             </div>
-    //                             <strong style={{ display: 'inline-block' }}>
-    //                                 {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
-    //                                 {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
-    //                                 {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
-    //                                 {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
-    //                             </strong>
-    //                         </div>
-    //                         <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems:'center' }}>
-    //                             <div style={{ marginTop: '-10.0%' }}>
-    //                                 인원: {item.counts} / {item.recruitmentCount}
-    //                                 <br/>
-    //                                 마감: {formatDate(item.endDate)}
-    //                                 <br/>
-    //                                 <div style={{ color: 'gray', fontSize: 'small', marginTop: '10px' }}>
-    //                                     {formatDateTime(item.finalUpdatedTime)}
-    //                                 </div>
-    //                             </div>
-    //                         </div>
-    //                     </div>
-    //                     <Divider />
-    //                 </div>
-    //             ))}  
-    //             </Card>
-    //         </div>
-    //     )
-    // }
 
     const categoryTagStyle = {
         display: 'flex',
@@ -466,38 +200,88 @@ function GroupPage() {
         marginLeft: '-0.3%',
         marginRight: '5px'
     };
+    
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color:'black'
+    };
+    
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+    };
+    
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
+    
 
     const renderPosts = (posts) => {
         return (
             <div gutter={[16, 16]} style={{ marginTop: '10px', padding: '1px', width: '100%', cursor: 'pointer' }} justify="space-between" >
                 <Card title={`GROUPS`} headStyle={{ background: '#DDEEFF' }}>
                     {posts.map((item, index) => (
-                        <div key={index} style={{ display: 'grid' }} onClick={(e) => {
-                            if (e.target.tagName.toLowerCase() === 'strong' && e.target.classList.contains('nickname')) { //strong 태그 중 nickname이라는 클래스네임이 달려 있는 태그의 경우에만 포트폴리오로 navigate
-                                handleNicknameClick(item.nickName);
-                            } else {
-                                handleRowClick(item.id, item.postType);
-                            }
-                        }}>
+                        <div >
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
                                     <div style={{display:'flex', alignItems: 'center', marginBottom:'15px'}}>
                                         <div>
-                                            <img
-                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
-                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                            />
+                                            {/* 프사 누르면 해당 유저 포트폴리오로 이동 */}
+                                            <Link
+                                                to={`/portfolio/${item.nickName}`} 
+                                                key={index}
+                                                className="hoverable-item"
+                                                onMouseEnter={handleMouseEnter}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={linkStyle}
+                                            >
+                                                {/* 포트폴리오 사진 */}
+                                                <img
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                />
+                                            </Link>
+                                            
                                         </div>
                                         <div >
-                                            <strong className="nickname">{item.nickName}</strong>
+                                            {/* 닉네임 누르면 포트폴리오로 이동 */}
+                                            <Link
+                                                    to={`/portfolio/${item.nickName}`} 
+                                                    key={index}
+                                                    className="hoverable-item"
+                                                    onMouseEnter={handleMouseEnter}
+                                                    onMouseLeave={handleMouseLeave}
+                                                    style={linkStyle}
+                                            >
+                                                {/* 닉네임 */}
+                                                <strong className="nickname">{item.nickName}</strong>
+                                            </Link>
+                                            
                                         </div>
                                     </div>
                                     
                                     <div style={{ display: 'flex' }}>
-                                        <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        {/* 게시물 제목 누르면 게시글로 이동 */}
+                                        <Link
+                                         to={(item.postType === "PROJECT") ? (`/project/detail/${item.id}`) :(`/study/detail/${item.id}`)} 
+                                         key={index}
+                                         className="hoverable-item"
+                                         onMouseEnter={handleMouseEnter}
+                                         onMouseLeave={handleMouseLeave}
+                                         style={linkStyle}
+                                        >
+                                            {/* 게시물 제목 */}
+                                            <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        </Link>
                                     </div>
                                     
-                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}>
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
+                                        onMouseUp={()=>handleRowClick(item.id, item.postType)}
+                                    >
+                                        {/* 한 줄 소개 눌러도 게시글로 이동, <Link>안 쓰고 <div>의 이벤트 함수를 썼기 때문에 밑줄기능 없음 */}
                                         {truncateString(item.briefContent, 50)}
                                     </div>
                                     <strong style={{ display: 'flex',marginTop:'10px' }}>

@@ -201,17 +201,20 @@ function GroupPage() {
         marginRight: '5px'
     };
     
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
     const linkStyle = {
         textDecoration: 'none',
         transition: 'text-decoration 0.3s',
         color:'black'
-      };
+    };
     
-      const handleMouseEnter = (e) => {
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseEnter = (e) => {
         e.currentTarget.style.textDecoration = 'underline';
-      };
+    };
     
-      const handleMouseLeave = (e) => {
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseLeave = (e) => {
         e.currentTarget.style.textDecoration = 'none';
     };
     
@@ -226,6 +229,7 @@ function GroupPage() {
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
                                     <div style={{display:'flex', alignItems: 'center', marginBottom:'15px'}}>
                                         <div>
+                                            {/* 프사 누르면 해당 유저 포트폴리오로 이동 */}
                                             <Link
                                                 to={`/portfolio/${item.nickName}`} 
                                                 key={index}
@@ -234,6 +238,7 @@ function GroupPage() {
                                                 onMouseLeave={handleMouseLeave}
                                                 style={linkStyle}
                                             >
+                                                {/* 포트폴리오 사진 */}
                                                 <img
                                                     style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
@@ -242,6 +247,7 @@ function GroupPage() {
                                             
                                         </div>
                                         <div >
+                                            {/* 닉네임 누르면 포트폴리오로 이동 */}
                                             <Link
                                                     to={`/portfolio/${item.nickName}`} 
                                                     key={index}
@@ -250,6 +256,7 @@ function GroupPage() {
                                                     onMouseLeave={handleMouseLeave}
                                                     style={linkStyle}
                                             >
+                                                {/* 닉네임 */}
                                                 <strong className="nickname">{item.nickName}</strong>
                                             </Link>
                                             
@@ -257,6 +264,7 @@ function GroupPage() {
                                     </div>
                                     
                                     <div style={{ display: 'flex' }}>
+                                        {/* 게시물 제목 누르면 게시글로 이동 */}
                                         <Link
                                          to={(item.postType === "PROJECT") ? (`/project/detail/${item.id}`) :(`/study/detail/${item.id}`)} 
                                          key={index}
@@ -265,6 +273,7 @@ function GroupPage() {
                                          onMouseLeave={handleMouseLeave}
                                          style={linkStyle}
                                         >
+                                            {/* 게시물 제목 */}
                                             <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
                                         </Link>
                                     </div>
@@ -272,6 +281,7 @@ function GroupPage() {
                                     <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
                                         onMouseUp={()=>handleRowClick(item.id, item.postType)}
                                     >
+                                        {/* 한 줄 소개 눌러도 게시글로 이동, <Link>안 쓰고 <div>의 이벤트 함수를 썼기 때문에 밑줄기능 없음 */}
                                         {truncateString(item.briefContent, 50)}
                                     </div>
                                     <strong style={{ display: 'flex',marginTop:'10px' }}>

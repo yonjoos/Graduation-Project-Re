@@ -52,6 +52,7 @@ function PortfolioPage() {
         
     }, [nickName]);
 
+    //프사 띄우는 용도
     useEffect(()=>{
 
 
@@ -96,6 +97,7 @@ function PortfolioPage() {
                                 style={{ height: '150px', cursor: 'pointer' }}
                                 title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        {/* 게시물 제목 */}
                                         <Link
                                             to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) :(`/study/detail/${post.id}`)}
                                             className="hoverable-item"
@@ -110,6 +112,7 @@ function PortfolioPage() {
                                 }
                             >
                                 <div>
+                                    {/* 카테고리 태그 */}
                                     <strong style={{ display: 'flex' }}>
 
                                         {post.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
@@ -121,6 +124,7 @@ function PortfolioPage() {
                                 <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
                                     onMouseUp={()=>onClickPosts(post)}
                                 >
+                                    {/* 한 줄 소개 */}
                                     {post.briefContent}
                                 </div>
                             </Card>
@@ -280,17 +284,21 @@ function PortfolioPage() {
         marginRight: '5px'
     };
 
+
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
     const linkStyle = {
         textDecoration: 'none',
         transition: 'text-decoration 0.3s',
         color:'black'
-      };
+    };
     
-      const handleMouseEnter = (e) => {
-        e.currentTarget.style.textDecoration = 'underline';
-      };
-    
-      const handleMouseLeave = (e) => {
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseEnter = (e) => {
+    e.currentTarget.style.textDecoration = 'underline';
+    };
+
+    //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
+    const handleMouseLeave = (e) => {
         e.currentTarget.style.textDecoration = 'none';
     };
 
@@ -385,12 +393,6 @@ function PortfolioPage() {
                             <Row>
                                 <Col span={14}>
                                     <Card title="ABOUT" style={{ height: '100%' }} headStyle={{ background: '#ddeeff' }}>
-                                        {/* 
-                                            == 변경사항 ==
-                                            1) 라디오 카드, 한 줄 소개 카드 없애고
-                                            2) 그 두 개를 하나의 카드 안에 넣음
-                                        */}
-
                                         <h6>Nick Name</h6>
                                         {nickName}
                                         <br />
@@ -405,10 +407,6 @@ function PortfolioPage() {
                                 </Col>
                                 <Col span={10}>
                                     <Card title="관심 분야 선호도" style={{ height: '100%' }} headStyle={{ background: '#ddeeff' }}>
-                                        {/* 
-                                        == 변경사항 ==
-                                        관심 분야 선호도 "그래프" -> 관심분야 선호도 그래프 
-                                    */}
                                         {renderPreferenceBar('web')}
                                         {renderPreferenceBar('app')}
                                         {renderPreferenceBar('game')}

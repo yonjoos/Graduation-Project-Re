@@ -194,6 +194,25 @@ public class UserService {
     }
 
 
+    @Transactional(readOnly = true) //단순 조회 후에 중복 여부 값만 반환하므로
+    public String isNicknameAvailableString(String nickname, String email) {
+
+        //사용자에게 입력받은 nickname을 기반으로 같은 닉네임을 가진 사용자를 찾아보기
+        Optional<User> existingUserWithNickname = userRepository.findByNickName(nickname);
+
+        // 비어있으면 사용 가능한 닉네임
+        if (existingUserWithNickname.isEmpty()) {
+            return "true";
+        }
+        // 민약에 작성한 닉네임을 가진 사람의 이메일이 나의 이메일과 같다면, me를 리턴
+        else if (existingUserWithNickname.get().getEmail().equals(email)) {
+            return "me";
+        }
+        // 비어있지 않으면 사용 불가능한 닉네임
+        else {
+            return "false";
+        }
+    }
 
 
     // 이미 등록되어있는 프로필사진 가져오기
@@ -303,5 +322,11 @@ public class UserService {
         System.out.println("업로드 드");
         userRepository.save(user);
 
+    }
+
+    public void removeProfileUrl(String email){
+        User user = userRepository.findByEmail(email).get();
+        user.setImageUrl(null);
+        userRepository.save(user);
     }
 }

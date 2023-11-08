@@ -287,8 +287,8 @@ function SearchProjectListPage(onSearch) {
         if (dataArray && dataArray.length > 0) {
             return (
 
-                <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
-                    <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                <Card size='small' style={{ padding: 0, margin: 0, width: '100%' }}>
+                    <div style={{ width: '100%', textAlign: 'left', padding: 0 }}>
                         <strong># {title}</strong>
                     </div>
                     <div style={{ margin: 0 }}>
@@ -312,10 +312,11 @@ function SearchProjectListPage(onSearch) {
 
     return (
         <div>
+            <br/>
             <SearchInLandingPage onSearch={handleSearch} initialSearchTerm={searchTerm.searchTerm} />
 
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', margin: '20px 0' }}>
-                <div style={{ position: 'absolute', zIndex: 2 }}>
+                <div style={{ position: 'absolute', zIndex: 2, width:'55%' }}>
                     {renderSection('User', data.userSearchDtoList)}
                     {renderSection('Project', data.projectSearchDtoList)}
                     {renderSection('Study', data.studySearchDtoList)}

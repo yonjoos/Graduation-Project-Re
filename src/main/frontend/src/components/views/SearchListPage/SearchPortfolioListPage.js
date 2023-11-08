@@ -120,6 +120,17 @@ function SearchPortfolioListPage(onSearch) {
         </Menu>
     );
 
+    const categoryTagStyle = {
+        display: 'flex',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        color: '#1365E6', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '5px'
+    };
+
+
     // 최신등록순, 조회수 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
     const handleSortOptionChange = (option) => {
         setSortOption(option);
@@ -136,19 +147,35 @@ function SearchPortfolioListPage(onSearch) {
             <div>
                 <Row gutter={16}>
                     {cards.map((item, index) => (
-
                         <Col xs={24} sm={8} key={index}>
-                            <Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
-                                {/* style = {{cursor: 'pointer'}} */}
+                            {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
+                            {/* style = {{cursor: 'pointer'}} */}
+                            <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <span>
+                                        <img
+                                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                        />
+                                    </span>
+
+                                    <span>{item.nickName}</span>
+                                    {/* <span>{item.cosineSimilarity}</span> */}
+                                </div>
+                            } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>
                                 <b>Field Of Interests</b>
-                                <br />
-                                {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
+                                <strong style={{ display: 'flex', marginTop: '5px' }}>
+                                    {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                    {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                    {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                    {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                </strong>
                                 <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                 <b>Brief Introduction</b>
                                 <br />
-                                {item.shortIntroduce}
+                                {truncateString(item.shortIntroduce, 20)}
                                 <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
-                                <b>조회 수 : </b>
+                                <b>👀 조회 수 : </b>
                                 {item.viewCount}
                             </Card>
                         </Col>
@@ -249,8 +276,8 @@ function SearchPortfolioListPage(onSearch) {
         if (dataArray && dataArray.length > 0) {
             return (
 
-                <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
-                    <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                <Card size='small' style={{ padding: 0, margin: 0, width: '100%' }}>
+                    <div style={{ width: '100%', textAlign: 'left', padding: 0 }}>
                         <strong># {title}</strong>
                     </div>
                     <div style={{ margin: 0 }}>
@@ -275,10 +302,11 @@ function SearchPortfolioListPage(onSearch) {
 
     return (
         <div>
+            <br />
             <SearchInLandingPage onSearch={handleSearch} initialSearchTerm={searchTerm.searchTerm} />
 
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', margin: '20px 0' }}>
-                <div style={{ position: 'absolute', zIndex: 2 }}>
+                <div style={{ position: 'absolute', zIndex: 2, width: '55%' }}>
                     {renderSection('User', data.userSearchDtoList)}
                     {renderSection('Project', data.projectSearchDtoList)}
                     {renderSection('Study', data.studySearchDtoList)}
@@ -315,7 +343,7 @@ function SearchPortfolioListPage(onSearch) {
                 </Row>
             </div>
 
-            <div style={{ textAlign: 'left', margin: "0 0" }}>
+            <div style={{ textAlign: 'center', marginTop: '15px', marginBottom: '15px' }}>
                 <Row>
                     <Col span={18} style={{ textAlign: 'left' }}>
                         {/** 현재 경로가 localhost:3000/search/portfoliocard이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
@@ -343,8 +371,9 @@ function SearchPortfolioListPage(onSearch) {
 
             </div>
 
-
-            {renderCards(portfolioData)}
+            <div style={{ display: 'grid' }}>
+                {renderCards(portfolioData)}
+            </div>
 
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Pagination

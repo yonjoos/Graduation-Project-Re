@@ -1286,8 +1286,8 @@ public class InitialDataLoader implements CommandLineRunner {
         // 추천 시스템 검증 전용 더미 데이터 만들기
         // 추천에 유효한 포폴까지만 생성하도록 하였음.
         // 0000 ~ 4321까지 총 209개의 더미 데이터 생성 필요
-
-//        0000
+//
+////        0000
 //        createUserAndPortfolio("0000", "0000", "0000", "0000", 0, 0, 0, 0, "0000", "0000", "");
 ////        0001
 //        createUserAndPortfolio("0001", "0001", "0001", "0001", 0, 0, 0, 1, "0001", "0001", "");
@@ -1705,6 +1705,5 @@ public class InitialDataLoader implements CommandLineRunner {
 //        createUserAndPortfolio("4320", "4320", "4320", "4320", 4, 3, 2, 0, "4320", "4320", "");
 ////        4321
 //        createUserAndPortfolio("4321", "4321", "4321", "4321", 4, 3, 2, 1, "4321", "4321", "");
-
     }
 }

@@ -44,7 +44,7 @@ function SearchInPortfolioCardPage({ onSearch, onChange }) {
                 onChange={handleInputChange} // 동적 타이핑 할 때마다 호출
                 onSearch={handleSearch} // 돋보기 버튼 클릭하면 호출
                 onPressEnter={handleKeyPress} // 엔터 버튼 눌르면 호출
-                style={{ width: 800 }}
+                style={{ width: '80%' }}
             />
         </Col>
     );

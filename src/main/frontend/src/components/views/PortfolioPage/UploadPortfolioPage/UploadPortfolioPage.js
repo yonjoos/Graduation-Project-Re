@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Row, Col, Input, Button, Radio, message, Upload, Modal } from 'antd';
+import { Row, Col, Input, Button, Radio, message, Upload, Modal, Card } from 'antd';
 import { request, setHasPortfolio } from '../../../../hoc/request';
 import { UploadOutlined } from '@ant-design/icons';
 import { getAuthToken } from '../../../../hoc/request';
@@ -32,7 +32,17 @@ function UploadPortfolioPage() {
     const [selectedImage, setSelectedImage] = useState(null); //업로드할 이미지, 내 도큐먼트에서 선택한거
     const [profileImage, setProfileImage] = useState(null); //이미 등록되어있는 프사 띄우는 용도
     const [profileUploaded, setProfileUploaded] = useState(false);
+    const [remove, setRemove] = useState(false);
 
+    const greetingMessage = (
+        <div>
+         <strong>포트폴리오를 작성하여 자신의 관심사와 경력을 자유롭게 표현할 수 있습니다.</strong>
+         <br></br>
+          <br />개성있는 포트폴리오를 작성하여 다른 유저들에게 능력을 어필해 보세요! 뭐라고 더 적고싶은데 쓸 말이 없다. 허전하네
+          <br />얼어붙은 달그림자 물결위에 차고 한겨울에 거센 파도 어쩌고 저쩌고 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 어떻게든 되겠지...
+          <br />그럼 건투를 빕니당 🍭🍬
+        </div>
+    );
 
     //프사 띄우기
     useEffect(()=>{
@@ -48,7 +58,7 @@ function UploadPortfolioPage() {
             });
 
     }, [profileImage])
-
+ 
 
     //프사 업로드
     const handleSubmit = () => {
@@ -84,6 +94,13 @@ function UploadPortfolioPage() {
         });
     };
 
+    useEffect(()=>{
+        if(selectedImage){
+            setRemove(null);
+        }
+
+    }, [selectedImage])
+
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
     const onChangeHandler = (event) => {
@@ -117,11 +134,11 @@ function UploadPortfolioPage() {
             value={preferences[field]}
             onChange={(e) => handlePreferenceChange(field, e.target.value)}
         >
-            <Radio value={0}>0</Radio>
-            <Radio value={1}>1</Radio>
-            <Radio value={2}>2</Radio>
-            <Radio value={3}>3</Radio>
-            <Radio value={4}>4</Radio>
+            <Radio value={0}>매우 싫음</Radio>
+            <Radio value={1}>싫음</Radio>
+            <Radio value={2}>보통</Radio>
+            <Radio value={3}>좋음</Radio>
+            <Radio value={4}>매우 좋음</Radio>
         </Radio.Group>
     );
 
@@ -173,7 +190,11 @@ function UploadPortfolioPage() {
                 alert('포트폴리오가 성공적으로 생성되었습니다.');
     
                 //프사 업로드
-                handleSubmit(); 
+                if(remove){
+                    return removeProfileImage();
+                    
+
+                }else{return handleSubmit(); }
             })
             .catch((error) => {
                 console.error('Failed to upload post:', error);
@@ -204,51 +225,157 @@ function UploadPortfolioPage() {
         setPreviewVisible(false);
     };
 
+    const handleRemoveSelectedImage = () => {
+        setSelectedImage(null);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
+        
+    };
+
+    const handleResetProfileImage = () =>{
+        setRemove(true);
+        console.log("selectedImage" , selectedImage);
+        console.log("remove" , remove);
+    };
+
+    const handleRemove = () =>{
+        selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
+    }
+    
+
+    const removeProfileImage = () =>{
+        
+        return new Promise((resolve, reject) => {
+                
+                const formData = new FormData();
+                formData.append('imageUrl', selectedImage);
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                };
+                
+                axios
+                    .put(`/removeProfileImage`, formData, config)
+                    .then((response) => {
+                        if (response.data === 'success') {
+                            setProfileUploaded(true);
+                            setProfileImage(null);
+                            setRemove(false);
+                            window.location.reload();
+                            resolve('success'); 
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('Failed to update information.');
+                            reject('failure'); 
+                        }
+                    })
+                    .catch((error) => {
+                        reject('failure'); 
+                    });
+       
+        });
+
+    }
+
 
     return (
         <Row justify="center">
-            <Col span={12}>
-                <form onSubmit={onSubmitPortfolio}>
-                    <div style={{ display: 'flex', marginBottom: '8px' }}>
-                        {/* 기존 프사가 있으면 띄우고 */}
-                        {/* 바꿀 이미지를 선택했으면 기존 프사 대신 그걸 띄움 */}
-                        {selectedImage ? (
-                            //바꿀 프사
-                            <img
-                            src={URL.createObjectURL(selectedImage)}
-                            style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue' }}
-                            onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                            />
-                        ):(
-                            //기존 프사
-                            <img
-                                style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue' }}
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                            />
+            <Col span={24}>
+                <Card title = {'Write down your information'} style={{marginTop:'20px'}} headStyle={{ background: '#ddeeff' }}>
+                <form onSubmit={onSubmitPortfolio} style={{paddingLeft:'45px', paddingRight:'45px'}}>
+                    <div style={{display:'flex', alignItems:'center', borderRadius:'10px', border: '1px solid lightgray'}}> 
+                    <div 
+                                        style={{display:'grid',
+                                        justifyContent:'center', 
+                                        marginLeft:'30px',
+                                        marginBottom:'20px',
+                                    }}>
+                                        <div 
+                                            style={{
+                                            width: '140px',  
+                                            height: '140px',  
+                                            borderRadius: '50%',
+                                            border: '5px solid lightblue',
+                                            overflow: 'hidden',
+                                            marginTop:'20px',
+                                            marginBottom:'10px'
+                                        }}>
+                                            {(remove) ? (
+                                                    <img
+                                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px',  }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
+                                                />
 
-                        )}
+                                                ) : (null)}
+
+                                            {!remove && selectedImage ? (
+                                                //새로 바꿀 이미지
+                                                <img
+                                                src={URL.createObjectURL(selectedImage)}
+                                                style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
+                                                onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                                />
+                                            ):(
+                                                //기존 프사
+                                                null
+
+                                            )}
+                                            {!remove && !selectedImage ? (
+                                                <img
+                                                style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                            />
+                                            ):(null)}
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                {/* 업로드할 사진 */}
+                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer',}}>
+                                                    ⚙️ set
+                                                    </label>
+                                                    <input
+                                                    type="file"
+                                                    id="fileInput"
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    onChange={(event) => {
+                                                        setSelectedImage(event.target.files[0]);
+                                                        console.log("selected " , selectedImage);
+                                                        // Handle the selected image as needed
+                                                        setRemove(false);
+                                                    }}
+                                                />
+                                                <span 
+                                                    style={{marginLeft:'30px', cursor:'pointer'}}
+                                                    onMouseUp={()=>handleRemove()}
+                                                >
+                                                    remove
+                                                </span>
+                                                
+                                            </div>
+                                    </div>
+                        <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>
+                            <p>
+                                {greetingMessage}
+                            </p>
+                        </div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        {/* 업로드할 사진 */}
-                        <Upload
-                            accept="image/*"
-                            showUploadList={false}
-                            beforeUpload={(image) => {
-                                setSelectedImage(image);
-                                return false; // Stops the upload action
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Image</Button>
-                        </Upload>
-                        
-                    </div>
+
+                                    
                     {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
-                    <p>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 선호도는 중복해서 체크할 수 없습니다. </p>
-                    <div className="form-outline mb-4">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Web</td>
+                    <div className="form-outline mb-4" style={{marginTop:'50px'}}>
+                        <strong style={{fontSize:'20px'}}> Fields of Interests</strong>
+                        <hr></hr>
+                        <p style={{marginLeft:'15px', marginRight:'15px'}}>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 
+                        <b>* 선호도는 중복해서 체크할 수 없습니다. * </b></p>
+                        <p style={{marginLeft:'15px', marginRight:'15px', color:'gray'}}>
+                            * 다양한 선호도 분포는 포트폴리오 추천에 도움이 됩니다
+                        </p>
+                        <table style={{ marginLeft:'15px', marginRight:'15px', marginTop:'40px', display:'flex', justifyContent:'center'}}>
+                            <tbody > 
+                                <tr >
+                                    <td width='70px' >Web</td>
                                     <td>{renderRadioGroup('web')}</td>
                                 </tr>
                                 <tr>
@@ -266,10 +393,12 @@ function UploadPortfolioPage() {
                             </tbody>
                         </table>
                     </div>
-                    <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                        한 줄 소개
-                    </div>
-                    <div className="form-outline mb-4">
+                    
+                    <div className="form-outline mb-4" style={{marginTop:'120px'}}>
+                        <strong style={{fontSize:'20px'}}> Brief Introduction</strong>
+                        <hr></hr>
+                        <p style={{marginLeft:'15px', marginRight:'15px', marginBottom:'40px'}}>프로필과 함께 유저들에게 가장 먼저 보이는 한 줄 소개입니다. 강렬한 문장으로 다른 유저들에게 자신을 소개해 보세요!</p>
+
                         <Input
                             type="text"
                             name="shortIntroduce"
@@ -277,20 +406,19 @@ function UploadPortfolioPage() {
                             onChange={onChangeHandler}
                         />
                     </div>
+                    <div className="form-outline mb-4" style={{marginTop:'120px'}}>
+                        <strong style={{fontSize:'20px'}}> Experience </strong>
+                        <hr></hr>
+                            <TextArea
+                                type="text"
+                                name="introduce"
+                                placeholder="소개 및 커리어를 작성해주세요."
+                                onChange={onChangeHandler}
+                                autoSize={{ minRows: 20 }}
+                            />
+                        </div>
                     <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                        경력
-                    </div>
-                    <div className="form-outline mb-4">
-                        <TextArea
-                            type="text"
-                            name="introduce"
-                            placeholder="소개 및 커리어를 작성해주세요."
-                            onChange={onChangeHandler}
-                            autoSize={{ minRows: 20 }}
-                        />
-                    </div>
-                    <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                        Photos
+                        <strong>Photos</strong>
                     </div>
                     <div className="form-outline mb-4">
                         <Upload
@@ -320,7 +448,7 @@ function UploadPortfolioPage() {
                         <img alt="프로젝트 이미지" style={{ width: '100%' }} src={previewImage} />
                     </Modal>
                     <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                        첨부파일
+                        <strong>Attatchment</strong>
                     </div>
                     <div className="form-outline mb-4">
                         <Upload
@@ -348,6 +476,9 @@ function UploadPortfolioPage() {
                         Create Portfolio
                     </Button>
                 </form>
+
+                </Card>
+                
             </Col>
         </Row>
     );

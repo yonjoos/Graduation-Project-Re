@@ -240,7 +240,7 @@ function Main() {
                     </Routes>
                 </div>
             </Content>
-            <Footer style={{ paddingLeft: '15%', paddingRight: '15%' }} logoSrc={logo4} />
+            <Footer style={{ paddingLeft: '15%', paddingRight: '15%' }} logoSrc={'https://storage.googleapis.com/hongik-pickme-bucket/P!ckMeLogo.png'} />
         </Layout>
     );
 }

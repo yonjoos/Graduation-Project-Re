@@ -184,8 +184,8 @@ function LandingPage() {
             return (
 
 
-                <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
-                    <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                <Card size='small' style={{ padding: 0, margin: 0}}>
+                    <div style={{ width: '100%', textAlign: 'left', padding: 0 }}>
                         <strong># {title}</strong>
                     </div>
                     <div style={{ margin: 0 }}>
@@ -259,7 +259,7 @@ function LandingPage() {
                             </Col>
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
-                                <div style={{ position: 'absolute', zIndex: 2 }}>
+                                <div style={{ position: 'absolute', zIndex: 2, width: '79%' }}>
 
                                     {renderSection('User', data.userSearchDtoList)}
                                     {renderSection('Project', data.projectSearchDtoList)}
@@ -288,7 +288,7 @@ function LandingPage() {
                                                 padding: '0px 5px 0px 5px',
                                                 backgroundColor: 'lightyellow', /* 원하는 색상으로 변경 */
                                                 borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-                                                color: 'green', /* 텍스트 색상 설정 */
+                                                color: '#ff8400', /* 텍스트 색상 설정 */
                                                 marginLeft: '-0.3%',
                                                 marginRight: '6px'
                                             };
@@ -405,7 +405,7 @@ function LandingPage() {
                             </Col>
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
-                                <div style={{ position: 'absolute', zIndex: 2 }}>
+                                <div style={{ position: 'absolute', zIndex: 2, width: '79%' }}>
 
                                     {renderSection('User', data.userSearchDtoList)}
                                     {renderSection('Project', data.projectSearchDtoList)}

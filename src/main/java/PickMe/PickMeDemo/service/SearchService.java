@@ -428,7 +428,7 @@ public class SearchService {
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
-
+            String url = user.getImageUrl();
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
             Integer applyCount;
@@ -467,6 +467,7 @@ public class SearchService {
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .imageUrl(url)
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가
@@ -631,6 +632,7 @@ public class SearchService {
         for (Posts post : filteredPosts) {
             Category postCategory = post.getCategory();        // posts를 통해 카테고리로 접근한 것을 postCategory로 명명
             User user = post.getUser();                         // posts를 통해 유저 접근한 것을 user로 명명
+            String url = user.getImageUrl();
 
             // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
             Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(post);
@@ -670,6 +672,7 @@ public class SearchService {
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .imageUrl(url)
                     .build();
 
             postsListDtoList.add(postsListDto);     // 컬렉션에 추가

@@ -424,11 +424,11 @@ function MyPage() {
                                                     </div>
                                                 </div>
                                                 <div style={{display:'flex', marginRight:'10px', marginBottom:'10px'}} >
-                                                    {nicknameAvailability !== null && ( // 중복 확인 버튼 눌러서 중복 확인 여부를 알아왔을 때,
+                                                    {nicknameAvailability !== "" && ( // 중복 확인 버튼 눌러서 중복 확인 여부를 알아왔을 때,
                                                         // 사용 가능한 닉네임인 경우 초록색으로 아래에 사용 가능하단 문구를 렌더링
                                                         // 사용 불가능한 닉네임인 경우 빨간색으로 아래에 사용 불가능하단 문구를 렌더링
                                                         // 빈 문자열로 중복확인 한 경우 빨간색으로 다시 입력하라는 문구를 렌더링
-                                                        <div className={nicknameAvailability ? "verification-success" : "verification-failure"} style={{ fontSize: '12px', marginLeft: '60px' ,marginBottom: '20px', marginTop: '', color: (userBaseInfo.nickName === "" || !nicknameAvailability) ? "#ff4d4f" : "#00cc00"}}>
+                                                        <div className={nicknameAvailability ? "verification-success" : "verification-failure"} style={{ fontSize: '12px', marginLeft: '100px' ,marginBottom: '20px', marginTop: '', color: (userBaseInfo.nickName === "" || !nicknameAvailability) ? "#ff4d4f" : "#00cc00"}}>
                                                             {(() => {
                                                                 if (userBaseInfo.nickName === "") {
                                                                     return "빈 문자열로는 닉네임을 생성할 수 없습니다. 다시 입력하세요"
@@ -442,6 +442,7 @@ function MyPage() {
                                                                 else if (userBaseInfo.nickName.length > 10) {
                                                                     return "닉네임은 최대 10자까지 입력 가능합니다."
                                                                 }
+                                                                // else if (userBaseInfo.nickName === )
                                                                 else {
                                                                     return "사용 가능한 닉네임입니다!"
                                                                 }

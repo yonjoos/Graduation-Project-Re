@@ -185,12 +185,23 @@ public class UserService {
     }
 
     @Transactional(readOnly = true) //단순 조회 후에 중복 여부 값만 반환하므로
-    public boolean isNicknameAvailable(String nickname) {
+    public String isNicknameAvailable(String nickname, String email) {
 
         //사용자에게 입력받은 nickname을 기반으로 같은 닉네임을 가진 사용자를 찾아보기
         Optional<User> existingUserWithNickname = userRepository.findByNickName(nickname);
 
-        return existingUserWithNickname.isEmpty(); //비어있으면 available: true / 비어있지 않으면 available: false
+        // 비어있으면 사용 가능한 닉네임
+        if (existingUserWithNickname.isEmpty()) {
+            return "true";
+        }
+        // 민약에 작성한 닉네임을 가진 사람의 이메일이 나의 이메일과 같다면, me를 리턴
+        else if (existingUserWithNickname.get().getEmail().equals(email)) {
+            return "me";
+        }
+        // 비어있지 않으면 사용 불가능한 닉네임
+        else {
+            return "false";
+        }
     }
 
 

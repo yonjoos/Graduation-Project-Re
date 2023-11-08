@@ -143,8 +143,8 @@ function PortfolioCardPage() {
         // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
         if (dataArray && dataArray.length > 0) {
             return (
-                <Card size='small' style={{ padding: 0, margin: 0, width: 800 }}>
-                    <div style={{ width: 800, textAlign: 'left', padding: 0 }}>
+                <Card size='small' style={{ padding: 0, margin: 0, width: '100%' }}>
+                    <div style={{ width: '100%', textAlign: 'left', padding: 0 }}>
                         <strong># {title}</strong>
                     </div>
                     <div style={{ margin: 0 }}>
@@ -472,7 +472,7 @@ function PortfolioCardPage() {
 
             {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', margin: '20px 0' }}>
-                <div style={{ position: 'absolute', zIndex: 2 }}>
+                <div style={{ position: 'absolute', zIndex: 2, width:'55%' }}>
                     {(relatedSearchTermEnable ?
                         (renderSection('User', searchData.userSearchDtoList)) : null)}
                 </div>

@@ -523,7 +523,8 @@ function MyPortfolioPage() {
                         okText="예"
                         cancelText="아니오"
                     >
-                        <p>정말로 포트폴리오를 삭제하시겠습니까?</p>
+                        <p>포트폴리오 삭제 시, 프로필 사진은 변경되지 않습니다. <br/>
+                            정말로 포트폴리오를 삭제하시겠습니까?</p>
                     </Modal>
                 </div>
             )}

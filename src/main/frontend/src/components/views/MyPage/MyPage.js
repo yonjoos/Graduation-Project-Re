@@ -362,7 +362,7 @@ function MyPage() {
     
     // 닉네임 중복 체크
     const handleDuplicateCheck = () => {
-        request('GET', `/nicknameDuplicate?nickname=${userBaseInfo.nickName}`) //백엔드에 현재 입력받은 nickname을 가진 회원이 있는 지 찾고, 백엔드는 해당 닉네임으로 유저 생성 가능하면 available:true /불가능하면 available:false 반환
+        request('GET', `/nicknameDuplicateString?nickname=${userBaseInfo.nickName}`) //백엔드에 현재 입력받은 nickname을 가진 회원이 있는 지 찾고, 백엔드는 해당 닉네임으로 유저 생성 가능하면 available:true /불가능하면 available:false 반환
             .then((response) => {
                 const isAvailable = response.data.available;
                 setNicknameAvailability(isAvailable); //닉네임 사용 가능 여부 값을 상태변수에 저장

@@ -185,7 +185,17 @@ public class UserService {
     }
 
     @Transactional(readOnly = true) //단순 조회 후에 중복 여부 값만 반환하므로
-    public String isNicknameAvailable(String nickname, String email) {
+    public boolean isNicknameAvailable(String nickname) {
+
+        //사용자에게 입력받은 nickname을 기반으로 같은 닉네임을 가진 사용자를 찾아보기
+        Optional<User> existingUserWithNickname = userRepository.findByNickName(nickname);
+
+        return existingUserWithNickname.isEmpty(); //비어있으면 available: true / 비어있지 않으면 available: false
+    }
+
+
+    @Transactional(readOnly = true) //단순 조회 후에 중복 여부 값만 반환하므로
+    public String isNicknameAvailableString(String nickname, String email) {
 
         //사용자에게 입력받은 nickname을 기반으로 같은 닉네임을 가진 사용자를 찾아보기
         Optional<User> existingUserWithNickname = userRepository.findByNickName(nickname);
@@ -203,8 +213,6 @@ public class UserService {
             return "false";
         }
     }
-
-
 
 
     // 이미 등록되어있는 프로필사진 가져오기

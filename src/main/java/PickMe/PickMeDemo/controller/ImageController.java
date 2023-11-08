@@ -7,6 +7,8 @@ import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +45,22 @@ public class ImageController {
         ProfileImageUrlDto imageUrlDto = userService.getUserProfileImageByNickName(nickName);
 
         return ResponseEntity.ok(imageUrlDto);
+    }
+
+
+    @PutMapping("/removeProfileImage")
+    private ResponseEntity<String> removeProfileImage(Principal principal) {
+
+        // Email 찾기
+        String userEmail = principal.getName();
+        userService.removeProfileUrl(userEmail);
+        try {
+            //email기반으로 user을 찾고, 입력받은 기존의 비밀번호가 db의 비밀번호와 같다면 바꾸려는 비밀번호로 user의 password를 업데이트한다.
+            userService.removeProfileUrl(userEmail);
+            return ResponseEntity.ok("success");
+        } catch (AppException ex) {
+            return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+        }
     }
 
 }

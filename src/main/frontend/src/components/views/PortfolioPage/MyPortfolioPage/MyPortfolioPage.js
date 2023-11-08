@@ -318,13 +318,22 @@ function MyPortfolioPage() {
                 <div>
                     <div style={{ display:'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div style={{ display: 'flex' }}>
-                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '100px', height: '100px' }}>
-                                <img
-                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px', border: '5px solid lightblue' }}
-                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                />
+                        <div style={{
+                            width: '110px',  
+                            height: '110px',  
+                            borderRadius: '50%',
+                            border: '5px solid lightblue',
+                            overflow: 'hidden',
+                        }}>
+                            <img
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                            />
                             </div>
-                            <div style={{ width: '90%', marginTop: '30px', fontSize: '30px', display:'grid' }}>
+                            <div style={{ marginLeft:'20px', width: '80%', marginTop: '30px', fontSize: '30px', display:'grid' }}>
                                 <div>
                                     <i>{data && data.nickName}</i><b>'s portfolio page</b>
                                 </div>
@@ -471,7 +480,7 @@ function MyPortfolioPage() {
                             <Card >
                                 <Row justify="space-between">
                                     <Col span={8}>
-                                        <div style={{ fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
+                                        <div style={{ width : '300px', fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>

@@ -304,4 +304,10 @@ public class UserService {
         userRepository.save(user);
 
     }
+
+    public void removeProfileUrl(String email){
+        User user = userRepository.findByEmail(email).get();
+        user.setImageUrl(null);
+        userRepository.save(user);
+    }
 }

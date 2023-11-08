@@ -21,6 +21,8 @@ function LandingPage() {
     const navigate = useNavigate();
     //const dispatch = useDispatch();
 
+    const [hotPostColor, sethotPostColor] = useState("black");
+
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const userRole = useSelector(state => state.auth.userRole);
 
@@ -211,6 +213,15 @@ function LandingPage() {
         navigate('/about');
     }
 
+    const handleHotPostColor=(type)=>{
+        if(type === "PROJECT"){
+            sethotPostColor("pink");
+        }
+        else{
+            sethotPostColor("yellow");
+        }
+    }
+
 
 
     return (
@@ -260,25 +271,59 @@ function LandingPage() {
     
                             <Col span={24}>
                                 <br />
-                                <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
+                                <b style={{ fontSize: '20px' }}>TODAY's HOT POST-</b>
                                 <br />
                                 <br />
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
-                                    {hotPost.map((item) => (
+                                    {hotPost.map((item) => {
+                                        let hotPostColor;
+                                        let TagStyle;
+                                        let borderColor;
+                                    
+                                        if (item.postType === 'PROJECT') {
+                                            hotPostColor = 'white';
+                                            borderColor = '1px solid #FFEFAA'
+                                            TagStyle = {
+                                                display: 'flex',
+                                                padding: '0px 5px 0px 5px',
+                                                backgroundColor: 'lightyellow', /* 원하는 색상으로 변경 */
+                                                borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+                                                color: 'green', /* 텍스트 색상 설정 */
+                                                marginLeft: '-0.3%',
+                                                marginRight: '6px'
+                                            };
+                                        } else {
+                                            hotPostColor = '#FFFBFE';
+                                            borderColor = '1px solid #fee5eb'
+                                            TagStyle = {
+                                                display: 'flex',
+                                                padding: '0px 5px 0px 5px',
+                                                backgroundColor: '#fee5eb', /* 원하는 색상으로 변경 */
+                                                borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+                                                color: '#ff4646', /* 텍스트 색상 설정 */
+                                                marginLeft: '-0.3%',
+                                                marginRight: '6px',
+                                            };
+                                        }
+                                        
+                                        return (
                                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Card onClick={() => onClickHandler(item.postType, item.id)} size="small"
                                                 style={{
                                                     cursor: 'pointer', width: '95%', height: '150px', paddingLeft: '3%', paddingRight: '3%',
-                                                    border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'
+                                                    border: '0.5px solid skyblue',  borderRadius: '8px',
+                                                    backgroundColor:hotPostColor,
+                                                    border:borderColor
+                                
                                                 }}>
                                                 <b>{truncateString(item.title, 15)}</b>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                                                     <strong style={{ display: 'flex' }}>
 
-                                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
-                                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
-                                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span> : ""}
-                                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span> : ""}
+                                                        {item.web ? <span style={{ ...TagStyle}}>#WEB</span> : ""}
+                                                        {item.app ? <span style={{ ...TagStyle}}>#APP</span> : ""}
+                                                        {item.game ? <span style={{ ...TagStyle}}>#GAME</span> : ""}
+                                                        {item.ai ? <span style={{ ...TagStyle }}>#AI</span> : ""}
                                                     </strong>
                                                     <div>
 
@@ -298,7 +343,8 @@ function LandingPage() {
                                                 </div>
                                             </Card>
                                         </div>
-                                    ))}
+                                        )
+                                    })}
                                 </Carousel>
                                 <br />
                                 <br />
@@ -311,7 +357,7 @@ function LandingPage() {
                                 </div>
                             </Col> */}
                             <Col span={24}>
-                                <b style={{ fontSize: '20px' }}>🔘 게시판 이동</b>
+                                <b style={{ fontSize: '20px' }}> </b>
                                 <br />
                             </Col>
                             <Col xs={24} sm={8}>

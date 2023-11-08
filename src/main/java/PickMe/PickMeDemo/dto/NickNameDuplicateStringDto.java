@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NickNameDuplicateDto {
+public class NickNameDuplicateStringDto {
 
-    private boolean available; //사용 가능한 닉네임인지 여부
+    private String available; //사용 가능한 닉네임인지 여부
 }

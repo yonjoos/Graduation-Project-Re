@@ -140,7 +140,15 @@ function MyPage() {
     const handleRemove = () =>{
         console.log("haneldRemove🩸");
         selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
-    }
+    };
+
+    const handleSet = () => {
+        const fileInput = document.getElementById("fileInput");
+        if (fileInput) {
+          fileInput.value = ''; // Reset the file input
+        }
+        fileInput.click(); // Trigger a click event on the file input
+      };
 
 
     //수정하기 버튼 누면 일어나는 액션
@@ -513,9 +521,6 @@ function MyPage() {
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
-                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer'}}>
-                                                    ⚙️ set image
-                                                    </label>
                                                     <input
                                                     type="file"
                                                     id="fileInput"
@@ -523,18 +528,23 @@ function MyPage() {
                                                     style={{ display: 'none' }}
                                                     onChange={(event) => {
                                                         setSelectedImage(event.target.files[0]);
-                                                        console.log("selected " , selectedImage);
+                                                        console.log("selected! " , selectedImage);
                                                         // Handle the selected image as needed
                                                         setRemove(false);
                                                     }}
                                                 />
+                                                <span
+                                                    onMouseUp={handleSet}
+                                                >
+                                                    ⚙️ set image
+                                                </span>
                                                 <span 
                                                     style={{marginLeft:'30px', cursor:'pointer'}}
                                                     onMouseUp={()=>handleRemove()}
                                                 >
                                                     remove
                                                 </span>
-                                                
+
                                             </div>
                                         </div>
                                     </div>

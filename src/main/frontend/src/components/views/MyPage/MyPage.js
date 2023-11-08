@@ -28,7 +28,8 @@ function MyPage() {
     //회원 정보 수정 관련
     const [isUpdateButtonEnabled, setIsUpdateButtonEnabled] = useState(false); // 정보 수정 시, 모든 필드가 입력되어야만 버튼이 활성화됨
     const [userBaseInfo, setUserBaseInfo] = useState(null); // 회원의 email, 닉네임, 이름, 포폴 유무 정보를 받아옴.
-    const [nicknameAvailability, setNicknameAvailability] = useState(null); // 닉네임 중복 여부
+    const [nicknameAvailability, setNicknameAvailability] = useState(""); // 닉네임 중복 여부
+    const [isConfirm, setIsConfirm] = useState(true);  // 닉네임 중복 확인 눌러서 중복 없으면 true, 중복 있으면 false. 닉네임 칸에 문자열을 변경하는 순간 false로 바뀜.
     // 회원 정보 업데이트랑 기존 정보 받아올 때 둘 다 사용, 업데이트 할 때는 에 비밀번호까지 실어서 보내고, 
     // 다시 useEffect로 GET- /userInfo할때는 userDto로 받음(비밀번호 필드 누락된 dto만 받음)
 
@@ -117,6 +118,10 @@ function MyPage() {
     const handleInputChange = (fieldName, value) => {
         // prevData로 이전의 회원 정보 변경 관련하여 입력된 필드 상태 값을 가져오고, value를 사용하여 이름이 fieldName인 속성을 추가하거나 업데이트하여 새 상태 값을 반환
         setUserBaseInfo((prevData) => ({ ...prevData, [fieldName]: value }));
+
+        if (fieldName === 'nickName') {
+            setIsConfirm(false);    // 닉네임이 변경되므로, isConfirm을 false로 바꿔주기
+        }
     };
 
     const handleRemoveSelectedImage = () => {
@@ -142,35 +147,40 @@ function MyPage() {
     //백으로 닉네임, 이름, 비밀번호, 프사 전달
     const updateInfo = (updatedData) => {
         if (updatedData.nickName && updatedData.userName && updatedData.password) { //기본정보 필수로 다 입력해야 작동
-            request('PUT', '/updateUserInfo', updatedData)
-                .then((response) => {
-                    if (response.data === "User information has been successfully updated.") {
-                        alert('정보가 업데이트되었습니다.');
-                        setUserBaseInfo((prevData) => ({ ...prevData, ...updatedData, password: '' }));
+            // 닉네임 중복 확인을 한 경우에만 request
+            if (isConfirm) {
+                request('PUT', '/updateUserInfo', updatedData)
+                    .then((response) => {
+                        if (response.data === "User information has been successfully updated.") {
+                            alert('정보가 업데이트되었습니다.');
+                            setUserBaseInfo((prevData) => ({ ...prevData, ...updatedData, password: '' }));
 
-                        //기본정보가 백으로 전달되고 나면
-                        //프로필 사진 업데이트 시작
-                        if(remove){
-                            return removeProfileImage();
+                            //기본정보가 백으로 전달되고 나면
+                            //프로필 사진 업데이트 시작
+                            if(remove){
+                                return removeProfileImage();
+                                
+
+                            }else{return handleSubmit(); }
                             
-
-                        }else{return handleSubmit(); }
-                        
-                    } else {
-                        console.error('Unknown response:', response.data);
-                        message.error('정보 업데이트에 실패했습니다.');
-                    }
-                })
-                .then((secondResponse) => {
-                    if (secondResponse === 'success') { //프사 업데이트(secondResponse)가 성공하면
-                    } else {
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error updating information:', error);
-                    message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
-                });
-        }else{
+                        } else {
+                            console.error('Unknown response:', response.data);
+                            message.error('정보 업데이트에 실패했습니다.');
+                        }
+                    })
+                    .then((secondResponse) => {
+                        if (secondResponse === 'success') { //프사 업데이트(secondResponse)가 성공하면
+                        } else {
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error updating information:', error);
+                        message.error('정보 업데이트 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
+                    });
+            } else {
+                message.warning('닉네임 중복 확인을 눌러주세요!');
+            }
+        } else {
             //모든 필수정보 다 입력하지 않으면
             message.warning('모든 필수 정보를 입력하세요.');
         }
@@ -356,8 +366,10 @@ function MyPage() {
             .then((response) => {
                 const isAvailable = response.data.available;
                 setNicknameAvailability(isAvailable); //닉네임 사용 가능 여부 값을 상태변수에 저장
+                setIsConfirm(true); // 중복 확인 클릭 true
             })
             .catch((error) => {
+                setIsConfirm(false); // 중복 확인 클릭 false
                 alert("잠시 후 다시 시도해보세요.");
             });
     };
@@ -421,8 +433,11 @@ function MyPage() {
                                                                 if (userBaseInfo.nickName === "") {
                                                                     return "빈 문자열로는 닉네임을 생성할 수 없습니다. 다시 입력하세요"
                                                                 }
-                                                                else if (!nicknameAvailability) {
+                                                                else if (nicknameAvailability === "false") {
                                                                     return "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요."
+                                                                }
+                                                                else if (nicknameAvailability === "me") {
+                                                                    return "본인이 현재 사용중인 닉네임입니다."
                                                                 }
                                                                 else if (userBaseInfo.nickName.length > 10) {
                                                                     return "닉네임은 최대 10자까지 입력 가능합니다."

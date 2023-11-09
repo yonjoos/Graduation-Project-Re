@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 //import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
 import { Divider, Row, Col, Button, Modal, message, Input, Card, Image } from 'antd';
@@ -120,7 +121,7 @@ function DetailProjectPage() {
             if (text[i] === '\n' || (text[i] === '\r' && text[i + 1] === '\n')) {
                 chunks.push('\n');
                 j = 0;
-    
+
                 if (text[i] === '\r') {
                     i++; // Skip the next character ('\n')
                 }
@@ -326,6 +327,20 @@ function DetailProjectPage() {
 
     const handleScrapModalCancel = () => {
         setIsScrapModalVisible(false);
+    };
+
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color: 'black'
+    };
+
+    const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+    };
+
+    const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
     };
 
 
@@ -1041,27 +1056,37 @@ function DetailProjectPage() {
         return (
             <div>
                 <Card>
-                    <div style={{display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
+                    <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
                         <div >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'grid' }}>
                                     <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
                                         {data.title}
                                     </div>
-                                    <strong style={{ display: 'flex', marginTop:'10px' }}>
+                                    <strong style={{ display: 'flex', marginTop: '10px' }}>
 
                                         {data.web && <span style={{ ...categoryTagStyle, background: '#fffec1' }}>#WEB</span>}
                                         {data.app && <span style={{ ...categoryTagStyle, background: '#fffec1' }}>#APP</span>}
-                                        {data.game && <span style={{ ...categoryTagStyle, background: '#fffec1'}}>#GAME</span>}
-                                        {data.ai && <span style={{ ...categoryTagStyle, background: '#fffec1'}}>#AI</span>}
+                                        {data.game && <span style={{ ...categoryTagStyle, background: '#fffec1' }}>#GAME</span>}
+                                        {data.ai && <span style={{ ...categoryTagStyle, background: '#fffec1' }}>#AI</span>}
                                     </strong>
 
-                                    <div style={{ marginTop: '25px', display:'flex' , alignItems:'center'}}>
-                                        <img
-                                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
-                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
-                                        />
-                                        <strong>{data.nickName}</strong>
+                                    <div style={{ marginTop: '25px', display: 'flex', alignItems: 'center' }}>
+                                        <Link
+                                            to={`/portfolio/${data.nickName}`}
+
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <img
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
+                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
+                                            />
+
+                                            <strong>{data.nickName}</strong>
+                                        </Link>
                                     </div>
 
                                 </div>
@@ -1081,7 +1106,7 @@ function DetailProjectPage() {
                             <div>
 
                                 {data.fileUrl && data.fileUrl.length >= 1 ? (
-                                    <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ borderRadius: '0px', background: '#fffec1' }}>
+                                    <Card style={{ borderborderRadius: '0px', border: 'none' }} size='small' title={`첨부파일`} bodyStyle={{ paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ borderRadius: '0px', background: '#fffec1' }}>
                                         {
                                             data.fileUrl ? (
                                                 data.fileUrl.map((file, index) => (
@@ -1103,7 +1128,7 @@ function DetailProjectPage() {
                             </div>
 
                             <div style={{ display: 'grid', marginTop: '20px' }}>
-                                <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`프로젝트 소개`} headStyle={{ borderRadius: '0px', background: '#fffec1'  }} bodyStyle={{ minHeight: '250px', paddingTop: '0px', paddingBottom: '10px' }} >
+                                <Card style={{ borderborderRadius: '0px', border: 'none' }} size='small' title={`프로젝트 소개`} headStyle={{ borderRadius: '0px', background: '#fffec1' }} bodyStyle={{ minHeight: '250px', paddingTop: '0px', paddingBottom: '10px' }} >
                                     <div style={{ marginTop: '20px' }}>
                                         {data.content && data.content.split('\n').map((line, index) => (
                                             <React.Fragment key={index}>
@@ -1116,7 +1141,7 @@ function DetailProjectPage() {
 
                                 <div style={{ marginTop: '20px' }} >
                                     {data.promoteImageUrl && data.promoteImageUrl.length >= 1 ? (
-                                        <Card style={{borderborderRadius: '0px', border:'none'}} size='small' title={`홍보 사진`} bodyStyle={{ borderRadius: '0px', paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{borderRadius: '0px', background: '#fffec1'  }}>
+                                        <Card style={{ borderborderRadius: '0px', border: 'none' }} size='small' title={`홍보 사진`} bodyStyle={{ borderRadius: '0px', paddingTop: '0px', paddingBottom: '0px', paddingRight: '0px', paddingLeft: '0px' }} headStyle={{ borderRadius: '0px', background: '#fffec1' }}>
 
                                             {data.promoteImageUrl ?
                                                 (

@@ -491,7 +491,7 @@ function MyPage() {
                                             {/* 로컬에서 선택한 이미지가 있으면 그걸 띄우고 기존 프사는 띄우지 않음 */}
                                             <div style={{ display: 'flex', marginBottom: '8px' }}>
                                                 {(remove) ? (
-                                                    <img
+                                                    <Image
                                                     style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 1 }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
                                                 />
@@ -500,7 +500,7 @@ function MyPage() {
 
                                                 {!remove && selectedImage ? (
                                                     //새로 바꿀 이미지
-                                                    <img
+                                                    <Image
                                                     src={URL.createObjectURL(selectedImage)}
                                                     style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
                                                     onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
@@ -511,7 +511,7 @@ function MyPage() {
 
                                                 )}
                                                 {!remove && !selectedImage ? (
-                                                    <img
+                                                    <Image
                                                     style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                                 />
@@ -533,7 +533,7 @@ function MyPage() {
                                                         setRemove(false);
                                                     }}
                                                 />
-                                                <span
+                                                <span style={{cursor: 'pointer'}}
                                                     onMouseUp={handleSet}
                                                 >
                                                     ⚙️ set image

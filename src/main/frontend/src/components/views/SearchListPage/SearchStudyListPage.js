@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 //import { useSelector, useDispatch } from 'react-redux';
 import { Row, Col, Button, Card, Pagination, Divider, Menu, Dropdown } from 'antd';
 import { request } from '../../../hoc/request';
@@ -88,6 +88,29 @@ function SearchStudyListPage(onSearch) {
         return `${year}년 ${month}월 ${day}일`;
     };
 
+    // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
+    const formatDateTime = (dateTimeArray) => {
+
+        if (!Array.isArray(dateTimeArray)) {
+            // dateTimeArray가 배열이 아닌 경우 오류 처리
+            return 'Invalid date and time format';
+        }
+        const [year, month, day, hours, minutes] = dateTimeArray;
+        const date = new Date(year, month - 1, day, hours, minutes);
+
+        // 년, 월, 일, 시간, 분 형식으로 포맷팅
+        const formattedYear = date.getFullYear();
+        const formattedMonth = (date.getMonth() + 1).toString().padStart(2, '0'); // 월을 2자리로 표현
+        const formattedDay = date.getDate().toString().padStart(2, '0'); // 일을 2자리로 표현
+        const formattedHours = date.getHours().toString().padStart(2, '0'); // 시를 2자리로 표현
+        const formattedMinutes = date.getMinutes().toString().padStart(2, '0'); // 분을 2자리로 표현
+
+        const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
+
+        return formattedDateTime;
+    };
+
+
     // 배너를 선택할 때마다 selectedBanners가 추가되거나 변경됨
     // 처음엔 all(모든 게시물 상태)
     // all이 아닌 다른 게시물을 선택하는 순간 all은 selectedBanners에서 지워지고, 선택된 배너가 selectedBanners에 추가됨
@@ -138,60 +161,108 @@ function SearchStudyListPage(onSearch) {
         </Menu>
     );
 
+    const categoryTagStyle = {
+        display: 'flex',
+        padding: '0px 5px 0px 5px',
+        backgroundColor: '#faf082', /* 원하는 색상으로 변경 */
+        borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
+        color: '#ff8400', /* 텍스트 색상 설정 */
+        marginLeft: '-0.3%',
+        marginRight: '5px'
+    };
+
+    const linkStyle = {
+        textDecoration: 'none',
+        transition: 'text-decoration 0.3s',
+        color: 'black'
+    };
+
+    const handleMouseEnter = (e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+    };
+
+    const handleMouseLeave = (e) => {
+        e.currentTarget.style.textDecoration = 'none';
+    };
+
 
     // 현재 선택된 selectedBanners에 따라 필터링 된 게시물을 기반으로 실제 렌더링 진행
     const renderPosts = (posts) => {
         return (
-            <div>
-                {posts.map((item, index) => (
-                    <Card key={index} style={{ margin: '0 0 0 0' }}> {/*margin bottom속성을 사용 - 각 페이지로 navigate하는 버튼이 card랑 딱 붙여서 보이기 위해 card끼리는 margin bottom으로 간격 띄우고, 첫번째 카드 margin top을 0으로 해서 딱 붙여서 보이게 했음 */}
-
-                        {/**아래의 속성들을 antd Card 컴포넌트로 묶음*/}
-                        {/** 이상하게, antd에서 끌어온 애들은 style = {{}}로 적용이 안되고 css로 적용될 때가 있음 */}
-                        <div onClick={() => handleRowClick(item.id)} style={{ cursor: 'pointer' }}>
-                            <Row gutter={[16, 16]} style={{ marginTop: '10px' }} justify="space-between" align="middle">
-                                {/** 수직선 CSS인 vertical-line을 만들어 주었음 */}
-                                <Col span={2} style={{ marginRight: '10px', marginLeft: '5px', textAlign: 'left' }} align="left">
-                                    <strong style={{ fontSize: '14px' }}> {item.nickName} </strong>
-                                </Col>
-                                <Col span={16}>
-                                    <Row>
-                                        <Col>
-                                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                                                <strong style={{ fontSize: '15px' }}>{item.title}</strong>
+            <div style={{ marginTop: '10px', padding: '1px', width: '100%' }} justify="space-between" >
+                <Card title={`STUDY`} headStyle={{ background: '#fee5eb', color: '#ff4646' }}>
+                    {posts.map((item, index) => (
+                        <div>
+                            <div style={{ display: 'flex', marginTop: '0px' }}>
+                                <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
+                                    <div>
+                                        <div style={{ display: 'flex', marginBottom: '10px', alignItems: 'center' }}>
+                                            <div >
+                                                <Link
+                                                    to={`/portfolio/${item.nickName}`}
+                                                    key={index}
+                                                    className="hoverable-item"
+                                                    onMouseEnter={handleMouseEnter}
+                                                    onMouseLeave={handleMouseLeave}
+                                                    style={linkStyle}
+                                                >
+                                                    <img
+                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
+                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                    />
+                                                </Link>
                                             </div>
-
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-                                    </Row>
-                                    <Divider></Divider>
-                                    <Row>
-                                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                                            {item.briefContent}
+                                            <div>
+                                                <Link
+                                                    to={`/portfolio/${item.nickName}`}
+                                                    key={index}
+                                                    className="hoverable-item"
+                                                    onMouseEnter={handleMouseEnter}
+                                                    onMouseLeave={handleMouseLeave}
+                                                    style={linkStyle}
+                                                >
+                                                    <strong className="nickname">{item.nickName}</strong>
+                                                </Link>
+                                            </div>
                                         </div>
-                                    </Row>
-
-                                </Col>
-                                <Col span={4} >
-                                    <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-                                        인원: {item.counts} / {item.recruitmentCount}
                                     </div>
-                                    <div style={{ marginLeft: '3px', fontSize: '13px' }}>
-                                        모집 마감일: {formatDate(item.endDate)}
+                                    <div style={{ display: 'flex' }}>
+                                        <Link
+                                            to={`/study/detail/${item.id}`}
+                                            key={index}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        </Link>
                                     </div>
-                                    <div className="shape-outline mb-1" style={{ marginRight: '30%' }}>
-                                        조회 수: {item.viewCount}
+                                    <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left', cursor: 'pointer' }}
+                                        onMouseUp={() => handleRowClick(item.id)}
+                                    >
+                                        {truncateString(item.briefContent, 50)}
                                     </div>
-                                </Col>
-                            </Row>
+                                    <strong style={{ display: 'flex' }}>
+                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
+                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
+                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
+                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#AI</span>}
+                                    </strong>
+                                </div>
+                                <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
+                                    <div>
+                                        인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
+                                        <br /><br /><div style={{ color: 'gray', fontSize: 'small' }}>{formatDateTime(item.finalUpdatedTime)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <Divider />
                         </div>
-                    </Card>
-
-                ))}
+                    ))}
+                </Card>
             </div>
-        );
+        )
     }
 
 
@@ -312,11 +383,11 @@ function SearchStudyListPage(onSearch) {
 
     return (
         <div>
-            <br/>
+            <br />
             <SearchInLandingPage onSearch={handleSearch} initialSearchTerm={searchTerm.searchTerm} />
 
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', margin: '20px 0' }}>
-                <div style={{ position: 'absolute', zIndex: 2, width:'55%' }}>
+                <div style={{ position: 'absolute', zIndex: 2, width: '55%' }}>
                     {renderSection('User', data.userSearchDtoList)}
                     {renderSection('Project', data.projectSearchDtoList)}
                     {renderSection('Study', data.studySearchDtoList)}

@@ -406,11 +406,10 @@ function PortfolioCardPage() {
                                     <div style={{display:'grid'}}>
                                         <div style={{display:'flex'}}>
                                             
-                                            <table style={{width:'30%'}}>
+                                            <table style={{width:'90px'}}>
                                                 <tbody>
                                                     <tr>
                                                         <td>
-
                                                             <CircularProgressbarWithChildren 
                                                                 value={item.cosineSimilarity}
                                                                 styles={buildStyles({
@@ -436,8 +435,6 @@ function PortfolioCardPage() {
                                                                 }
                                                             >
                                                                 
-
-
                                                                 {/* Put any JSX content in here that you'd like. It'll be vertically and horizonally centered. */}
                                                                 <img
                                                                     style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}

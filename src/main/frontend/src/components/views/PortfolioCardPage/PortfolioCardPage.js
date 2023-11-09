@@ -61,13 +61,13 @@ function PortfolioCardPage() {
         setReload(0);
     }, [reload]);
 
-    useEffect(()=>{
-        if(recommend === 1) {
+    useEffect(() => {
+        if (recommend === 1) {
             Recommend();
             setRecommend(0);
             setSustain(1);
         }
-        else{
+        else {
         }
     }, [recommend])
 
@@ -205,6 +205,7 @@ function PortfolioCardPage() {
     // 엔터나 클릭 시에만 변경됨(검색어 관련)
     const handleSearch = (value) => {
         setSustain(0);
+        setIsRecommend(0);
         setSearchTerm(value); // 검색어를 세팅
         setRelatedSearchTermEnable(false); // 엔터나 클릭을 눌렀으므로 연관 검색어 렌더링 여부를 false로 설정
         setCurrentPage(0); // 검색어가 바뀌면, 강제로 1페이지로 이동시킴
@@ -226,7 +227,7 @@ function PortfolioCardPage() {
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
- 
+
         setIsRecommend(0);
 
         setSustain(0);
@@ -264,10 +265,10 @@ function PortfolioCardPage() {
     }
 
 
-    const Recommend = async() => {
-        try{
+    const Recommend = async () => {
+        try {
             const response = await request('GET', `/getRecommendation`);
-            setData(response.data); 
+            setData(response.data);
             setTotalPages(response.data.totalPages);
             console.log(data);
         } catch (error) {
@@ -296,10 +297,10 @@ function PortfolioCardPage() {
     // 드롭다운을 위한 코드
     const menu = (
         <Menu selectedKeys={[sortOption]}>
-            <Menu.Item key="latestPortfolio" onClick={() => setSortOption('latestPortfolio')}>
+            <Menu.Item key="latestPortfolio" onClick={() => { setSortOption('latestPortfolio'); setIsRecommend(0); setSustain(0); }}>
                 최신 등록 순
             </Menu.Item>
-            <Menu.Item key="byViewCount" onClick={() => setSortOption('byViewCount')}>
+            <Menu.Item key="byViewCount" onClick={() => { setSortOption('byViewCount'); setIsRecommend(0); setSustain(0); }}>
                 조회수 순
             </Menu.Item>
         </Menu>
@@ -324,18 +325,18 @@ function PortfolioCardPage() {
             return (
                 <div style={{
                     display: 'flex',
-                    justifyContent: 'center', 
-                    alignItems: 'center',    
+                    justifyContent: 'center',
+                    alignItems: 'center',
                     textAlign: 'center',
                     marginBottom: '20px'
                 }}>
                     <div>
                         <strong>알맞는 사람을 찾는중입니다. 잠시만 기다려주세요</strong>
                     </div>
-                    <div style={{marginLeft:'20px'}}>
+                    <div style={{ marginLeft: '20px' }}>
                         <Spin size="large" />
                     </div>
-                    
+
                 </div>
             );
         } else if (sustain === 1) {
@@ -375,31 +376,37 @@ function PortfolioCardPage() {
                         {cards.map((item, index) => (
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
-                                    {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
+                                {/* style = {{cursor: 'pointer'}} */}
+                                <Card onClick={() => onClickHandler(item.nickName)}
+
+                                    headStyle={{ background: index === 0 ? '#fee371' : index === 1 ? '#e6e6e6' : index === 2 ? '#decba1' : '#e5eefc' }}
+                                    bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }}
+                                    title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <div>
                                                 <span>
                                                     <img
-                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
+                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                     />
                                                 </span>
                                                 <span> {item.nickName}</span>
+
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <span > {item.cosineSimilarity}</span>
                                                 <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
                                             </div>
                                             {/* <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span> */}
                                         </div>
-                                    } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>
+                                    } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer', border: index === 0 ? '1px solid #fee371' : index === 1 ? '1px solid #e6e6e6' : index === 2 ? '1px solid #decba1' : '#e5eefc' }}>
                                     <b>Field Of Interests</b>
                                     <strong style={{ display: 'flex', marginTop: '5px' }}>
                                         {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
                                         {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
                                         {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
                                         {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                    </strong>             
+                                    </strong>
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>
                                     <br />
@@ -422,27 +429,27 @@ function PortfolioCardPage() {
                         {cards.map((item, index) => (
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
-                                    {/* style = {{cursor: 'pointer'}} */}
-                                    <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
-                                        <div style={{ display: 'flex', alignItems:'center'  }}>
-                                            <span>
-                                                <img
-                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                {/* style = {{cursor: 'pointer'}} */}
+                                <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span>
+                                            <img
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
                                                 src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                />
-                                            </span>
+                                            />
+                                        </span>
 
-                                            <span>{item.nickName}</span>
-                                            {/* <span>{item.cosineSimilarity}</span> */}
-                                        </div>
-                                    } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>
+                                        <span>{item.nickName}</span>
+                                        {/* <span>{item.cosineSimilarity}</span> */}
+                                    </div>
+                                } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>
                                     <b>Field Of Interests</b>
                                     <strong style={{ display: 'flex', marginTop: '5px' }}>
                                         {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
                                         {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
                                         {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
                                         {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                    </strong> 
+                                    </strong>
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>
                                     <br />
@@ -472,7 +479,7 @@ function PortfolioCardPage() {
 
             {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', margin: '20px 0' }}>
-                <div style={{ position: 'absolute', zIndex: 2, width:'55%' }}>
+                <div style={{ position: 'absolute', zIndex: 2, width: '55%' }}>
                     {(relatedSearchTermEnable ?
                         (renderSection('User', searchData.userSearchDtoList)) : null)}
                 </div>
@@ -521,7 +528,7 @@ function PortfolioCardPage() {
                         <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                             Study
                         </Button>
-                        
+
                     </Col>
                     <Col span={6} style={{ textAlign: 'right' }}>
                         <Dropdown overlay={menu} placement="bottomRight">
@@ -534,23 +541,23 @@ function PortfolioCardPage() {
                 <hr />
             </div>
             <div style={{
-                        display: 'flex',
-                        alignItems: 'center',    
-                        textAlign: 'center',
-                        marginBottom: '20px'
-                    }}>
+                display: 'flex',
+                alignItems: 'center',
+                textAlign: 'center',
+                marginBottom: '20px'
+            }}>
                 <div >
                     <Button onClick={handleRecommend}>
                         RECOMMEND
                     </Button>
 
                 </div>
-                <div style={{marginLeft:'20px'}}>
+                <div style={{ marginLeft: '20px' }}>
                     ⬅️ try our recommendation system!
                 </div>
             </div>
-            <div style={{display:'grid'}}> 
-                
+            <div style={{ display: 'grid' }}>
+
                 {renderContent()}
 
             </div>
@@ -566,9 +573,9 @@ function PortfolioCardPage() {
                     />
                 </div>
             ) : (
-                <div/>
+                <div />
             )}
-            
+
         </div>
     );
 }

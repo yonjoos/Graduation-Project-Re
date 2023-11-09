@@ -17,7 +17,13 @@ function UploadPortfolioPage() {
     // 포트폴리오 폼의 상태를 관리할 state 변수들
     const [shortIntroduce, setShortIntroduce] = useState(''); // 한 줄 소개
     const [introduce, setIntoduce] = useState(''); // 소개 및 커리어
-    const [preferences, setPreferences] = useState({    // 각 분야의 선호도
+    const [preferences, setPreferences] = useState({    // 순위에 맞는 선호하는 분야
+        first: 'nop',
+        second: 'nop',
+        third: 'nop',
+        fourth: 'nop'
+    });
+    const [prefer, setPrefer] = useState({          // 각 분야의 선호도
         web: 0,
         app: 0,
         game: 0,
@@ -58,6 +64,11 @@ function UploadPortfolioPage() {
             });
 
     }, [profileImage])
+
+    // preferences를 prefer로 변환
+    useEffect(() => {
+        updatePreferFromPreferences();
+    }, [preferences]);
  
 
     //프사 업로드
@@ -113,11 +124,11 @@ function UploadPortfolioPage() {
 
     };
 
-    // field 값으로는 web, app, game, ai가 들어옴.
+    // field 값으로는 nop, web, app, game, ai가 들어옴.
     // value 값으로는 0, 1, 2, 3, 4가 들어옴.
     const handlePreferenceChange = (field, value) => {
-        // 0 선택은 중복을 허용. 이외의 값들에 대해서는 중복을 허용하지 않음.
-        if (value === 0 || !Object.values(preferences).includes(value)) {
+        // '관심 없음' 선택은 중복을 허용. 이외의 값들에 대해서는 중복을 허용하지 않음.
+        if (value === 'nop' || !Object.values(preferences).includes(value)) {
             const newPreferences = { ...preferences, [field]: value };  // ...을 통해 기존의 preferences 상태를 가져오고, field를 value값으로 세팅. ex) [web] = 1
             setPreferences(newPreferences); // 새롭게 설정된 newPreferences를 Preferences로 세팅
         }
@@ -128,19 +139,75 @@ function UploadPortfolioPage() {
     };
 
 
-    // Web, App, Game, Ai 필드가 0, 1, 2, 3, 4를 선택할 수 있게 하기 위한 함수.
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={preferences[field]}
-            onChange={(e) => handlePreferenceChange(field, e.target.value)}
-        >
-            <Radio value={0}>매우 싫음</Radio>
-            <Radio value={1}>싫음</Radio>
-            <Radio value={2}>보통</Radio>
-            <Radio value={3}>좋음</Radio>
-            <Radio value={4}>매우 좋음</Radio>
-        </Radio.Group>
-    );
+    // 순위에 맞게 각 항목을 선택할 수 있도록 하는 함수
+    const renderRadioGroup = (field, weight) => {
+        if (weight === 4) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        } else if (weight === 3) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        } else if (weight === 2) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        } else if (weight === 1) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        }
+    
+        // Default rendering if weight doesn't match any condition
+        return null;
+    };
+
+    // preferences에 저장된 애를 prefer에 옮겨서 저장
+    const updatePreferFromPreferences = () => {
+        setPrefer({
+            web: preferences.first === 'web' ? 4 : (preferences.second === 'web' ? 3 : (preferences.third === 'web' ? 2 : (preferences.fourth === 'web' ? 1 : 0))),
+            app: preferences.first === 'app' ? 4 : (preferences.second === 'app' ? 3 : (preferences.third === 'app' ? 2 : (preferences.fourth === 'app' ? 1 : 0))),
+            game: preferences.first === 'game' ? 4 : (preferences.second === 'game' ? 3 : (preferences.third === 'game' ? 2 : (preferences.fourth === 'game' ? 1 : 0))),
+            ai: preferences.first === 'ai' ? 4 : (preferences.second === 'ai' ? 3 : (preferences.third === 'ai' ? 2 : (preferences.fourth === 'ai' ? 1 : 0))),
+        });
+    };
 
     // 포트폴리오 폼 제출 시 호출되는 이벤트 핸들러
     const onSubmitPortfolio = (e) => {
@@ -152,7 +219,7 @@ function UploadPortfolioPage() {
         }
 
         // web, app, game, ai는 한 번에 바로 접근할 수 없고, preferences를 통해서 접근한다.
-        submitPortfolio(e, preferences.web, preferences.app, preferences.game, preferences.ai, shortIntroduce, introduce, promoteImageUrl, fileUrl);
+        submitPortfolio(e, prefer.web, prefer.app, prefer.game, prefer.ai, shortIntroduce, introduce, promoteImageUrl, fileUrl);
     };
 
 
@@ -385,20 +452,20 @@ function UploadPortfolioPage() {
                         <table style={{ marginLeft:'15px', marginRight:'15px', marginTop:'40px', display:'flex', justifyContent:'center'}}>
                             <tbody > 
                                 <tr >
-                                    <td width='70px' >Web</td>
-                                    <td>{renderRadioGroup('web')}</td>
+                                    <td>1순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td>{renderRadioGroup('first', 4)}</td>
                                 </tr>
                                 <tr>
-                                    <td>App</td>
-                                    <td>{renderRadioGroup('app')}</td>
+                                    <td>2순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td>{renderRadioGroup('second', 3)}</td>
                                 </tr>
                                 <tr>
-                                    <td>Game</td>
-                                    <td>{renderRadioGroup('game')}</td>
+                                    <td>3순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td>{renderRadioGroup('third', 2)}</td>
                                 </tr>
                                 <tr>
-                                    <td>AI</td>
-                                    <td>{renderRadioGroup('ai')}</td>
+                                    <td>4순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td>{renderRadioGroup('fourth', 1)}</td>
                                 </tr>
                             </tbody>
                         </table>

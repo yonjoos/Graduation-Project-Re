@@ -467,6 +467,7 @@ public class SearchService {
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .finalUpdatedTime(post.getLastModifiedDate())
                     .imageUrl(url)
                     .build();
 
@@ -672,6 +673,7 @@ public class SearchService {
                     .endDate(post.getEndDate())
                     .briefContent(post.getContent())
                     .viewCount(viewCount)
+                    .finalUpdatedTime(post.getLastModifiedDate())
                     .imageUrl(url)
                     .build();
 

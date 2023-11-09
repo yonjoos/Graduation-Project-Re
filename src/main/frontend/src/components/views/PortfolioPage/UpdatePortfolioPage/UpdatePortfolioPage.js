@@ -19,11 +19,17 @@ function UpdatePortfolioPage() {
     const [hasPortfolio, setHasPortfolio] = useState('');
     const [existingShortIntroduce, setExistingShortIntroduce] = useState('');
     const [existingIntroduce, setExistingIntroduce] = useState('');
-    const [existingPreferences, setExistingPreferences] = useState({
+    const [existingPreferences, setExistingPreferences] = useState({    // 디비에서 가져올 애 + 디비에 넣을 애 (UploadPortfolioPage.js의 prefer와 동일한 역할)
         web: 0,
         app: 0,
         game: 0,
         ai: 0
+    });
+    const [preferences, setPreferences] = useState({    // 순위에 맞는 선호하는 분야
+        first: 'nop',
+        second: 'nop',
+        third: 'nop',
+        fourth: 'nop'
     });
     const [promoteImageUrl, setPromoteImageUrl] = useState([]); // 기존에 있던 이미지 상태변수
     const [fileUrl, setFileUrl] = useState([]); // 기존에 있던 첨부파일 상태변수
@@ -63,6 +69,11 @@ function UpdatePortfolioPage() {
             });
 
     }, [profileImage])
+
+    // preferences를 prefer로 변환
+    useEffect(() => {
+        updateExistingPreferFromPreferences();
+    }, [preferences]);
 
     // Fetch existing portfolio data on component mount
     useEffect(() => {
@@ -112,6 +123,25 @@ function UpdatePortfolioPage() {
         });
     };
 
+    // 백엔드에서 가져온 데이터인 web: 4, app: 3, game: 2, ai: 0과 같은 형식을 preferences 형식인 first, second, third, fourth에 맞게 변형
+    const mapExistingPreferences = (existingData) => {
+        const preferencesMap = {
+            4: 'web',
+            3: 'app',
+            2: 'game',
+            0: 'nop',
+        };
+    
+        const mappedPreferences = {
+            first: preferencesMap[existingData.web],
+            second: preferencesMap[existingData.app],
+            third: preferencesMap[existingData.game],
+            fourth: preferencesMap[existingData.ai],
+        };
+    
+        return mappedPreferences;
+    };
+
     // Function to fetch existing portfolio data - db에서 기존의 포트폴리오를 가져오기
     const fetchExistingPortfolioData = async () => {
         try {
@@ -120,12 +150,19 @@ function UpdatePortfolioPage() {
             setHasPortfolio(existingData.hasPortfolio);
             setExistingShortIntroduce(existingData.shortIntroduce);
             setExistingIntroduce(existingData.introduce);
-            setExistingPreferences({
-                web: existingData.web,
-                app: existingData.app,
-                game: existingData.game,
-                ai: existingData.ai
+            const mappedPreferences = mapExistingPreferences(existingData);
+            setPreferences({
+                first: mappedPreferences.first,
+                second: mappedPreferences.second,
+                third: mappedPreferences.third,
+                fourth: mappedPreferences.fourth,
             });
+            // setExistingPreferences({
+            //     web: existingData.web,
+            //     app: existingData.app,
+            //     game: existingData.game,
+            //     ai: existingData.ai
+            // });
             setPromoteImageUrl(existingData.promoteImageUrl);
             setFileUrl(existingData.fileUrl);
         } catch (error) {
@@ -133,19 +170,75 @@ function UpdatePortfolioPage() {
         }
     };
 
-    // Web, App, Game, Ai 필드가 0, 1, 2, 3, 4를 선택할 수 있게 하기 위한 함수.
-    const renderRadioGroup = (field) => (
-        <Radio.Group
-            value={existingPreferences[field]}
-            onChange={(e) => handlePreferenceChange(field, e.target.value)}
-        >
-            <Radio value={0}>매우 싫음</Radio>
-            <Radio value={1}>싫음</Radio>
-            <Radio value={2}>보통</Radio>
-            <Radio value={3}>좋음</Radio>
-            <Radio value={4}>매우 좋음</Radio>
-        </Radio.Group>
-    );
+    // 순위에 맞게 각 항목을 선택할 수 있도록 하는 함수
+    const renderRadioGroup = (field, weight) => {
+        if (weight === 4) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        } else if (weight === 3) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        } else if (weight === 2) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        } else if (weight === 1) {
+            return (
+                <Radio.Group
+                    value={preferences[field]}
+                    onChange={(e) => handlePreferenceChange(field, e.target.value)}
+                >
+                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'web'}>Web</Radio>
+                    <Radio value={'app'}>App</Radio>
+                    <Radio value={'game'}>Game</Radio>
+                    <Radio value={'ai'}>AI</Radio>
+                </Radio.Group>
+            );
+        }
+    
+        // Default rendering if weight doesn't match any condition
+        return null;
+    };
+
+    // preferences에 저장된 애를 existingPrefer에 옮겨서 저장
+    const updateExistingPreferFromPreferences = () => {
+        setExistingPreferences({
+            web: preferences.first === 'web' ? 4 : (preferences.second === 'web' ? 3 : (preferences.third === 'web' ? 2 : (preferences.fourth === 'web' ? 1 : 0))),
+            app: preferences.first === 'app' ? 4 : (preferences.second === 'app' ? 3 : (preferences.third === 'app' ? 2 : (preferences.fourth === 'app' ? 1 : 0))),
+            game: preferences.first === 'game' ? 4 : (preferences.second === 'game' ? 3 : (preferences.third === 'game' ? 2 : (preferences.fourth === 'game' ? 1 : 0))),
+            ai: preferences.first === 'ai' ? 4 : (preferences.second === 'ai' ? 3 : (preferences.third === 'ai' ? 2 : (preferences.fourth === 'ai' ? 1 : 0))),
+        });
+    };
 
     // 입력 필드 변경 시 호출되는 이벤트 핸들러
     const onChangeHandler = (event) => {
@@ -295,15 +388,17 @@ function UpdatePortfolioPage() {
     }
     
 
-    // 선호도 체크
+    // field 값으로는 nop, web, app, game, ai가 들어옴.
+    // value 값으로는 0, 1, 2, 3, 4가 들어옴.
     const handlePreferenceChange = (field, value) => {
-        // 0은 중복해서 선택할 수 있지만, 다른 값들은 중복해서 선택할 수 없도록 함
-        if (value === 0 || !Object.values(existingPreferences).includes(value)) {
-            const newPreferences = { ...existingPreferences, [field]: value };      // 기존의 상태를 가져온 후, 필드에 값 세팅. ex) [Web] : 1
-            setExistingPreferences(newPreferences);     // 새롭게 변경된 상태를 로컬스토리지에 저장
-        } else {
-            // 0 이외의 값을 중복 체크하면 warning 띄우기
-            message.warning('Please select unique preferences for each field.');
+        // '관심 없음' 선택은 중복을 허용. 이외의 값들에 대해서는 중복을 허용하지 않음.
+        if (value === 'nop' || !Object.values(preferences).includes(value)) {
+            const newPreferences = { ...preferences, [field]: value };  // ...을 통해 기존의 preferences 상태를 가져오고, field를 value값으로 세팅. ex) [web] = 1
+            setPreferences(newPreferences); // 새롭게 설정된 newPreferences를 Preferences로 세팅
+        }
+        else {
+            // 중복된 값을 선택하면 경고 문구 띄움.
+            message.warning('분야 별로 서로 다른 선호도를 체크해주세요.');
         }
     };
 
@@ -469,20 +564,20 @@ function UpdatePortfolioPage() {
                                         <table style={{ marginLeft:'15px', marginRight:'15px', marginTop:'40px', display:'flex', justifyContent:'center'}}>
                                             <tbody>
                                                 <tr>
-                                                    <td>Web</td>
-                                                    <td>{renderRadioGroup('web')}</td>
+                                                    <td>1순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td>{renderRadioGroup('first', 4)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td>App</td>
-                                                    <td>{renderRadioGroup('app')}</td>
+                                                    <td>2순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td>{renderRadioGroup('second', 3)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Game</td>
-                                                    <td>{renderRadioGroup('game')}</td>
+                                                    <td>3순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td>{renderRadioGroup('third', 2)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td>AI</td>
-                                                    <td>{renderRadioGroup('ai')}</td>
+                                                    <td>4순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td>{renderRadioGroup('fourth', 1)}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

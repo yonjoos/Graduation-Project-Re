@@ -338,7 +338,7 @@ function DetailStudyPage() {
         // setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
         // setLastLastVisitedEndpoint(visitedEndEndpoint);
         // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
-        navigate(`/portfolio/notify/${nickName}`);
+        navigate(`/portfolio/${nickName}`);
     };
 
     const handlePortfolioClick = (nickName) => {
@@ -349,7 +349,7 @@ function DetailStudyPage() {
         // setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
         // setLastLastVisitedEndpoint(visitedEndEndpoint);
         // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
-        navigate(`/portfolio/notify/${nickName}`);
+        navigate(`/portfolio/${nickName}`);
     };
 
     // 승인하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가

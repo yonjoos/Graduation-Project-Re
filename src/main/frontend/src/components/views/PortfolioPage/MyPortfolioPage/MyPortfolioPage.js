@@ -54,7 +54,7 @@ function MyPortfolioPage() {
             });
     }, [dispatch]);
 
-    useEffect(()=>{
+    useEffect(() => {
 
         request('GET', '/userProfileImage')
             .then((response) => {
@@ -137,14 +137,14 @@ function MyPortfolioPage() {
     const linkStyle = {
         textDecoration: 'none',
         transition: 'text-decoration 0.3s',
-        color:'black'
-      };
-    
-      const handleMouseEnter = (e) => {
+        color: 'black'
+    };
+
+    const handleMouseEnter = (e) => {
         e.currentTarget.style.textDecoration = 'underline';
-      };
-    
-      const handleMouseLeave = (e) => {
+    };
+
+    const handleMouseLeave = (e) => {
         e.currentTarget.style.textDecoration = 'none';
     };
 
@@ -161,7 +161,7 @@ function MyPortfolioPage() {
                                 title={
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Link
-                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) :(`/study/detail/${post.id}`)}
+                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) : (`/study/detail/${post.id}`)}
                                             className="hoverable-item"
                                             onMouseEnter={handleMouseEnter}
                                             onMouseLeave={handleMouseLeave}
@@ -183,7 +183,7 @@ function MyPortfolioPage() {
                                     </strong>
                                 </div>
                                 <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
-                                    onMouseUp={()=>onClickPosts(post)}
+                                    onMouseUp={() => onClickPosts(post)}
                                 >
                                     {post.briefContent}
                                 </div>
@@ -316,35 +316,36 @@ function MyPortfolioPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ display:'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
+                    <div style={{ display: 'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div style={{ display: 'flex' }}>
-                        <div style={{
-                            width: '110px',  
-                            height: '110px',  
-                            borderRadius: '50%',
-                            border: '5px solid lightblue',
-                            overflow: 'hidden',
-                        }}>
-                            <img
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                }}
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                            />
+                            <div style={{
+                                width: '110px',
+                                height: '110px',
+                                borderRadius: '50%',
+                                border: '5px solid lightblue',
+                                overflow: 'hidden',
+                            }}>
+                                <Image
+                                    style={{
+                                        width: '100px',
+                                        height: '100px',
+                                    }}
+                                    alt={'프로필 사진'}
+                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                />
                             </div>
-                            <div style={{ marginLeft:'20px', width: '80%', marginTop: '30px', fontSize: '30px', display:'grid' }}>
+                            <div style={{ marginLeft: '20px', width: '80%', marginTop: '30px', fontSize: '30px', display: 'grid' }}>
                                 <div>
                                     <i>{data && data.nickName}</i><b>'s portfolio page</b>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
-                                            <strong>CONTACT : </strong>
-                                            {data && data.email}
-                                        </div>
-                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
-                                            <strong> 조회수 : </strong>
-                                            {data && data.viewCount}
+                                    <div style={{ fontSize: '12px', marginTop: '10px' }}>
+                                        <strong>CONTACT : </strong>
+                                        {data && data.email}
+                                    </div>
+                                    <div style={{ fontSize: '12px', marginTop: '10px' }}>
+                                        <strong> 조회수 : </strong>
+                                        {data && data.viewCount}
                                     </div>
                                 </div>
                             </div>
@@ -480,7 +481,7 @@ function MyPortfolioPage() {
                             <Card >
                                 <Row justify="space-between">
                                     <Col span={8}>
-                                        <div style={{ width : '300px', fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
+                                        <div style={{ width: '300px', fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
                                     </Col>
                                     <Col span={8} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>
@@ -523,7 +524,7 @@ function MyPortfolioPage() {
                         okText="예"
                         cancelText="아니오"
                     >
-                        <p>포트폴리오 삭제 시, 프로필 사진은 변경되지 않습니다. <br/>
+                        <p>포트폴리오 삭제 시, 프로필 사진은 변경되지 않습니다. <br />
                             정말로 포트폴리오를 삭제하시겠습니까?</p>
                     </Modal>
                 </div>

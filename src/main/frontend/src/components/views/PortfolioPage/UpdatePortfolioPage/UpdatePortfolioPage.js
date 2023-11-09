@@ -55,6 +55,7 @@ function UpdatePortfolioPage() {
     );
 
 
+
     //프사 띄우기
     useEffect(()=>{
 
@@ -433,20 +434,28 @@ function UpdatePortfolioPage() {
 
     const handleRemoveSelectedImage = () => {
         setSelectedImage(null);
-        console.log("selectedImage" , selectedImage);
+        console.log("remove selectedImage" , selectedImage);
         console.log("remove" , remove);
         
     };
 
     const handleResetProfileImage = () =>{
         setRemove(true);
-        console.log("selectedImage" , selectedImage);
-        console.log("remove" , remove);
+        console.log("reset to basic, selectedImage : " , selectedImage);
+        console.log("removed" , remove);
     };
 
     const handleRemove = () =>{
         selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
     }
+
+    const handleSet = () => {
+        const fileInput = document.getElementById("fileInput");
+        if (fileInput) {
+          fileInput.value = ''; // Reset the file input
+        }
+        fileInput.click(); // Trigger a click event on the file input
+    };
 
     return (
         <div>
@@ -501,9 +510,6 @@ function UpdatePortfolioPage() {
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
-                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer',}}>
-                                                    ⚙️ set
-                                                    </label>
                                                     <input
                                                     type="file"
                                                     id="fileInput"
@@ -511,18 +517,23 @@ function UpdatePortfolioPage() {
                                                     style={{ display: 'none' }}
                                                     onChange={(event) => {
                                                         setSelectedImage(event.target.files[0]);
-                                                        console.log("selected " , selectedImage);
+                                                        console.log("selected! " , selectedImage);
                                                         // Handle the selected image as needed
                                                         setRemove(false);
                                                     }}
                                                 />
+                                                <span
+                                                    onMouseUp={handleSet}
+                                                >
+                                                    ⚙️ set
+                                                </span>
                                                 <span 
                                                     style={{marginLeft:'30px', cursor:'pointer'}}
                                                     onMouseUp={()=>handleRemove()}
                                                 >
                                                     remove
                                                 </span>
-                                                
+
                                             </div>
                                     </div>
                                     <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>

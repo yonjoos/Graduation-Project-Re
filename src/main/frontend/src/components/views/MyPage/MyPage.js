@@ -140,7 +140,15 @@ function MyPage() {
     const handleRemove = () =>{
         console.log("haneldRemove🩸");
         selectedImage ? handleRemoveSelectedImage() : handleResetProfileImage();
-    }
+    };
+
+    const handleSet = () => {
+        const fileInput = document.getElementById("fileInput");
+        if (fileInput) {
+          fileInput.value = ''; // Reset the file input
+        }
+        fileInput.click(); // Trigger a click event on the file input
+      };
 
 
     //수정하기 버튼 누면 일어나는 액션
@@ -483,7 +491,7 @@ function MyPage() {
                                             {/* 로컬에서 선택한 이미지가 있으면 그걸 띄우고 기존 프사는 띄우지 않음 */}
                                             <div style={{ display: 'flex', marginBottom: '8px' }}>
                                                 {(remove) ? (
-                                                    <img
+                                                    <Image
                                                     style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 1 }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
                                                 />
@@ -492,7 +500,7 @@ function MyPage() {
 
                                                 {!remove && selectedImage ? (
                                                     //새로 바꿀 이미지
-                                                    <img
+                                                    <Image
                                                     src={URL.createObjectURL(selectedImage)}
                                                     style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
                                                     onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
@@ -503,7 +511,7 @@ function MyPage() {
 
                                                 )}
                                                 {!remove && !selectedImage ? (
-                                                    <img
+                                                    <Image
                                                     style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                                 />
@@ -513,9 +521,6 @@ function MyPage() {
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 {/* 업로드할 사진 */}
-                                                <label htmlFor="fileInput" className="custom-upload" style={{cursor:'pointer'}}>
-                                                    ⚙️ set image
-                                                    </label>
                                                     <input
                                                     type="file"
                                                     id="fileInput"
@@ -523,18 +528,23 @@ function MyPage() {
                                                     style={{ display: 'none' }}
                                                     onChange={(event) => {
                                                         setSelectedImage(event.target.files[0]);
-                                                        console.log("selected " , selectedImage);
+                                                        console.log("selected! " , selectedImage);
                                                         // Handle the selected image as needed
                                                         setRemove(false);
                                                     }}
                                                 />
+                                                <span style={{cursor: 'pointer'}}
+                                                    onMouseUp={handleSet}
+                                                >
+                                                    ⚙️ set image
+                                                </span>
                                                 <span 
                                                     style={{marginLeft:'30px', cursor:'pointer'}}
                                                     onMouseUp={()=>handleRemove()}
                                                 >
                                                     remove
                                                 </span>
-                                                
+
                                             </div>
                                         </div>
                                     </div>

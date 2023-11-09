@@ -2466,6 +2466,7 @@ public class PostsService {
             String findPostsTitle = findPosts.getTitle(); // 게시물 제목
             User findPostUser = findPosts.getUser(); // 게시물 작성자
 
+
             NotificationMessageDto notificationMessage;
             String notifyMessage;
 
@@ -2518,6 +2519,7 @@ public class PostsService {
 
 
         PostsDto postsDto;
+        String url = findPosts.getUser().getImageUrl();
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
         Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
@@ -2555,6 +2557,7 @@ public class PostsService {
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .finalUpdatedTime(findPosts.getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
         }
         // 해당 게시물을 스크랩하지 않았다면
@@ -2578,6 +2581,7 @@ public class PostsService {
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .finalUpdatedTime(findPosts.getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
         }
 
@@ -2999,6 +3003,7 @@ public class PostsService {
                 .collect(Collectors.toList());
 
         PostsDto postsDto;
+        String url = findPosts.getUser().getImageUrl();
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
         Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
@@ -3035,6 +3040,7 @@ public class PostsService {
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .finalUpdatedTime(findPosts.getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
         }
         // 해당 게시물을 스크랩하지 않았다면
@@ -3058,6 +3064,7 @@ public class PostsService {
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .finalUpdatedTime(findPosts.getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
         }
 
@@ -3389,6 +3396,7 @@ public class PostsService {
                 .collect(Collectors.toList());
 
         PostsDto postsDto;
+        String url = findPosts.getUser().getImageUrl();
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
         Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
@@ -3423,6 +3431,7 @@ public class PostsService {
                     .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                     .endDate(savedScrapPosts.getPosts().getEndDate())
                     .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
         }
         // 게시물 지원 한 사람
@@ -3448,6 +3457,7 @@ public class PostsService {
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                         .endDate(savedScrapPosts.getPosts().getEndDate())
                         .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
+                        .imageUrl(url)
                         .build();
             }
             // 승인 난 사람
@@ -3471,6 +3481,7 @@ public class PostsService {
                         .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
                         .endDate(savedScrapPosts.getPosts().getEndDate())
                         .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
+                        .imageUrl(url)
                         .build();
             }
         }
@@ -3520,6 +3531,7 @@ public class PostsService {
                 .collect(Collectors.toList());
 
         PostsDto postsDto;
+        String url = findPosts.getUser().getImageUrl();
 
         // UserApplyPosts 엔티티에서 posts_id가 동일한 레코드의 개수를 가져옴.
         Optional<Integer> applyCountOptional = userApplyPostsRepository.countByPostsAndConfirmTrue(findPosts);
@@ -3555,6 +3567,7 @@ public class PostsService {
                     .recruitmentCount(findPosts.getRecruitmentCount())
                     .endDate(findPosts.getEndDate())
                     .finalUpdatedTime(findPosts.getLastModifiedDate())
+                    .imageUrl(url)
                     .build();
         }
         // 게시물 지원 한 사람
@@ -3580,6 +3593,7 @@ public class PostsService {
                         .recruitmentCount(findPosts.getRecruitmentCount())
                         .endDate(findPosts.getEndDate())
                         .finalUpdatedTime(findPosts.getLastModifiedDate())
+                        .imageUrl(url)
                         .build();
             }
             // 승인 난 사람
@@ -3603,6 +3617,7 @@ public class PostsService {
                         .recruitmentCount(findPosts.getRecruitmentCount())
                         .endDate(findPosts.getEndDate())
                         .finalUpdatedTime(findPosts.getLastModifiedDate())
+                        .imageUrl(url)
                         .build();
             }
         }

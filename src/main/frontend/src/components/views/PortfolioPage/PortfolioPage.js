@@ -49,11 +49,11 @@ function PortfolioPage() {
                 console.error("Error fetching data:", error);
             });
 
-        
+
     }, [nickName]);
 
     //프사 띄우는 용도
-    useEffect(()=>{
+    useEffect(() => {
 
 
         request('GET', `/getOtherUsersProfileImage?nickName=${nickName}`)
@@ -99,7 +99,7 @@ function PortfolioPage() {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         {/* 게시물 제목 */}
                                         <Link
-                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) :(`/study/detail/${post.id}`)}
+                                            to={(post.postType === "PROJECT") ? (`/project/detail/${post.id}`) : (`/study/detail/${post.id}`)}
                                             className="hoverable-item"
                                             onMouseEnter={handleMouseEnter}
                                             onMouseLeave={handleMouseLeave}
@@ -122,7 +122,7 @@ function PortfolioPage() {
                                     </strong>
                                 </div>
                                 <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
-                                    onMouseUp={()=>onClickPosts(post)}
+                                    onMouseUp={() => onClickPosts(post)}
                                 >
                                     {/* 한 줄 소개 */}
                                     {post.briefContent}
@@ -289,12 +289,12 @@ function PortfolioPage() {
     const linkStyle = {
         textDecoration: 'none',
         transition: 'text-decoration 0.3s',
-        color:'black'
+        color: 'black'
     };
-    
+
     //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
     const handleMouseEnter = (e) => {
-    e.currentTarget.style.textDecoration = 'underline';
+        e.currentTarget.style.textDecoration = 'underline';
     };
 
     //마우스를 게시글 위에 올렸을 때 텍스트에 밑줄 생기는 기능을 위한 css
@@ -310,7 +310,7 @@ function PortfolioPage() {
 
     return (
         // 포트폴리오 업로드 후 F5를 누르지 않으면 데이터가 들어오지 않는 문제를 data 안에 들어있는 isCreated사용과 삼항 연산자를 통해 직접적으로 해결.
-        <div style={{width:'100%'}}>
+        <div style={{ width: '100%' }}>
             <div style={{ marginLeft: '15%', marginRight: '15%' }}>
                 {/** navigate(-1)을 통해, 바로 이전에 방문했던 페이지로 돌아갈 수 있음 */}
                 {/* <Button type="primary" onClick={handleGoBackClick}>
@@ -329,26 +329,36 @@ function PortfolioPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ display:'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
+                    <div style={{ display: 'grid', marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
                         <div style={{ display: 'flex' }}>
-                            <div style={{ marginRight: '20px', borderRadius: '50%', overflow: 'hidden', width: '100px', height: '100px' }}>
-                                <img
-                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px', border: '5px solid lightblue' }}
+                            <div style=
+                                {{
+                                    borderRadius: '50%',
+                                    overflow: 'hidden',
+                                    width: '110px',
+                                    height: '110px',
+                                    border: '5px solid lightblue',
+                                }}>
+                                <Image
+                                    style={{
+                                        width: '100px', height: '100px',
+                                    }}
+                                    alt={'프로필 사진'}
                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                 />
                             </div>
-                            <div style={{ width: '90%', marginTop: '30px', fontSize: '30px', display:'grid' }}>
+                            <div style={{ marginLeft: '20px', width: '80%', marginTop: '30px', fontSize: '30px', display: 'grid' }}>
                                 <div>
                                     <i>{data && data.nickName}</i><b>'s portfolio page</b>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
-                                            <strong>CONTACT : </strong>
-                                            {data && data.email}
-                                        </div>
-                                    <div style={{ fontSize: '12px', marginTop:'10px' }}>
-                                            <strong> 조회수 : </strong>
-                                            {data && data.viewCount}
+                                    <div style={{ fontSize: '12px', marginTop: '10px' }}>
+                                        <strong>CONTACT : </strong>
+                                        {data && data.email}
+                                    </div>
+                                    <div style={{ fontSize: '12px', marginTop: '10px' }}>
+                                        <strong> 조회수 : </strong>
+                                        {data && data.viewCount}
                                     </div>
                                 </div>
                             </div>

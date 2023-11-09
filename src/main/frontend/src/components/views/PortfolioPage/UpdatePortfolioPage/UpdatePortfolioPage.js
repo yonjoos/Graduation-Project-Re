@@ -123,25 +123,6 @@ function UpdatePortfolioPage() {
         });
     };
 
-    // 백엔드에서 가져온 데이터인 web: 4, app: 3, game: 2, ai: 0과 같은 형식을 preferences 형식인 first, second, third, fourth에 맞게 변형
-    const mapExistingPreferences = (existingData) => {
-        const preferencesMap = {
-            4: 'web',
-            3: 'app',
-            2: 'game',
-            0: 'nop',
-        };
-    
-        const mappedPreferences = {
-            first: preferencesMap[existingData.web],
-            second: preferencesMap[existingData.app],
-            third: preferencesMap[existingData.game],
-            fourth: preferencesMap[existingData.ai],
-        };
-    
-        return mappedPreferences;
-    };
-
     // Function to fetch existing portfolio data - db에서 기존의 포트폴리오를 가져오기
     const fetchExistingPortfolioData = async () => {
         try {
@@ -150,12 +131,12 @@ function UpdatePortfolioPage() {
             setHasPortfolio(existingData.hasPortfolio);
             setExistingShortIntroduce(existingData.shortIntroduce);
             setExistingIntroduce(existingData.introduce);
-            const mappedPreferences = mapExistingPreferences(existingData);
+            // 백엔드에서 가져온 데이터인 web: 4, app: 3, game: 2, ai: 0과 같은 형식을 preferences 형식인 first, second, third, fourth에 맞게 변형
             setPreferences({
-                first: mappedPreferences.first,
-                second: mappedPreferences.second,
-                third: mappedPreferences.third,
-                fourth: mappedPreferences.fourth,
+                first: existingData.web === 4 ? 'web' : (existingData.app === 4 ? 'app' : (existingData.game === 4 ? 'game' : (existingData.ai === 4 ? 'ai' : 'nop'))),
+                second: existingData.web === 3 ? 'web' : (existingData.app === 3 ? 'app' : (existingData.game === 3 ? 'game' : (existingData.ai === 3 ? 'ai' : 'nop'))),
+                third: existingData.web === 2 ? 'web' : (existingData.app === 2 ? 'app' : (existingData.game === 2 ? 'game' : (existingData.ai === 2 ? 'ai' : 'nop'))),
+                fourth: existingData.web === 1 ? 'web' : (existingData.app === 1 ? 'app' : (existingData.game === 1 ? 'game' : (existingData.ai === 1 ? 'ai' : 'nop'))),
             });
             // setExistingPreferences({
             //     web: existingData.web,
@@ -178,7 +159,7 @@ function UpdatePortfolioPage() {
                     value={preferences[field]}
                     onChange={(e) => handlePreferenceChange(field, e.target.value)}
                 >
-                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'nop'}>없음</Radio>
                     <Radio value={'web'}>Web</Radio>
                     <Radio value={'app'}>App</Radio>
                     <Radio value={'game'}>Game</Radio>
@@ -191,7 +172,7 @@ function UpdatePortfolioPage() {
                     value={preferences[field]}
                     onChange={(e) => handlePreferenceChange(field, e.target.value)}
                 >
-                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'nop'}>없음</Radio>
                     <Radio value={'web'}>Web</Radio>
                     <Radio value={'app'}>App</Radio>
                     <Radio value={'game'}>Game</Radio>
@@ -204,7 +185,7 @@ function UpdatePortfolioPage() {
                     value={preferences[field]}
                     onChange={(e) => handlePreferenceChange(field, e.target.value)}
                 >
-                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'nop'}>없음</Radio>
                     <Radio value={'web'}>Web</Radio>
                     <Radio value={'app'}>App</Radio>
                     <Radio value={'game'}>Game</Radio>
@@ -217,7 +198,7 @@ function UpdatePortfolioPage() {
                     value={preferences[field]}
                     onChange={(e) => handlePreferenceChange(field, e.target.value)}
                 >
-                    <Radio value={'nop'}>관심 없음</Radio>
+                    <Radio value={'nop'}>없음</Radio>
                     <Radio value={'web'}>Web</Radio>
                     <Radio value={'app'}>App</Radio>
                     <Radio value={'game'}>Game</Radio>
@@ -391,7 +372,7 @@ function UpdatePortfolioPage() {
     // field 값으로는 nop, web, app, game, ai가 들어옴.
     // value 값으로는 0, 1, 2, 3, 4가 들어옴.
     const handlePreferenceChange = (field, value) => {
-        // '관심 없음' 선택은 중복을 허용. 이외의 값들에 대해서는 중복을 허용하지 않음.
+        // '없음' 선택은 중복을 허용. 이외의 값들에 대해서는 중복을 허용하지 않음.
         if (value === 'nop' || !Object.values(preferences).includes(value)) {
             const newPreferences = { ...preferences, [field]: value };  // ...을 통해 기존의 preferences 상태를 가져오고, field를 value값으로 세팅. ex) [web] = 1
             setPreferences(newPreferences); // 새롭게 설정된 newPreferences를 Preferences로 세팅
@@ -555,8 +536,9 @@ function UpdatePortfolioPage() {
                                     {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
                                     <div className="form-outline mb-4" style={{marginTop:'50px'}}>
                                         <strong style={{fontSize:'20px'}}> Fields of Interests</strong>
-                                        <hr></hr>
-                                        <p style={{marginLeft:'15px', marginRight:'15px'}}>관심 분야와 선호도를 선택해주세요. 정확한 추천을 위해, 각 분야의 선호도에 순서를 정해주세요. 4가 가장 높은 선호도이고, 0은 관심 없는 분야입니다. 관심 없는 분야(0)는 중복해서 선택할 수 있지만, 이외의 
+                                        <hr/>
+                                        <p style={{marginLeft:'15px', marginRight:'15px'}}>선호도에 맞는 관심분야를 선택해주세요. 정확한 추천을 위해, 선호도에 순서를 정해주세요.
+                                        <br/> 
                                         <b>* 선호도는 중복해서 체크할 수 없습니다. * </b></p>
                                         <p style={{marginLeft:'15px', marginRight:'15px', color:'gray'}}>
                                             * 다양한 선호도 분포는 포트폴리오 추천에 도움이 됩니다

@@ -322,7 +322,7 @@ function MyPortfolioPage() {
                                 width: '110px',
                                 height: '110px',
                                 borderRadius: '50%',
-                                border: '5px solid lightblue',
+                                border: '5px solid salmon',
                                 overflow: 'hidden',
                             }}>
                                 <Image

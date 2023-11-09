@@ -348,7 +348,7 @@ function SearchPortfolioListPage(onSearch) {
                     <Col span={18} style={{ textAlign: 'left' }}>
                         {/** 현재 경로가 localhost:3000/search/portfoliocard이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                         <Button type={location.pathname.includes('/search/portfoliocard') ? 'primary' : 'default'} onClick={handleSearchPortfolioCard}>
-                            Portfolio Card
+                            Portfolios
                         </Button>
                         <Button type={location.pathname.includes('/search/project') ? 'primary' : 'default'} onClick={handleSearchProject}>
                             Project

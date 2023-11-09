@@ -463,7 +463,7 @@ function StudyPage() {
                 <Col span={12} style={{ textAlign: 'left', margin: "0 0" }}>
                     {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                     <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
-                        Portfolio Card
+                        Portfolios
                     </Button>
                     <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                         Project

@@ -133,7 +133,7 @@ public class CommentsService {
                             .commentWriter(isCommentWriter)
                             .finalCommentedTime(c.getLastModifiedDate())
                             .isTopLevel(false)
-                            .imageUrl(url)
+                            .imageUrl(c.getUser().getImageUrl())
                             .build();
                 }
 
@@ -146,7 +146,7 @@ public class CommentsService {
                             .commentWriter(isCommentWriter)
                             .finalCommentedTime(c.getLastModifiedDate())
                             .isTopLevel(true)
-                            .imageUrl(url)
+                            .imageUrl(c.getUser().getImageUrl())
                             .build();
                 }
 

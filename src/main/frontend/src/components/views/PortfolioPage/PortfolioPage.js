@@ -337,7 +337,7 @@ function PortfolioPage() {
                                     overflow: 'hidden',
                                     width: '110px',
                                     height: '110px',
-                                    border: '5px solid lightblue',
+                                    border: '5px solid salmon',
                                 }}>
                                 <Image
                                     style={{

@@ -55,6 +55,7 @@ function DetailProjectPage() {
 
 
     const currentUserNickName = getUserNickName();
+    const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
         // ProjectId를 PathVariable로 보내기
@@ -88,6 +89,20 @@ function DetailProjectPage() {
         // Initial data fetch
         fetchCommentData();
     }, [pageSize]);
+
+    //프로필 사진 백에서 가져오기
+    useEffect(()=>{
+
+        request('GET', '/userProfileImage')
+            .then((response) => {
+                console.log(response.data.imageUrl);
+                setProfileImage(response.data.imageUrl);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile image:", error);
+            });
+
+    }, [profileImage])
 
 
     // 백엔드에서 받아온 데이터에 공백이 없으면, maxCharacters번째 글자 이후에 공백을 넣어주는 함수
@@ -705,7 +720,10 @@ function DetailProjectPage() {
             <div className={`comment-container depth-${depth}`}>
                 <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <UserOutlined style={{ marginRight: '5px' }} />
+                        <img
+                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
+                        />
                         <div style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></div>
                     </div>
 
@@ -769,7 +787,10 @@ function DetailProjectPage() {
                 </div>
                 {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
                     <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px', marginBottom: '20px' }}>
-                        <UserOutlined style={{ marginBottom: "12px", marginRight: '5px' }}></UserOutlined>
+                        <img
+                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
+                        />
                         <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
                         <TextArea
                             autoSize={{ minRows: 3 }}
@@ -1081,7 +1102,7 @@ function DetailProjectPage() {
                                             style={linkStyle}
                                         >
                                             <img
-                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
+                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
                                                 src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
                                             />
 
@@ -1187,7 +1208,10 @@ function DetailProjectPage() {
                                     </div>
 
                                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                        <UserOutlined style={{ marginRight: '5px' }} />
+                                        <img
+                                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                        />
                                         <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>
                                     </div>
                                     <TextArea

@@ -440,9 +440,9 @@ function PortfolioCardPage() {
 
                                                                 {/* Put any JSX content in here that you'd like. It'll be vertically and horizonally centered. */}
                                                                 <img
-                                                                            style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}
-                                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                                        />
+                                                                    style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}
+                                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                                />
                                                                 {/* <div style={{ fontSize: 10, marginTop: 5 }}>
                                                                     <strong>{item.cosineSimilarity}%</strong>
                                                                 </div> */}

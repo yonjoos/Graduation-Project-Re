@@ -337,7 +337,7 @@ function StudyPage() {
                                                 style={linkStyle}
                                             >
                                                 <img
-                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                 />
                                             </Link>

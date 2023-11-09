@@ -373,7 +373,7 @@ function StudyPage() {
                                     >
                                         {truncateString(item.briefContent, 50)}
                                     </div>
-                                <strong style={{ display: 'flex' }}>
+                                <strong style={{ display: 'flex', fontSize:'12px' }}>
                                     {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
                                     {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
                                     {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}

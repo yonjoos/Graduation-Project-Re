@@ -174,7 +174,7 @@ function MyPortfolioPage() {
                                 }
                             >
                                 <div>
-                                    <strong style={{ display: 'flex' }}>
+                                    <strong style={{ display: 'flex' , fontSize:'12px'}}>
 
                                         {post.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
                                         {post.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}

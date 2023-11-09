@@ -332,7 +332,7 @@ function ScrapPage() {
                                         {/* 한 줄 소개 눌러도 게시글로 이동, <Link>안 쓰고 <div>의 이벤트 함수를 썼기 때문에 밑줄기능 없음 */}
                                         {truncateString(item.briefContent, 50)}
                                     </div>
-                                    <strong style={{ display: 'flex',marginTop:'10px' }}>
+                                    <strong style={{ display: 'flex',marginTop:'10px', fontSize:'12px' }}>
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}

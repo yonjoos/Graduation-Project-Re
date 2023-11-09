@@ -164,7 +164,7 @@ function SearchPortfolioListPage(onSearch) {
                                 </div>
                             } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>
                                 <b>Field Of Interests</b>
-                                <strong style={{ display: 'flex', marginTop: '5px' }}>
+                                <strong style={{ display: 'flex', marginTop: '5px', fontSize:'12px' }}>
                                     {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
                                     {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
                                     {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}

@@ -318,7 +318,7 @@ function LandingPage() {
                                                 }}>
                                                 <b>{truncateString(item.title, 15)}</b>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                                                    <strong style={{ display: 'flex' }}>
+                                                    <strong style={{ display: 'flex', fontSize:'12px' }}>
 
                                                         {item.web ? <span style={{ ...TagStyle}}>#WEB</span> : ""}
                                                         {item.app ? <span style={{ ...TagStyle}}>#APP</span> : ""}
@@ -428,7 +428,7 @@ function LandingPage() {
                                                     border: '1px solid #e8e8e8', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '8px'
                                                 }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                    <strong style={{ display: 'flex' }}>
+                                                    <strong style={{ display: 'flex' , fontSize:'12px'}}>
 
                                                         {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
                                                         {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}

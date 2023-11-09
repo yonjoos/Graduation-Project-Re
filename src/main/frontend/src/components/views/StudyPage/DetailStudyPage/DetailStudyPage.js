@@ -1063,7 +1063,7 @@ function DetailStudyPage() {
                                     <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
                                         {data.title}
                                     </div>
-                                    <strong style={{ display: 'flex', marginTop: '10px' }}>
+                                    <strong style={{ display: 'flex', marginTop: '10px', fontSize:'12px' }}>
 
                                         {data.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
                                         {data.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}

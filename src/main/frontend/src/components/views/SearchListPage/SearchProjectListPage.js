@@ -243,7 +243,7 @@ function SearchProjectListPage(onSearch) {
                                     >
                                         {truncateString(item.briefContent, 50)}
                                     </div>
-                                    <strong style={{ display: 'flex' }}>
+                                    <strong style={{ display: 'flex', fontSize:'12px' }}>
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}

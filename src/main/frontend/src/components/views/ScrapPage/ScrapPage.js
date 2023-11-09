@@ -18,6 +18,9 @@ function ScrapPage() {
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
+    const myNickName = window.localStorage.getItem('user_nickname');
+
+
 
     // 페이지가 새로 마운트 될 때마다 실행됨. 
     // 프로젝트 게시물이면 postsOption === project / 스터디 게시물이면 postsOption === study
@@ -293,7 +296,7 @@ function ScrapPage() {
                                     <div style={{display:'flex'}}>
                                         <div>
                                             <Link
-                                                to={`/portfolio/${item.nickName}`} // Use template literals
+                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} // Use template literals
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}
@@ -308,7 +311,7 @@ function ScrapPage() {
                                         </div>
                                         <div>
                                             <Link
-                                                to={`/portfolio/${item.nickName}`} // Use template literals
+                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} // Use template literals
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}

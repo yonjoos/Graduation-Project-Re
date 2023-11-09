@@ -30,6 +30,9 @@ function StudyPage() {
 
 
     const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 5개 단위로 하였음
+    const myNickName = window.localStorage.getItem('user_nickname');
+
+
 
     // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
     useEffect(() => {
@@ -326,7 +329,7 @@ function StudyPage() {
                                     <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
                                         <div >
                                             <Link
-                                                to={`/portfolio/${item.nickName}`} 
+                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}
@@ -341,7 +344,7 @@ function StudyPage() {
                                         </div>
                                         <div>
                                         <Link
-                                                to={`/portfolio/${item.nickName}`} 
+                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}

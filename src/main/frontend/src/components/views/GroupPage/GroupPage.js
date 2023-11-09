@@ -24,6 +24,9 @@ function GroupPage() {
 
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
+    const myNickName = window.localStorage.getItem('user_nickname');
+
+
 
     // 페이지가 새로 마운트 될 때마다 실행됨. 
     // 내가 보고있는 게시물이 내가 쓴 글인지(postsOption === writer) 또는 내가 지원한 글인지(postsOption === applicant)
@@ -231,7 +234,7 @@ function GroupPage() {
                                         <div>
                                             {/* 프사 누르면 해당 유저 포트폴리오로 이동 */}
                                             <Link
-                                                to={`/portfolio/${item.nickName}`} 
+                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}
@@ -249,7 +252,7 @@ function GroupPage() {
                                         <div >
                                             {/* 닉네임 누르면 포트폴리오로 이동 */}
                                             <Link
-                                                    to={`/portfolio/${item.nickName}`} 
+                                                    to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
                                                     key={index}
                                                     className="hoverable-item"
                                                     onMouseEnter={handleMouseEnter}

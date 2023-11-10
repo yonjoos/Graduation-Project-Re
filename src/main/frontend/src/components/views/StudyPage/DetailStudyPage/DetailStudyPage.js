@@ -720,11 +720,20 @@ function DetailStudyPage() {
             <div className={`comment-container depth-${depth}`}>
                 <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <img
-                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
-                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
-                        />
-                        <div style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></div>
+                        <Link
+                            to={`/portfolio/${data.nickName}`}
+
+                            className="hoverable-item"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                            style={linkStyle}
+                        >
+                            <img
+                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
+                            />
+                            <strong>{comment.nickName}</strong>
+                        </Link>
                     </div>
 
                     {comment.commentWriter && (

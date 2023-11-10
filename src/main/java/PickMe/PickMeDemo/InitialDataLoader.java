@@ -1705,5 +1705,112 @@ public class InitialDataLoader implements CommandLineRunner {
 //        createUserAndPortfolio("4320", "4320", "4320", "4320", 4, 3, 2, 0, "4320", "4320", "");
 ////        4321
 //        createUserAndPortfolio("4321", "4321", "4321", "4321", 4, 3, 2, 1, "4321", "4321", "");
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7000 = User.builder()
+                .userName("최세영")
+                .nickName("ssangnamja")
+                .email("csy626@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("626"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile4.png")
+                .build();
+
+        userRepository.save(user7000);
+
+        Portfolio user7000Portfolio = Portfolio.builder()
+                .user(user7000)
+                .web(4)
+                .app(3)
+                .game(2)
+                .ai(1)
+                .shortIntroduce("카카오 네이버? 어림없지 스타트업 차릴 준비합니다.")
+                .introduce("렉스, 야크, 프롤로그를 넘어서 콜그래프까지 과제를 제출하였습니다. \n인생에서 그것만큼 뿌듯한 게 없었던 것 같습니다. \n 이러한 열정으로 여러분과 같이 함께 성장해나가겠습니다.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7000Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7001 = User.builder()
+                .userName("이동렬")
+                .nickName("홍익키다리")
+                .email("ldl515@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("515"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile1.png")
+                .build();
+
+        userRepository.save(user7001);
+
+        Portfolio user7001Portfolio = Portfolio.builder()
+                .user(user7001)
+                .web(1)
+                .app(2)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("기계과지만, 소프트웨어에 관심있는 4학년입니다.")
+                .introduce("자율주행에 관심있다보니, 기계과에서 배우는 것만으로는 부족하단 생각이 들었습니다. \n 자율주행 소프트웨어 공부 같이 하실 분 있으면 꼭 함께해요!")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7001Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7002 = User.builder()
+                .userName("노호수")
+                .nickName("문산토박이")
+                .email("hosoo313@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("313"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile2.png")
+                .build();
+
+        userRepository.save(user7002);
+
+        Portfolio user7002Portfolio = Portfolio.builder()
+                .user(user7002)
+                .web(1)
+                .app(2)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("현재 군대에 있지만, 내년에 복학하면 같이 열심히 성장할 학우분들을 모십니다.")
+                .introduce("NLP와 AI분야에 관심있습니다. \n 여기서 열심히 해서 꼭 네이버 가겠습니다. \n 플젝이든 스터디든 먼저 제 이메일로 연락주세요! 빠르게 답변 드리겠습니다!!")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7002Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7003 = User.builder()
+                .userName("이선재")
+                .nickName("언리얼장인")
+                .email("sundae1226@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("1226"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile3.png")
+                .build();
+
+        userRepository.save(user7003);
+
+        Portfolio user7003Portfolio = Portfolio.builder()
+                .user(user7003)
+                .web(1)
+                .app(2)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("홍익대학교 컴퓨터공학과에 재학중인, 게임 개발에 관심있는 이선재입니다.")
+                .introduce("앞서 말씀드렸다시피, 게임 분야에 큰 관심이 있어, 유니티와 언리얼 관련해서 게임 제작 4건 정도를 해보았습니다. 유니티 같은 경우에는, 초중학생들 대상으로 학원에서 일하며 가르친 적도 있습니다. 요새 유니티 엔진이 핫하다 해서 이쪽으로 좀 더 파고 있는데, 같이 성장하실 분 있으면 같이 공부하면 좋을 것 같아요!. \n \n 플젝이든 스터디든 먼저 제 이메일로 연락주세요! 아 그리고 dm도 가능하니 이쪽으로 연락주세요! \n DM: 1231DASJK123J 입니다")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7003Portfolio);
+
+
     }
+
 }

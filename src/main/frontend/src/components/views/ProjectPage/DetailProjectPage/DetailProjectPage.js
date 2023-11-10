@@ -91,7 +91,7 @@ function DetailProjectPage() {
     }, [pageSize]);
 
     //프로필 사진 백에서 가져오기
-    useEffect(()=>{
+    useEffect(() => {
 
         request('GET', '/userProfileImage')
             .then((response) => {
@@ -720,11 +720,20 @@ function DetailProjectPage() {
             <div className={`comment-container depth-${depth}`}>
                 <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <img
-                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
-                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
-                        />
-                        <div style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></div>
+                        <Link
+                            to={`/portfolio/${data.nickName}`}
+
+                            className="hoverable-item"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                            style={linkStyle}
+                        >
+                            <img
+                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
+                            />
+                            <strong>{comment.nickName}</strong>
+                        </Link>
                     </div>
 
                     {comment.commentWriter && (
@@ -788,7 +797,7 @@ function DetailProjectPage() {
                 {replyToCommentId === comment.id && ( // 답글 달기 버튼 누른 부모 댓글 아래에 답글 작성할 폼 세팅
                     <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px', marginBottom: '20px' }}>
                         <img
-                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
                             src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                         />
                         <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
@@ -1084,7 +1093,7 @@ function DetailProjectPage() {
                                     <div style={{ fontSize: '25px', fontWeight: 'bold' }}>
                                         {data.title}
                                     </div>
-                                    <strong style={{ display: 'flex', marginTop: '10px', fontSize:'12px' }}>
+                                    <strong style={{ display: 'flex', marginTop: '10px', fontSize: '12px' }}>
 
                                         {data.web && <span style={{ ...categoryTagStyle, background: '#fffec1' }}>#WEB</span>}
                                         {data.app && <span style={{ ...categoryTagStyle, background: '#fffec1' }}>#APP</span>}
@@ -1102,7 +1111,7 @@ function DetailProjectPage() {
                                             style={linkStyle}
                                         >
                                             <img
-                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
                                                 src={`https://storage.googleapis.com/hongik-pickme-bucket/${data.imageUrl}`}
                                             />
 
@@ -1209,7 +1218,7 @@ function DetailProjectPage() {
 
                                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                                         <img
-                                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
                                             src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                         />
                                         <p style={{ margin: '0' }}><strong>{currentUserNickName}</strong></p>

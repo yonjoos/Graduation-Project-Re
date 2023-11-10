@@ -20,7 +20,7 @@ function BottomFooter(props) {
         <div style={{ width: "100%" }}>
             <Footer style={{ backgroundColor: "white", textAlign: "center", marginTop: "200px"}}>
                 <Row type="flex" justify="center">
-                    <Col xs={12} style={{ paddingLeft : '20%', paddingTop: '5px' }}>
+                    <Col xs={12} style={{ paddingTop: '5px' }}>
                         {renderFooter() ? (
                             <div onClick={() => navigate("/")}>
                             <img
@@ -42,12 +42,13 @@ function BottomFooter(props) {
                         )}
 
                     </Col>
-                    <Col xs={12} style={{ paddingRight : '20%', paddingTop: '5px' }}>
+                    <Col xs={12} style={{ paddingTop: '5px' }}>
                         <Link
                             to={`/about`}
                         >
                             <Text style={{ fontWeight: "bold" }}>About Us</Text>
                         </Link>
+                        <br />
                         <Text style={{ fontWeight: "bold" }}>Team Name: 서울고양이</Text>
                         <br />
                         <Text type="secondary">Production team members: 이윤식, 박시홍, 정연주</Text>

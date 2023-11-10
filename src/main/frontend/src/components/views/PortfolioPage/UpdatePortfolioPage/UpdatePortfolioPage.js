@@ -560,14 +560,17 @@ function UpdatePortfolioPage() {
                                                     <td>1순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td>{renderRadioGroup('first', 4)}</td>
                                                 </tr>
+                                                <div style={{ marginBottom: '6px' }}></div>
                                                 <tr>
                                                     <td>2순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td>{renderRadioGroup('second', 3)}</td>
                                                 </tr>
+                                                <div style={{ marginBottom: '6px' }}></div>
                                                 <tr>
                                                     <td>3순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td>{renderRadioGroup('third', 2)}</td>
                                                 </tr>
+                                                <div style={{ marginBottom: '6px' }}></div>
                                                 <tr>
                                                     <td>4순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td>{renderRadioGroup('fourth', 1)}</td>
@@ -577,7 +580,7 @@ function UpdatePortfolioPage() {
                                     </div>
                                     <form onSubmit={onSubmitPortfolio}>
                                         {/* Short Introduce */}
-                                        <div className="form-outline mb-4" style={{marginTop:'120px'}}>
+                                        <div className="form-outline mb-4" style={{marginTop:'100px'}}>
                                             <strong style={{fontSize:'20px'}}> Brief Introduction</strong>
                                             <hr></hr>
                                             <p style={{marginLeft:'15px', marginRight:'15px', marginBottom:'40px'}}>프로필과 함께 유저들에게 가장 먼저 보이는 한 줄 소개입니다. 강렬한 문장으로 다른 유저들에게 자신을 소개해 보세요!</p>

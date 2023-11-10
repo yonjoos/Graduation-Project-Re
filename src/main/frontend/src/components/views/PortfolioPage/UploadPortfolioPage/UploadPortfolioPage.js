@@ -372,7 +372,7 @@ function UploadPortfolioPage() {
                                             width: '140px',  
                                             height: '140px',  
                                             borderRadius: '50%',
-                                            border: '5px solid salmon',
+                                            border: '5px solid lightblue',
                                             overflow: 'hidden',
                                             marginTop:'20px',
                                             marginBottom:'10px'

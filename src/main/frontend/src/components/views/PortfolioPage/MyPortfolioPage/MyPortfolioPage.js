@@ -174,7 +174,7 @@ function MyPortfolioPage() {
                                 }
                             >
                                 <div>
-                                    <strong style={{ display: 'flex' , fontSize:'12px'}}>
+                                    <strong style={{ display: 'flex' }}>
 
                                         {post.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
                                         {post.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
@@ -322,7 +322,7 @@ function MyPortfolioPage() {
                                 width: '110px',
                                 height: '110px',
                                 borderRadius: '50%',
-                                border: '5px solid salmon',
+                                border: '5px solid lightblue',
                                 overflow: 'hidden',
                             }}>
                                 <Image

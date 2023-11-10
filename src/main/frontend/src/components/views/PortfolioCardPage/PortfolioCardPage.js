@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Spin, Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
+import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import { request, setHasPortfolio } from '../../../hoc/request';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
@@ -394,7 +396,6 @@ function PortfolioCardPage() {
 
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <span > {item.cosineSimilarity}</span>
                                                 <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
                                             </div>
                                             {/* <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span> */}

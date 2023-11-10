@@ -108,7 +108,7 @@ useEffect(()=>{
         <Dropdown overlay={menu} placement="bottomRight" arrow>
             <Button type="text" value="large" style={{ color: 'black', background: 'transparent', fontSize: '18px', height: '10vh', }}>
                 <img
-                    style={{ borderRadius: '50%', width: '40px', height: '40px', marginBottom: '15px', border: '3px solid salmon'}}
+                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon'}}
                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                 />
             </Button>

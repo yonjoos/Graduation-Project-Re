@@ -789,7 +789,7 @@ function DetailProjectPage() {
                     <div className={`reply-container depth-${depth + 1}`} style={{ display: 'flex', alignItems: 'center', marginTop: '5px', marginBottom: '20px' }}>
                         <img
                             style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
-                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
+                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                         />
                         <p style={{ marginRight: '10px' }}><strong>{currentUserNickName}</strong></p>
                         <TextArea

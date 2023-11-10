@@ -24,9 +24,6 @@ function GroupPage() {
 
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
-    const myNickName = window.localStorage.getItem('user_nickname');
-
-
 
     // 페이지가 새로 마운트 될 때마다 실행됨. 
     // 내가 보고있는 게시물이 내가 쓴 글인지(postsOption === writer) 또는 내가 지원한 글인지(postsOption === applicant)
@@ -234,7 +231,7 @@ function GroupPage() {
                                         <div>
                                             {/* 프사 누르면 해당 유저 포트폴리오로 이동 */}
                                             <Link
-                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
+                                                to={`/portfolio/${item.nickName}`} 
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}
@@ -243,7 +240,7 @@ function GroupPage() {
                                             >
                                                 {/* 포트폴리오 사진 */}
                                                 <img
-                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                 />
                                             </Link>
@@ -252,7 +249,7 @@ function GroupPage() {
                                         <div >
                                             {/* 닉네임 누르면 포트폴리오로 이동 */}
                                             <Link
-                                                    to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
+                                                    to={`/portfolio/${item.nickName}`} 
                                                     key={index}
                                                     className="hoverable-item"
                                                     onMouseEnter={handleMouseEnter}
@@ -287,7 +284,7 @@ function GroupPage() {
                                         {/* 한 줄 소개 눌러도 게시글로 이동, <Link>안 쓰고 <div>의 이벤트 함수를 썼기 때문에 밑줄기능 없음 */}
                                         {truncateString(item.briefContent, 50)}
                                     </div>
-                                    <strong style={{ display: 'flex',marginTop:'10px' , fontSize:'12px'}}>
+                                    <strong style={{ display: 'flex',marginTop:'10px' }}>
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}

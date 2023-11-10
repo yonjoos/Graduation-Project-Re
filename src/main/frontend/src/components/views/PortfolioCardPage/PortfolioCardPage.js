@@ -406,11 +406,10 @@ function PortfolioCardPage() {
                                     <div style={{display:'grid'}}>
                                         <div style={{display:'flex'}}>
                                             
-                                            <table style={{width:'30%'}}>
+                                            <table style={{width:'90px'}}>
                                                 <tbody>
                                                     <tr>
                                                         <td>
-
                                                             <CircularProgressbarWithChildren 
                                                                 value={item.cosineSimilarity}
                                                                 styles={buildStyles({
@@ -436,13 +435,11 @@ function PortfolioCardPage() {
                                                                 }
                                                             >
                                                                 
-
-
                                                                 {/* Put any JSX content in here that you'd like. It'll be vertically and horizonally centered. */}
                                                                 <img
-                                                                            style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}
-                                                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                                        />
+                                                                    style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}
+                                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                                />
                                                                 {/* <div style={{ fontSize: 10, marginTop: 5 }}>
                                                                     <strong>{item.cosineSimilarity}%</strong>
                                                                 </div> */}
@@ -464,22 +461,23 @@ function PortfolioCardPage() {
                                                     </tr> */}
                                                 </tbody>
                                             </table>
-                                            <div style={{ width: '70%', display: 'grid', marginLeft: '20px'}}>
+                                            <div style={{ width: '70%', display: 'grid', marginLeft: '15px'}}>
                                                 <div>
                                                     <strong style={{fontSize:'20px'}}> {item.cosineSimilarity}</strong>% similar
                                                 </div>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between' , marginTop:'5px', marginBottom:'3px'}}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' , marginTop:'2px', marginBottom:'5px'}}>
                                                     <div>
-                                                    <strong>{item.nickName}</strong>
+                                                    <strong style={{fontSize:'15px'}}>{item.nickName}</strong>
                                                     </div>
                                                 </div>
-                                                <div style={{  }}>
-                                                    <strong style={{ display: 'flex'}}>
-                                                    {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                                    {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                                    {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                                    {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
+                                                <div style={{ width: '70px', display: 'flex', flexWrap: 'wrap' }}>
+                                                    <strong style={{ display: 'flex', fontSize:'12px' }}>
+                                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : null}
+                                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : null}
+                                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : null}
+                                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : null}
                                                     </strong>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -517,26 +515,34 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                 {/* style = {{cursor: 'pointer'}} */}
-                                <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <span>
-                                            <img
-                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
-                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                            />
-                                        </span>
+                                <Card 
+                                    onClick={() => onClickHandler(item.nickName)} 
+                                    headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }}
+                                    title={
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <span>
+                                                <img
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '2px solid salmon', marginRight: '10px' }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                />
+                                            </span>
 
-                                        <span>{item.nickName}</span>
-                                        {/* <span>{item.cosineSimilarity}</span> */}
-                                    </div>
-                                } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>
+                                            <span>{item.nickName}</span>
+                                            {/* <span>{item.cosineSimilarity}</span> */}
+                                        </div>
+                                        } 
+                                    style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}
+                                >
                                     <b>Field Of Interests</b>
-                                    <strong style={{ display: 'flex', marginTop: '5px' }}>
-                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                    </strong>
+                                    <div style={{marginTop:'10px'}}>
+                                        <strong style={{ display: 'flex', fontSize:'12px' }}>
+                                            {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span ></span>}
+                                            {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span ></span>}
+                                            {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span ></span>}
+                                            {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span ></span>}
+                                        </strong>
+
+                                    </div>                                    
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>
                                     <br />

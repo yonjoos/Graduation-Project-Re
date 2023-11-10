@@ -113,7 +113,7 @@ function PortfolioPage() {
                             >
                                 <div>
                                     {/* 카테고리 태그 */}
-                                    <strong style={{ display: 'flex' }}>
+                                    <strong style={{ display: 'flex' , fontSize:'12px'}}>
 
                                         {post.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span> : ""}
                                         {post.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span> : ""}
@@ -337,7 +337,7 @@ function PortfolioPage() {
                                     overflow: 'hidden',
                                     width: '110px',
                                     height: '110px',
-                                    border: '5px solid lightblue',
+                                    border: '5px solid salmon',
                                 }}>
                                 <Image
                                     style={{
@@ -490,10 +490,10 @@ function PortfolioPage() {
                         <Col span={16}>
                             <Card >
                                 <Row justify="space-between">
-                                    <Col span={8}>
+                                    <Col span={10}>
                                         <div style={{ fontWeight: 'bold' }}>{data && data.nickName}님이 작성한 게시물</div>
                                     </Col>
-                                    <Col span={8} style={{ textAlign: 'right' }}>
+                                    <Col span={6} style={{ textAlign: 'right' }}>
                                         <div onClick={onLoadPosts}>
                                             <strong style={{ cursor: 'pointer' }}>{loadPosts}</strong>
                                         </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Typography, Row, Col } from "antd";
-import { useNavigate, useLocation } from "react-router-dom"; // Import the useNavigate hook
+import { useNavigate, useLocation, Link } from "react-router-dom"; // Import the useNavigate hook
 
 const { Footer } = Layout;
 const { Text } = Typography;
@@ -43,6 +43,11 @@ function BottomFooter(props) {
 
                     </Col>
                     <Col xs={12} style={{ paddingRight : '20%', paddingTop: '5px' }}>
+                        <Link
+                            to={`/about`}
+                        >
+                            <Text style={{ fontWeight: "bold" }}>About Us</Text>
+                        </Link>
                         <Text style={{ fontWeight: "bold" }}>Team Name: 서울고양이</Text>
                         <br />
                         <Text type="secondary">Production team members: 이윤식, 박시홍, 정연주</Text>

@@ -1,8 +1,11 @@
 // 로그인된 회원만 볼 수 있는 페이지
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Spin, Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
+import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
+import { CircularProgressbarWithChildren, buildStyles  } from 'react-circular-progressbar';
+
 import { request, setHasPortfolio } from '../../../hoc/request';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
@@ -365,6 +368,8 @@ function PortfolioCardPage() {
 
     // renderCards
     const renderCards = (cards) => {
+        let similarity = null;
+        
         if (!cards || cards.length === 0) {
             return <div>No data available</div>; // or any other appropriate message
         }
@@ -374,48 +379,127 @@ function PortfolioCardPage() {
                 <div>
                     <Row gutter={16}>
                         {cards.map((item, index) => (
+                            <React.Fragment key={index}>
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                 {/* style = {{cursor: 'pointer'}} */}
                                 <Card onClick={() => onClickHandler(item.nickName)}
 
-                                    headStyle={{ background: index === 0 ? '#fee371' : index === 1 ? '#e6e6e6' : index === 2 ? '#decba1' : '#e5eefc' }}
+                                    headStyle={{ background: '#e5eefc'}}
                                     bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }}
                                     title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <div>
-                                                <span>
-                                                    <img
-                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
-                                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                                    />
-                                                </span>
-                                                <span> {item.nickName}</span>
+  
+                                                {index === 0 ? <span> <strong style={{fontSize:'20px'}}>Top</strong> recommended </span> : index === 1 ? <span><strong style={{fontSize:'20px'}}>2nd</strong> recommended</span> : <span><strong style={{fontSize:'20px'}}>3rd</strong> recommended</span>}
 
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <span > {item.cosineSimilarity}</span>
                                                 <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
                                             </div>
                                             {/* <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span> */}
                                         </div>
-                                    } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer', border: index === 0 ? '1px solid #fee371' : index === 1 ? '1px solid #e6e6e6' : index === 2 ? '1px solid #decba1' : '#e5eefc' }}>
-                                    <b>Field Of Interests</b>
-                                    <strong style={{ display: 'flex', marginTop: '5px' }}>
-                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                    </strong>
-                                    <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
-                                    <b>Brief Introduction</b>
-                                    <br />
-                                    {truncateString(item.shortIntroduce, 20)}
-                                    <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
-                                    <b>👀 조회 수 : </b>
-                                    {item.viewCount}
+                                    } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer', border: index === 0 ? '1px solid #fee371' : index === 1 ? '1px solid #e6e6e6' : index === 2 ? '1px solid #decba1' : '#e5eefc' }}
+                                >
+
+                                    <div style={{display:'grid'}}>
+                                        <div style={{display:'flex'}}>
+                                            
+                                            <table style={{width:'90px'}}>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <CircularProgressbarWithChildren 
+                                                                value={item.cosineSimilarity}
+                                                                styles={buildStyles({
+                                                                // Rotation of path and trail, in number of turns (0-1)
+
+                                                                // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                                                                strokeLinecap: 'round',
+                                                            
+                                                                // Text size
+                                                            
+                                                                // How long animation takes to go from one percentage to another, in seconds
+                                                            
+                                                                // Can specify path transition in more detail, or remove it entirely
+                                                                // pathTransition: 'none',
+                                                            
+                                                                //index === 0 ? '#fee371' : index === 1 ? '#e6e6e6' : index === 2 ? '#decba1' : '#e5eefc'
+                                                                // Colors
+                                                                pathColor: index === 0 ? `rgba(254, 227, 113, ${item.cosineSimilarity / 100})` : index === 1 ? `rgba(150, 150, 150, ${item.cosineSimilarity / 100})` : index === 2 ? `rgba(222, 203, 161, ${item.cosineSimilarity / 100})` : `rgba(229, 238, 252, ${0})`,
+                                                                textColor: '#f88',
+                                                                trailColor: 'white',
+                                                                backgroundColor: '#3e98c7',
+                                                                })
+                                                                }
+                                                            >
+                                                                
+                                                                {/* Put any JSX content in here that you'd like. It'll be vertically and horizonally centered. */}
+                                                                <img
+                                                                    style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}
+                                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                                />
+                                                                {/* <div style={{ fontSize: 10, marginTop: 5 }}>
+                                                                    <strong>{item.cosineSimilarity}%</strong>
+                                                                </div> */}
+
+                                                                
+
+                                                            </CircularProgressbarWithChildren>
+
+                                                            
+
+
+                                                        </td>
+                                                    </tr>
+                                                    {/* <tr>
+                                                        <td>
+                                                        <strong>{item.cosineSimilarity}</strong>% similar
+
+                                                        </td>
+                                                    </tr> */}
+                                                </tbody>
+                                            </table>
+                                            <div style={{ width: '70%', display: 'grid', marginLeft: '15px'}}>
+                                                <div>
+                                                    <strong style={{fontSize:'20px'}}> {item.cosineSimilarity}</strong>% similar
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' , marginTop:'2px', marginBottom:'5px'}}>
+                                                    <div>
+                                                    <strong style={{fontSize:'15px'}}>{item.nickName}</strong>
+                                                    </div>
+                                                </div>
+                                                <div style={{ width: '70px', display: 'flex', flexWrap: 'wrap' }}>
+                                                    <strong style={{ display: 'flex', fontSize:'12px' }}>
+                                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : null}
+                                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : null}
+                                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : null}
+                                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : null}
+                                                    </strong>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+
+                                    </div>
+                                    <hr></hr>
+                                    <div>
+                                        <div>
+                                            <b>Introduction</b>
+                                            <br></br>
+                                            {truncateString(item.shortIntroduce, 20)}
+                                        </div>
+
+                                    </div>
+                                    
+ 
                                 </Card>
+                                
+                                
                             </Col>
+                            </React.Fragment>
+                            
                         ))}
                     </Row>
                 </div>
@@ -430,26 +514,34 @@ function PortfolioCardPage() {
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                 {/* style = {{cursor: 'pointer'}} */}
-                                <Card onClick={() => onClickHandler(item.nickName)} headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }} title={
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <span>
-                                            <img
-                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
-                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                                            />
-                                        </span>
+                                <Card 
+                                    onClick={() => onClickHandler(item.nickName)} 
+                                    headStyle={{ background: '#e5eefc' }} bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }}
+                                    title={
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <span>
+                                                <img
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '2px solid salmon', marginRight: '10px' }}
+                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
+                                                />
+                                            </span>
 
-                                        <span>{item.nickName}</span>
-                                        {/* <span>{item.cosineSimilarity}</span> */}
-                                    </div>
-                                } style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}>
+                                            <span>{item.nickName}</span>
+                                            {/* <span>{item.cosineSimilarity}</span> */}
+                                        </div>
+                                        } 
+                                    style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}
+                                >
                                     <b>Field Of Interests</b>
-                                    <strong style={{ display: 'flex', marginTop: '5px' }}>
-                                        {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                        {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span style={{ marginBottom: '24px' }}></span>}
-                                    </strong>
+                                    <div style={{marginTop:'10px'}}>
+                                        <strong style={{ display: 'flex', fontSize:'12px' }}>
+                                            {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span ></span>}
+                                            {item.app ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#APP</span> : <span ></span>}
+                                            {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span ></span>}
+                                            {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span ></span>}
+                                        </strong>
+
+                                    </div>                                    
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b>Brief Introduction</b>
                                     <br />
@@ -575,6 +667,7 @@ function PortfolioCardPage() {
             ) : (
                 <div />
             )}
+            
 
         </div>
     );

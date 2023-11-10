@@ -361,77 +361,76 @@ function UploadPortfolioPage() {
                 <Card title = {'Write down your information'} style={{marginTop:'20px'}} headStyle={{ background: '#ddeeff' }}>
                 <form onSubmit={onSubmitPortfolio} style={{paddingLeft:'45px', paddingRight:'45px'}}>
                     <div style={{display:'flex', alignItems:'center', borderRadius:'10px', border: '1px solid lightgray'}}> 
-                    <div 
-                                        style={{display:'grid',
-                                        justifyContent:'center', 
-                                        marginLeft:'30px',
-                                        marginBottom:'20px',
-                                    }}>
-                                        <div 
-                                            style={{
-                                            width: '140px',  
-                                            height: '140px',  
-                                            borderRadius: '50%',
-                                            border: '5px solid lightblue',
-                                            overflow: 'hidden',
-                                            marginTop:'20px',
-                                            marginBottom:'10px'
-                                        }}>
-                                            {(remove) ? (
-                                                    <img
-                                                    style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px',  }}
-                                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
-                                                />
+                        <div 
+                            style={{display:'grid',
+                            justifyContent:'center', 
+                            marginLeft:'30px',
+                            marginBottom:'20px',
+                        }}>
+                            <div 
+                                style={{
+                                width: '140px',  
+                                height: '140px',  
+                                borderRadius: '50%',
+                                border: '5px solid salmon',
+                                overflow: 'hidden',
+                                marginTop:'20px',
+                                marginBottom:'10px'
+                            }}>
+                                {(remove) ? (
+                                        <img
+                                        style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px',  }}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
+                                    />
 
-                                                ) : (null)}
+                                    ) : (null)}
 
-                                            {!remove && selectedImage ? (
-                                                //새로 바꿀 이미지
-                                                <img
-                                                src={URL.createObjectURL(selectedImage)}
-                                                style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
-                                                onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
-                                                />
-                                            ):(
-                                                //기존 프사
-                                                null
+                                {!remove && selectedImage ? (
+                                    //새로 바꿀 이미지
+                                    <img
+                                    src={URL.createObjectURL(selectedImage)}
+                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
+                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                    />
+                                ):(
+                                    //기존 프사
+                                    null
 
-                                            )}
-                                            {!remove && !selectedImage ? (
-                                                <img
-                                                style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
-                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
-                                            />
-                                            ):(null)}
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                {/* 업로드할 사진 */}
-                                                    <input
-                                                    type="file"
-                                                    id="fileInput"
-                                                    accept="image/*"
-                                                    style={{ display: 'none' }}
-                                                    onChange={(event) => {
-                                                        setSelectedImage(event.target.files[0]);
-                                                        console.log("selected! " , selectedImage);
-                                                        // Handle the selected image as needed
-                                                        setRemove(false);
-                                                    }}
-                                                />
-                                                <span
-                                                    onMouseUp={handleSet}
-                                                >
-                                                    ⚙️ set
-                                                </span>
-                                                <span 
-                                                    style={{marginLeft:'30px', cursor:'pointer'}}
-                                                    onMouseUp={()=>handleRemove()}
-                                                >
-                                                    remove
-                                                </span>
-
-                                            </div>
-                                    </div>
+                                )}
+                                {!remove && !selectedImage ? (
+                                    <img
+                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
+                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                />
+                                ):(null)}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    {/* 업로드할 사진 */}
+                                        <input
+                                        type="file"
+                                        id="fileInput"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={(event) => {
+                                            setSelectedImage(event.target.files[0]);
+                                            console.log("selected! " , selectedImage);
+                                            // Handle the selected image as needed
+                                            setRemove(false);
+                                        }}
+                                    />
+                                    <span
+                                        onMouseUp={handleSet}
+                                    >
+                                        ⚙️ set
+                                    </span>
+                                    <span 
+                                        style={{marginLeft:'30px', cursor:'pointer'}}
+                                        onMouseUp={()=>handleRemove()}
+                                    >
+                                        remove
+                                    </span>
+                                </div>
+                            </div>
                         <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>
                             <p>
                                 {greetingMessage}
@@ -456,14 +455,17 @@ function UploadPortfolioPage() {
                                     <td>1순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('first', 4)}</td>
                                 </tr>
+                                <div style={{ marginBottom: '6px' }}></div>
                                 <tr>
                                     <td>2순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('second', 3)}</td>
                                 </tr>
+                                <div style={{ marginBottom: '6px' }}></div>
                                 <tr>
                                     <td>3순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('third', 2)}</td>
                                 </tr>
+                                <div style={{ marginBottom: '6px' }}></div>
                                 <tr>
                                     <td>4순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('fourth', 1)}</td>
@@ -472,7 +474,7 @@ function UploadPortfolioPage() {
                         </table>
                     </div>
                     
-                    <div className="form-outline mb-4" style={{marginTop:'120px'}}>
+                    <div className="form-outline mb-4" style={{marginTop:'100px'}}>
                         <strong style={{fontSize:'20px'}}> Brief Introduction</strong>
                         <hr></hr>
                         <p style={{marginLeft:'15px', marginRight:'15px', marginBottom:'40px'}}>프로필과 함께 유저들에게 가장 먼저 보이는 한 줄 소개입니다. 강렬한 문장으로 다른 유저들에게 자신을 소개해 보세요!</p>

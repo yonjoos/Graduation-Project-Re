@@ -372,7 +372,7 @@ function UploadPortfolioPage() {
                                             width: '140px',  
                                             height: '140px',  
                                             borderRadius: '50%',
-                                            border: '5px solid salmon',
+                                            border: '5px solid lightblue',
                                             overflow: 'hidden',
                                             marginTop:'20px',
                                             marginBottom:'10px'
@@ -432,6 +432,79 @@ function UploadPortfolioPage() {
 
                                             </div>
                                     </div>
+=======
+                        <div 
+                            style={{display:'grid',
+                            justifyContent:'center', 
+                            marginLeft:'30px',
+                            marginBottom:'20px',
+                        }}>
+                            <div 
+                                style={{
+                                width: '140px',  
+                                height: '140px',  
+                                borderRadius: '50%',
+                                border: '5px solid salmon',
+                                overflow: 'hidden',
+                                marginTop:'20px',
+                                marginBottom:'10px'
+                            }}>
+                                {(remove) ? (
+                                        <img
+                                        style={{ borderRadius: '50%', width: '100%', height: '100%', marginBottom: '15px',  }}
+                                        src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
+                                    />
+
+                                    ) : (null)}
+
+                                {!remove && selectedImage ? (
+                                    //새로 바꿀 이미지
+                                    <img
+                                    src={URL.createObjectURL(selectedImage)}
+                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px',  }}
+                                    onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
+                                    />
+                                ):(
+                                    //기존 프사
+                                    null
+
+                                )}
+                                {!remove && !selectedImage ? (
+                                    <img
+                                    style={{ borderRadius: '50%',  width: '100%', height: '100%', marginBottom: '15px', }}
+                                    src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
+                                />
+                                ):(null)}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                {/* 업로드할 사진 */}
+                                    <input
+                                    type="file"
+                                    id="fileInput"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={(event) => {
+                                        setSelectedImage(event.target.files[0]);
+                                        console.log("selected! " , selectedImage);
+                                        // Handle the selected image as needed
+                                        setRemove(false);
+                                    }}
+                                />
+                                <span
+                                    onMouseUp={handleSet}
+                                >
+                                    ⚙️ set
+                                </span>
+                                <span 
+                                    style={{marginLeft:'30px', cursor:'pointer'}}
+                                    onMouseUp={()=>handleRemove()}
+                                >
+                                    remove
+                                </span>
+
+                            </div>
+                        </div>
+                        
                         <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>
                             <p>
                                 {greetingMessage}

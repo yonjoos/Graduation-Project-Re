@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Spin, Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
 import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
-import { CircularProgressbarWithChildren, buildStyles  } from 'react-circular-progressbar';
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 
 import { request, setHasPortfolio } from '../../../hoc/request';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';

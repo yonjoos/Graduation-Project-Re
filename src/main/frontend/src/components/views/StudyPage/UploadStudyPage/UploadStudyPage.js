@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Row, Col, Input, Button, Checkbox, InputNumber, DatePicker, message, Upload, Modal } from 'antd';
+import { Card, Row, Col, Input, Button, Checkbox, InputNumber, DatePicker, message, Upload, Modal } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { getAuthToken } from '../../../../hoc/request';
 import axios from 'axios';
@@ -181,199 +181,214 @@ function UploadStudyPage() {
 
     return (
         <Row justify="center">
-            <Col span={12}>
-                <form onSubmit={onSubmitStudy} encType="multipart/form-data">
-                    <div className="form-outline mb-1">스터디 이름</div>
-                    <div className="form-outline mb-4">
-                        <Input
-                            type="text"
-                            placeholder="스터디 이름"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="form-outline mb-1">모집 분야</div>
-                    <div className="form-outline mb-4">
-                        {renderCheckboxGroup()}
-                    </div>
-
-                    <div style = {{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
-                            <div className="form-outline mb-1">모집 인원</div>
-                            <div className="form-outline mb-4">
-                                <InputNumber
-                                    placeholder="모집 인원"
-                                    value={recruitmentCount}
-                                    onChange={handleRecruitsChange}
-                                    min={0}  // 이 부분을 추가하여 음수 입력 방지
-                                    defaultValue={0}    // 맨 처음에 0 값으로 놓이게 설정
-                                />
-                            </div>
+            <Col span={24}>
+                <Card title = {'Upload Study'} style={{ marginTop: '20px' }} headStyle={{ background: '#fee5eb' }}>
+                    <form onSubmit={onSubmitStudy} encType="multipart/form-data">
+                        <strong style={{ fontSize: '20px' }}> Study Name </strong>
+                        <hr/>
+                        <div className="form-outline mb-4">
+                            <Input
+                                type="text"
+                                placeholder="스터디 이름"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
                         </div>
-                        <div style = {{ marginRight : '40%' }}>
-                            <div className="form-outline mb-1">모집 마감일</div>
-                            <div className="form-outline mb-4">
-                                <DatePicker
-                                    onChange={(dateString) => setEndDate(dateString)}
-                                    placeholder="모집 마감일"
-                                    // disabledDate prop은 현재 날짜(current)가 오늘 날짜 이전인 경우에 true를 반환하도록 설정되어 있습니다.
-                                    // 따라서 선택할 수 없는 날짜는 비활성화됩니다. dayjs().endOf('day')는 오늘 날짜의 끝 시간을 나타냅니다.
-                                    disabledDate={(current) => current && current < dayjs().endOf('day')}
-                                />
-                            </div>
+
+                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
+                            <strong style={{ fontSize: '20px' }}> Study Fields </strong>
                         </div>
-                    </div>
+                        <div className="form-outline mb-4">
+                            {renderCheckboxGroup()}
+                        </div>
 
-                    <div className="form-outline mb-1">스터디 내용</div>
-                    <div className="form-outline mb-4">
-                        <TextArea
-                            placeholder="스터디 내용"
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            autoSize={{ minRows: 20 }}
-                        />
-                    </div>
+                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
+                            <strong style={{ fontSize: '20px' }}>Volume of Recruitment</strong>
+                            <hr/>
+                        </div>
+                        <div className="form-outline mb-4">
+                            <InputNumber
+                                placeholder="모집 인원"
+                                value={recruitmentCount}
+                                onChange={handleRecruitsChange}
+                                min={0}  // 이 부분을 추가하여 음수 입력 방지
+                                defaultValue={0}    // 맨 처음에 0 값으로 놓이게 설정
+                            />
+                        </div>
+                        
+                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
+                            <strong style={{ fontSize: '20px' }}>Recruitment Period</strong>
+                            <hr/>
+                        </div>
+                        <div className="form-outline mb-4">
+                            <DatePicker
+                                onChange={(dateString) => setEndDate(dateString)}
+                                placeholder="모집 마감일"
+                                // disabledDate prop은 현재 날짜(current)가 오늘 날짜 이전인 경우에 true를 반환하도록 설정되어 있습니다.
+                                // 따라서 선택할 수 없는 날짜는 비활성화됩니다. dayjs().endOf('day')는 오늘 날짜의 끝 시간을 나타냅니다.
+                                disabledDate={(current) => current && current < dayjs().endOf('day')}
+                            />
+                        </div>
 
-                    <div className="form-outline mb-1">홍보 사진</div>
-                    <div className="form-outline mb-4">
+                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
+                            <strong style={{ fontSize: '20px' }}>Content</strong>
+                            <hr/>
+                        </div>
+                        <div className="form-outline mb-4">
+                            <TextArea
+                                placeholder="스터디 내용"
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                autoSize={{ minRows: 20 }}
+                            />
+                        </div>
+
+                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
+                            <strong style={{ fontSize: '20px' }}>Publicity Picture</strong>
+                            <hr/>
+                        </div>
+                        <div className="form-outline mb-4">
+                            <Upload
+                                accept="image/*"
+                                showUploadList={false}
+                                beforeUpload={(image) => {
+                                    setPromoteImageUrl([...promoteImageUrl, image]);
+                                    return false; // Stops the upload action
+                                }}
+                            >
+                                <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
+                                </Upload>   
+                                {promoteImageUrl.map((image, index) => (
+                                    <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
+                                        <img
+                                            src={URL.createObjectURL(image)}
+                                            alt="홍보 사진"
+                                            style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                            onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                        />
+                                        <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                                    </div>
+                                ))}
+                        </div>
+                        {/* Preview Modal */}
+                        <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
+                            <img alt="스터디 이미지" style={{ width: '100%' }} src={previewImage} />
+                        </Modal>
+
+                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
+                            <strong style={{ fontSize: '20px' }}>Attatchment</strong>
+                            <hr/>
+                        </div>
+                        <div className="form-outline mb-4">
                         <Upload
-                            accept="image/*"
-                            showUploadList={false}
-                            beforeUpload={(image) => {
-                                setPromoteImageUrl([...promoteImageUrl, image]);
-                                return false; // Stops the upload action
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
-                            </Upload>   
-                            {promoteImageUrl.map((image, index) => (
-                                <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
-                                    <img
-                                        src={URL.createObjectURL(image)}
-                                        alt="홍보 사진"
-                                        style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
-                                        onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
-                                    />
-                                    <Button onClick={() => removePromoteImage(index)}>Remove</Button>
+                                accept=".pdf,.doc,.docx"
+                                showUploadList={false}
+                                beforeUpload={(file) => {
+                                    setFileUrl([...fileUrl, file]);
+                                    return false;
+                                }}
+                            >
+                                <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
+                            </Upload>
+                            {fileUrl.map((file, index) => (
+                                <div key={index} style={{ display: 'flex', marginBottom: '8px', alignItems: 'center', marginBottom: '8px' }}>
+
+                                    <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
+                                        {file.name}
+                                    </Button>
+
+                                    <Button onClick={() => removeFile(index)}>Remove</Button>
                                 </div>
                             ))}
-                    </div>
-                    {/* Preview Modal */}
-                    <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
-                        <img alt="스터디 이미지" style={{ width: '100%' }} src={previewImage} />
-                    </Modal>
 
-                    <div className="form-outline mb-1">첨부 파일</div>
-                    <div className="form-outline mb-4">
-                    <Upload
-                            accept=".pdf,.doc,.docx"
-                            showUploadList={false}
-                            beforeUpload={(file) => {
-                                setFileUrl([...fileUrl, file]);
-                                return false;
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
-                        </Upload>
-                        {fileUrl.map((file, index) => (
-                            <div key={index} style={{ display: 'flex', marginBottom: '8px', alignItems: 'center', marginBottom: '8px' }}>
-
-                                <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
-                                    {file.name}
-                                </Button>
-
-                                <Button onClick={() => removeFile(index)}>Remove</Button>
-                            </div>
-                        ))}
-
-                        {/*  드래그앤 드롭 
-                        <Dragger style={{ cursor: 'pointer' }}
-                            {...fileUploadProps}
-                            multiple
-                            accept=".pdf,.doc,.docx"
-                            showUploadList={true}
-                            className="custom-upload-dragger"
-                            beforeUpload={(file) => {
-                                setFileUrl([...fileUrl, file]);
-                                return false;
-                            }}
-                            onRemove={(file) => {
-                                const index = fileUrl.indexOf(file);
-                                if (index !== -1) {
-                                    removeFile(index);
-                                }
-                            }}
-                            onPreview={(file) => {
-                                const url = URL.createObjectURL(file.originFileObj);
-                                window.open(url, '_blank');
-                            }}
-
-
-                        >
-                            <p className="ant-upload-drag-icon">
-                                <UploadOutlined />
-                            </p>
-                            <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                            <p className="ant-upload-hint">
-                                Support for a single or bulk upload. Strictly prohibited from uploading company data or other banned files.
-                            </p>
-                           
-                            <style>{`
-                                    .custom-upload-dragger .ant-upload-list-item-info {
-                                        cursor: pointer; // 파일 이름 부분에 포인터 커서 스타일을 설정
+                            {/*  드래그앤 드롭 
+                            <Dragger style={{ cursor: 'pointer' }}
+                                {...fileUploadProps}
+                                multiple
+                                accept=".pdf,.doc,.docx"
+                                showUploadList={true}
+                                className="custom-upload-dragger"
+                                beforeUpload={(file) => {
+                                    setFileUrl([...fileUrl, file]);
+                                    return false;
+                                }}
+                                onRemove={(file) => {
+                                    const index = fileUrl.indexOf(file);
+                                    if (index !== -1) {
+                                        removeFile(index);
                                     }
-                                    .custom-upload-dragger .ant-upload-list-item-name {
-                                        cursor: pointer; // "@" 부분에 포인터 커서 스타일을 설정
+                                }}
+                                onPreview={(file) => {
+                                    const url = URL.createObjectURL(file.originFileObj);
+                                    window.open(url, '_blank');
+                                }}
+
+
+                            >
+                                <p className="ant-upload-drag-icon">
+                                    <UploadOutlined />
+                                </p>
+                                <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                                <p className="ant-upload-hint">
+                                    Support for a single or bulk upload. Strictly prohibited from uploading company data or other banned files.
+                                </p>
+                            
+                                <style>{`
+                                        .custom-upload-dragger .ant-upload-list-item-info {
+                                            cursor: pointer; // 파일 이름 부분에 포인터 커서 스타일을 설정
+                                        }
+                                        .custom-upload-dragger .ant-upload-list-item-name {
+                                            cursor: pointer; // "@" 부분에 포인터 커서 스타일을 설정
+                                        }
+                                    `}</style>
+
+                            </Dragger>
+                            드래그앤 드롭  */}
+                            
+
+                        </div>
+
+                        {/* 실제로 사진 및 파일 업로드 시 사용해야할 코드.
+                            여러 장의 사진 또는 여러 개의 파일을 업로드하기 위해서는 코드 수정 필요.
+                            또한 최대로 올릴 수 있는 사진, 파일의 개수를 조정해야 함. */}
+                        {/* <div className="form-outline mb-1">홍보 사진</div>
+                        <div className="form-outline mb-4">
+                            <Upload
+                                accept="image/*"
+                                fileList={promoteImageUrl ? [promoteImageUrl] : []}
+                                beforeUpload={() => false}
+                                onChange={(info) => {
+                                    if (info.fileList.length > 0) {
+                                        setPromoteImageUrl(info.fileList[0]);
+                                    } else {
+                                        setPromoteImageUrl(null);
                                     }
-                                `}</style>
+                                }}
+                            >
+                                <Button icon={<UploadOutlined />}>Upload Photos</Button>
+                            </Upload>
+                        </div>
 
-                        </Dragger>
-                         드래그앤 드롭  */}
-                         
-
-                    </div>
-
-                    {/* 실제로 사진 및 파일 업로드 시 사용해야할 코드.
-                        여러 장의 사진 또는 여러 개의 파일을 업로드하기 위해서는 코드 수정 필요.
-                        또한 최대로 올릴 수 있는 사진, 파일의 개수를 조정해야 함. */}
-                    {/* <div className="form-outline mb-1">홍보 사진</div>
-                    <div className="form-outline mb-4">
-                        <Upload
-                            accept="image/*"
-                            fileList={promoteImageUrl ? [promoteImageUrl] : []}
-                            beforeUpload={() => false}
-                            onChange={(info) => {
-                                if (info.fileList.length > 0) {
-                                    setPromoteImageUrl(info.fileList[0]);
-                                } else {
-                                    setPromoteImageUrl(null);
-                                }
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />}>Upload Photos</Button>
-                        </Upload>
-                    </div>
-
-                    <div className="form-outline mb-1">첨부 파일</div>
-                    <div className="form-outline mb-4">
-                        <Upload
-                            accept=".pdf,.doc,.docx"
-                            fileList={fileUrl ? [fileUrl] : []}
-                            beforeUpload={() => false}
-                            onChange={(info) => {
-                                if (info.fileList.length > 0) {
-                                    setFileUrl(info.fileList[0]);
-                                } else {
-                                    setFileUrl(null);
-                                }
-                            }}
-                        >
-                            <Button icon={<UploadOutlined />} disabled={!!fileUrl}>Upload Files</Button>
-                        </Upload>
-                    </div> */}
-                    <Button type="primary" block htmlType="submit">Submit</Button>
-                </form>
+                        <div className="form-outline mb-1">첨부 파일</div>
+                        <div className="form-outline mb-4">
+                            <Upload
+                                accept=".pdf,.doc,.docx"
+                                fileList={fileUrl ? [fileUrl] : []}
+                                beforeUpload={() => false}
+                                onChange={(info) => {
+                                    if (info.fileList.length > 0) {
+                                        setFileUrl(info.fileList[0]);
+                                    } else {
+                                        setFileUrl(null);
+                                    }
+                                }}
+                            >
+                                <Button icon={<UploadOutlined />} disabled={!!fileUrl}>Upload Files</Button>
+                            </Upload>
+                        </div> */}
+                        <Button type="primary" block htmlType="submit">Submit</Button>
+                    </form>
+                </Card>
             </Col>
         </Row>
     );

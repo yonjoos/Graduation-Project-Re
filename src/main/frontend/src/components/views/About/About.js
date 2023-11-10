@@ -24,48 +24,6 @@ function About() {
                             height: '200px'
                             }}>
                             <img
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/images.jpeg`}
-                                style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover'
-                                }}
-                            />
-                        </div>
-                        <div style={{display:'flex', justifyContent:'space-between'}}>
-                            <div style={{display:'grid', marginLeft:'40px', width:'300px'}}>
-                                <div style={{fontSize:'25px'}}>
-                                    <strong>정 연 주</strong>
-                                </div>
-                                <div>
-                                    Backend Developer<br></br>Frontend Developer<br></br>UX/UI Designer
-                                </div>
-                            </div>
-                            <div style={{width:'400px'}}>
-                                <ul>
-                                    <li>서울@@초등학교 졸업</li>
-                                    <li>서울@@중학교 졸업</li>
-                                    <li>서울@@고등학교 졸업</li>
-                                    <li>홍익대학교 서울캠퍼스 자율전공학부 17학번</li>
-                                    <li>홍익대학교 서울캠퍼스 시각디자인과 졸업</li>
-                                    <li>홍익대학교 서울캠퍼스 컴퓨터공학과 졸업</li>
-                                </ul>
-                            </div>
-                        </div>
-                        
-
-                    </div>
-
-                </div>
-                <hr></hr>
-                <div style={{display:'grid'}}>
-                    <div style={{display:'flex'}}>
-                        <div style={{
-                            overflow: 'hidden',
-                            width: '170px',
-                            height: '200px'
-                            }}>
-                            <img
                                 src={`https://storage.googleapis.com/hongik-pickme-bucket/%E1%84%86%E1%85%A6%E1%84%85%E1%85%A9%E1%86%AB.png`}
                                 style={{
                                 width: '100%',
@@ -93,9 +51,7 @@ function About() {
                                 </ul>
                             </div>
                         </div>
-                        
                     </div>
-
                 </div>
                 <hr></hr>
                 <div style={{display:'grid'}}>
@@ -134,13 +90,47 @@ function About() {
                                 </ul>
                             </div>
                         </div>
-                        
-                        
-                        
                     </div>
-
                 </div>
-                
+                <hr></hr>
+                <div style={{display:'grid'}}>
+                    <div style={{display:'flex'}}>
+                        <div style={{
+                            overflow: 'hidden',
+                            width: '170px',
+                            height: '200px'
+                            }}>
+                            <img
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/images.jpeg`}
+                                style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                                }}
+                            />
+                        </div>
+                        <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <div style={{display:'grid', marginLeft:'40px', width:'300px'}}>
+                                <div style={{fontSize:'25px'}}>
+                                    <strong>정 연 주</strong>
+                                </div>
+                                <div>
+                                    Backend Developer<br></br>Frontend Developer<br></br>UX/UI Designer
+                                </div>
+                            </div>
+                            <div style={{width:'400px'}}>
+                                <ul>
+                                    <li>서울@@초등학교 졸업</li>
+                                    <li>서울@@중학교 졸업</li>
+                                    <li>서울@@고등학교 졸업</li>
+                                    <li>홍익대학교 서울캠퍼스 자율전공학부 17학번</li>
+                                    <li>홍익대학교 서울캠퍼스 시각디자인과 졸업</li>
+                                    <li>홍익대학교 서울캠퍼스 컴퓨터공학과 졸업</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }

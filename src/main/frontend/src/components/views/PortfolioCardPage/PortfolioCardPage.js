@@ -395,7 +395,6 @@ function PortfolioCardPage() {
 
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <span > {item.cosineSimilarity}</span>
                                                 <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
                                             </div>
                                             {/* <span>{item.cosineSimilarity}{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span> */}

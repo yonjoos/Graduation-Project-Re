@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Row, Col, Input, Button, Checkbox, DatePicker, message, InputNumber, Upload, Modal, Card } from 'antd';
+import { Row, Col, Input, Button, Checkbox, DatePicker, message, InputNumber, Upload, Modal } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { getAuthToken } from '../../../../hoc/request';
 import axios from 'axios';
@@ -251,190 +251,174 @@ function UpdateStudyPage() {
 
     return (
         <Row justify="center">
-            <Col span={24}>
-                <Card title = {'Update Study'} style={{ marginTop: '20px' }} headStyle={{ background: '#fee5eb' }}>
-                    <form onSubmit={onSubmitStudy}>
-                        <strong style={{ fontSize: '20px' }}> Study Name </strong>
-                        <hr/>
-                        <div className="form-outline mb-4">
-                            <Input
-                                type="text"
-                                name="title"
-                                placeholder="스터디 이름 변경"
-                                value={data.title}
-                                onChange={onChangeHandler}
-                            />
-                        </div>
+            <Col span={12}>
+                <form onSubmit={onSubmitStudy}>
+                    <div className="form-outline mb-1">스터디 이름</div>
+                    <div className="form-outline mb-4">
+                        <Input
+                            type="text"
+                            name="title"
+                            placeholder="제목 변경"
+                            value={data.title}
+                            onChange={onChangeHandler}
+                        />
+                    </div>
 
-                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}> Study Fields </strong>
-                            <hr/>
-                        </div>
-                        <div className="form-outline mb-4">
-                            <label>Post Type &nbsp;&nbsp;&nbsp;</label>
-                            {renderCheckboxGroup()}
-                        </div>
-                        
-                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Volume of Recruitment</strong>
-                            <hr/>
-                        </div>
-                        <div className="form-outline mb-4">
-                            <InputNumber
-                                type="number"
-                                name="recruitmentCount"
-                                placeholder="모집 인원 변경"
-                                value={data.recruitmentCount}
-                                // InputNumber 컴포넌트에서는 onChange 이벤트가 일반적인 event 객체를 전달하지 않고 숫자 값만 전달하므로, name을 직접 만들어 준다.
-                                onChange={(value) => onChangeHandler({ target: { name: 'recruitmentCount', value } })}
-                            />
-                        </div>
+                    <div className="form-outline mb-1">모집 분야</div>
+                    <div className="form-outline mb-4">
+                        <label>Post Type &nbsp;&nbsp;&nbsp;</label>
+                        {renderCheckboxGroup()}
+                    </div>
 
-                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Recruitment Period</strong>
-                            <hr/>
-                        </div>
-                        <div className="form-outline mb-4">
-                            <DatePicker
-                                name="endDate"
-                                value={data.endDate}
-                                onChange={(date) => onChangeHandler({ target: { name: 'endDate', value: date } })}
-                                placeholder="모집 마감일 변경"
-                                format="YYYY-MM-DD"
-                                disabledDate={(current) => current && current < dayjs().endOf('day')}
-                            />
-                        </div>
-                            
-                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Content</strong>
-                            <hr/>
-                        </div>
-                        <div className="form-outline mb-4">
-                            <TextArea
-                                name="content"
-                                placeholder="스터디 내용 변경"
-                                value={data.content}
-                                onChange={onChangeHandler}
-                                autoSize={{ minRows: 20 }}
-                            />
-                        </div>
-
-                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Publicity Picture</strong>
-                            <hr/>
-                        </div>
-                        <div className="form-outline mb-4">
-                            <div>
-                                <Upload
-                                    accept="image/*"
-                                    showUploadList={false}
-                                    beforeUpload={(image) => {
-                                        setNewPromoteImageUrl([...newPromoteImageUrl, image]);
-                                        return false; // Stops the upload action
-                                    }}
-                                >
-                                    <Button icon={<UploadOutlined />}>Upload Photo</Button>
-                                </Upload>
-
-                                {/* 기존에 올려놨던 이미지 세팅 */}
-                                {data.promoteImageUrl ? (
-                                    data.promoteImageUrl.map((imageUrl, index) => (
-                                        <div key={index} >
-                                            <img
-                                                key={index}
-                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
-                                                alt={`홍보 사진 ${index + 1}`}
-                                                style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
-                                                onClick={() => handlePreview(`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`)
-                                                }
-                                            />
-                                            <Button onClick={() => removePromoteImage(index)}>Remove</Button>
-                                        </div>
-
-                                    ))
-                                ) : (
-                                    <p>이미지가 없습니다</p>
-                                )}
-
-                                {/* 새로 올릴 이미지 세팅 */}
-                                {newPromoteImageUrl ?
-                                    (newPromoteImageUrl.map((image, index) => (
-                                        <div key={index} >
-                                            <img
-                                                src={URL.createObjectURL(image)}
-                                                alt="홍보 사진"
-                                                style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
-                                                onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
-                                            />
-                                            <Button onClick={() => removeNewPromoteImage(index)}>Remove</Button>
-                                        </div>
-                                    )))
-                                    : (
-                                        null
-                                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div>
+                            <div className="form-outline mb-1">모집 인원</div>
+                            <div className="form-outline mb-4">
+                                <InputNumber
+                                    type="number"
+                                    name="recruitmentCount"
+                                    placeholder="모집 인원 변경"
+                                    value={data.recruitmentCount}
+                                    // InputNumber 컴포넌트에서는 onChange 이벤트가 일반적인 event 객체를 전달하지 않고 숫자 값만 전달하므로, name을 직접 만들어 준다.
+                                    onChange={(value) => onChangeHandler({ target: { name: 'recruitmentCount', value } })}
+                                />
                             </div>
                         </div>
-                        <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
-                            <img alt="스터디 이미지" style={{ width: '100%' }} src={previewImage} />
-                        </Modal>
-
-                        <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Attatchment</strong>
-                            <hr/>
+                        <div style={{ marginRight: '40%' }}>
+                            <div className="form-outline mb-1">모집 마감일</div>
+                            <div className="form-outline mb-4">
+                                <DatePicker
+                                    name="endDate"
+                                    value={data.endDate}
+                                    onChange={(date) => onChangeHandler({ target: { name: 'endDate', value: date } })}
+                                    placeholder="모집 마감일 변경"
+                                    format="YYYY-MM-DD"
+                                    disabledDate={(current) => current && current < dayjs().endOf('day')}
+                                />
+                            </div>
                         </div>
-                        <div className="form-outline mb-4">
+                    </div>
+
+                    <div className="form-outline mb-1">스터디 내용</div>
+                    <div className="form-outline mb-4">
+                        <TextArea
+                            name="content"
+                            placeholder="스터디 내용 변경"
+                            value={data.content}
+                            onChange={onChangeHandler}
+                            autoSize={{ minRows: 20 }}
+                        />
+                    </div>
+
+                    <div className="form-outline mb-1">홍보 사진</div>
+                    <div className="form-outline mb-4">
+                        <div>
                             <Upload
-                                accept=".pdf,.doc,.docx"
+                                accept="image/*"
                                 showUploadList={false}
-                                beforeUpload={(file) => {
-                                    setNewFileUrl([...newFileUrl, file]);
-                                    return false;
+                                beforeUpload={(image) => {
+                                    setNewPromoteImageUrl([...newPromoteImageUrl, image]);
+                                    return false; // Stops the upload action
                                 }}
                             >
-                                <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
+                                <Button icon={<UploadOutlined />}>Upload Photo</Button>
                             </Upload>
 
-                            {/* 기존에 올려놨던 첨부파일 세팅 */}
-                            {data.fileUrl ? (
-                                data.fileUrl.map((file, index) => (
-
-                                    <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
-                                        <Button
-                                            onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
-                                        >
-                                            {file.fileName} {/* 파일 이름 표시 */}
-                                        </Button>
-                                        <Button onClick={() => removeFile(index)}>Remove</Button>
+                            {/* 기존에 올려놨던 이미지 세팅 */}
+                            {data.promoteImageUrl ? (
+                                data.promoteImageUrl.map((imageUrl, index) => (
+                                    <div key={index} >
+                                        <img
+                                            key={index}
+                                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`}
+                                            alt={`홍보 사진 ${index + 1}`}
+                                            style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
+                                            onClick={() => handlePreview(`https://storage.googleapis.com/hongik-pickme-bucket/${imageUrl}`)
+                                            }
+                                        />
+                                        <Button onClick={() => removePromoteImage(index)}>Remove</Button>
                                     </div>
-
-
 
                                 ))
                             ) : (
-                                <p>첨부파일이 없습니다</p>
+                                <p>이미지가 없습니다</p>
                             )}
 
-                            {/* 새로 올릴 첨부파일 세팅 */}
-                            {newFileUrl ?
-                                (newFileUrl.map((file, index) => (
+                            {/* 새로 올릴 이미지 세팅 */}
+                            {newPromoteImageUrl ?
+                                (newPromoteImageUrl.map((image, index) => (
                                     <div key={index} >
-
-                                        <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
-                                            {file.name}
-                                        </Button>
-                                        <Button onClick={() => removeNewFile(index)}>Remove</Button>
+                                        <img
+                                            src={URL.createObjectURL(image)}
+                                            alt="홍보 사진"
+                                            style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
+                                            onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
+                                        />
+                                        <Button onClick={() => removeNewPromoteImage(index)}>Remove</Button>
                                     </div>
                                 )))
                                 : (
                                     null
                                 )}
                         </div>
+                    </div>
+                    <Modal visible={previewVisible} footer={null} onCancel={handleClosePreview}>
+                        <img alt="스터디 이미지" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
 
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button type="primary" block htmlType="submit">Update Study</Button>
-                        </div>
-                    </form>
-                </Card>
+                    <div className="form-outline mb-1">첨부 파일</div>
+                    <div className="form-outline mb-4">
+                        <Upload
+                            accept=".pdf,.doc,.docx"
+                            showUploadList={false}
+                            beforeUpload={(file) => {
+                                setNewFileUrl([...newFileUrl, file]);
+                                return false;
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Files</Button>
+                        </Upload>
+
+                        {/* 기존에 올려놨던 첨부파일 세팅 */}
+                        {data.fileUrl ? (
+                            data.fileUrl.map((file, index) => (
+
+                                <div style={{ display: 'flex', justifyContent: 'left' }} key={index}>
+                                    <Button
+                                        onClick={() => window.open(`https://storage.googleapis.com/hongik-pickme-bucket/${file.fileUrl}`, '_blank')} // 파일 열기 함수 호출
+                                    >
+                                        {file.fileName} {/* 파일 이름 표시 */}
+                                    </Button>
+                                    <Button onClick={() => removeFile(index)}>Remove</Button>
+                                </div>
+
+
+
+                            ))
+                        ) : (
+                            <p>첨부파일이 없습니다</p>
+                        )}
+
+                        {/* 새로 올릴 첨부파일 세팅 */}
+                        {newFileUrl ?
+                            (newFileUrl.map((file, index) => (
+                                <div key={index} >
+
+                                    <Button onClick={() => window.open(URL.createObjectURL(file), '_blank')}>
+                                        {file.name}
+                                    </Button>
+                                    <Button onClick={() => removeNewFile(index)}>Remove</Button>
+                                </div>
+                            )))
+                            : (
+                                null
+                            )}
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Button type="primary" block htmlType="submit">Update Study</Button>
+                    </div>
+                </form>
             </Col>
         </Row>
     );

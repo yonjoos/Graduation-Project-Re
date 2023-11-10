@@ -492,7 +492,7 @@ function MyPage() {
                                             <div style={{ display: 'flex', marginBottom: '8px' }}>
                                                 {(remove) ? (
                                                     <Image
-                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 1 }}
+                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid salmon', zIndex: 1 }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/comgongWow.png`}
                                                 />
 
@@ -502,7 +502,7 @@ function MyPage() {
                                                     //새로 바꿀 이미지
                                                     <Image
                                                     src={URL.createObjectURL(selectedImage)}
-                                                    style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
+                                                    style={{ borderRadius: '50%', width: '200px', height: '200px', marginBottom: '15px', border: '5px solid salmon', zIndex: 0 }}
                                                     onClick={() => handlePreview(URL.createObjectURL(selectedImage))} // Open the modal when clicked
                                                     />
                                                 ):(
@@ -512,7 +512,7 @@ function MyPage() {
                                                 )}
                                                 {!remove && !selectedImage ? (
                                                     <Image
-                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid lightblue', zIndex: 0 }}
+                                                    style={{ borderRadius: '50%', width: '190px', height: '190px', marginBottom: '15px', border: '5px solid salmon', zIndex: 0 }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${profileImage}`}
                                                 />
                                                 ):(null)}

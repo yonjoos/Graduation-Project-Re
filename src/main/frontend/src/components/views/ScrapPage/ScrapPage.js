@@ -18,9 +18,6 @@ function ScrapPage() {
     const [sortOption, setSortOption] = useState('latestPosts'); //최신등록순: latestPosts / 모집마감순: nearDeadline
     const pageSize = 3; // 현재 게시물 수가 적으므로 페이징을 3개 단위로 하였음
 
-    const myNickName = window.localStorage.getItem('user_nickname');
-
-
 
     // 페이지가 새로 마운트 될 때마다 실행됨. 
     // 프로젝트 게시물이면 postsOption === project / 스터디 게시물이면 postsOption === study
@@ -275,69 +272,58 @@ function ScrapPage() {
                         <div >
                             <div style={{ display: 'flex', marginTop: '0px' }}>
                                 <div style={{ width: '80%', display: 'grid', marginLeft: '10px' }}>
-                                    <div style={{display:'flex', alignItems: 'center', marginBottom:'15px'}}>
+                                    <strong style={{ display: 'flex' }}>
+                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
+                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
+                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
+                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
+                                    </strong>
+                                    <div style={{ display: 'flex' }}>
+                                        <Link
+                                            to={(item.postType === "PROJECT") ? (`/project/detail/${item.id}`) :(`/study/detail/${item.id}`)} // Use template literals
+                                            key={index}
+                                            className="hoverable-item"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={linkStyle}
+                                        >
+                                            <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
+                                        </Link>
+                                    </div>
+                                    <div style={{display:'flex'}}>
                                         <div>
-                                            {/* 프사 누르면 해당 유저 포트폴리오로 이동 */}
                                             <Link
-                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
+                                                to={`/portfolio/${item.nickName}`} // Use template literals
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}
                                                 onMouseLeave={handleMouseLeave}
                                                 style={linkStyle}
                                             >
-                                                {/* 포트폴리오 사진 */}
                                                 <img
-                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                 />
                                             </Link>
-                                            
                                         </div>
-                                        <div >
-                                            {/* 닉네임 누르면 포트폴리오로 이동 */}
+                                        <div>
                                             <Link
-                                                    to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
-                                                    key={index}
-                                                    className="hoverable-item"
-                                                    onMouseEnter={handleMouseEnter}
-                                                    onMouseLeave={handleMouseLeave}
-                                                    style={linkStyle}
+                                                to={`/portfolio/${item.nickName}`} // Use template literals
+                                                key={index}
+                                                className="hoverable-item"
+                                                onMouseEnter={handleMouseEnter}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={linkStyle}
                                             >
-                                                {/* 닉네임 */}
                                                 <strong className="nickname">{item.nickName}</strong>
                                             </Link>
-                                            
                                         </div>
                                     </div>
-                                    
-                                    <div style={{ display: 'flex' }}>
-                                        {/* 게시물 제목 누르면 게시글로 이동 */}
-                                        <Link
-                                        to={(item.postType === "PROJECT") ? (`/project/detail/${item.id}`) :(`/study/detail/${item.id}`)} 
-                                        key={index}
-                                        className="hoverable-item"
-                                        onMouseEnter={handleMouseEnter}
-                                        onMouseLeave={handleMouseLeave}
-                                        style={linkStyle}
-                                        >
-                                            {/* 게시물 제목 */}
-                                            <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-                                        </Link>
-                                    </div>
-                                    
                                     <div style={{ marginTop: '10px', marginRight: '20px', textAlign: 'left' }}
                                         onMouseUp={()=>handleRowClick(item.id, item.postType)}
                                     >
-                                        {/* 한 줄 소개 눌러도 게시글로 이동, <Link>안 쓰고 <div>의 이벤트 함수를 썼기 때문에 밑줄기능 없음 */}
                                         {truncateString(item.briefContent, 50)}
                                     </div>
-                                    <strong style={{ display: 'flex',marginTop:'10px', fontSize:'12px' }}>
-                                        {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
-                                        {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
-                                        {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
-                                        {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
-                                    </strong>
                                 </div>
                                 <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                     <div>

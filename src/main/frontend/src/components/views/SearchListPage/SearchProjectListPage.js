@@ -207,7 +207,7 @@ function SearchProjectListPage(onSearch) {
                                                     style={linkStyle}
                                                 >
                                                     <img
-                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
+                                                        style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight: '10px' }}
                                                         src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                     />
                                                 </Link>
@@ -243,7 +243,7 @@ function SearchProjectListPage(onSearch) {
                                     >
                                         {truncateString(item.briefContent, 50)}
                                     </div>
-                                    <strong style={{ display: 'flex', fontSize:'12px' }}>
+                                    <strong style={{ display: 'flex' }}>
                                         {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#WEB</span>}
                                         {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#APP</span>}
                                         {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#faf082' }}>#GAME</span>}
@@ -430,7 +430,7 @@ function SearchProjectListPage(onSearch) {
                     <Col span={18} style={{ textAlign: 'left' }}>
                         {/** 현재 경로가 http://localhost:3000/search/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                         <Button type={location.pathname.includes('/search/portfoliocard') ? 'primary' : 'default'} onClick={handleSearchPortfolioCard}>
-                            Portfolios
+                            Portfolio Card
                         </Button>
                         <Button type={location.pathname.includes('/search/project') ? 'primary' : 'default'} onClick={handleSearchProject}>
                             Project

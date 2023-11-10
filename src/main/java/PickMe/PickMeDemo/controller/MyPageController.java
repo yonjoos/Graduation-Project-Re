@@ -41,7 +41,17 @@ public class MyPageController {
         }
     }
 
+    @GetMapping("/userProfileImage") // Use path variable to get project ID from URL
+    private ResponseEntity<ProfileImageUrlDto> getUserProfileImage(Principal principal) {
 
+        String email = principal.getName();
+        System.out.println("프사 컨트롤러");
+        ProfileImageUrlDto userDto = userService.getUserProfileImageByEmail(email);
+        System.out.println("프사 컨트롤러 끝");
+
+
+        return ResponseEntity.ok(userDto);
+    }
     @PostMapping("/updateProfileImage")
     public ResponseEntity<String> updateProfileImage(@Valid ProfileImageUploadDTO FormDto, Principal principal)throws IOException {
         try{

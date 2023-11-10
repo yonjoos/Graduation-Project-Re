@@ -391,7 +391,7 @@ function PortfolioCardPage() {
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <div>
   
-                                                {index === 0 ? <span> FIRST PLACE </span> : index === 1 ? <span>SECOND PLACE</span> : <span>THIRD PLACE</span>}
+                                                {index === 0 ? <span> <strong style={{fontSize:'20px'}}>Top</strong> recommended </span> : index === 1 ? <span><strong style={{fontSize:'20px'}}>2nd</strong> recommended</span> : <span><strong style={{fontSize:'20px'}}>3rd</strong> recommended</span>}
 
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>

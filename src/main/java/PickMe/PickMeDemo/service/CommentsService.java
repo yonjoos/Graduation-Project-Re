@@ -74,6 +74,7 @@ public class CommentsService {
 
         User currentUser = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AppException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+        String url = currentUser.getImageUrl();
 
         JPAQuery<Comments> query = queryFactory.selectFrom(comments) // 댓글을 조회할건데,
                 .leftJoin(comments.parent).fetchJoin()  // 부모 댓글도 같이 조회할거야
@@ -132,6 +133,7 @@ public class CommentsService {
                             .commentWriter(isCommentWriter)
                             .finalCommentedTime(c.getLastModifiedDate())
                             .isTopLevel(false)
+                            .imageUrl(c.getUser().getImageUrl())
                             .build();
                 }
 
@@ -144,6 +146,7 @@ public class CommentsService {
                             .commentWriter(isCommentWriter)
                             .finalCommentedTime(c.getLastModifiedDate())
                             .isTopLevel(true)
+                            .imageUrl(c.getUser().getImageUrl())
                             .build();
                 }
 

@@ -114,7 +114,7 @@ public class RecommendationsService {
 
                 Integer views = viewCountPortfolioRepository.countByPortfolio_Id(pair.portfolio.getId()).orElse(null);
                 Double cosine = pair.similarity;
-
+                int returnCosine = (int) (cosine * 100.0);
                 PortfolioCardRecommendationDto cardDto = PortfolioCardRecommendationDto.builder()
                         .nickName(nickName)
                         .web(pair.portfolio.getWeb())
@@ -123,7 +123,7 @@ public class RecommendationsService {
                         .ai(pair.portfolio.getAi())
                         .shortIntroduce(pair.portfolio.getShortIntroduce())
                         .viewCount(views)
-                        .cosineSimilarity(cosine)
+                        .cosineSimilarity(returnCosine)
                         .imageUrl(url)
                         .build();
 

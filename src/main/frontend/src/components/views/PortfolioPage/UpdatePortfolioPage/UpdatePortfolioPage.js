@@ -523,6 +523,7 @@ function UpdatePortfolioPage() {
                                                     }}
                                                 />
                                                 <span
+                                                    style={{cursor: 'pointer'}}
                                                     onMouseUp={handleSet}
                                                 >
                                                     ⚙️ set

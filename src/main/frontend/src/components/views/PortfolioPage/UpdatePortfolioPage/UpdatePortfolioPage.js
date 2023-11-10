@@ -337,33 +337,33 @@ function UpdatePortfolioPage() {
         
         return new Promise((resolve, reject) => {
                 
-                const formData = new FormData();
-                formData.append('imageUrl', selectedImage);
-                const config = {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${getAuthToken()}`,
-                    },
-                };
-                
-                axios
-                    .put(`/removeProfileImage`, formData, config)
-                    .then((response) => {
-                        if (response.data === 'success') {
-                            setProfileUploaded(true);
-                            setProfileImage(null);
-                            setRemove(false);
-                            window.location.reload();
-                            resolve('success'); 
-                        } else {
-                            console.error('Unknown response:', response.data);
-                            message.error('Failed to update information.');
-                            reject('failure'); 
-                        }
-                    })
-                    .catch((error) => {
+            const formData = new FormData();
+            formData.append('imageUrl', selectedImage);
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getAuthToken()}`,
+                },
+            };
+            
+            axios
+                .put(`/removeProfileImage`, formData, config)
+                .then((response) => {
+                    if (response.data === 'success') {
+                        setProfileUploaded(true);
+                        setProfileImage(null);
+                        setRemove(false);
+                        window.location.reload();
+                        resolve('success'); 
+                    } else {
+                        console.error('Unknown response:', response.data);
+                        message.error('Failed to update information.');
                         reject('failure'); 
-                    });
+                    }
+                })
+                .catch((error) => {
+                    reject('failure'); 
+                });
        
         });
 
@@ -476,7 +476,7 @@ function UpdatePortfolioPage() {
                                             width: '140px',  
                                             height: '140px',  
                                             borderRadius: '50%',
-                                            border: '5px solid salmon',
+                                            border: '5px solid lightblue',
                                             overflow: 'hidden',
                                             marginTop:'20px',
                                             marginBottom:'10px'
@@ -509,32 +509,32 @@ function UpdatePortfolioPage() {
                                                 ):(null)}
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                {/* 업로드할 사진 */}
-                                                    <input
-                                                    type="file"
-                                                    id="fileInput"
-                                                    accept="image/*"
-                                                    style={{ display: 'none' }}
-                                                    onChange={(event) => {
-                                                        setSelectedImage(event.target.files[0]);
-                                                        console.log("selected! " , selectedImage);
-                                                        // Handle the selected image as needed
-                                                        setRemove(false);
-                                                    }}
-                                                />
-                                                <span
-                                                    onMouseUp={handleSet}
-                                                >
-                                                    ⚙️ set
-                                                </span>
-                                                <span 
-                                                    style={{marginLeft:'30px', cursor:'pointer'}}
-                                                    onMouseUp={()=>handleRemove()}
-                                                >
-                                                    remove
-                                                </span>
+                                            {/* 업로드할 사진 */}
+                                                <input
+                                                type="file"
+                                                id="fileInput"
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                onChange={(event) => {
+                                                    setSelectedImage(event.target.files[0]);
+                                                    console.log("selected! " , selectedImage);
+                                                    // Handle the selected image as needed
+                                                    setRemove(false);
+                                                }}
+                                            />
+                                            <span
+                                                onMouseUp={handleSet}
+                                            >
+                                                ⚙️ set
+                                            </span>
+                                            <span 
+                                                style={{marginLeft:'30px', cursor:'pointer'}}
+                                                onMouseUp={()=>handleRemove()}
+                                            >
+                                                remove
+                                            </span>
 
-                                            </div>
+                                        </div>
                                     </div>
                                     <div style={{marginLeft:'40px', marginRight:'40px', display:'flex', alignItems:'center'}}>
                                         <p>

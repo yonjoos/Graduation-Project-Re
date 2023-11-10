@@ -30,9 +30,6 @@ function StudyPage() {
 
 
     const pageSize = 5; // 현재 게시물 수가 적으므로 페이징을 5개 단위로 하였음
-    const myNickName = window.localStorage.getItem('user_nickname');
-
-
 
     // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
     useEffect(() => {
@@ -329,7 +326,7 @@ function StudyPage() {
                                     <div style={{display:'flex', marginBottom:'10px', alignItems:'center'}}>
                                         <div >
                                             <Link
-                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
+                                                to={`/portfolio/${item.nickName}`} 
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}
@@ -337,14 +334,14 @@ function StudyPage() {
                                                 style={linkStyle}
                                             >
                                                 <img
-                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                                    style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid lightblue', marginRight:'10px' }}
                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                 />
                                             </Link>
                                         </div>
                                         <div>
                                         <Link
-                                                to={myNickName === item.nickName ? (`/portfolio`) :`/portfolio/${item.nickName}`} 
+                                                to={`/portfolio/${item.nickName}`} 
                                                 key={index}
                                                 className="hoverable-item"
                                                 onMouseEnter={handleMouseEnter}
@@ -373,7 +370,7 @@ function StudyPage() {
                                     >
                                         {truncateString(item.briefContent, 50)}
                                     </div>
-                                <strong style={{ display: 'flex', fontSize:'12px' }}>
+                                <strong style={{ display: 'flex' }}>
                                     {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#WEB</span>}
                                     {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#APP</span>}
                                     {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#fee5eb' }}>#GAME</span>}
@@ -463,7 +460,7 @@ function StudyPage() {
                 <Col span={12} style={{ textAlign: 'left', margin: "0 0" }}>
                     {/** 현재 경로가 localhost:3000/project이면 primary형식으로 버튼 표시, 다른 경로라면 default로 표시 */}
                     <Button type={location.pathname === '/portfoliocard' ? 'primary' : 'default'} onClick={handlePortfolioCardPage}>
-                        Portfolios
+                        Portfolio Card
                     </Button>
                     <Button type={location.pathname === '/project' ? 'primary' : 'default'} onClick={handleProjectPage}>
                         Project

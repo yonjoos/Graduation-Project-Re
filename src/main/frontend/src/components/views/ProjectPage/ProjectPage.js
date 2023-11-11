@@ -452,7 +452,7 @@ function ProjectPage() {
                     </Col>
                     <Col span={6} style={{ textAlign: 'right' }}>
                         <Button type="primary" onClick={onClickHandler}>
-                            Upload Project
+                            게시물 업로드
                         </Button>
                     </Col>
                 </Row>

@@ -24,7 +24,7 @@ function About() {
                             height: '200px'
                             }}>
                             <img
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/%E1%84%86%E1%85%A6%E1%84%85%E1%85%A9%E1%86%AB.png`}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/shihong.png`}
                                 style={{
                                 width: '100%',
                                 height: '100%',
@@ -62,7 +62,7 @@ function About() {
                             height: '200px'
                             }}>
                             <img
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/%E1%84%89%E1%85%B3%E1%84%90%E1%85%B5%E1%84%8E%E1%85%B5.png`}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/Me1.jpg`}
                                 style={{
                                 width: '100%',
                                 height: '100%',
@@ -101,7 +101,7 @@ function About() {
                             height: '200px'
                             }}>
                             <img
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/images.jpeg`}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/yonjoo.jpg`}
                                 style={{
                                 width: '100%',
                                 height: '100%',
@@ -144,8 +144,8 @@ function About() {
                     <div style={{fontSize:'40px', marginBottom:'50px'}}>
                         <strong>P!ck Me</strong>
                     </div>
-                    <div style={{ marginRight:'230px'}}>
-                        <p>‘픽미’ 웹사이트는, <br/>
+                    <div style={{display: 'flex', justifyContent:'flex-start'}}>
+                        <p><strong>‘픽미’</strong> 웹사이트는, <br/>
                             컴퓨터 공학에 관심있는 홍대생이라면, 누구나 사용할 수 있는 포트폴리오 기반 팀 빌딩 서비스입니다.
                             <br/>
                             저희가 이 서비스를 기획하게 된 목적은 다음과 같습니다. 

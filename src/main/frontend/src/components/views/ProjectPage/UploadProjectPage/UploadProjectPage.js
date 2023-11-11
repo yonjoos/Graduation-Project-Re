@@ -141,13 +141,13 @@ function UploadProjectPage() {
             .post('/uploadProjectPost', formData, config)
             .then((response) => {
                 // Handle the response
-                alert('게시물이 성공적으로 업로드되었습니다.');
+                alert('게시물이 성공적으로 등록되었습니다.');
                 navigate('/project');
             })
             .catch((error) => {
                 // Handle errors
                 console.error('Failed to upload post:', error);
-                alert('게시물 업로드에 실패하였습니다.');
+                alert('게시물 등록에 실패하였습니다.');
             });
     };
 
@@ -184,7 +184,7 @@ function UploadProjectPage() {
             <Col span={24}>
                 <Card title = {'Upload Project'} style={{ marginTop: '20px' }} headStyle={{ background: '#fffec1' }}>
                     <form onSubmit={onSubmitProject} encType="multipart/form-data">
-                        <strong style={{ fontSize: '20px' }}> Project Name </strong>
+                        <strong style={{ fontSize: '20px' }}>프로젝트 이름</strong>
                         <hr/>
                         <div className="form-outline mb-4">
                             <Input
@@ -196,14 +196,14 @@ function UploadProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}> Project Fields </strong>
+                            <strong style={{ fontSize: '20px' }}>모집 분야</strong>
                         </div>
                         <div className="form-outline mb-4">
                             {renderCheckboxGroup()}
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Volume of Recruitment</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 인원</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -217,7 +217,7 @@ function UploadProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Recruitment Period</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 기한</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -231,7 +231,7 @@ function UploadProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Content</strong>
+                            <strong style={{ fontSize: '20px' }}>프로젝트 내용</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -244,7 +244,7 @@ function UploadProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Publicity Picture</strong>
+                            <strong style={{ fontSize: '20px' }}>홍보 사진</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -276,7 +276,7 @@ function UploadProjectPage() {
                         </Modal>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Attatchment</strong>
+                            <strong style={{ fontSize: '20px' }}>첨부파일</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">

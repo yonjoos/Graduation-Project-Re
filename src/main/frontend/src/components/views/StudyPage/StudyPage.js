@@ -453,7 +453,7 @@ function StudyPage() {
                     </Col>
                     <Col span={6} style={{ textAlign: 'right' }}>
                         <Button type="primary" onClick={onClickHandler}>
-                            게시물 업로드
+                            게시물 등록
                         </Button>
                     </Col>
                 </Row>

@@ -254,7 +254,7 @@ function UpdateProjectPage() {
             <Col span={24}>
                 <Card title = {'Update Project'} style={{ marginTop: '20px' }} headStyle={{ background: '#fffec1' }}>
                     <form onSubmit={onSubmitProject}>
-                        <strong style={{ fontSize: '20px' }}> Project Name </strong>
+                        <strong style={{ fontSize: '20px' }}>프로젝트 이름</strong>
                         <hr/>
                         <div className="form-outline mb-4">
                             <Input
@@ -267,16 +267,15 @@ function UpdateProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}> Project Fields </strong>
+                            <strong style={{ fontSize: '20px' }}>모집 분야</strong>
                         </div>
                         <div className="form-outline mb-4">
-                            <label>Post Type &nbsp;&nbsp;&nbsp;</label>
                             {renderCheckboxGroup()}
                         </div>
 
                         
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Volume of Recruitment</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 인원</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -291,7 +290,7 @@ function UpdateProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Recruitment Period</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 기한</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -306,7 +305,7 @@ function UpdateProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Content</strong>
+                            <strong style={{ fontSize: '20px' }}>프로젝트 내용</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -320,7 +319,7 @@ function UpdateProjectPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Publicity Picture</strong>
+                            <strong style={{ fontSize: '20px' }}>홍보 사진</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -379,7 +378,7 @@ function UpdateProjectPage() {
                         </Modal>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Attatchment</strong>
+                            <strong style={{ fontSize: '20px' }}>첨부파일</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">

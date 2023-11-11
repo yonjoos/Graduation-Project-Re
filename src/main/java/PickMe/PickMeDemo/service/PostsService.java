@@ -3363,12 +3363,17 @@ public class PostsService {
         Posts findPosts = postsRepository.findById(postsId)
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
-        ScrapPosts scrapPosts = ScrapPosts.builder()
-                .user(findUser)
-                .posts(findPosts)
-                .build();
+        Optional<ScrapPosts> findScrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
-        ScrapPosts savedScrapPosts = scrapPostsRepository.save(scrapPosts);
+        // 해당 게시물을 스크랩한 적이 없을 때에만 스크랩 저장
+        if (findScrapPosts.isEmpty()) {
+            ScrapPosts scrapPosts = ScrapPosts.builder()
+                    .user(findUser)
+                    .posts(findPosts)
+                    .build();
+
+            ScrapPosts savedScrapPosts = scrapPostsRepository.save(scrapPosts);
+        }
 
         // 해당 게시물을 방금 스크랩했으므로 다음과 같은 DTO 반환
         boolean hasApplied = false;     // 지원 여부
@@ -3417,20 +3422,20 @@ public class PostsService {
                     .scrap(true)        // 방금 게시물을 스크랩 했으므로, 이제 이 유저는 스크랩 한 유저
                     .applying(false)    // 지원 중이지도 않고
                     .applied(false)     // 지원 승인되지도 않았음
-                    .nickName(savedScrapPosts.getPosts().getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
-                    .title(savedScrapPosts.getPosts().getTitle())
-                    .web(savedScrapPosts.getPosts().getCategory().getWeb())
-                    .app(savedScrapPosts.getPosts().getCategory().getApp())
-                    .game(savedScrapPosts.getPosts().getCategory().getGame())
-                    .ai(savedScrapPosts.getPosts().getCategory().getAi())
-                    .content(savedScrapPosts.getPosts().getContent())
+                    .nickName(findPosts.getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
+                    .title(findPosts.getTitle())
+                    .web(findPosts.getCategory().getWeb())
+                    .app(findPosts.getCategory().getApp())
+                    .game(findPosts.getCategory().getGame())
+                    .ai(findPosts.getCategory().getAi())
+                    .content(findPosts.getContent())
                     .promoteImageUrl(imageUrls)
                     .fileUrl(fileUrls)
-                    //.counts(savedScrapPosts.getPosts().getCounts())
+                    //.counts(findPosts.getCounts())
                     .counts(applyCount)
-                    .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
-                    .endDate(savedScrapPosts.getPosts().getEndDate())
-                    .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
+                    .recruitmentCount(findPosts.getRecruitmentCount())
+                    .endDate(findPosts.getEndDate())
+                    .finalUpdatedTime(findPosts.getLastModifiedDate())
                     .imageUrl(url)
                     .build();
         }
@@ -3443,20 +3448,20 @@ public class PostsService {
                         .scrap(true)        // 방금 게시물을 스크랩 했으므로, 이제 이 유저는 스크랩 한 유저
                         .applying(true)     // 지원은 했으나 (지원 중이지만),
                         .applied(false)     // 지원이 승인된 것은 아님.
-                        .nickName(savedScrapPosts.getPosts().getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
-                        .title(savedScrapPosts.getPosts().getTitle())
-                        .web(savedScrapPosts.getPosts().getCategory().getWeb())
-                        .app(savedScrapPosts.getPosts().getCategory().getApp())
-                        .game(savedScrapPosts.getPosts().getCategory().getGame())
-                        .ai(savedScrapPosts.getPosts().getCategory().getAi())
-                        .content(savedScrapPosts.getPosts().getContent())
+                        .nickName(findPosts.getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
+                        .title(findPosts.getTitle())
+                        .web(findPosts.getCategory().getWeb())
+                        .app(findPosts.getCategory().getApp())
+                        .game(findPosts.getCategory().getGame())
+                        .ai(findPosts.getCategory().getAi())
+                        .content(findPosts.getContent())
                         .promoteImageUrl(imageUrls)
                         .fileUrl(fileUrls)
-                        //.counts(savedScrapPosts.getPosts().getCounts())
+                        //.counts(findPosts.getCounts())
                         .counts(applyCount)
-                        .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
-                        .endDate(savedScrapPosts.getPosts().getEndDate())
-                        .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
+                        .recruitmentCount(findPosts.getRecruitmentCount())
+                        .endDate(findPosts.getEndDate())
+                        .finalUpdatedTime(findPosts.getLastModifiedDate())
                         .imageUrl(url)
                         .build();
             }
@@ -3467,20 +3472,20 @@ public class PostsService {
                         .scrap(true)        // 방금 게시물을 스크랩 했으므로, 이제 이 유저는 스크랩 한 유저
                         .applying(false)    // 지원 중은 아니고,
                         .applied(true)     // 지원이 승인되었음.
-                        .nickName(savedScrapPosts.getPosts().getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
-                        .title(savedScrapPosts.getPosts().getTitle())
-                        .web(savedScrapPosts.getPosts().getCategory().getWeb())
-                        .app(savedScrapPosts.getPosts().getCategory().getApp())
-                        .game(savedScrapPosts.getPosts().getCategory().getGame())
-                        .ai(savedScrapPosts.getPosts().getCategory().getAi())
-                        .content(savedScrapPosts.getPosts().getContent())
+                        .nickName(findPosts.getUser().getNickName())   // 게시물 작성자 닉네임. 주의 : savedScrapPosts.getUser().getNickName()하면 지원한 사람의 닉네임이 나옴!!
+                        .title(findPosts.getTitle())
+                        .web(findPosts.getCategory().getWeb())
+                        .app(findPosts.getCategory().getApp())
+                        .game(findPosts.getCategory().getGame())
+                        .ai(findPosts.getCategory().getAi())
+                        .content(findPosts.getContent())
                         .promoteImageUrl(imageUrls)
                         .fileUrl(fileUrls)
-                        //.counts(savedScrapPosts.getPosts().getCounts())
+                        //.counts(findPosts.getCounts())
                         .counts(applyCount)
-                        .recruitmentCount(savedScrapPosts.getPosts().getRecruitmentCount())
-                        .endDate(savedScrapPosts.getPosts().getEndDate())
-                        .finalUpdatedTime(savedScrapPosts.getPosts().getLastModifiedDate())
+                        .recruitmentCount(findPosts.getRecruitmentCount())
+                        .endDate(findPosts.getEndDate())
+                        .finalUpdatedTime(findPosts.getLastModifiedDate())
                         .imageUrl(url)
                         .build();
             }
@@ -3500,10 +3505,12 @@ public class PostsService {
                 .orElseThrow(() -> new AppException("게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
 
         // 스크랩한 레포지토리 찾기
-        ScrapPosts findScrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId)
-                .orElseThrow(() -> new AppException("스크랩한 게시물을 찾을 수 없습니다", HttpStatus.BAD_REQUEST));
+        Optional<ScrapPosts> findScrapPosts = scrapPostsRepository.findByUser_IdAndPosts_Id(findUser.getId(), postsId);
 
-        scrapPostsRepository.delete(findScrapPosts);
+        // 스크랩한 적이 있을 때에만 delete
+        if (findScrapPosts.isPresent()) {
+            scrapPostsRepository.delete(findScrapPosts.get());
+        }
 
 
         boolean hasApplied = false;     // 지원 여부

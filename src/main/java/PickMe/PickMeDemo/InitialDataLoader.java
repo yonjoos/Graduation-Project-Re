@@ -1706,6 +1706,7 @@ public class InitialDataLoader implements CommandLineRunner {
 ////        4321
 //        createUserAndPortfolio("4321", "4321", "4321", "4321", 4, 3, 2, 1, "4321", "4321", "");
 
+
         // 초기 데이터 생성 및 저장(2)
         User user7000 = User.builder()
                 .userName("최세영")
@@ -1819,6 +1820,110 @@ public class InitialDataLoader implements CommandLineRunner {
         portfolioRepository.save(user7003Portfolio);
 
 
+
+        // 초기 데이터 생성 및 저장(10)
+        User user10 = User.builder()
+                .userName("이윤식")
+                .nickName("rilato")
+                .email("leeyunsik1997@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("10"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile7.png")
+                .build();
+
+        userRepository.save(user10);
+
+        Portfolio user10Portfolio = Portfolio.builder()
+                .user(user10)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("안정적인 서버를 구축하는 백엔드 개발자")
+                .introduce("- 대기업 백엔드 개발자 희망 \n- 프론트 개발자와 원활한 소통 가능할 정도의 React 지식 보유 \n- Node.JS, Spring Boot 사용 가능 \n- MongoDB, PostgreSQL 사용 가능 ")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user10Portfolio);
+
+        // 초기 데이터 생성 및 저장(11)
+        User user11 = User.builder()
+                .userName("안기범")
+                .nickName("AhnGiveUp")
+                .email("gb1912@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("11"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile8.png")
+                .build();
+
+        userRepository.save(user11);
+
+        Portfolio user11Portfolio = Portfolio.builder()
+                .user(user11)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("게임을 좋아하는 남자")
+                .introduce("- 대기업 종사자 \n- 학점 4.3 \n- 유니티를 활용하여 쳐라쳐라 매우쳐라 개발 \n- 언리얼을 활용하여 MMORPG 개발 중")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user11Portfolio);
+
+        // 초기 데이터 생성 및 저장(12)
+        User user12 = User.builder()
+                .userName("노현준")
+                .nickName("침놓는 티모")
+                .email("rhj423@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("12"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile9.png")
+                .build();
+
+        userRepository.save(user12);
+
+        Portfolio user12Portfolio = Portfolio.builder()
+                .user(user12)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("한의원 웹 사이트 만들어드립니다.")
+                .introduce("- 홍대 컴공 졸업 \n- 침 놓는 데에 관심 많음 \n- 침 맞는 것도 좋아함 \n- SpringBoot + TypeScript로 개발")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user12Portfolio);
+
+        // 초기 데이터 생성 및 저장(13)
+        User user13 = User.builder()
+                .userName("박성대")
+                .nickName("앱장인")
+                .email("chumsungdae@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("13"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile10.png")
+                .build();
+
+        userRepository.save(user13);
+
+        Portfolio user13Portfolio = Portfolio.builder()
+                .user(user13)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("인공지능 활용한 어플리케이션 개발자")
+                .introduce("- 의료 기기 관련 어플 개발자 \n- React Native 사용 \n- Kotlin 사용 가능 \n- 딥 러닝, 머신 러닝에 관한 지식 다량 함유")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user13Portfolio);
     }
 
 }

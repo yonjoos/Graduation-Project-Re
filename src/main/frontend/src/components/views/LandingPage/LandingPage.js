@@ -116,6 +116,27 @@ function LandingPage() {
         return str;
     };
 
+    // 배너 클릭시 about페이지로 이동
+    const handleImageClick = (index) => {
+        // 이미지를 클릭할 때 index에 따라 다르게 navigate
+        switch (index) {
+            case 0:
+                navigate('/about');
+                break;
+            case 1:
+                navigate('/portfoliocard');
+                break;
+            case 2:
+                navigate('/project');
+                break;
+            case 3:
+                navigate('/study');
+                break;
+            default:
+                break;
+        }
+    };
+
     // 인기 게시물 카드 클릭 시 게시물로 이동
     const onClickHandler = (postType, id) => {
         // 버튼을 클릭하면, 현재 위치를 다 '/'로 세팅해서 디스패치
@@ -208,22 +229,6 @@ function LandingPage() {
         return null;
     };
 
-
-    const handleAbout = () => {
-        navigate('/about');
-    }
-
-    const handleHotPostColor=(type)=>{
-        if(type === "PROJECT"){
-            sethotPostColor("pink");
-        }
-        else{
-            sethotPostColor("yellow");
-        }
-    }
-
-
-
     return (
         <div style={{width:'100%'}}>
             {/* Conditional rendering based on authentication status */}
@@ -244,7 +249,8 @@ function LandingPage() {
                             <div key={index} style={{ display: 'flex', justifyContent: 'center' }}>
                                 <img
                                     src={imageUrl}
-                                    style={{ width: '100%', height: '100%' }}
+                                    style={{ width: '100%', height: '100%', cursor: 'pointer' }}
+                                    onClick={() => handleImageClick(index)}
                                 />
                             </div>
                         ))}
@@ -271,7 +277,7 @@ function LandingPage() {
     
                             <Col span={24}>
                                 <br />
-                                <b style={{ fontSize: '20px' }}>TODAY's HOT POST-</b>
+                                <b style={{ fontSize: '20px' }}>🔥 오늘의 인기글</b>
                                 <br />
                                 <br />
                                 <Carousel autoplay slidesToShow={4} dots={false} style={{ marginLeft: '1.25%' }}>
@@ -357,8 +363,7 @@ function LandingPage() {
                                 </div>
                             </Col> */}
                             <Col span={24}>
-                                <b style={{ fontSize: '20px' }}> </b>
-                                <br />
+                                <b style={{ fontSize: '20px', marginBottom: '5px' }}>🔘 바로가기</b>
                             </Col>
                             <Col xs={24} sm={8}>
                                 <PortfolioCard />

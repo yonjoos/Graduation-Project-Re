@@ -37,7 +37,7 @@ function PortfolioCard(props) {
   // );  
 
   return (
-    <div onClick={onClickHandler} style={{ position: 'relative', marginTop: '30px', cursor: 'pointer' }}>
+    <div onClick={onClickHandler} style={{ position: 'relative', cursor: 'pointer' }}>
       
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'relative', zIndex: 2 }}>
         <img

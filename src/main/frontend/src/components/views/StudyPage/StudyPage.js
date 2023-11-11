@@ -382,7 +382,7 @@ function StudyPage() {
                             </div>
                             <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems: 'center' }}>
                                 <div>
-                                    인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)} <br></br> 👀 조회 수: {item.viewCount}
+                                    모집 인원 &nbsp; {item.counts} / {item.recruitmentCount} <br></br>모집 기한 &nbsp; {formatDate(item.endDate)} <br></br> 조회 수 &nbsp;&nbsp;&nbsp;&nbsp; {item.viewCount}
                                     <br/><br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
                                 </div>
                             </div>

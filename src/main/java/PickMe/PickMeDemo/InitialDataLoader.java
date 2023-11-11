@@ -201,9 +201,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(관리자)
         User adminUser = User.builder()
-                .userName("admin")
+                .userName("운영자")
                 .nickName("admin")
-                .email("admin@gmail.com")
+                .email("admin@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("admin"))  // 비밀번호 해싱
                 .role(Role.ADMIN)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 27, 14, 30, 0))
@@ -214,9 +214,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(유저)
         User generalUser = User.builder()
-                .userName("user")
+                .userName("김유저")
                 .nickName("user")
-                .email("user@gmail.com")
+                .email("user@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("user"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .build();
@@ -245,9 +245,9 @@ public class InitialDataLoader implements CommandLineRunner {
         // 초기 데이터 생성 및 저장(1)
         // 모든 값이 비어있어서 생성 실험 가능한 유저
         User user1 = User.builder()
-                .userName("Test")
-                .nickName("Test")
-                .email("1")
+                .userName("김실험")
+                .nickName("TestKim")
+                .email("testKim@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("1"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .build();
@@ -257,9 +257,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(2)
         User user2 = User.builder()
-                .userName("이윤식")
-                .nickName("다섯글자닉다섯글자닉")
-                .email("2")
+                .userName("이문식")
+                .nickName("croco1997")
+                .email("croco1997@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("2"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
@@ -372,8 +372,8 @@ public class InitialDataLoader implements CommandLineRunner {
         // 초기 데이터 생성 및 저장(3)
         User user3 = User.builder()
                 .userName("박시홍")
-                .nickName("freshhongsi")
-                .email("3")
+                .nickName("freshHongsi")
+                .email("hongsi@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("3"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 27, 14, 30, 0))
@@ -486,8 +486,8 @@ public class InitialDataLoader implements CommandLineRunner {
         // 초기 데이터 생성 및 저장(4)
         User user4 = User.builder()
                 .userName("Black Consumer")
-                .nickName("악 성 유 저")
-                .email("4")
+                .nickName("악성유저")
+                .email("blackComsumer@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 6, 27, 14, 30, 0))
@@ -644,7 +644,7 @@ public class InitialDataLoader implements CommandLineRunner {
         User user5 = User.builder()
                 .userName("홍길동")
                 .nickName("고길동")
-                .email("5")
+                .email("gogil@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("5"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
@@ -757,9 +757,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(6)
         User user6 = User.builder()
-                .userName("프로젝트")
+                .userName("성지민")
                 .nickName("onlyProject")
-                .email("6")
+                .email("opop@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 2, 14, 30, 0))
@@ -872,9 +872,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(7)
         User user7 = User.builder()
-                .userName("정연주")
-                .nickName("yonjoos")
-                .email("7")
+                .userName("정인준")
+                .nickName("injoon")
+                .email("joon@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("7"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
@@ -1016,9 +1016,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(8)
         User user8 = User.builder()
-                .userName("스터디")
+                .userName("안채운")
                 .nickName("onlyStudy")
-                .email("8")
+                .email("osos@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 4, 27, 14, 30, 0))
@@ -1131,9 +1131,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // 초기 데이터 생성 및 저장(9)
         User user9 = User.builder()
-                .userName("게임")
-                .nickName("게임 장인")
-                .email("9")
+                .userName("윤지현")
+                .nickName("jihyun")
+                .email("jihyun@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
@@ -1705,5 +1705,336 @@ public class InitialDataLoader implements CommandLineRunner {
 //        createUserAndPortfolio("4320", "4320", "4320", "4320", 4, 3, 2, 0, "4320", "4320", "");
 ////        4321
 //        createUserAndPortfolio("4321", "4321", "4321", "4321", 4, 3, 2, 1, "4321", "4321", "");
+
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7000 = User.builder()
+                .userName("최세영")
+                .nickName("sangnamja")
+                .email("csy626@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("626"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile4.png")
+                .build();
+
+        userRepository.save(user7000);
+
+        Portfolio user7000Portfolio = Portfolio.builder()
+                .user(user7000)
+                .web(4)
+                .app(3)
+                .game(2)
+                .ai(1)
+                .shortIntroduce("카카오 네이버? 이런 IT 대기업보다는 전 스타트업에서 제 역량을 키우고 싶습니다.")
+                .introduce("- 렉스, 야크, 프롤로그를 넘어서 콜그래프까지 과제를 제출\n" +
+                        "- 학점 3.8\n" +
+                        "- 정보처리기사 자격 보유")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7000Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7001 = User.builder()
+                .userName("이두열")
+                .nickName("홍익모비딕")
+                .email("ldl515@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("515"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile1.png")
+                .build();
+
+        userRepository.save(user7001);
+
+        Portfolio user7001Portfolio = Portfolio.builder()
+                .user(user7001)
+                .web(1)
+                .app(2)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("기계과지만, 소프트웨어에 관심있는 4학년입니다.")
+                .introduce("- 자율주행 동아리 활동, 입상 경력 보유(은상)\n" +
+                        "- AI 부트캠프 활동 경험\n" +
+                        "- 일반기계기사 자격 보유")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7001Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7002 = User.builder()
+                .userName("노호수")
+                .nickName("마라토니아")
+                .email("hosoo313@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("313"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile2.png")
+                .build();
+
+        userRepository.save(user7002);
+
+        Portfolio user7002Portfolio = Portfolio.builder()
+                .user(user7002)
+                .web(1)
+                .app(2)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("현재 군대에서 복무하고 있지만, 내년에 복학하면 같이 열심히 성장할 학우분들을 모십니다.")
+                .introduce("- NLP와 AI분야에 대해 학부연구생 활동 경험 보유\n" +
+                        "- 동아리에서 알고리즘 강연 경험 보유\n" +
+                        "- WEB 프로젝트 2개 경험")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7002Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7003 = User.builder()
+                .userName("이선재")
+                .nickName("언리얼장인")
+                .email("sundae1226@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("1226"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile3.png")
+                .build();
+
+        userRepository.save(user7003);
+
+        Portfolio user7003Portfolio = Portfolio.builder()
+                .user(user7003)
+                .web(1)
+                .app(2)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("홍익대학교 컴퓨터공학과에 재학중인, 게임 개발에 관심있는 이선재입니다.")
+                .introduce("- 게임 분야에 큰 관심이 있어, 유니티와 언리얼 관련해서 게임 제작 4건 경험 보유\n" +
+                        "- 언리얼 같은 경우, 초중학생들 대상으로 학원강사 경력 있음.\n " +
+                        "- 메타버스 관련 스터디에 관심 있음")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7003Portfolio);
+
+
+
+
+        // 초기 데이터 생성 및 저장(10)
+        User user10 = User.builder()
+                .userName("이윤식")
+                .nickName("rilato")
+                .email("leeyunsik1997@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("10"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile7.png")
+                .build();
+
+        userRepository.save(user10);
+
+        Portfolio user10Portfolio = Portfolio.builder()
+                .user(user10)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("안정적인 서버를 구축하는 백엔드 개발자")
+                .introduce("- 대기업 백엔드 개발자 희망 \n- 프론트 개발자와 원활한 소통 가능할 정도의 React 지식 보유 \n- Node.JS, Spring Boot 사용 가능 \n- MongoDB, PostgreSQL 사용 가능 ")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user10Portfolio);
+
+        // 초기 데이터 생성 및 저장(11)
+        User user11 = User.builder()
+                .userName("안기범")
+                .nickName("AhnGiveUp")
+                .email("gb1912@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("11"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile8.png")
+                .build();
+
+        userRepository.save(user11);
+
+        Portfolio user11Portfolio = Portfolio.builder()
+                .user(user11)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("게임을 좋아하는 남자")
+                .introduce("- 대기업 종사자 \n- 학점 4.3 \n- 유니티를 활용하여 쳐라쳐라 매우쳐라 개발 \n- 언리얼을 활용하여 MMORPG 개발 중")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user11Portfolio);
+
+        // 초기 데이터 생성 및 저장(12)
+        User user12 = User.builder()
+                .userName("노현준")
+                .nickName("침놓는 티모")
+                .email("rhj423@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("12"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile9.png")
+                .build();
+
+        userRepository.save(user12);
+
+        Portfolio user12Portfolio = Portfolio.builder()
+                .user(user12)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("한의원 웹 사이트 만들어드립니다.")
+                .introduce("- 홍대 컴공 졸업 \n- 침 놓는 데에 관심 많음 \n- 침 맞는 것도 좋아함 \n- SpringBoot + TypeScript로 개발")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user12Portfolio);
+
+        // 초기 데이터 생성 및 저장(13)
+        User user13 = User.builder()
+                .userName("박성대")
+                .nickName("앱장인")
+                .email("chumsungdae@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("13"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile10.png")
+                .build();
+
+        userRepository.save(user13);
+
+        Portfolio user13Portfolio = Portfolio.builder()
+                .user(user13)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("인공지능 활용한 어플리케이션 개발자")
+                .introduce("- 의료 기기 관련 어플 개발자 \n- React Native 사용 \n- Kotlin 사용 가능 \n- 딥 러닝, 머신 러닝에 관한 지식 다량 함유")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user13Portfolio);
+
+
+        // 초기 데이터 생성 및 저장(2)
+        User user8000 = User.builder()
+                .userName("김영희")
+                .nickName("youngHee")
+                .email("yh@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("younghee"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile14.png")
+                .build();
+
+        userRepository.save(user8000);
+
+        Portfolio user8000Portfolio = Portfolio.builder()
+                .user(user8000)
+                .web(1)
+                .app(0)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("컴공과 재간둥희 영희입니다!")
+                .introduce("언리얼과 유니티를 주로 다룹니다. 함께 게임 제작하실 학우분 찾습니다!")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user8000Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user8001 = User.builder()
+                .userName("이소라")
+                .nickName("sora")
+                .email("sora@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("sora"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile15.png")
+                .build();
+
+        userRepository.save(user8001);
+
+        Portfolio user8001Portfolio = Portfolio.builder()
+                .user(user8001)
+                .web(1)
+                .app(2)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("소라빵을 좋아하는 이소라입니다!")
+                .introduce("앱, 웹 희망합니다! 하지만 아직 탐색중...이 전공 나랑 안맞는듯........")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user8001Portfolio);
+
+
+        // 초기 데이터 생성 및 저장(2)
+        User user8002 = User.builder()
+                .userName("박나폴레옹")
+                .nickName("kingpoleon")
+                .email("kingpoleon@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("kingpoleon"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile16.png")
+                .build();
+
+        userRepository.save(user8002);
+
+        Portfolio user8002Portfolio = Portfolio.builder()
+                .user(user8002)
+                .web(2)
+                .app(1)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("프랑스인 아님, 유럽인 아님, 토종 한국인임")
+                .introduce("요즘 케라스 공부중입니다. 매우 재미있습니다.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user8002Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user8003 = User.builder()
+                .userName("최부자")
+                .nickName("moneychoi")
+                .email("moneychoi@g.hongi.ac.kr")
+                .password(passwordEncoder.encode("moneychoi"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile17.png")
+                .build();
+
+        userRepository.save(user8003);
+
+        Portfolio user8003Portfolio = Portfolio.builder()
+                .user(user8003)
+                .web(1)
+                .app(2)
+                .game(0)
+                .ai(4)
+                .shortIntroduce("돈 좋아합니다 ㅋㅋ 같이 입상해서 돈 받아요")
+                .introduce("같이 공모전 나가서 상금 500만원 받을 팀원 모집합니다. 성실했으면 좋겠어요")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user8003Portfolio);
+
+
+
+
     }
+
 }

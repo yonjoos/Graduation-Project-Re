@@ -24,7 +24,7 @@ function About() {
                             height: '200px'
                             }}>
                             <img
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/%E1%84%86%E1%85%A6%E1%84%85%E1%85%A9%E1%86%AB.png`}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/shihong.png`}
                                 style={{
                                 width: '100%',
                                 height: '100%',
@@ -41,11 +41,11 @@ function About() {
                                     Backend Developer<br></br>Frontend Developer
                                 </div>
                             </div>
-                            <div style={{width:'400px'}}>
+                            <div style={{width:'400px', display: 'flex', alignItems:'center'}}>
                                 <ul>
-                                    <li>모름</li>
-                                    <li>모름</li>
-                                    <li>당연히 모름</li>
+                                    <li>고양문화초등학교</li>
+                                    <li>고양발산중학교</li>
+                                    <li>고양백신고등학교</li>
                                     <li>홍익대학교 서울캠퍼스 자율전공학부 17학번</li>
                                     <li>홍익대학교 서울캠퍼스 컴퓨터공학과 졸업</li>
                                 </ul>
@@ -62,7 +62,7 @@ function About() {
                             height: '200px'
                             }}>
                             <img
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/%E1%84%89%E1%85%B3%E1%84%90%E1%85%B5%E1%84%8E%E1%85%B5.png`}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/Me1.jpg`}
                                 style={{
                                 width: '100%',
                                 height: '100%',
@@ -79,11 +79,11 @@ function About() {
                                     Backend Developer<br></br>Frontend Developer
                                 </div>
                             </div>
-                            <div style={{width:'400px'}}>
+                            <div style={{width:'400px', display: 'flex', alignItems:'center'}}>
                                 <ul>
-                                    <li>모름</li>
-                                    <li>모름</li>
-                                    <li>당연히 모름</li>
+                                    <li>서울창경초등학교</li>
+                                    <li>선덕중학교</li>
+                                    <li>청원고등학교</li>
                                     <li>홍익대학교 서울캠퍼스 자율전공학부 17학번</li>
                                     <li>홍익대학교 서울캠퍼스 경영학과 졸업</li>
                                     <li>홍익대학교 서울캠퍼스 컴퓨터공학과 졸업</li>
@@ -101,7 +101,7 @@ function About() {
                             height: '200px'
                             }}>
                             <img
-                                src={`https://storage.googleapis.com/hongik-pickme-bucket/images.jpeg`}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/yonjoo.jpg`}
                                 style={{
                                 width: '100%',
                                 height: '100%',
@@ -118,11 +118,8 @@ function About() {
                                     Backend Developer<br></br>Frontend Developer<br></br>UX/UI Designer
                                 </div>
                             </div>
-                            <div style={{width:'400px'}}>
+                            <div style={{width:'400px', display: 'flex', alignItems:'center'}}>
                                 <ul>
-                                    <li>서울@@초등학교 졸업</li>
-                                    <li>서울@@중학교 졸업</li>
-                                    <li>서울@@고등학교 졸업</li>
                                     <li>홍익대학교 서울캠퍼스 자율전공학부 17학번</li>
                                     <li>홍익대학교 서울캠퍼스 시각디자인과 졸업</li>
                                     <li>홍익대학교 서울캠퍼스 컴퓨터공학과 졸업</li>
@@ -142,23 +139,40 @@ function About() {
 
     return (
         <div>
-            <Card title="What is P!ck Me?" style={{paddingLeft:'50px', paddingRight:'50px'}}>
-                <div style={{display:'grid', padding:'20px', marginBottom:'100px'}}>
+            <Card title="What is P!ck Me?" style={{paddingLeft:'50px', paddingRight:'50px', marginTop: '30px'}}>
+                <div style={{display:'grid', padding:'20px', marginBottom:'50px'}}>
                     <div style={{fontSize:'40px', marginBottom:'50px'}}>
                         <strong>P!ck Me</strong>
                     </div>
-                    <div style={{marginLeft:'30px', marginRight:'350px'}}>
-                        <p>픽미는 그 뭐더라 하여튼 사이튼데, 졸업프로젝트고, React랑 Spring으로 만들었어요
-                            개 고생하면서 만들었습니다. 보고 감격하고 채용해주세요. 잘 적응하겠습니다. 아 할 말 없다. 진짜 없다. 왜 문단 나누기 안 됨.
-                            오른 쪽에 사진 넣을거임 근데 마땅히 넣을거 없다. 목 허리 어깨 켁켁 <br></br>동해물과백두산이마르고 닳도록 하느님이 보우하사 우리나라만세
-                            무궁화 삼천리 화려강산 대한사람 대한으로
-                            <br></br>
-                            <br></br>
-                            <i>long live the P!ck Me</i>
+                    <div style={{display: 'flex', justifyContent:'flex-start'}}>
+                        <p><strong>‘픽미’</strong> 웹사이트는, <br/>
+                            컴퓨터 공학에 관심있는 홍대생이라면, 누구나 사용할 수 있는 포트폴리오 기반 팀 빌딩 서비스입니다.
+                            <br/>
+                            저희가 이 서비스를 기획하게 된 목적은 다음과 같습니다. 
+                            <br/>
+                            보통 저희는 교내 커뮤니티를 통해 프로젝트나 스터디 팀원을 찾습니다.
+                            <br/>
+                            그러나, 교내 커뮤니티는, 여러 게시물들의 혼재로 인해 모집글을 한 눈에 찾기 어렵습니다.
+                            <br/>
+                            또한, 학우들의 관심사와 개발 경험을 확인할 수 있는 기능을 제공하지 않습니다.
+                            <br/>
+                            이로인해, 잠재적 팀원이 될 사람을 찾는 것은 어려운 일이 됩니다.
+                            <br/>
+                            따라서 저희는, 3가지 솔루션을 제시합니다.
+                            <br/>
+                            우선, 카테고라이징을 통해 관련 게시물들을 한 눈에 볼 수 있도록 하였습니다.
+                            <br/>
+                            또한, 서로의 개발 경험이나 관심사를 확인할 수 있는 포트폴리오 폼을 제공함으로써 상대방에 대한 더 많은 정보를 얻을 수 있도록 합니다.
+                            <br/>
+                            그리고, 포트폴리오 분석을 통해 나와 맞는 사용자를 추천하는 기능을 제공하였습니다.
+                            <br/>
+                            여러분들의 편의성과 개성, 학습의지를 P!ck me와 함께 붙태워보세요!
+
+
                         </p>
                     </div>
                 </div>
-                <div style={{marginBottom:'150px'}}>
+                <div style={{marginBottom:'50px'}}>
                     <img
                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/Project.png`}
                                     style={{

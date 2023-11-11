@@ -273,8 +273,7 @@ function DetailProjectPage() {
             try {
                 const response = await request('POST', `/project/apply/${projectId}`, {});
                 setData(response.data); // 백엔드에서 받아온 데이터 세팅
-
-                navigate(`/project/detail/${projectId}`);
+                window.location.reload(); // 페이지 새로고침
             } catch (error) {
                 console.error("Error fetching project data:", error);
             }
@@ -293,6 +292,7 @@ function DetailProjectPage() {
 
             setData(response.data);     // 백엔드에서 받아온 데이터 세팅
             setIsCancelModalVisible(false); // 모달 안보이게 숨김
+            window.location.reload(); // 페이지 새로고침
         } catch (error) {
             console.error("Error approving user:", error);
         }
@@ -305,6 +305,7 @@ function DetailProjectPage() {
                 .then((response) => {
                     //console.log("Fetched project data:", response.data); // Log the fetched data
                     setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                    window.location.reload(); // 페이지 새로고침
                 })
                 .catch((error) => {
                     // 승인된 인원이 있는 경우, 삭제가 진행이 안됨. 승인된 인원을 모두 승인 해제하더라도, 여전히 삭제는 안됨.
@@ -321,6 +322,7 @@ function DetailProjectPage() {
                 .then((response) => {
                     //console.log("Fetched project data:", response.data); // Log the fetched data
                     setData(response.data); // 백엔드에서 받아온 데이터 세팅
+                    window.location.reload(); // 페이지 새로고침
                 })
                 .catch((error) => {
                     console.error("Error fetching project data:", error);
@@ -1112,11 +1114,11 @@ function DetailProjectPage() {
 
                                 </div>
                                 <div style={{ alignItems: 'center' }}>
-                                    👀 조회 수 : {data.viewCount}
+                                    조회 수 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{data.viewCount}
                                     <br />
-                                    모집 인원 : {data.counts} / {data.recruitmentCount}
+                                    모집 인원 &nbsp;{data.counts} / {data.recruitmentCount}
                                     <br />
-                                    모집 기한 : {formatDate(data.endDate)}
+                                    모집 기한 &nbsp;{formatDate(data.endDate)}
                                     <br />
                                     <br />
                                     <br />
@@ -1255,7 +1257,7 @@ function DetailProjectPage() {
 
                     <div style={{ flex: 2.5 }}>
                         {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
-                        {/* data.writer && renderButtons() */}
+                        {data.writer && renderButtons()}
                         {/* {renderButtons()} */}
                         {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
                         {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}

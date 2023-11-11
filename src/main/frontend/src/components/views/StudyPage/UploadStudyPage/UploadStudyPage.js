@@ -141,13 +141,13 @@ function UploadStudyPage() {
             .post('/uploadStudyPost', formData, config)
             .then((response) => {
                 // Handle the response
-                alert('게시물이 성공적으로 업로드되었습니다.');
+                alert('게시물이 성공적으로 등록되었습니다.');
                 navigate('/study');
             })
             .catch((error) => {
                 // Handle errors
                 console.error('Failed to upload post:', error);
-                alert('게시물 업로드에 실패하였습니다.');
+                alert('게시물 등록에 실패하였습니다.');
             });
     };
 
@@ -184,7 +184,7 @@ function UploadStudyPage() {
             <Col span={24}>
                 <Card title = {'Upload Study'} style={{ marginTop: '20px' }} headStyle={{ background: '#fee5eb' }}>
                     <form onSubmit={onSubmitStudy} encType="multipart/form-data">
-                        <strong style={{ fontSize: '20px' }}> Study Name </strong>
+                        <strong style={{ fontSize: '20px' }}>스터디 이름</strong>
                         <hr/>
                         <div className="form-outline mb-4">
                             <Input
@@ -196,14 +196,14 @@ function UploadStudyPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}> Study Fields </strong>
+                            <strong style={{ fontSize: '20px' }}>모집 분야</strong>
                         </div>
                         <div className="form-outline mb-4">
                             {renderCheckboxGroup()}
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Volume of Recruitment</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 인원</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -217,7 +217,7 @@ function UploadStudyPage() {
                         </div>
                         
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Recruitment Period</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 기한</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -231,7 +231,7 @@ function UploadStudyPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Content</strong>
+                            <strong style={{ fontSize: '20px' }}>스터디 내용</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -244,7 +244,7 @@ function UploadStudyPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Publicity Picture</strong>
+                            <strong style={{ fontSize: '20px' }}>홍보 사진</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -276,7 +276,7 @@ function UploadStudyPage() {
                         </Modal>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Attatchment</strong>
+                            <strong style={{ fontSize: '20px' }}>첨부파일</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">

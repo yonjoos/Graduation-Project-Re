@@ -247,6 +247,9 @@ function PortfolioCardPage() {
 
 
     const toggleBanner = (banner) => {
+
+        setSustain(0);
+        setIsRecommend(0);
         if (banner === 'all') { // 만약 선택된 배너가 전체라면 selectedBanners: [all]
             setSelectedBanners(['all']);
         }

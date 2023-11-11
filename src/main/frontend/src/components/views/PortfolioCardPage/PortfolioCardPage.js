@@ -643,12 +643,12 @@ function PortfolioCardPage() {
             }}>
                 <div >
                     <Button onClick={handleRecommend}>
-                        RECOMMEND
+                        팀원 추천
                     </Button>
 
                 </div>
                 <div style={{ marginLeft: '20px' }}>
-                    ⬅️ try our recommendation system!
+                    ⬅️ 팀원을 추천받아 보세요!
                 </div>
             </div>
             <div style={{ display: 'grid' }}>

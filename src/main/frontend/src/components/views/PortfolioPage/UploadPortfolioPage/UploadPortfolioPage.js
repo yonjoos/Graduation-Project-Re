@@ -42,11 +42,12 @@ function UploadPortfolioPage() {
 
     const greetingMessage = (
         <div>
-         <strong>포트폴리오를 작성하여 자신의 관심사와 경력을 자유롭게 표현할 수 있습니다.</strong>
+         <strong>📗 포트폴리오를 작성하여 자신의 관심사와 경력을 자유롭게 표현할 수 있습니다.</strong>
          <br></br>
-          <br />개성있는 포트폴리오를 작성하여 다른 유저들에게 능력을 어필해 보세요! 뭐라고 더 적고싶은데 쓸 말이 없다. 허전하네
-          <br />얼어붙은 달그림자 물결위에 차고 한겨울에 거센 파도 어쩌고 저쩌고 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 어떻게든 되겠지...
-          <br />그럼 건투를 빕니당 🍭🍬
+          <br />📘 개성있는 포트폴리오를 작성하여 다른 유저들에게 능력을 어필해 보세요! 
+          <br />📙 사진과 첨부파일 등 다양한 컨텐츠를 활용하여 여러분의 포트폴리오를 매력있게 만들어보세요!
+          <br /> 
+
         </div>
     );
 
@@ -419,6 +420,7 @@ function UploadPortfolioPage() {
                                         }}
                                     />
                                     <span
+                                        style={{cursor: 'pointer'}}
                                         onMouseUp={handleSet}
                                     >
                                         ⚙️ set
@@ -452,22 +454,22 @@ function UploadPortfolioPage() {
                         <table style={{ marginLeft:'15px', marginRight:'15px', marginTop:'40px', display:'flex', justifyContent:'center'}}>
                             <tbody > 
                                 <tr >
-                                    <td>1순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td><strong>⚽ 1순위</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('first', 4)}</td>
                                 </tr>
                                 <div style={{ marginBottom: '6px' }}></div>
                                 <tr>
-                                    <td>2순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td><strong>🥎 2순위</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('second', 3)}</td>
                                 </tr>
                                 <div style={{ marginBottom: '6px' }}></div>
                                 <tr>
-                                    <td>3순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td><strong>🏀 3순위</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('third', 2)}</td>
                                 </tr>
                                 <div style={{ marginBottom: '6px' }}></div>
                                 <tr>
-                                    <td>4순위&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                    <td><strong>🏐 4순위</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{renderRadioGroup('fourth', 1)}</td>
                                 </tr>
                             </tbody>
@@ -512,11 +514,11 @@ function UploadPortfolioPage() {
                             <Button icon={<UploadOutlined />} style={{ marginBottom: '10px' }}>Upload Photo</Button>
                         </Upload>
                         {promoteImageUrl.map((image, index) => (
-                            <div key={index} style={{ display: 'flex', marginBottom: '8px' }}>
+                            <div key={index}>
                                 <img
                                     src={URL.createObjectURL(image)}
                                     alt="홍보 사진"
-                                    style={{ maxWidth: '200px', maxHeight: '200px', marginRight: '16px', cursor: 'pointer' }}
+                                    style={{ width: 300, marginRight: '16px', cursor: 'pointer' }}
                                     onClick={() => handlePreview(URL.createObjectURL(image))} // Open the modal when clicked
                                 />
                                 <Button onClick={() => removePromoteImage(index)}>Remove</Button>
@@ -548,7 +550,7 @@ function UploadPortfolioPage() {
                                     {file.name}
                                 </Button>
 
-                                <Button onClick={() => removeFile(index)}>Remove</Button>
+                                <Button style={{ marginLeft: '10px' }} onClick={() => removeFile(index)}>Remove</Button>
                             </div>
                         ))}
                     </div>

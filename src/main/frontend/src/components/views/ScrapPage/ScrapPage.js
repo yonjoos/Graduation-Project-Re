@@ -399,13 +399,13 @@ function ScrapPage() {
                             onClick={() => handlePostsOptionChange("project")}
                             style={{ marginRight: '10px' }}
                         >
-                            프로젝트
+                            Project
                         </Button>
                         <Button
                             type={postsOption === "study" ? 'primary' : 'default'}
                             onClick={() => handlePostsOptionChange("study")}
                         >
-                            스터디
+                            Study
                         </Button>
 
                     </Col>

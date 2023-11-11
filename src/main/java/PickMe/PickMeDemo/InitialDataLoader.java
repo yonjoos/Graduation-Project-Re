@@ -377,6 +377,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("3"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 27, 14, 30, 0))
+                .imageUrl("profile5.png")
                 .build();
 
         userRepository.save(user3);
@@ -491,6 +492,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 6, 27, 14, 30, 0))
+                .imageUrl("profile6.png")
                 .build();
 
         userRepository.save(user4);
@@ -648,6 +650,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("5"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
+                .imageUrl("profile6.png")
                 .build();
 
         userRepository.save(user5);
@@ -763,6 +766,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 2, 14, 30, 0))
+                .imageUrl("profile17.png")
                 .build();
 
         userRepository.save(user6);
@@ -878,6 +882,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("7"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
+                .imageUrl("profile19.png")
                 .build();
 
         userRepository.save(user7);
@@ -1022,6 +1027,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 4, 27, 14, 30, 0))
+                .imageUrl("profile18.png")
                 .build();
 
         userRepository.save(user8);
@@ -1137,6 +1143,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile11.png")
                 .build();
 
         userRepository.save(user9);

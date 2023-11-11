@@ -458,13 +458,13 @@ function DetailProjectPage() {
 
 
             setCommentText('');
-            message.success("댓글이 성공적으로 업로드 되었습니다.");
+            message.success("댓글이 성공적으로 등록되었습니다.");
             setCurrentPage(0); // 댓글 업로드 후, 다시 댓글 렌더링은 0번째부터 가져오게 하기 위함
             fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
 
         } catch (error) {
-            console.error("댓글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.", error);
-            message.error("댓글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.");
+            console.error("댓글 등록에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("댓글 등록에 실패했습니다. 잠시 후 다시 시도하세요.");
         }
     };
 
@@ -485,12 +485,12 @@ function DetailProjectPage() {
             setReplyText('');
             setReplyToCommentId(null); // 현재 지시 중인 답글의 parentid를 null로 세팅
             setCurrentPage(0); // 답글 업로드 후, 다시 댓글 렌더링은 0번째부터 가져오게 하기 위함
-            message.success("답글이 성공적으로 업로드 되었습니다.");
+            message.success("답글이 성공적으로 등록되었습니다.");
 
             fetchCommentData(); // 댓글 업로드가 되었다면, 최근 올린 댓글이 반영된 결과를 다시 조회해옴
         } catch (error) {
-            console.error("답글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.", error);
-            message.error("답글 업로드에 실패했습니다. 잠시 후 다시 시도하세요.");
+            console.error("답글 등록에 실패했습니다. 잠시 후 다시 시도하세요.", error);
+            message.error("답글 등록에 실패했습니다. 잠시 후 다시 시도하세요.");
         }
     };
 

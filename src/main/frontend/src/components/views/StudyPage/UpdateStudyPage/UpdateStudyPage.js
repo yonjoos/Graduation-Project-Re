@@ -254,7 +254,7 @@ function UpdateStudyPage() {
             <Col span={24}>
                 <Card title = {'Update Study'} style={{ marginTop: '20px' }} headStyle={{ background: '#fee5eb' }}>
                     <form onSubmit={onSubmitStudy}>
-                        <strong style={{ fontSize: '20px' }}> Study Name </strong>
+                        <strong style={{ fontSize: '20px' }}>스터디 이름</strong>
                         <hr/>
                         <div className="form-outline mb-4">
                             <Input
@@ -267,15 +267,14 @@ function UpdateStudyPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}> Study Fields </strong>
+                            <strong style={{ fontSize: '20px' }}>모집 분야</strong>
                         </div>
                         <div className="form-outline mb-4">
-                            <label>Post Type &nbsp;&nbsp;&nbsp;</label>
                             {renderCheckboxGroup()}
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Volume of Recruitment</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 인원</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -290,7 +289,7 @@ function UpdateStudyPage() {
                         </div>
                     
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Recruitment Period</strong>
+                            <strong style={{ fontSize: '20px' }}>모집 기한</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -305,7 +304,7 @@ function UpdateStudyPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Content</strong>
+                            <strong style={{ fontSize: '20px' }}>스터디 내용</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -319,7 +318,7 @@ function UpdateStudyPage() {
                         </div>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Publicity Picture</strong>
+                            <strong style={{ fontSize: '20px' }}>홍보 사진</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">
@@ -378,7 +377,7 @@ function UpdateStudyPage() {
                         </Modal>
 
                         <div className="form-outline mb-1" style={{ marginTop: '60px' }}>
-                            <strong style={{ fontSize: '20px' }}>Attatchment</strong>
+                            <strong style={{ fontSize: '20px' }}>첨부파일</strong>
                             <hr/>
                         </div>
                         <div className="form-outline mb-4">

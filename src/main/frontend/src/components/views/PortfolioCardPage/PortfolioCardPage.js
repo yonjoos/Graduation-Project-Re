@@ -247,6 +247,9 @@ function PortfolioCardPage() {
 
 
     const toggleBanner = (banner) => {
+
+        setSustain(0);
+        setIsRecommend(0);
         if (banner === 'all') { // 만약 선택된 배너가 전체라면 selectedBanners: [all]
             setSelectedBanners(['all']);
         }
@@ -640,12 +643,12 @@ function PortfolioCardPage() {
             }}>
                 <div >
                     <Button onClick={handleRecommend}>
-                        RECOMMEND
+                        팀원 추천
                     </Button>
 
                 </div>
                 <div style={{ marginLeft: '20px' }}>
-                    ⬅️ try our recommendation system!
+                    ⬅️ 팀원을 추천받아 보세요!
                 </div>
             </div>
             <div style={{ display: 'grid' }}>

@@ -1707,119 +1707,117 @@ public class InitialDataLoader implements CommandLineRunner {
 //        createUserAndPortfolio("4321", "4321", "4321", "4321", 4, 3, 2, 1, "4321", "4321", "");
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // 초기 데이터 생성 및 저장(2)
+        User user7000 = User.builder()
+                .userName("최세영")
+                .nickName("sangnamja")
+                .email("csy626@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("626"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile4.png")
+                .build();
+
+        userRepository.save(user7000);
+
+        Portfolio user7000Portfolio = Portfolio.builder()
+                .user(user7000)
+                .web(4)
+                .app(3)
+                .game(2)
+                .ai(1)
+                .shortIntroduce("카카오 네이버? 이런 IT 대기업보다는 전 스타트업에서 제 역량을 키우고 싶습니다.")
+                .introduce("- 렉스, 야크, 프롤로그를 넘어서 콜그래프까지 과제를 제출\n" +
+                        "- 학점 3.8\n" +
+                        "- 정보처리기사 자격 보유")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7000Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7001 = User.builder()
+                .userName("이두열")
+                .nickName("홍익모비딕")
+                .email("ldl515@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("515"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile1.png")
+                .build();
+
+        userRepository.save(user7001);
+
+        Portfolio user7001Portfolio = Portfolio.builder()
+                .user(user7001)
+                .web(1)
+                .app(2)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("기계과지만, 소프트웨어에 관심있는 4학년입니다.")
+                .introduce("- 자율주행 동아리 활동, 입상 경력 보유(은상)\n" +
+                        "- AI 부트캠프 활동 경험\n" +
+                        "- 일반기계기사 자격 보유")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7001Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7002 = User.builder()
+                .userName("노호수")
+                .nickName("마라토니아")
+                .email("hosoo313@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("313"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile2.png")
+                .build();
+
+        userRepository.save(user7002);
+
+        Portfolio user7002Portfolio = Portfolio.builder()
+                .user(user7002)
+                .web(1)
+                .app(2)
+                .game(3)
+                .ai(4)
+                .shortIntroduce("현재 군대에서 복무하고 있지만, 내년에 복학하면 같이 열심히 성장할 학우분들을 모십니다.")
+                .introduce("- NLP와 AI분야에 대해 학부연구생 활동 경험 보유\n" +
+                        "- 동아리에서 알고리즘 강연 경험 보유\n" +
+                        "- WEB 프로젝트 2개 경험")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7002Portfolio);
+
+        // 초기 데이터 생성 및 저장(2)
+        User user7003 = User.builder()
+                .userName("이선재")
+                .nickName("언리얼장인")
+                .email("sundae1226@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("1226"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
+                .imageUrl("profile3.png")
+                .build();
+
+        userRepository.save(user7003);
+
+        Portfolio user7003Portfolio = Portfolio.builder()
+                .user(user7003)
+                .web(1)
+                .app(2)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("홍익대학교 컴퓨터공학과에 재학중인, 게임 개발에 관심있는 이선재입니다.")
+                .introduce("- 게임 분야에 큰 관심이 있어, 유니티와 언리얼 관련해서 게임 제작 4건 경험 보유\n" +
+                        "- 언리얼 같은 경우, 초중학생들 대상으로 학원강사 경력 있음.\n " +
+                        "- 메타버스 관련 스터디에 관심 있음")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user7003Portfolio);
 
 
 
@@ -1927,4 +1925,5 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(user13Portfolio);
     }
+
 }

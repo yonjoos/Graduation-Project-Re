@@ -722,11 +722,20 @@ function DetailStudyPage() {
             <div className={`comment-container depth-${depth}`}>
                 <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <img
-                            style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
-                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
-                        />
-                        <div style={{ marginRight: '10px' }}><strong>{comment.nickName}</strong></div>
+                        <Link
+                            to={`/portfolio/${data.nickName}`}
+
+                            className="hoverable-item"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                            style={linkStyle}
+                        >
+                            <img
+                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight: '10px' }}
+                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${comment.imageUrl}`}
+                            />
+                            <strong>{comment.nickName}</strong>
+                        </Link>
                     </div>
 
                     {comment.commentWriter && (
@@ -1259,6 +1268,7 @@ function DetailStudyPage() {
                         {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
                         {/* data.writer && renderButtons() */}
                         {/* {renderButtons()} */}
+                        {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
                         {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
                         {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
                         {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}

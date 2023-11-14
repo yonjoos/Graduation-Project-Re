@@ -204,6 +204,7 @@ public class CommentsService {
                             .commentWriter(false)
                             .finalCommentedTime(c.getLastModifiedDate())
                             .isTopLevel(false)
+                            .imageUrl("noResult.png")
                             .build();
                 }
 
@@ -216,6 +217,7 @@ public class CommentsService {
                             .commentWriter(false)
                             .finalCommentedTime(c.getLastModifiedDate())
                             .isTopLevel(true)
+                            .imageUrl("noResult.png")
                             .build();
                 }
 

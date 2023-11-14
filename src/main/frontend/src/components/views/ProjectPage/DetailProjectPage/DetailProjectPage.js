@@ -725,7 +725,7 @@ function DetailProjectPage() {
                 <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Link
-                            to={`/portfolio/${data.nickName}`}
+                            to={`/portfolio/${comment.nickName}`}
 
                             className="hoverable-item"
                             onMouseEnter={handleMouseEnter}

@@ -218,6 +218,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .nickName("user")
                 .email("user@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("user"))  // 비밀번호 해싱
+                .imageUrl("profile3.png")
                 .role(Role.USER)
                 .build();
 
@@ -249,6 +250,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .nickName("TestKim")
                 .email("testKim@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("1"))  // 비밀번호 해싱
+                .imageUrl("profile20.png")
                 .role(Role.USER)
                 .build();
 
@@ -263,7 +265,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("2"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl(initialImg)
+                .imageUrl("profile1.png")
                 .build();
 
         userRepository.save(user2);
@@ -377,7 +379,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("3"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 27, 14, 30, 0))
-                .imageUrl("profile5.png")
+                .imageUrl("profile19.png")
                 .build();
 
         userRepository.save(user3);
@@ -492,7 +494,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 6, 27, 14, 30, 0))
-                .imageUrl("profile6.png")
+                .imageUrl("profile2.png")
                 .build();
 
         userRepository.save(user4);
@@ -650,7 +652,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("5"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
-                .imageUrl("profile6.png")
+                .imageUrl("profile18.png")
                 .build();
 
         userRepository.save(user5);
@@ -766,7 +768,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 2, 14, 30, 0))
-                .imageUrl("profile17.png")
+                .imageUrl("profile3.png")
                 .build();
 
         userRepository.save(user6);
@@ -882,7 +884,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("7"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
-                .imageUrl("profile19.png")
+                .imageUrl("profile17.png")
                 .build();
 
         userRepository.save(user7);
@@ -1027,7 +1029,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 4, 27, 14, 30, 0))
-                .imageUrl("profile18.png")
+                .imageUrl("profile4.png")
                 .build();
 
         userRepository.save(user8);
@@ -1143,7 +1145,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile11.png")
+                .imageUrl("profile16.png")
                 .build();
 
         userRepository.save(user9);
@@ -1750,7 +1752,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("515"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile1.png")
+                .imageUrl("profile15.png")
                 .build();
 
         userRepository.save(user7001);
@@ -1778,7 +1780,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("313"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile2.png")
+                .imageUrl("profile6.png")
                 .build();
 
         userRepository.save(user7002);
@@ -1806,7 +1808,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("1226"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile3.png")
+                .imageUrl("profile14.png")
                 .build();
 
         userRepository.save(user7003);
@@ -1863,7 +1865,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("11"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile8.png")
+                .imageUrl("profile13.png")
                 .build();
 
         userRepository.save(user11);
@@ -1889,7 +1891,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("12"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile9.png")
+                .imageUrl("profile8.png")
                 .build();
 
         userRepository.save(user12);
@@ -1915,7 +1917,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("13"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile10.png")
+                .imageUrl("profile12.png")
                 .build();
 
         userRepository.save(user13);
@@ -1942,7 +1944,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("younghee"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile14.png")
+                .imageUrl("profile9.png")
                 .build();
 
         userRepository.save(user8000);
@@ -1968,7 +1970,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("sora"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile15.png")
+                .imageUrl("profile11.png")
                 .build();
 
         userRepository.save(user8001);
@@ -1995,7 +1997,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("kingpoleon"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile16.png")
+                .imageUrl("profile10.png")
                 .build();
 
         userRepository.save(user8002);
@@ -2021,7 +2023,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("moneychoi"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile17.png")
+                .imageUrl("profile2.png")
                 .build();
 
         userRepository.save(user8003);

@@ -852,6 +852,7 @@ public class PostsService {
             User applicantUser = userApplyPosts.getUser();
             ApplicantDto applicantDto = ApplicantDto.builder()
                     .nickName(applicantUser.getNickName()) // 지원자의 닉네임
+                    .imageUrl(applicantUser.getImageUrl()) // 지원자의 프사
                     .confirm(userApplyPosts.getConfirm()) // 승인 여부
                     .count(applyCount)                      // 현재 지원자 수
                     .build();

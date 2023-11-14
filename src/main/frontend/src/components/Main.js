@@ -167,10 +167,10 @@ function Main() {
                             path="/project"
                             element={Auth(ProjectPage, null)}
                         />
-                        {/* <Route
+                        <Route
                             path="/project/detail/:projectId"
                             element={Auth(DetailProjectPage, true)}
-                        /> */}
+                        />
                         <Route
                             path="/project/upload"
                             element={Auth(UploadProjectPage, true)}
@@ -183,10 +183,10 @@ function Main() {
                             path="/study"
                             element={Auth(StudyPage, null)}
                         />
-                        {/* <Route
+                        <Route
                             path="/study/detail/:studyId"
                             element={Auth(DetailStudyPage, true)}
-                        /> */}
+                        />
                         <Route
                             path="/study/upload"
                             element={Auth(UploadStudyPage, true)}
@@ -216,14 +216,14 @@ function Main() {
                             path="/"
                             element={Auth(LandingPage, null)}
                         />
-                        <Route
+                        {/* <Route
                             path="/project/detail/:projectId"
                             element={Auth(DetailProjectPage, true)}
                         />
                         <Route
                             path="/study/detail/:studyId"
                             element={Auth(DetailStudyPage, true)}
-                        />
+                        /> */}
 
                         {/* <Route
                             path="/project/detail/notify/:projectId"

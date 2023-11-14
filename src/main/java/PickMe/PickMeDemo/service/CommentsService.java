@@ -2,12 +2,11 @@ package PickMe.PickMeDemo.service;
 
 import PickMe.PickMeDemo.dto.CommentRequestDto;
 import PickMe.PickMeDemo.dto.CommentResponseDto;
-import PickMe.PickMeDemo.entity.Comments;
-import PickMe.PickMeDemo.entity.Posts;
-import PickMe.PickMeDemo.entity.QComments;
-import PickMe.PickMeDemo.entity.User;
+import PickMe.PickMeDemo.dto.NotificationMessageDto;
+import PickMe.PickMeDemo.entity.*;
 import PickMe.PickMeDemo.exception.AppException;
 import PickMe.PickMeDemo.repository.CommentsRepository;
+import PickMe.PickMeDemo.repository.NotificationsRepository;
 import PickMe.PickMeDemo.repository.PostsRepository;
 import PickMe.PickMeDemo.repository.UserRepository;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -32,6 +31,8 @@ public class CommentsService {
     private final UserRepository userRepository;
     private final PostsRepository postsRepository;
     private final CommentsRepository commentsRepository; // 댓글 저장소 추가
+    private final NotificationsRepository notificationsRepository;
+    private final NotificationService notificationService;
     private final JPAQueryFactory queryFactory;
 
 
@@ -63,6 +64,106 @@ public class CommentsService {
 
         // 댓글 레포지토리에 저장
         commentsRepository.save(comment);
+
+
+        /////////////////////////아래부터, 댓글 등록 시 notification, sse관련
+        // 1. 달리는 댓글에 부모 댓글이 있는 경우
+        // -> 그 댓글의 부모 댓글을 쓴 사람인데,
+        // -> 부모 댓글을 쓴 사람과 달릴 댓글을 쓴 사람이 다르고
+        // -> 부모 댓글을 쓴 사람이 게시물 작성자가 아닌 경우에 부모 댓글 쓴 사람에게 알림 발송
+
+        // 2. 달리는 댓글의 모든 경우에 대해
+        // -> 달리는 댓글의 작성자와 게시물 작성자가 다른 경우에 게시물 작성자에게 알림 발송
+
+
+        if (comment.getParent() != null) { // 달릴 댓글에게 부모 댓글이 있는 경우
+
+
+            NotificationMessageDto parentNotificationMessage; // 부모 댓글 작성한 사람에게 보낼 실시간 알림 메세지
+            String parentNotifyMessage; // 부모 댓글 작성한 사람에게 보낼 공지될 data
+
+//            NotificationMessageDto postWriterNotificationMessage; // 게시물 작성자에게 보낼 실시간 알림 메세지
+//            String postWriterNotifyMessage; // 게시물 작성자에게 보낼 공지될 data
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) { // 프로젝트 게시물일 경우
+
+                // parentNotificationMessage : 실시간 알림 카드에 들어갈 내용(부모 댓글 작성자에게 갈 내용)
+                // parentNotifyMessage : Notification 배너 안에 들어갈 카드 내용(부모 댓글 작성자에게 갈 공지
+
+                parentNotificationMessage = new NotificationMessageDto("project/detail/" + findPosts.getId() + ": 프로젝트 게시물 : \"" + findPosts.getTitle() + "\"의 회원님의 댓글에 \"" + findUser.getNickName() + "\"님이 답글을 남겼습니다.\"" + commentRequestDTO.getContent()+"\""); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                parentNotifyMessage = "프로젝트 게시물 : \"" + findPosts.getTitle() + "\"의 회원님의 댓글에 \"" + findUser.getNickName() + "\"님이 답글을 남겼습니다.\"" + commentRequestDTO.getContent()+"\"";
+
+
+            }
+            else  { // 스터디 게시물일 경우
+                parentNotificationMessage = new NotificationMessageDto("study/detail/" + findPosts.getId() + ": 스터디 게시물 : \"" + findPosts.getTitle() + "\"의 회원님의 댓글에 \"" + findUser.getNickName() + "\"님이 답글을 남겼습니다.\"" + commentRequestDTO.getContent()+"\""); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                parentNotifyMessage = "스터디 게시물 : \"" + findPosts.getTitle() + "\"의 회원님의 댓글에 \"" + findUser.getNickName() + "\"님이 답글을 남겼습니다.\"" + commentRequestDTO.getContent()+"\"";
+
+
+            }
+
+
+            if(!comment.getParent().getUser().getId().equals(findUser.getId())) // 현재 답글을 쓴 사용자가 그 댓글의 부모와 다른 사람인데,
+            {
+
+                if(!comment.getParent().getUser().getId().equals(findPosts.getUser().getId())) // 부모 댓글을 쓴 사용자가 게시물 작성자가 아닌 경우에 sse, 공지 보냄
+                {
+                    Optional<User> parentUser = userRepository.findById(comment.getParent().getUser().getId()); // 부모 댓글 작성자 찾기
+                    if(parentUser.isPresent())
+                    {
+                        Notifications parentCommentNotification = Notifications.builder()
+                                .user(parentUser.get()) // 부모 댓글 작성자에게 보내기
+                                .postId(findPosts.getId())
+                                .notificationMessage(parentNotifyMessage)
+                                .postType(findPosts.getPostType())
+                                .checked(false)
+                                .build();
+
+                        Notifications savedParentCommentNotification = notificationsRepository.save(parentCommentNotification);
+                        parentNotificationMessage.setMessage(parentNotificationMessage.getMessage() + savedParentCommentNotification.getId().toString());
+                        notificationService.notify(comment.getParent().getUser().getId(), parentNotificationMessage); // 부모 대댓글 작성자에게 실시간 알림 전송
+                    }
+                }
+
+            }
+
+
+        }
+
+         // 부모 댓글이 있든 없든, 게시물 작성자에게는 댓글 달렸다고 sse, 공지 보내기
+
+        if(!findPosts.getUser().getId().equals(findUser.getId())) // 현재 댓글 또는 답글을 단 사람이 게시물 작성자가 아닐 경우에 실행
+        {
+            NotificationMessageDto postWriterNotificationMessage; // 게시물 작성자에게 보낼 실시간 알림
+            String postWriterNotifyMessage; // 게시물 작성자에게 보낼 공지
+
+            if (PostType.PROJECT.equals(findPosts.getPostType())) {
+
+                postWriterNotificationMessage = new NotificationMessageDto("project/detail/" + findPosts.getId() + ": 프로젝트 게시물 : \"" + findPosts.getTitle() + "\"에 \"" + findUser.getNickName() + "\"님이 댓글을 남겼습니다.\"" + commentRequestDTO.getContent()+"\""); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                postWriterNotifyMessage = "프로젝트 게시물 : \"" + findPosts.getTitle() + "\"에 \"" + findUser.getNickName() + "\"님이 댓글을 남겼습니다.\n\"" + commentRequestDTO.getContent()+"\"";
+
+            }
+            else  {
+                postWriterNotificationMessage = new NotificationMessageDto("study/detail/" + findPosts.getId() + ": 스터디 게시물 : \"" + findPosts.getTitle() + "\"에 \"" + findUser.getNickName() + "\"님이 댓글을 남겼습니다.\"" + commentRequestDTO.getContent()+"\""); // 실제 구현 완료되면, 여기가 아니라 notification으로 라우팅 걸어주자
+                postWriterNotifyMessage = "스터디 게시물 : \"" + findPosts.getTitle() + "\"에 \"" + findUser.getNickName() + "\"님이 댓글을 남겼습니다.\n\"" + commentRequestDTO.getContent()+"\"";
+
+            }
+
+            Notifications postWriterCommentNotification = Notifications.builder()
+                .user(findPosts.getUser()) // 게시물 작성자에게 보내기
+                .postId(findPosts.getId())
+                .notificationMessage(postWriterNotifyMessage)
+                .postType(findPosts.getPostType())
+                .checked(false)
+                .build();
+
+            Notifications savedPostWriterCommentNotification = notificationsRepository.save(postWriterCommentNotification);
+            postWriterNotificationMessage.setMessage(postWriterNotificationMessage.getMessage() + savedPostWriterCommentNotification.getId().toString());
+            notificationService.notify(findPosts.getUser().getId(), postWriterNotificationMessage); // 부모 대댓글 작성자에게 실시간 알림 전송
+            }
+
+
+
 
     }
 

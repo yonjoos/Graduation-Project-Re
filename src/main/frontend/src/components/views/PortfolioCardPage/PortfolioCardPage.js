@@ -489,7 +489,7 @@ function PortfolioCardPage() {
                                     <hr></hr>
                                     <div>
                                         <div>
-                                            <b>Introduction</b>
+                                            <b>한 줄 소개</b>
                                             <br></br>
                                             {truncateString(item.shortIntroduce, 20)}
                                         </div>
@@ -535,7 +535,7 @@ function PortfolioCardPage() {
                                         } 
                                     style={{ height: '250px', marginBottom: '10px', cursor: 'pointer' }}
                                 >
-                                    <b>Field Of Interests</b>
+                                    <b> 관심 분야 선호도 </b>
                                     <div style={{marginTop:'10px'}}>
                                         <strong style={{ display: 'flex', fontSize:'12px' }}>
                                             {item.web ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#WEB</span> : <span ></span>}
@@ -546,7 +546,7 @@ function PortfolioCardPage() {
 
                                     </div>                                    
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
-                                    <b>Brief Introduction</b>
+                                    <b> 한 줄 소개 </b>
                                     <br />
                                     {truncateString(item.shortIntroduce, 20)}
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>

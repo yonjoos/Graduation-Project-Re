@@ -463,7 +463,7 @@ function UpdatePortfolioPage() {
             {hasPortfolio ? (
                 <Row justify="center">
                     <Col span={24} >
-                        <Card title = {'Write down your information'} style={{marginTop:'20px'}} headStyle={{ background: '#ddeeff' }}>
+                        <Card title = {'나만의 포트폴리오를 만들어보세요!'} style={{marginTop:'20px'}} headStyle={{ background: '#ddeeff' }}>
                             <div style={{paddingLeft:'45px', paddingRight:'45px'}}> 
                                 <div style={{display:'flex', alignItems:'center', borderRadius:'10px', border: '1px solid lightgray' }}>
                                     <div 
@@ -548,7 +548,7 @@ function UpdatePortfolioPage() {
                                     {/* Existing input fields */}
                                     {/** mb-4 : "margin Bottom 4"를 의미하며 요소 하단에 여백을 적용하는 데 사용 */}
                                     <div className="form-outline mb-4" style={{marginTop:'50px'}}>
-                                        <strong style={{fontSize:'20px'}}> Fields of Interests</strong>
+                                        <strong style={{fontSize:'20px'}}> 관심 분야 선호도 </strong>
                                         <hr/>
                                         <p style={{marginLeft:'15px', marginRight:'15px'}}>선호도에 맞는 관심분야를 선택해주세요. 정확한 추천을 위해, 선호도에 순서를 정해주세요.
                                         <br/> 
@@ -583,7 +583,7 @@ function UpdatePortfolioPage() {
                                     <form onSubmit={onSubmitPortfolio}>
                                         {/* Short Introduce */}
                                         <div className="form-outline mb-4" style={{marginTop:'100px'}}>
-                                            <strong style={{fontSize:'20px'}}> Brief Introduction</strong>
+                                            <strong style={{fontSize:'20px'}}> 한 줄 소개 </strong>
                                             <hr></hr>
                                             <p style={{marginLeft:'15px', marginRight:'15px', marginBottom:'40px'}}>프로필과 함께 유저들에게 가장 먼저 보이는 한 줄 소개입니다. 강렬한 문장으로 다른 유저들에게 자신을 소개해 보세요!</p>
                                             <Input
@@ -596,7 +596,7 @@ function UpdatePortfolioPage() {
                                         </div>
                                         {/* Introduce */}
                                         <div className="form-outline mb-4" style={{marginTop:'120px'}}>
-                                            <strong style={{fontSize:'20px'}}> Experience </strong>
+                                            <strong style={{fontSize:'20px'}}> 경력 </strong>
                                             <hr></hr>
                                             <TextArea
                                                 type="text"
@@ -609,7 +609,7 @@ function UpdatePortfolioPage() {
                                         </div>
                                         {/* File URL */}
                                         <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                            <strong>Photos</strong>
+                                            <strong> 홍보 사진 </strong>
                                         </div>
                                         <div className="form-outline mb-4">
                                             <div>
@@ -666,7 +666,7 @@ function UpdatePortfolioPage() {
                                             <img alt="포트폴리오 이미지" style={{ width: '100%' }} src={previewImage} />
                                         </Modal>
                                         <div style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                            <strong>Attatchment</strong>
+                                            <strong> 첨부 파일 </strong>
                                         </div>
                                         <div className="form-outline mb-4">
                                             <Upload

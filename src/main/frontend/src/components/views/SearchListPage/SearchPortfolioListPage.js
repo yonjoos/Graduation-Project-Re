@@ -175,7 +175,7 @@ function SearchPortfolioListPage(onSearch) {
                                 <br />
                                 {truncateString(item.shortIntroduce, 20)}
                                 <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
-                                <b>👀 조회 수 : </b>
+                                <b>조회 수 : </b>
                                 {item.viewCount}
                             </Card>
                         </Col>

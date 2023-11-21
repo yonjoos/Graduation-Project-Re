@@ -2404,7 +2404,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
         // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
         Posts posts108 = Posts.builder()
-                .user(user106)
+                .user(user108)
                 .postType(PostType.STUDY)
                 .title("자스자스")
                 .recruitmentCount(4)

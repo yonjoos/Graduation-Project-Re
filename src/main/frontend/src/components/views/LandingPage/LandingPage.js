@@ -344,7 +344,7 @@ function LandingPage() {
                                                         인원 | {item.counts} / {item.recruitmentCount}
                                                     </div>
                                                     <div className="shape-outline mb-1">
-                                                        👀 조회수 {item.viewCount}
+                                                        조회수 {item.viewCount}
                                                     </div>
                                                 </div>
                                             </Card>
@@ -455,7 +455,7 @@ function LandingPage() {
                                                         인원 | {item.counts} / {item.recruitmentCount}
                                                     </div>
                                                     <div className="shape-outline mb-1">
-                                                        👀 조회수 {item.viewCount}
+                                                        조회수 {item.viewCount}
                                                     </div>
                                                 </div>
                                             </Card>

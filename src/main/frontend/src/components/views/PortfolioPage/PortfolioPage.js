@@ -5,6 +5,8 @@ import { Button, Card, Row, Col, Radio, Progress, Divider, Modal, Image } from '
 
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
+import { useStore, useDispatch} from 'react-redux';
+import userEvent from '@testing-library/user-event';
 
 function PortfolioPage() {
     const navigate = useNavigate();
@@ -31,6 +33,11 @@ function PortfolioPage() {
     UseEffect #############################################################################################################
     UseEffect #############################################################################################################
     */
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch({type: "SET_RECOMMENDED_PORTPOLIO_VIEW", isRecommededPortpolioView: true});
+    })
 
     // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {

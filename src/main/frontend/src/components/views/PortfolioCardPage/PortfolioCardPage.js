@@ -10,6 +10,7 @@ import { request, setHasPortfolio } from '../../../hoc/request';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
+import { useDispatch, useStore } from 'react-redux';
 
 
 function PortfolioCardPage() {
@@ -37,38 +38,61 @@ function PortfolioCardPage() {
     const [sustain, setSustain] = useState(0);
     const [showRecommend, setShow] = useState(0);
 
-
+    const store = useStore();
+    const dispatch = useDispatch();
 
 
     const pageSize = 9;
 
+    
+    
+
     // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
     useEffect(() => {
-        console.log('현재 검색된 키워드: ', currentSearchTerm);
-        setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
-        fetchFilteredSearchLists();
+        if( !store.getState().recommend.isRecommededPortpolioView ){
+            console.log('현재 검색된 키워드: ', currentSearchTerm);
+            setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
+            fetchFilteredSearchLists();
+        }
+ 
     }, [currentSearchTerm]);
 
     // <Button> PortfolioCard 다시 눌렀을 때 실행
     // Handler : handleReload() 에 의해 호출됨
 
     useEffect(() => {
-        setCurrentPage(0);
-        setTotalPages(0);
-        setSearchTerm("");
-        setSelectedBanners(['all']);
+        if( !store.getState().recommend.isRecommededPortpolioView ){
+            setCurrentPage(0);
+            setTotalPages(0);
+            setSearchTerm("");
+            setSelectedBanners(['all']);
+            dispatch({
+                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
+                isRecommededPortpolioView: false,
+            });
+            dispatch({
+                type: "SAVE_RECOMMENDED_LIST",
+                recommendedList: null
+            });
+    
+            // REQUEST FUNCTION 
+            fetchUsers();
+            setReload(0);
+        }
 
-        // REQUEST FUNCTION 
-        fetchUsers();
 
-        setReload(0);
     }, [reload]);
 
     useEffect(() => {
-        if (recommend === 1) {
+        if (recommend === 1 && !store.getState().recommend.isRecommededPortpolioView) {
             Recommend();
             setRecommend(0);
             setSustain(1);
+            dispatch({
+                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
+                isRecommededPortpolioView: false,
+            });
+            
         }
         else {
         }
@@ -79,10 +103,31 @@ function PortfolioCardPage() {
     // Handler : toggleBanner / handleSearch, toggleBanner, Pagination / handleSearch
     useEffect(() => {
 
-        console.log('현재 선택된 배너 정보', selectedBanners);
-        console.log('현재 검색 완료된 키워드: ', searchTerm);
-        fetchUsers();
+        if(!store.getState().recommend.isRecommededPortpolioView){
+            console.log('현재 선택된 배너 정보', selectedBanners);
+            console.log('현재 검색 완료된 키워드: ', searchTerm);
+            fetchUsers();
+
+        }
+        
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
+
+    useEffect(() => {
+        if (store.getState().recommend.isRecommededPortpolioView) {
+            const recommendedList = store.getState().recommend.recommendedList;
+    
+            console.log("-----------------", recommendedList);
+    
+            setData(recommendedList);
+    
+            console.log("세팅된 데이터=================", recommendedList);
+    
+            dispatch({
+                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
+                isRecommededPortpolioView: false,
+            });
+        }
+    }, [store.getState().recommend.recommendedList]);
 
 
 
@@ -275,6 +320,9 @@ function PortfolioCardPage() {
         try {
             const response = await request('GET', `/getRecommendation`);
             setData(response.data);
+            //console.log('response.data', response.data);
+            //console.log("state", store.getState());
+            dispatch({type: "SAVE_RECOMMENDED_LIST", recommendedList: response.data})
             setTotalPages(response.data.totalPages);
             console.log(data);
         } catch (error) {

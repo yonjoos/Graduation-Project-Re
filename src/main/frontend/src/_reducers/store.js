@@ -54,6 +54,7 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
+import recommendReducer from './recommendReducer';
 
 // initialState: 앱의 초기 상태를 정의하는 객체임. 여기서는 isAuthenticated와 authToken을 초기화 수행
 const initialState = {
@@ -61,7 +62,7 @@ const initialState = {
     authToken: null,
     userRole: null,
     userPortfolio: null,
-    userNickName: null
+    userNickName: null,
 };
 
 /**
@@ -108,7 +109,7 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 userPortfolio: false
-            }
+            }    
         default:
             return state;
     }
@@ -148,8 +149,9 @@ const authReducer = (state = initialState, action) => {
 
 // Combine both reducers into a single rootReducer
 const rootReducer = combineReducers({
-    auth: authReducer // authReducer manages authentication-related state
+    auth: authReducer, // authReducer manages authentication-related state
     //endpoint: endpointReducer // endpointReducer manages endpoint-related state
+    recommend: recommendReducer
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

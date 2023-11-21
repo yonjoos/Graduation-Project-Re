@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 //import { useSelector, useDispatch } from "react-redux";
 import { request, getUserNickName } from '../../../../hoc/request';
-import { Divider, Row, Col, Button, Modal, message, Input, Card, Image } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Row, Col, Button, Modal, message, Input, Card, Image } from 'antd';
+import { DownOutlined, UpOutlined } from '@ant-design/icons';
 //import { lastVisitedEndpoint } from "../../../../_actions/actions";
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from "../../../../hoc/request";
 import '../StudyPage.css';
@@ -373,16 +373,16 @@ function DetailStudyPage() {
         navigate(`/portfolio/${nickName}`);
     };
 
-    const handlePortfolioClick = (nickName) => {
-        // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
-        // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
-        // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
-        // dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
-        // setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-        // setLastLastVisitedEndpoint(visitedEndEndpoint);
-        // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
-        navigate(`/portfolio/${nickName}`);
-    };
+    // const handlePortfolioClick = (nickName) => {
+    //     // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
+    //     // 가장 마지막에 저장한 엔드포인트인 /study/detail/${studyId}로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study/detail/${studyId}로 설정
+    //     // 전에 방문했던 페이지는 현재 페이지로, 전 전에 방문했던 페이지는 현재 페이지 이전에 방문했던 페이지로 설정
+    //     // dispatch(lastVisitedEndpoint(`/study/detail/${studyId}`, visitedEndEndpoint, visitedEndEndEndpoint));    // 전역에 상태 저장을 위한 애.
+    //     // setLastVisitedEndpoint(`/study/detail/${studyId}`);   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
+    //     // setLastLastVisitedEndpoint(visitedEndEndpoint);
+    //     // setLastLastLastVisitedEndpoint(visitedEndEndEndpoint);
+    //     navigate(`/portfolio/${nickName}`);
+    // };
 
     // 승인하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가
     const handleApproveUser = async (applyUserNickName, studyId) => {
@@ -407,6 +407,7 @@ function DetailStudyPage() {
             setApplicantData(response.data);    // 변경된 데이터를 갖고 새롭게 data를 세팅함
             setApproveModalVisible(false);       // 모달은 안보이게 설정
             setCancelModalVisible(false);
+            window.location.reload(); // 페이지 새로고침
         } catch (error) {
             console.error("Error approving user:", error);
         }
@@ -436,6 +437,7 @@ function DetailStudyPage() {
             setApplicantData(response.data);     // 변경된 데이터를 갖고 새롭게 data를 세팅함
             setApproveModalVisible(false);       // 모달은 안보이게 설정
             setCancelModalVisible(false);
+            window.location.reload(); // 페이지 새로고침
         } catch (error) {
             console.error("Error approving user:", error);
         }
@@ -723,7 +725,7 @@ function DetailStudyPage() {
                 <div className="comment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Link
-                            to={`/portfolio/${data.nickName}`}
+                            to={`/portfolio/${comment.nickName}`}
 
                             className="hoverable-item"
                             onMouseEnter={handleMouseEnter}
@@ -834,17 +836,34 @@ function DetailStudyPage() {
     const renderApplicantButton = () => {
         return (
             <div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '5%', marginTop: '10px' }}>
-                    <Button onClick={toggleContent}>
-                        {isApplicantOpen ? '지원자 목록 닫기' : '지원자 목록 열기'}
+                <div style={{ marginTop: '10px' }}>
+                    <Button style={{ width: '100%', height: '50px', backgroundColor: '#ffe5ec' }} onClick={toggleContent}>
+                    {isApplicantOpen ? (
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                <b style={{ fontSize: '15px' }}>지원 현황</b>
+                            </div>
+                            <div>
+                                <UpOutlined />
+                            </div>
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                <b style={{ fontSize: '15px' }}>지원 현황</b>
+                            </div>
+                            <div>
+                                <DownOutlined />
+                            </div>
+                        </div>
+                    )}
                     </Button>
                 </div>
-                <div style={{ marginLeft: '15%', marginRight: '5%' }}>
+                <div>
                     {isApplicantOpen && applicantData.length > 0 && // applicantData가 비어있지 않을 때 렌더링
                         <div>
-                            {applicantData.map((applicant, index) => (
+                            {/* {applicantData.map((applicant, index) => (
                                 <div key={index}>
-                                    <Divider />
                                     <Row>
                                         <Col span={8} onClick={() => handleNickNameClick(applicant.nickName)} style={{ cursor: 'pointer' }}>
                                             {applicant.nickName}
@@ -881,9 +900,89 @@ function DetailStudyPage() {
                                             )}
                                         </Col>
                                     </Row>
-                                    <Divider />
                                 </div>
-                            ))}
+                            ))} */}
+                            {isApplicantOpen && applicantData.length > 0 && (
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <div style={{ width: '100%', display: 'flex' }}>
+                                        <Card title={<span style={{ fontSize: '15px' }}>지원자</span>}
+                                            style={{ flex: 1 }}
+                                            headStyle={{ paddingLeft: '15px', marginTop: '0px', backgroundColor: '#FFE5F2' }}
+                                            bodyStyle={{ paddingTop: '0px', paddingBottom: '15px' }}
+                                        >
+                                            {applicantData.map((applicant, index) => (
+                                            // Render unconfirmed applicants (where confirm is false)
+                                            // You can adjust your condition based on your applicant.confirm property
+                                            !applicant.confirm && (
+                                                <div key={index} style={{ marginTop: '15px' }}>
+                                                    <Row>
+                                                        <Col span={16} onClick={() => handleNickNameClick(applicant.nickName)} style={{ cursor: 'pointer' }}>
+                                                            <img
+                                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${applicant.imageUrl}`}
+                                                            />
+                                                            <b>{applicant.nickName}</b>
+                                                        </Col>
+                                                        <Col span={8} style={{ display: 'flex', justifyContent: 'end' }}>
+                                                            <Button
+                                                                size="small"
+                                                                style={{ backgroundColor: '#FFECE5', boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)' }}
+                                                                onClick={() => {
+                                                                setApplyUserNickname(applicant.nickName);
+                                                                setApproveModalVisible(true);
+                                                                if (data.counts === data.recruitmentCount) {
+                                                                    message.warning('정원이 모두 찼습니다!');
+                                                                }
+                                                                }}
+                                                            >
+                                                                승인
+                                                            </Button>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            )
+                                            ))}
+                                        </Card>
+                                    </div>
+                                    <div style={{ width: '100%', display: 'flex' }}>
+                                        <Card title={<span style={{ fontSize: '15px' }}>팀원</span>}
+                                            style={{ flex: 1 }}
+                                            headStyle={{ paddingLeft: '15px', marginTop: '0px', backgroundColor: '#FFE5F2' }}
+                                            bodyStyle={{ paddingTop: '0px', paddingBottom: '15px' }}
+                                        >
+                                            {applicantData.map((applicant, index) => (
+                                            // Render confirmed applicants (where confirm is true)
+                                            // You can adjust your condition based on your applicant.confirm property
+                                            applicant.confirm && (
+                                                <div key={index} style={{ marginTop: '15px' }}>
+                                                    <Row>
+                                                        <Col span={16} onClick={() => handleNickNameClick(applicant.nickName)} style={{ cursor: 'pointer' }}>
+                                                            <img
+                                                                style={{ borderRadius: '50%', width: '40px', height: '40px', border: '3px solid salmon', marginRight:'10px' }}
+                                                                src={`https://storage.googleapis.com/hongik-pickme-bucket/${applicant.imageUrl}`}
+                                                            />
+                                                            <b>{applicant.nickName}</b>
+                                                        </Col>
+                                                        <Col span={8} style={{ display: 'flex', justifyContent: 'end' }}>
+                                                            <Button
+                                                                size="small"
+                                                                style={{ backgroundColor: '#FFECE5', boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)' }}
+                                                                onClick={() => {
+                                                                setApplyUserNickname(applicant.nickName);
+                                                                setCancelModalVisible(true);
+                                                                }}
+                                                            >
+                                                                승인 취소
+                                                            </Button>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            )
+                                            ))}
+                                        </Card>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     }
                 </div>
@@ -900,8 +999,8 @@ function DetailStudyPage() {
                 <Modal
                     title="유저 승인 취소"
                     open={cancelModalVisible} // visible로 모달 열림 여부 설정
-                    onOk={() => handleCancelApproval(applyUserNickName, studyId)} // 취소 버튼을 누르면 모달 닫기
-                    onCancel={() => setCancelModalVisible(false)} // "예" 버튼을 누르면 승인 취소 동작 처리 함수 호출
+                    onOk={() => handleCancelApproval(applyUserNickName, studyId)}
+                    onCancel={() => setCancelModalVisible(false)}
                     okText="예"
                     cancelText="아니오"
                 >
@@ -1086,7 +1185,7 @@ function DetailStudyPage() {
 
     const renderPost = (data) => {
         return (
-            <div>
+            <div style={{ marginTop: '20px' }}>
                 <Card>
                     <div style={{ display: 'grid', marginLeft: '10px', marginRight: '10px' }}>
                         <div >
@@ -1258,92 +1357,82 @@ function DetailStudyPage() {
         <div>
             {data.writer !== null ? (
                 // data.writer가 null이 아닌 경우 (게시물이 존재하는 경우)
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {/** flex : space-between에서, 각 항목끼리 화면에서 차지하는 비중을 결정하는 style */}
-                    <div style={{ flex: 1 }}>
-                        {/** 좌측 여백을 위해 만든 더미 div */}
-                    </div>
+                <div>
+                    {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
+                    {data.writer && renderButtons()}
+                    {data.writer && renderApplicantButton()}
+                    {/* {renderButtons()} */}
+                    {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
+                    {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
+                    {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
+                    {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
+                    {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
+                    {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
+                    {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
 
-                    <div style={{ flex: 2.5 }}>
-                        {/** 게시물 작성자에게만 보이는 화면. 우측 상단에 게시물 수정, 삭제 버튼이 보임. */}
-                        {data.writer && renderButtons()}
-                        {/* {renderButtons()} */}
-                        {/** 게시물을 작성하지 않은 유저에게만 보이는 화면. 우측 상단에 스크랩 버튼과 지원 버튼이 보임. */}
-                        {!data.writer && !data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 안한 사람 */}
-                        {!data.writer && data.scrap && !data.applying && !data.applied && renderButtons()}    {/** 지원 안한 사람 + 스크랩 한 사람 */}
-                        {!data.writer && !data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 안한 사람 */}
-                        {!data.writer && data.scrap && data.applying && !data.applied && renderButtons()}     {/** 지원 O 승인 X인 사람 (승인 대기 중) + 스크랩 한 사람 */}
-                        {!data.writer && !data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 안한 사람 */}
-                        {!data.writer && data.scrap && !data.applying && data.applied && renderButtons()}     {/** 승인 O인 사람 (승인 완료) + 스크랩 한 사람 */}
+                    {renderPost(data)}
 
-                        {renderPost(data)}
-
-                        {/* Modal */}
-                        <Modal
-                            title="Confirm Action"
-                            open={isModalVisible}
-                            onOk={handleModalConfirm}
-                            onCancel={handleModalCancel}
-                            okText="예"
-                            cancelText="아니오"
-                        >
-                            {modalAction === 'delete' && (
-                                <p>게시물을 삭제하시겠습니까?</p>
-                            )}
-                            {modalAction === 'apply' && (
-                                <p>게시물에 지원하시겠습니까?</p>
-                            )}
-                        </Modal>
-                        <Modal
-                            title="Confirm Action"
-                            open={isCancelModalVisible}
-                            onOk={handleCancelModalConfirm}
-                            onCancel={handleCancelModalCancel}
-                            okText="예"
-                            cancelText="아니오"
-                        >
-                            <p>지원을 취소하시겠습니까?</p>
-                        </Modal>
-                        <Modal
-                            title="Confirm Action"
-                            open={isScrapModalVisible}
-                            onOk={handleScrapModalConfirm}
-                            onCancel={handleScrapModalCancel}
-                            okText="예"
-                            cancelText="아니오"
-                        >
-                            {scrapAction === 'scrap' && (
-                                <p>게시물을 스크랩하시겠습니까?</p>
-                            )}
-                            {scrapAction === 'cancelScrap' && (
-                                <p>스크랩을 취소하시겠습니까?</p>
-                            )}
-                        </Modal>
-                        <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
-                            title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
-                            open={commentEditConfirmModalVisible}
-                            onOk={handleCommentEditModalOk}
-                            onCancel={handleCommentEditModalCancel}
-                            okText="예"
-                            cancelText="아니오"
-                        >
-                            {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
-                        </Modal>
-                        <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
-                            title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
-                            open={commentDeleteConfirmModalVisible}
-                            onOk={handleCommentDeleteModalOk}
-                            onCancel={handleCommentDeleteModalCancel}
-                            okText="예"
-                            cancelText="아니오"
-                        >
-                            {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
-                        </Modal>
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                        {data.writer && renderApplicantButton()}
-                    </div>
+                    {/* Modal */}
+                    <Modal
+                        title="Confirm Action"
+                        open={isModalVisible}
+                        onOk={handleModalConfirm}
+                        onCancel={handleModalCancel}
+                        okText="예"
+                        cancelText="아니오"
+                    >
+                        {modalAction === 'delete' && (
+                            <p>게시물을 삭제하시겠습니까?</p>
+                        )}
+                        {modalAction === 'apply' && (
+                            <p>게시물에 지원하시겠습니까?</p>
+                        )}
+                    </Modal>
+                    <Modal
+                        title="Confirm Action"
+                        open={isCancelModalVisible}
+                        onOk={handleCancelModalConfirm}
+                        onCancel={handleCancelModalCancel}
+                        okText="예"
+                        cancelText="아니오"
+                    >
+                        <p>지원을 취소하시겠습니까?</p>
+                    </Modal>
+                    <Modal
+                        title="Confirm Action"
+                        open={isScrapModalVisible}
+                        onOk={handleScrapModalConfirm}
+                        onCancel={handleScrapModalCancel}
+                        okText="예"
+                        cancelText="아니오"
+                    >
+                        {scrapAction === 'scrap' && (
+                            <p>게시물을 스크랩하시겠습니까?</p>
+                        )}
+                        {scrapAction === 'cancelScrap' && (
+                            <p>스크랩을 취소하시겠습니까?</p>
+                        )}
+                    </Modal>
+                    <Modal // 댓글 또는 답글의 수정 완료 버튼 클릭 시 보여지는 모달
+                        title={isTopLevelUsedByEditing ? '댓글 수정' : '답글 수정'}
+                        open={commentEditConfirmModalVisible}
+                        onOk={handleCommentEditModalOk}
+                        onCancel={handleCommentEditModalCancel}
+                        okText="예"
+                        cancelText="아니오"
+                    >
+                        {isTopLevelUsedByEditing ? '댓글을 수정하시겠습니까?' : '답글을 수정하시겠습니까?'}
+                    </Modal>
+                    <Modal // 댓글 또는 답글의 삭제 버튼 클릭 시 보여지는 모달
+                        title={isTopLevelUsedByDelete ? '댓글 삭제' : '답글 삭제'}
+                        open={commentDeleteConfirmModalVisible}
+                        onOk={handleCommentDeleteModalOk}
+                        onCancel={handleCommentDeleteModalCancel}
+                        okText="예"
+                        cancelText="아니오"
+                    >
+                        {isTopLevelUsedByDelete ? '댓글을 삭제하시겠습니까?' : '답글을 삭제하시겠습니까?'}
+                    </Modal>
                 </div>
             ) : (
                 // data.writer가 null인 경우 (게시물이 없는 경우)

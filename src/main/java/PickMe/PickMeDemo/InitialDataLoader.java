@@ -218,6 +218,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .nickName("user")
                 .email("user@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("user"))  // 비밀번호 해싱
+                .imageUrl("profile3.png")
                 .role(Role.USER)
                 .build();
 
@@ -249,6 +250,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .nickName("TestKim")
                 .email("testKim@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("1"))  // 비밀번호 해싱
+                .imageUrl("profile20.png")
                 .role(Role.USER)
                 .build();
 
@@ -263,7 +265,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("2"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl(initialImg)
+                .imageUrl("profile1.png")
                 .build();
 
         userRepository.save(user2);
@@ -377,7 +379,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("3"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 27, 14, 30, 0))
-                .imageUrl("profile5.png")
+                .imageUrl("profile19.png")
                 .build();
 
         userRepository.save(user3);
@@ -492,7 +494,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("4"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 6, 27, 14, 30, 0))
-                .imageUrl("profile6.png")
+                .imageUrl("profile2.png")
                 .build();
 
         userRepository.save(user4);
@@ -650,7 +652,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("5"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
-                .imageUrl("profile6.png")
+                .imageUrl("profile18.png")
                 .build();
 
         userRepository.save(user5);
@@ -766,7 +768,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("6"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 2, 14, 30, 0))
-                .imageUrl("profile17.png")
+                .imageUrl("profile3.png")
                 .build();
 
         userRepository.save(user6);
@@ -882,7 +884,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("7"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 9, 25, 14, 30, 0))
-                .imageUrl("profile19.png")
+                .imageUrl("profile17.png")
                 .build();
 
         userRepository.save(user7);
@@ -1027,7 +1029,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("8"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 4, 27, 14, 30, 0))
-                .imageUrl("profile18.png")
+                .imageUrl("profile4.png")
                 .build();
 
         userRepository.save(user8);
@@ -1143,7 +1145,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("9"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile11.png")
+                .imageUrl("profile16.png")
                 .build();
 
         userRepository.save(user9);
@@ -1750,7 +1752,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("515"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile1.png")
+                .imageUrl("profile15.png")
                 .build();
 
         userRepository.save(user7001);
@@ -1778,7 +1780,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("313"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile2.png")
+                .imageUrl("profile6.png")
                 .build();
 
         userRepository.save(user7002);
@@ -1806,7 +1808,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("1226"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile3.png")
+                .imageUrl("profile14.png")
                 .build();
 
         userRepository.save(user7003);
@@ -1863,7 +1865,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("11"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile8.png")
+                .imageUrl("profile13.png")
                 .build();
 
         userRepository.save(user11);
@@ -1889,7 +1891,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("12"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile9.png")
+                .imageUrl("profile8.png")
                 .build();
 
         userRepository.save(user12);
@@ -1915,7 +1917,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("13"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
-                .imageUrl("profile10.png")
+                .imageUrl("profile12.png")
                 .build();
 
         userRepository.save(user13);
@@ -1942,7 +1944,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("younghee"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile14.png")
+                .imageUrl("profile9.png")
                 .build();
 
         userRepository.save(user8000);
@@ -1968,7 +1970,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("sora"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile15.png")
+                .imageUrl("profile11.png")
                 .build();
 
         userRepository.save(user8001);
@@ -1995,7 +1997,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("kingpoleon"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile16.png")
+                .imageUrl("profile10.png")
                 .build();
 
         userRepository.save(user8002);
@@ -2021,7 +2023,7 @@ public class InitialDataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("moneychoi"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 8, 27, 14, 30, 0))
-                .imageUrl("profile17.png")
+                .imageUrl("profile2.png")
                 .build();
 
         userRepository.save(user8003);
@@ -2042,6 +2044,2475 @@ public class InitialDataLoader implements CommandLineRunner {
 
 
 
-    }
+        // 초기 데이터 생성 및 저장 (윤식)
+        // 모바일 게임
+        User user100 = User.builder()
+                .userName("김홍익")
+                .nickName("khi")
+                .email("khi@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("100"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile21.jpg")
+                .build();
 
+        userRepository.save(user100);
+
+        Portfolio user100Portfolio = Portfolio.builder()
+                .user(user100)
+                .web(0)
+                .app(3)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("유니티가 좋아요~")
+                .introduce("- 유니티와 C# 많이 다루어봤어요 \n- 쳐라쳐라 매우쳐라 게임 개발 \n- 3Cards 게임 개발")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user100Portfolio);
+
+        String initialEndDate100 = "2024-01-02";
+        DateTimeFormatter dateFormatter100 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate100 = LocalDate.parse(initialEndDate100, dateFormatter100);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts100 = Posts.builder()
+                .user(user100)
+                .postType(PostType.STUDY)
+                .title("저랑 같이 C# 알고리즘 공부하실분~")
+                .recruitmentCount(3)
+                .content("C#으로 코테 준비해요.\n초보도 환영\n백준 브론즈부터 시작할 예정이에요.")
+                .endDate(endDate100)
+                .build();
+
+        postsRepository.save(posts100);
+
+        Category category100 = Category.builder()
+                .posts(posts100)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category100.validateFieldCount();
+        categoryRepository.save(category100);
+
+        String initialEndDate101 = "2024-01-10";
+        DateTimeFormatter dateFormatter101 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate101 = LocalDate.parse(initialEndDate101, dateFormatter101);
+
+        Posts posts101 = Posts.builder()
+                .user(user100)
+                .postType(PostType.PROJECT)
+                .title("모바일 웹 게임 같이 만들어요~")
+                .recruitmentCount(4)
+                .content("언리얼 기초부터 같이 공부하실분 구해요.\n저도 언리얼은 아무것도 몰라요.")
+                .endDate(endDate101)
+                .build();
+
+        postsRepository.save(posts101);
+
+        Category category101 = Category.builder()
+                .posts(posts101)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category101.validateFieldCount();
+        categoryRepository.save(category101);
+
+
+
+        // 모바일 게임
+        User user102 = User.builder()
+                .userName("이폴가")
+                .nickName("폴가이즈")
+                .email("fallguys@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("102"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile22.jpg")
+                .build();
+
+        userRepository.save(user102);
+
+        Portfolio user102Portfolio = Portfolio.builder()
+                .user(user102)
+                .web(0)
+                .app(3)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("유니티가 좋아요~")
+                .introduce("- 유니티와 C# 많이 다루어봤어요 \n- 쳐라쳐라 매우쳐라 게임 개발 \n- 3Cards 게임 개발")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user100Portfolio);
+
+        String initialEndDate102 = "2024-01-02";
+        DateTimeFormatter dateFormatter102 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate102 = LocalDate.parse(initialEndDate102, dateFormatter102);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts102 = Posts.builder()
+                .user(user102)
+                .postType(PostType.STUDY)
+                .title("유니티 노베 같이 공부할 사람 구해용")
+                .recruitmentCount(4)
+                .content("유니티로 앱 게임 만들고 싶어요..\n근데 아직 유니티 공부 안해봣어요ㅠ\n저랑 같이 공부해요!!")
+                .endDate(endDate102)
+                .build();
+
+        postsRepository.save(posts102);
+
+        Category category102 = Category.builder()
+                .posts(posts102)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category102.validateFieldCount();
+        categoryRepository.save(category102);
+
+        String initialEndDate103 = "2024-01-17";
+        DateTimeFormatter dateFormatter103 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate103 = LocalDate.parse(initialEndDate103, dateFormatter103);
+
+        Posts posts103 = Posts.builder()
+                .user(user102)
+                .postType(PostType.PROJECT)
+                .title("모바일 웹 게임 같이 만들어요~")
+                .recruitmentCount(4)
+                .content("언리얼 기초부터 같이 공부하실분 구해요.\n저도 언리얼은 아무것도 몰라요.")
+                .endDate(endDate103)
+                .build();
+
+        postsRepository.save(posts103);
+
+        Category category103 = Category.builder()
+                .posts(posts103)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category103.validateFieldCount();
+        categoryRepository.save(category103);
+
+
+
+
+        // 웹
+        User user104 = User.builder()
+                .userName("박지락")
+                .nickName("봉골레러버")
+                .email("lovepasta@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("104"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile23.jpg")
+                .build();
+
+        userRepository.save(user104);
+
+        Portfolio user104Portfolio = Portfolio.builder()
+                .user(user104)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("백엔드 장인")
+                .introduce("- 각종 프로젝트 백엔드 다수 경험 \n- 궁금해? \n- 궁금하면 나한테 메일로..")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user104Portfolio);
+
+        String initialEndDate104 = "2024-02-22";
+        DateTimeFormatter dateFormatter104 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate104 = LocalDate.parse(initialEndDate104, dateFormatter104);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts104 = Posts.builder()
+                .user(user104)
+                .postType(PostType.STUDY)
+                .title("스프링 시큐리티 공부하실 분")
+                .recruitmentCount(4)
+                .content("백엔드 보안과 관련하여 공부합시다.\n잘 다루시는 분 환영\n못해도 괜찮음")
+                .endDate(endDate104)
+                .build();
+
+        postsRepository.save(posts104);
+
+        Category category104 = Category.builder()
+                .posts(posts104)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category104.validateFieldCount();
+        categoryRepository.save(category104);
+
+        String initialEndDate105 = "2024-02-07";
+        DateTimeFormatter dateFormatter105 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate105 = LocalDate.parse(initialEndDate105, dateFormatter105);
+
+        Posts posts105 = Posts.builder()
+                .user(user104)
+                .postType(PostType.PROJECT)
+                .title("스프링 시큐리티 활용한 웹 프로젝트 개발")
+                .recruitmentCount(5)
+                .content("스프링 시큐리티 잘 다루시는 백엔드 2명 구합니다.\nVue 잘 다루는 프론트엔드 2명 구합니다.")
+                .endDate(endDate105)
+                .build();
+
+        postsRepository.save(posts105);
+
+        Category category105 = Category.builder()
+                .posts(posts105)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category105.validateFieldCount();
+        categoryRepository.save(category105);
+
+
+
+
+        // 앱
+        User user106 = User.builder()
+                .userName("최사원")
+                .nickName("바다가좋아")
+                .email("temple@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("106"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile24.jpg")
+                .build();
+
+        userRepository.save(user106);
+
+        Portfolio user106Portfolio = Portfolio.builder()
+                .user(user106)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("앱 개발 전문가")
+                .introduce("- 앱 서버 구축 다수 경험 \n- 스프링 부트 사용 \n- 함께 플젝하실 프론트 찾아요~")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user106Portfolio);
+
+        String initialEndDate106 = "2024-03-10";
+        DateTimeFormatter dateFormatter106 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate106 = LocalDate.parse(initialEndDate106, dateFormatter106);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts106 = Posts.builder()
+                .user(user106)
+                .postType(PostType.STUDY)
+                .title("React Native")
+                .recruitmentCount(3)
+                .content("리액트 네이티브 스터디\n프론트는 저도 처음이에요\n")
+                .endDate(endDate106)
+                .build();
+
+        postsRepository.save(posts106);
+
+        Category category106 = Category.builder()
+                .posts(posts106)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category106.validateFieldCount();
+        categoryRepository.save(category106);
+
+        String initialEndDate107 = "2024-01-06";
+        DateTimeFormatter dateFormatter107 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate107 = LocalDate.parse(initialEndDate107, dateFormatter107);
+
+        Posts posts107 = Posts.builder()
+                .user(user106)
+                .postType(PostType.PROJECT)
+                .title("JWT 써서 로그인 구현한 웹")
+                .recruitmentCount(4)
+                .content("node js, express 사용합니다.\n 백엔드 1명 구합니다.\nJavaScript 쓸 줄 아시는 프론트엔드 2명 구합니다.")
+                .endDate(endDate107)
+                .build();
+
+        postsRepository.save(posts107);
+
+        Category category107 = Category.builder()
+                .posts(posts107)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category107.validateFieldCount();
+        categoryRepository.save(category107);
+
+
+
+
+        // 웹
+        User user108 = User.builder()
+                .userName("강해운")
+                .nickName("해운대")
+                .email("haeundae@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("108"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile25.jpg")
+                .build();
+
+        userRepository.save(user108);
+
+        Portfolio user108Portfolio = Portfolio.builder()
+                .user(user108)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("자바스크립트 전문가")
+                .introduce("- 프론트엔드 구축 다수 경험 \n- 자바스크립트 사용 \n- 함께 플젝하실 백 찾아요~")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user108Portfolio);
+
+        String initialEndDate108 = "2024-02-11";
+        DateTimeFormatter dateFormatter108 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate108 = LocalDate.parse(initialEndDate108, dateFormatter108);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts108 = Posts.builder()
+                .user(user106)
+                .postType(PostType.STUDY)
+                .title("자스자스")
+                .recruitmentCount(4)
+                .content("자바스크립트 코테 준비\n프론트 하시는 분들은 저와 함께 스터디하시면 도움 많이 될 거에요!!\n")
+                .endDate(endDate108)
+                .build();
+
+        postsRepository.save(posts108);
+
+        Category category108 = Category.builder()
+                .posts(posts108)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category108.validateFieldCount();
+        categoryRepository.save(category108);
+
+        String initialEndDate109 = "2024-01-16";
+        DateTimeFormatter dateFormatter109 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate109 = LocalDate.parse(initialEndDate109, dateFormatter109);
+
+        Posts posts109 = Posts.builder()
+                .user(user108)
+                .postType(PostType.PROJECT)
+                .title("프론트는 자바스크립트 사용. 프로젝트 같이 할 백엔드 개발자 구해요~")
+                .recruitmentCount(3)
+                .content("자바스크립트 사용합니다.\n백엔드 1명 구합니다.\n자바스크립트 장인 프론트엔드도 1명 구합니다.")
+                .endDate(endDate109)
+                .build();
+
+        postsRepository.save(posts109);
+
+        Category category109 = Category.builder()
+                .posts(posts109)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category109.validateFieldCount();
+        categoryRepository.save(category109);
+
+
+
+
+        // 웹, AI
+        User user110 = User.builder()
+                .userName("나하늘")
+                .nickName("밤하늘의풍경")
+                .email("sky@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("110"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile26.jpg")
+                .build();
+
+        userRepository.save(user110);
+
+        Portfolio user110Portfolio = Portfolio.builder()
+                .user(user110)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("텐서플로우를 활용한 딥러닝 마스터")
+                .introduce("- 파이썬 사용합니다. \n- 장고를 활용하여 백엔드 구축합니다. \n- 딥러닝 많이 해봤어요")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user110Portfolio);
+
+        String initialEndDate110 = "2024-03-03";
+        DateTimeFormatter dateFormatter110 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate110 = LocalDate.parse(initialEndDate110, dateFormatter110);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts110 = Posts.builder()
+                .user(user110)
+                .postType(PostType.STUDY)
+                .title("텐서플로")
+                .recruitmentCount(3)
+                .content("AI 처음 접하시는 분 계신가요?\n제가 친절하게 알려드립니다.\n같이 파이썬 공부해요~")
+                .endDate(endDate110)
+                .build();
+
+        postsRepository.save(posts110);
+
+        Category category110 = Category.builder()
+                .posts(posts110)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category110.validateFieldCount();
+        categoryRepository.save(category110);
+
+        String initialEndDate111 = "2024-01-11";
+        DateTimeFormatter dateFormatter111 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate111 = LocalDate.parse(initialEndDate111, dateFormatter111);
+
+        Posts posts111 = Posts.builder()
+                .user(user110)
+                .postType(PostType.PROJECT)
+                .title("Tensorflow를 활용한 서버 개발")
+                .recruitmentCount(3)
+                .content("딥러닝을 활용한 토이 플젝하실 분 구합니다.\n백엔드 2명 구해요.\n코딩 감자도 환영.")
+                .endDate(endDate111)
+                .build();
+
+        postsRepository.save(posts111);
+
+        Category category111 = Category.builder()
+                .posts(posts111)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category111.validateFieldCount();
+        categoryRepository.save(category111);
+
+
+
+
+        // 앱, AI
+        User user112 = User.builder()
+                .userName("문사막")
+                .nickName("이카사막")
+                .email("desert@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("112"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile27.jpg")
+                .build();
+
+        userRepository.save(user112);
+
+        Portfolio user112Portfolio = Portfolio.builder()
+                .user(user112)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("파이토치 쓸 줄 아는 백엔드 개발자")
+                .introduce("- 파이썬이 주력 언어입니다. \n- 장고로 백엔드 구축합니다. \n- 파이토치 이제 막 배우기 시작했어요")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user112Portfolio);
+
+        String initialEndDate112 = "2024-01-01";
+        DateTimeFormatter dateFormatter112 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate112 = LocalDate.parse(initialEndDate112, dateFormatter112);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts112 = Posts.builder()
+                .user(user112)
+                .postType(PostType.STUDY)
+                .title("파이토치")
+                .recruitmentCount(3)
+                .content("파이토치 개초보와 함깨 하는 파이토치 공부\n잘 하는 분 환영\n못하는 분도 환영")
+                .endDate(endDate112)
+                .build();
+
+        postsRepository.save(posts112);
+
+        Category category112 = Category.builder()
+                .posts(posts112)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category112.validateFieldCount();
+        categoryRepository.save(category112);
+
+        String initialEndDate113 = "2024-01-21";
+        DateTimeFormatter dateFormatter113 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate113 = LocalDate.parse(initialEndDate113, dateFormatter113);
+
+        Posts posts113 = Posts.builder()
+                .user(user112)
+                .postType(PostType.PROJECT)
+                .title("파이토치를 활용한 서버 개발")
+                .recruitmentCount(4)
+                .content("파이토치를 사용한 딥러닝으로 졸프 같이 하실 분 구합니다.\n파이토치 쓰시는 백엔드 개발자 1명, React Native쓰시는 프론트엔드 개발자 2명 구해요.\n")
+                .endDate(endDate113)
+                .build();
+
+        postsRepository.save(posts113);
+
+        Category category113 = Category.builder()
+                .posts(posts113)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category113.validateFieldCount();
+        categoryRepository.save(category113);
+
+
+
+
+        // 게임, 앱, AI
+        User user114 = User.builder()
+                .userName("배국밥")
+                .nickName("수운대애구욱")
+                .email("gukbabchoong@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("114"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile28.jpg")
+                .build();
+
+        userRepository.save(user114);
+
+        Portfolio user114Portfolio = Portfolio.builder()
+                .user(user114)
+                .web(0)
+                .app(3)
+                .game(4)
+                .ai(2)
+                .shortIntroduce("모바일 게임 개발자")
+                .introduce("- 유니티로 모바일 게임 제작합니다. \n- AI에는 조금 관심 있어요. \n- 파이토치나 텐서플로 둘 다 관심 있어요.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user114Portfolio);
+
+        String initialEndDate114 = "2024-01-01";
+        DateTimeFormatter dateFormatter114 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate114 = LocalDate.parse(initialEndDate114, dateFormatter114);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts114 = Posts.builder()
+                .user(user114)
+                .postType(PostType.STUDY)
+                .title("Unity 공부 같이 해여")
+                .recruitmentCount(2)
+                .content("Unity 스터디 같이 해보고, 마음 맞으면 졸프도 같이 하실 분 괌\n")
+                .endDate(endDate114)
+                .build();
+
+        postsRepository.save(posts114);
+
+        Category category114 = Category.builder()
+                .posts(posts114)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category114.validateFieldCount();
+        categoryRepository.save(category114);
+
+        String initialEndDate115 = "2024-01-21";
+        DateTimeFormatter dateFormatter115 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate115 = LocalDate.parse(initialEndDate115, dateFormatter115);
+
+        Posts posts115 = Posts.builder()
+                .user(user114)
+                .postType(PostType.PROJECT)
+                .title("디펜스 게임 만들어여")
+                .recruitmentCount(5)
+                .content("인공지능을 활용한 모바일 디펜스 게임 구상 완료됐어요.\n이미 기획, 사운드, 그래픽 모두 모였고, 개발자만 더 구해봅니다..\n")
+                .endDate(endDate115)
+                .build();
+
+        postsRepository.save(posts115);
+
+        Category category115 = Category.builder()
+                .posts(posts115)
+                .web(false)
+                .app(false)
+                .game(true)
+                .ai(true)
+                .build();
+
+        category115.validateFieldCount();
+        categoryRepository.save(category115);
+
+
+
+
+        // 게임, 앱
+        User user116 = User.builder()
+                .userName("Debruyne")
+                .nickName("Foreigner")
+                .email("foreigner@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("116"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile29.jpg")
+                .build();
+
+        userRepository.save(user116);
+
+        Portfolio user116Portfolio = Portfolio.builder()
+                .user(user116)
+                .web(0)
+                .app(3)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("Mobile Game Planner")
+                .introduce("- I'm a Mobile Game Planner \n- I'm looking for a Back/Front Developer \n")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user116Portfolio);
+
+        String initialEndDate116 = "2024-02-27";
+        DateTimeFormatter dateFormatter116 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate116 = LocalDate.parse(initialEndDate116, dateFormatter116);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts116 = Posts.builder()
+                .user(user116)
+                .postType(PostType.STUDY)
+                .title("Let's study how to make game")
+                .recruitmentCount(3)
+                .content("I'm a mobile game planner\nIf you are interested in mobile game planning, let's study together.")
+                .endDate(endDate116)
+                .build();
+
+        postsRepository.save(posts116);
+
+        Category category116 = Category.builder()
+                .posts(posts116)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category116.validateFieldCount();
+        categoryRepository.save(category116);
+
+        String initialEndDate117 = "2024-01-19";
+        DateTimeFormatter dateFormatter117 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate117 = LocalDate.parse(initialEndDate117, dateFormatter117);
+
+        Posts posts117 = Posts.builder()
+                .user(user116)
+                .postType(PostType.PROJECT)
+                .title("Let's make an app game")
+                .recruitmentCount(3)
+                .content("I'm a mobile game planner\nIf you are interested in developing mobile games, let's make an app game together.\n")
+                .endDate(endDate117)
+                .build();
+
+        postsRepository.save(posts117);
+
+        Category category117 = Category.builder()
+                .posts(posts117)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category117.validateFieldCount();
+        categoryRepository.save(category117);
+
+
+
+
+        // 웹
+        User user118 = User.builder()
+                .userName("kevin")
+                .nickName("Airplane")
+                .email("airplane@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("118"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile30.jpg")
+                .build();
+
+        userRepository.save(user118);
+
+        Portfolio user118Portfolio = Portfolio.builder()
+                .user(user118)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("Web Service Developer")
+                .introduce("- Hi there!\n- I'm a Web Service Developer \n- I'm interested in developing a backend using a spring boot.\n And I'm also interested in developing a backend using a node js.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user118Portfolio);
+
+        String initialEndDate118 = "2024-01-22";
+        DateTimeFormatter dateFormatter118 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate118 = LocalDate.parse(initialEndDate118, dateFormatter118);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts118 = Posts.builder()
+                .user(user118)
+                .postType(PostType.STUDY)
+                .title("Let's study Spring Boot")
+                .recruitmentCount(4)
+                .content("I'm a Web Service Developer\nIf you are interested in developing a backend server, Join us!!")
+                .endDate(endDate118)
+                .build();
+
+        postsRepository.save(posts118);
+
+        Category category118 = Category.builder()
+                .posts(posts118)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category118.validateFieldCount();
+        categoryRepository.save(category118);
+
+        String initialEndDate119 = "2024-01-06";
+        DateTimeFormatter dateFormatter119 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate119 = LocalDate.parse(initialEndDate119, dateFormatter119);
+
+        Posts posts119 = Posts.builder()
+                .user(user118)
+                .postType(PostType.PROJECT)
+                .title("Let's make an app game")
+                .recruitmentCount(4)
+                .content("I'm a Web Service Developer\nLet's make a web using react and spring boot!\n")
+                .endDate(endDate119)
+                .build();
+
+        postsRepository.save(posts119);
+
+        Category category119 = Category.builder()
+                .posts(posts119)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category119.validateFieldCount();
+        categoryRepository.save(category119);
+
+
+
+
+        // 앱
+        User user120 = User.builder()
+                .userName("고한강")
+                .nickName("HanRiver")
+                .email("hanriver@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("120"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile31.jpg")
+                .build();
+
+        userRepository.save(user120);
+
+        Portfolio user120Portfolio = Portfolio.builder()
+                .user(user120)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("모바일 앱 개발자")
+                .introduce("- 안녕하세요!\n- 모바일 어플리케이션 개발자, 고한강입니다.\n- 아직은 개발이 서툴지만, 차근차근 배우고 있어요.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user120Portfolio);
+
+        String initialEndDate120 = "2024-01-09";
+        DateTimeFormatter dateFormatter120 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate120 = LocalDate.parse(initialEndDate120, dateFormatter120);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts120 = Posts.builder()
+                .user(user120)
+                .postType(PostType.STUDY)
+                .title("앱개발 초짜")
+                .recruitmentCount(4)
+                .content("앱 개발 처음 공부하는데..\n어디서부터 어떻게 해야할 지 막막하네요..\n같이 스터디하실 분 계신가요??")
+                .endDate(endDate120)
+                .build();
+
+        postsRepository.save(posts120);
+
+        Category category120 = Category.builder()
+                .posts(posts120)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category120.validateFieldCount();
+        categoryRepository.save(category120);
+
+        String initialEndDate121 = "2024-01-06";
+        DateTimeFormatter dateFormatter121 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate121 = LocalDate.parse(initialEndDate121, dateFormatter121);
+
+        Posts posts121 = Posts.builder()
+                .user(user120)
+                .postType(PostType.PROJECT)
+                .title("앱 프로젝트 만드실 분~")
+                .recruitmentCount(4)
+                .content("졸프 같이할 사람 찾아요\n아직 개발이 서툴다면, 스터디 먼저 같이 해봐요!\n")
+                .endDate(endDate121)
+                .build();
+
+        postsRepository.save(posts121);
+
+        Category category121 = Category.builder()
+                .posts(posts121)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category121.validateFieldCount();
+        categoryRepository.save(category121);
+
+
+
+
+        // 앱
+        User user122 = User.builder()
+                .userName("장팔")
+                .nickName("팔이긴사나이")
+                .email("longarm@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("122"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile32.jpg")
+                .build();
+
+        userRepository.save(user122);
+
+        Portfolio user122Portfolio = Portfolio.builder()
+                .user(user122)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("앱등이")
+                .introduce("- 앱 개발 좋아!\n- 애플 좋아!\n- 깔끔한 디자인!")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user122Portfolio);
+
+        String initialEndDate122 = "2024-02-19";
+        DateTimeFormatter dateFormatter122 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate122 = LocalDate.parse(initialEndDate122, dateFormatter122);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts122 = Posts.builder()
+                .user(user122)
+                .postType(PostType.STUDY)
+                .title("애플 디자인 공부")
+                .recruitmentCount(4)
+                .content("애플처럼 깔끔한 디자인 만드는 거 공부하실 분\n프론트엔드 개발자들 환영\n디자인 관심있는 분 모두 환영")
+                .endDate(endDate122)
+                .build();
+
+        postsRepository.save(posts122);
+
+        Category category122 = Category.builder()
+                .posts(posts122)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category122.validateFieldCount();
+        categoryRepository.save(category122);
+
+        String initialEndDate123 = "2024-03-03";
+        DateTimeFormatter dateFormatter123 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate123 = LocalDate.parse(initialEndDate123, dateFormatter123);
+
+        Posts posts123 = Posts.builder()
+                .user(user122)
+                .postType(PostType.PROJECT)
+                .title("애플처럼 깔끔한 디자인으로 프론트 구축합니다.")
+                .recruitmentCount(3)
+                .content("프로젝트는 저 혼자 독박쓸거에요\n스프링 부트, 노드, 익스프레스 등 백엔드 개발자 2명 구합니다.\n님만 오면 바로 시작.")
+                .endDate(endDate123)
+                .build();
+
+        postsRepository.save(posts123);
+
+        Category category123 = Category.builder()
+                .posts(posts123)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category123.validateFieldCount();
+        categoryRepository.save(category123);
+
+
+
+
+        // 게임, 웹
+        User user124 = User.builder()
+                .userName("정야근")
+                .nickName("혼모노웹개발자")
+                .email("honmono@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("124"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile33.jpg")
+                .build();
+
+        userRepository.save(user124);
+
+        Portfolio user124Portfolio = Portfolio.builder()
+                .user(user124)
+                .web(3)
+                .app(0)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("게임둥이")
+                .introduce("- 언리얼 원툴!\n- 유니티 몰라!\n- 웹 게임 만들자!")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user124Portfolio);
+
+        String initialEndDate124 = "2024-03-29";
+        DateTimeFormatter dateFormatter124 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate124 = LocalDate.parse(initialEndDate124, dateFormatter124);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts124 = Posts.builder()
+                .user(user124)
+                .postType(PostType.STUDY)
+                .title("언리얼 웹 스터디")
+                .recruitmentCount(3)
+                .content("언리얼 배울 곳이 마땅히 없네요\n동아리도 없는거 같고..\n저랑 으쌰으쌰 해봐요")
+                .endDate(endDate124)
+                .build();
+
+        postsRepository.save(posts124);
+
+        Category category124 = Category.builder()
+                .posts(posts124)
+                .web(true)
+                .app(false)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category124.validateFieldCount();
+        categoryRepository.save(category124);
+
+        String initialEndDate125 = "2024-01-03";
+        DateTimeFormatter dateFormatter125 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate125 = LocalDate.parse(initialEndDate125, dateFormatter125);
+
+        Posts posts125 = Posts.builder()
+                .user(user124)
+                .postType(PostType.PROJECT)
+                .title("언리얼로 메이플스토리같은 RPG 만들자!")
+                .recruitmentCount(4)
+                .content("졸업프로젝트로 큰 규모로 RPG 게임 개발해봅시다.\n언리얼 장인 세 분 모십니다.\n초 고퀄 게임 Coming soon...")
+                .endDate(endDate125)
+                .build();
+
+        postsRepository.save(posts125);
+
+        Category category125 = Category.builder()
+                .posts(posts125)
+                .web(true)
+                .app(false)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category125.validateFieldCount();
+        categoryRepository.save(category125);
+
+
+
+
+        // 웹, AI
+        User user126 = User.builder()
+                .userName("하냥이")
+                .nickName("야옹이집사")
+                .email("catmom@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("126"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile34.jpg")
+                .build();
+
+        userRepository.save(user126);
+
+        Portfolio user126Portfolio = Portfolio.builder()
+                .user(user126)
+                .web(4)
+                .app(0)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("고양이 집사")
+                .introduce("- 웹 개발에 관심 있어용\n- 인공지능에도 관심있어용\n- 고양이에도 관심있어용")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user126Portfolio);
+
+        String initialEndDate126 = "2024-02-14";
+        DateTimeFormatter dateFormatter126 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate126 = LocalDate.parse(initialEndDate126, dateFormatter126);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts126 = Posts.builder()
+                .user(user126)
+                .postType(PostType.STUDY)
+                .title("인공지능 스터디")
+                .recruitmentCount(3)
+                .content("인공지능 어디서부터 어떻게 시작해야 하죠?\n파이토치든 텐서플로든 함께 공부해요~\n")
+                .endDate(endDate126)
+                .build();
+
+        postsRepository.save(posts126);
+
+        Category category126 = Category.builder()
+                .posts(posts126)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category126.validateFieldCount();
+        categoryRepository.save(category126);
+
+        String initialEndDate127 = "2024-01-03";
+        DateTimeFormatter dateFormatter127 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate127 = LocalDate.parse(initialEndDate127, dateFormatter127);
+
+        Posts posts127 = Posts.builder()
+                .user(user126)
+                .postType(PostType.PROJECT)
+                .title("인공지능으로 추천기능 구현한 플젝")
+                .recruitmentCount(4)
+                .content("AWS 활용해서 배포까지 하는 웹 서비스 만들어봐요~\n인공지능 쓸거에요!\n스프링 부트와 장고 중에서 백엔드 고민 중..\nTypeScript 가능한 프론트 개발자도 모셔요!")
+                .endDate(endDate127)
+                .build();
+
+        postsRepository.save(posts127);
+
+        Category category127 = Category.builder()
+                .posts(posts127)
+                .web(true)
+                .app(false)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category127.validateFieldCount();
+        categoryRepository.save(category127);
+
+
+
+
+        // 앱, AI
+        User user128 = User.builder()
+                .userName("한강쥐")
+                .nickName("개팔자상팔자개발자")
+                .email("dogmom@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("128"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile35.jpg")
+                .build();
+
+        userRepository.save(user128);
+
+        Portfolio user128Portfolio = Portfolio.builder()
+                .user(user128)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("개팔자는 상팔자. 개발자도 상팔자.")
+                .introduce("- 앱 개발에 관심 있어용\n- 인공지능에도 관심있어용\n- 강아지에도 관심있어용")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user128Portfolio);
+
+        String initialEndDate128 = "2024-02-14";
+        DateTimeFormatter dateFormatter128 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate128 = LocalDate.parse(initialEndDate128, dateFormatter128);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts128 = Posts.builder()
+                .user(user128)
+                .postType(PostType.STUDY)
+                .title("앱 개발 스터디")
+                .recruitmentCount(3)
+                .content("앱에 관심 있으신 분\n어느 정도 앱 개발을 해보신 분\n프론트엔드에 관심있는 분\n백엔드에 관심있는 분")
+                .endDate(endDate128)
+                .build();
+
+        postsRepository.save(posts128);
+
+        Category category128 = Category.builder()
+                .posts(posts128)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category128.validateFieldCount();
+        categoryRepository.save(category128);
+
+        String initialEndDate129 = "2024-02-04";
+        DateTimeFormatter dateFormatter129 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate129 = LocalDate.parse(initialEndDate129, dateFormatter129);
+
+        Posts posts129 = Posts.builder()
+                .user(user128)
+                .postType(PostType.PROJECT)
+                .title("인공지능으로 앱 플젝")
+                .recruitmentCount(3)
+                .content("깃허브 활용해서 배포까지 하는 앱 서비스 만들어봐요~\n졸업 프로젝트 용이에요!\n스프링 부트로 백서버 구축합시다.\nSwift 쓸 줄 아시는 분도 구합니당!")
+                .endDate(endDate129)
+                .build();
+
+        postsRepository.save(posts129);
+
+        Category category129 = Category.builder()
+                .posts(posts129)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category129.validateFieldCount();
+        categoryRepository.save(category129);
+
+
+
+
+
+
+
+
+
+
+        // 초기 데이터 생성 및 저장 (시홍)
+        User user200 = User.builder()
+                .userName("김성준")
+                .nickName("sungjoon")
+                .email("sungjoon@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("200"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile36.jpg")
+                .build();
+
+        userRepository.save(user200);
+
+        Portfolio user200Portfolio = Portfolio.builder()
+                .user(user200)
+                .web(4)
+                .app(2)
+                .game(1)
+                .ai(3)
+                .shortIntroduce("플젝 잘하고싶다....")
+                .introduce("- 스프링 관련 웹 개발 경험 \n- NodeJs, React로 풀스택 개발 경험 \n- 현재 jwt 관련해 공부 중")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user200Portfolio);
+
+        String initialEndDate200 = "2023-12-02";
+        DateTimeFormatter dateFormatter200 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate200 = LocalDate.parse(initialEndDate200, dateFormatter200);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts130 = Posts.builder()
+                .user(user200)
+                .postType(PostType.STUDY)
+                .title("c++로 코테 준비하실 분 저랑 같이 백준 공부해요")
+                .recruitmentCount(4)
+                .content("C++로 코테 제대로 하실 분만 모십니다.\n주 1~2회 오프라인으로도 만나고 싶습니다.\n각종 부트캠프도 같이 준비하면 좋을 것 같아요")
+                .endDate(endDate200)
+                .build();
+
+        postsRepository.save(posts130);
+
+        Category category130 = Category.builder()
+                .posts(posts130)
+                .web(false)
+                .app(false)
+                .game(true)
+                .ai(true)
+                .build();
+
+        category130.validateFieldCount();
+        categoryRepository.save(category130);
+
+        String initialEndDate201 = "2023-12-10";
+        DateTimeFormatter dateFormatter201 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate201 = LocalDate.parse(initialEndDate201, dateFormatter201);
+
+        Posts posts131 = Posts.builder()
+                .user(user200)
+                .postType(PostType.PROJECT)
+                .title("망고플레이트 대체할 홍대맛집 사이트 만들려고 합니다~")
+                .recruitmentCount(4)
+                .content("Spring으로 백엔드 구축 예정이고,\n프런트는 react 가능하신 분이 지원하셨으면 좋겠습니다")
+                .endDate(endDate201)
+                .build();
+
+        postsRepository.save(posts131);
+
+        Category category131 = Category.builder()
+                .posts(posts131)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category131.validateFieldCount();
+        categoryRepository.save(category131);
+
+
+
+        // 알림 앱 개발
+        User user201 = User.builder()
+                .userName("이알람")
+                .nickName("alimi")
+                .email("alimi@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("201"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile37.jpg")
+                .build();
+
+        userRepository.save(user201);
+
+        Portfolio user201Portfolio = Portfolio.builder()
+                .user(user201)
+                .web(3)
+                .app(4)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("간단하지만, 있으면 좋을 앱들을 만드는 데에 관심이 많습니다.~")
+                .introduce("- Kotlin 사용 경험 다수 \n- React Native 활용 경험 \n- 메신저 앱 개발 경험 보유")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user201Portfolio);
+
+        String initialEndDate202 = "2024-01-12";
+        DateTimeFormatter dateFormatter202 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate202 = LocalDate.parse(initialEndDate202, dateFormatter202);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts132 = Posts.builder()
+                .user(user201)
+                .postType(PostType.STUDY)
+                .title("앱 개발에 관련된 인프런 강좌 공구해서 같이 공부할 분 모집합니다")
+                .recruitmentCount(3)
+                .content("Kotlin과 Android Studio를 활용한 강의가 좋을 것 같습니다.\n저도 아직 초보라 같이 공부하시면서 성장하실 분이면 좋아요\n제 이메일로 연락 주세요!")
+                .endDate(endDate202)
+                .build();
+
+        postsRepository.save(posts132);
+
+        Category category132 = Category.builder()
+                .posts(posts132)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category132.validateFieldCount();
+        categoryRepository.save(category132);
+
+        String initialEndDate203 = "2024-01-17";
+        DateTimeFormatter dateFormatter203 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate203 = LocalDate.parse(initialEndDate203, dateFormatter203);
+
+        Posts posts133 = Posts.builder()
+                .user(user201)
+                .postType(PostType.PROJECT)
+                .title("학원가에서 사용할 커스터마이징 알람 앱 같이 만들분 구해요")
+                .recruitmentCount(3)
+                .content("Swift 사용가능하신 분이면 진짜 꼭 연락주세요.... \n저도 현재 공부중인데, 아직 갈 길이 머네요! 한 2달 안에 만드는 걸 목표로 하고 있습니다")
+                .endDate(endDate203)
+                .build();
+
+        postsRepository.save(posts133);
+
+        Category category133 = Category.builder()
+                .posts(posts133)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category133.validateFieldCount();
+        categoryRepository.save(category133);
+
+
+
+
+        // 웹, 앱, ai, 게임
+        User user202 = User.builder()
+                .userName("송하나")
+                .nickName("oneSong")
+                .email("oneSong@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("202"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile38.jpg")
+                .build();
+
+        userRepository.save(user202);
+
+        Portfolio user202Portfolio = Portfolio.builder()
+                .user(user202)
+                .web(4)
+                .app(3)
+                .game(1)
+                .ai(2)
+                .shortIntroduce("프론트만 팠습니다. 믿어주세요.")
+                .introduce("- 각종 프로젝트 프론트 다수 경험 \n- ux,ui관련 공부도 병행 줌 \n- 코테는 python으로 합니다.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user202Portfolio);
+
+        String initialEndDate204 = "2024-02-22";
+        DateTimeFormatter dateFormatter204 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate204 = LocalDate.parse(initialEndDate204, dateFormatter204);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts134 = Posts.builder()
+                .user(user202)
+                .postType(PostType.STUDY)
+                .title("파이썬으로 프로그래머스 문풀 같이 하실분")
+                .recruitmentCount(3)
+                .content("프로그래머스 lv3,4 같이 도전하면서 푸실 분\n꾸준히 하시는 분만 연락주세요\n야생형 개발자 환영")
+                .endDate(endDate204)
+                .build();
+
+        postsRepository.save(posts134);
+
+        Category category134 = Category.builder()
+                .posts(posts134)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category134.validateFieldCount();
+        categoryRepository.save(category134);
+
+        String initialEndDate205 = "2024-02-07";
+        DateTimeFormatter dateFormatter205 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate205 = LocalDate.parse(initialEndDate205, dateFormatter205);
+
+        Posts posts135 = Posts.builder()
+                .user(user202)
+                .postType(PostType.PROJECT)
+                .title("홍대생을 위한 취업 정보 알리미 사이트 제작")
+                .recruitmentCount(5)
+                .content("노드js 잘 다루시는 백엔드 3명 구합니다.\nFigma, React, Typescript 잘 다루는 프론트엔드 2명 구합니다.")
+                .endDate(endDate205)
+                .build();
+
+        postsRepository.save(posts135);
+
+        Category category135 = Category.builder()
+                .posts(posts135)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category135.validateFieldCount();
+        categoryRepository.save(category135);
+
+
+
+
+        // 앱, ai
+        User user203 = User.builder()
+                .userName("강철민")
+                .nickName("fubao")
+                .email("fubao@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("203"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile39.jpg")
+                .build();
+
+        userRepository.save(user203);
+
+        Portfolio user203Portfolio = Portfolio.builder()
+                .user(user203)
+                .web(1)
+                .app(4)
+                .game(2)
+                .ai(3)
+                .shortIntroduce("동물과 앱 공부를 사랑하는 예비 개발자 fubao입니다")
+                .introduce("- '오늘의 동물원' 앱 제작 \n- '동물 먹이도감' 앱 제작 \n- 풀스택 지망")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user203Portfolio);
+
+        String initialEndDate206 = "2024-01-10";
+        DateTimeFormatter dateFormatter206 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate206 = LocalDate.parse(initialEndDate206, dateFormatter206);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts136 = Posts.builder()
+                .user(user203)
+                .postType(PostType.STUDY)
+                .title("figma 관련해서 가르쳐주실 분 모십니다.")
+                .recruitmentCount(2)
+                .content("피그마 잘 아시는 분 모십니다. 당장 프로젝트에 써야하는데, 잘 몰라서...\n이메일로 먼전 연락주세요\n")
+                .endDate(endDate206)
+                .build();
+
+        postsRepository.save(posts136);
+
+        Category category136 = Category.builder()
+                .posts(posts136)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category136.validateFieldCount();
+        categoryRepository.save(category136);
+
+        String initialEndDate207 = "2024-01-06";
+        DateTimeFormatter dateFormatter207 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate207 = LocalDate.parse(initialEndDate207, dateFormatter207);
+
+        Posts posts137 = Posts.builder()
+                .user(user203)
+                .postType(PostType.PROJECT)
+                .title("동물 심리 분석 측정 앱")
+                .recruitmentCount(4)
+                .content("동물들의 얼굴 사진을 보고, 표정을 기반으로 동물의 심리 상태 및 감정을 분석해주는 앱을 제장하려고 합니다.\n 풀스택 가능하신 분 3분 모집합니다.\n")
+                .endDate(endDate207)
+                .build();
+
+        postsRepository.save(posts137);
+
+        Category category137 = Category.builder()
+                .posts(posts137)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category137.validateFieldCount();
+        categoryRepository.save(category137);
+
+
+
+
+        // 게임, 앱
+        User user204 = User.builder()
+                .userName("김뮤즈")
+                .nickName("bandBoy")
+                .email("bandBoy@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("204"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile40.jpg")
+                .build();
+
+        userRepository.save(user204);
+
+        Portfolio user204Portfolio = Portfolio.builder()
+                .user(user204)
+                .web(0)
+                .app(3)
+                .game(4)
+                .ai(0)
+                .shortIntroduce("게임이랑 앱에 관심있는 예비 개발자입니다. 잘 부탁드려요!")
+                .introduce("- 앱 관련 공부는 했습니다만, 구체적인 프로젝트 경험은 아직 없습니다.\n- 저랑 관심사 비슷하신 분 같이 공부하면서 성장해요!")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user204Portfolio);
+
+        String initialEndDate208 = "2024-01-11";
+        DateTimeFormatter dateFormatter208 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate208 = LocalDate.parse(initialEndDate208, dateFormatter208);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts138 = Posts.builder()
+                .user(user204)
+                .postType(PostType.STUDY)
+                .title("유니티 스터디 모집")
+                .recruitmentCount(4)
+                .content("유니티 처음 같이 배우실 분 모집해요\n인프런 강의 보고 각자 공부하고, 서로 피드백 주는 방식으로 하면 좋을 것 같습니다!!\n")
+                .endDate(endDate208)
+                .build();
+
+        postsRepository.save(posts138);
+
+        Category category138 = Category.builder()
+                .posts(posts138)
+                .web(false)
+                .app(false)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category138.validateFieldCount();
+        categoryRepository.save(category138);
+
+        String initialEndDate209 = "2024-01-16";
+        DateTimeFormatter dateFormatter209 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate209 = LocalDate.parse(initialEndDate209, dateFormatter209);
+
+        Posts posts139 = Posts.builder()
+                .user(user204)
+                .postType(PostType.PROJECT)
+                .title("리듬 게임 앱 만드실 분 구합니다")
+                .recruitmentCount(3)
+                .content("리듬스타에서 갑자기 영감 받아서 글 올립니다.\n게임 개발 경험 있으시고, 음악 관련 기본 지식 있으신 분이면 좋을 것 같아요.\n가능하면, 유니티 사용해보고자 합니다.")
+                .endDate(endDate209)
+                .build();
+
+        postsRepository.save(posts139);
+
+        Category category139 = Category.builder()
+                .posts(posts139)
+                .web(false)
+                .app(true)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category139.validateFieldCount();
+        categoryRepository.save(category139);
+
+
+
+
+        // 웹, 게임, ai, 앱
+        User user205 = User.builder()
+                .userName("정한별")
+                .nickName("takoyam")
+                .email("takoyam@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("205"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile41.jpg")
+                .build();
+
+        userRepository.save(user205);
+
+        Portfolio user205Portfolio = Portfolio.builder()
+                .user(user205)
+                .web(4)
+                .app(2)
+                .game(3)
+                .ai(1)
+                .shortIntroduce("게임을 좋아하지만, 직무는 웹쪽 희망합니다")
+                .introduce("- 코테 언어는 파이썬입니다. \n- 백엔드 공부는 김영한 커리 타면서 공부해보고 있어요. \n- 빠른 시일 내에 프로젝트 해보고 싶습니다.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user205Portfolio);
+
+        String initialEndDate210 = "2024-01-03";
+        DateTimeFormatter dateFormatter210 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate210 = LocalDate.parse(initialEndDate210, dateFormatter210);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts140 = Posts.builder()
+                .user(user205)
+                .postType(PostType.STUDY)
+                .title("spring jpa 활용")
+                .recruitmentCount(3)
+                .content("김영한 커리 타시는 분들 중에, 각자 서로 과제 내주고 피드백 주는 스터디 하실 분 있나요?\n아직 실력이 부족해서, 그런 방식으로 공부하면 좋을 것 같습니다.\n")
+                .endDate(endDate210)
+                .build();
+
+        postsRepository.save(posts140);
+
+        Category category140 = Category.builder()
+                .posts(posts140)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category140.validateFieldCount();
+        categoryRepository.save(category140);
+
+        String initialEndDate211 = "2024-01-11";
+        DateTimeFormatter dateFormatter211 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate211 = LocalDate.parse(initialEndDate211, dateFormatter211);
+
+        Posts posts141 = Posts.builder()
+                .user(user205)
+                .postType(PostType.PROJECT)
+                .title("홍익대 중고 거래 장터 사이트 같이 제작하실 분")
+                .recruitmentCount(3)
+                .content("홍익대 내에서 사용될 중고 거래 장터 사이트 같이 제작하실 분 모집합니다.\n백엔드 1, 프론트 1명 구해요.\n아마 Spring / Vue 사용할 것 같습니다")
+                .endDate(endDate211)
+                .build();
+
+        postsRepository.save(posts141);
+
+        Category category141 = Category.builder()
+                .posts(posts141)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category141.validateFieldCount();
+        categoryRepository.save(category141);
+
+
+
+
+        // 게임, 웹, ai, 앱(플래시게임)
+        User user206 = User.builder()
+                .userName("김빛나")
+                .nickName("flashKim")
+                .email("flashKim@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("206"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile42.jpg")
+                .build();
+
+        userRepository.save(user206);
+
+        Portfolio user206Portfolio = Portfolio.builder()
+                .user(user206)
+                .web(3)
+                .app(1)
+                .game(4)
+                .ai(2)
+                .shortIntroduce("고전 플래쉬 게임을 좋아하는 인디 게임 전문가 김빛나입니다.")
+                .introduce("- 코테 언어는 c# 사용합니다. \n- 유니티로 게임 제작 2번 해봤어요. \n- 제 닉네임으로 된 깃허브 가보시면 확인하실 수 있습니다.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user206Portfolio);
+
+        String initialEndDate212 = "2024-01-01";
+        DateTimeFormatter dateFormatter212 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate212 = LocalDate.parse(initialEndDate212, dateFormatter212);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts142 = Posts.builder()
+                .user(user206)
+                .postType(PostType.STUDY)
+                .title("언리얼 스터디")
+                .recruitmentCount(3)
+                .content("유니티에서 이제 언리얼 넘어가서 공부해보려고 합니다.\n잘 하는 분 환영\n못하는 분도 환영")
+                .endDate(endDate212)
+                .build();
+
+        postsRepository.save(posts142);
+
+        Category category142 = Category.builder()
+                .posts(posts142)
+                .web(false)
+                .app(false)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category142.validateFieldCount();
+        categoryRepository.save(category142);
+
+        String initialEndDate213 = "2024-01-11";
+        DateTimeFormatter dateFormatter213 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate213 = LocalDate.parse(initialEndDate213, dateFormatter213);
+
+        Posts posts143 = Posts.builder()
+                .user(user206)
+                .postType(PostType.PROJECT)
+                .title("고전 인디 플래쉬 게임 개발")
+                .recruitmentCount(3)
+                .content("고전 인디 게임 좋아하시는 분 있으시면 같이 게임 개발 해봐요.\n 웹 상에 배포할거라, 백엔드 개발자 1명, 유니티 다루실 개발자 1명 구해요.\n")
+                .endDate(endDate213)
+                .build();
+
+        postsRepository.save(posts143);
+
+        Category category143 = Category.builder()
+                .posts(posts143)
+                .web(true)
+                .app(false)
+                .game(true)
+                .ai(false)
+                .build();
+
+        category143.validateFieldCount();
+        categoryRepository.save(category143);
+
+
+
+
+        // AI, 웹, 앱 게임
+        User user207 = User.builder()
+                .userName("안준희")
+                .nickName("mandooking")
+                .email("mandooking@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("207"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile43.jpg")
+                .build();
+
+        userRepository.save(user207);
+
+        Portfolio user207Portfolio = Portfolio.builder()
+                .user(user207)
+                .web(3)
+                .app(2)
+                .game(1)
+                .ai(4)
+                .shortIntroduce("예비 딥러닝 개발자 만두킹입니다.")
+                .introduce("- 파이썬과 텐서플로우로 ai 공부 해보고 있습니다.. \n- 파이토치도 사용해본 적 있어요 \n- 웹 개발도 관심 있습니다.")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user207Portfolio);
+
+        String initialEndDate214 = "2024-01-06";
+        DateTimeFormatter dateFormatter214 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate214 = LocalDate.parse(initialEndDate214, dateFormatter214);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts144 = Posts.builder()
+                .user(user207)
+                .postType(PostType.STUDY)
+                .title("파이토치 공부 같이 해여")
+                .recruitmentCount(2)
+                .content("파이토치 스터디 같이 해보고, 인연 맞으면 졸프까지.... 함께합시다 우리\n")
+                .endDate(endDate214)
+                .build();
+
+        postsRepository.save(posts144);
+
+        Category category144 = Category.builder()
+                .posts(posts144)
+                .web(false)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category144.validateFieldCount();
+        categoryRepository.save(category144);
+
+        String initialEndDate215 = "2024-01-21";
+        DateTimeFormatter dateFormatter215 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate215 = LocalDate.parse(initialEndDate215, dateFormatter215);
+
+        Posts posts145 = Posts.builder()
+                .user(user207)
+                .postType(PostType.PROJECT)
+                .title("음성변조를 활용한 ai 면접 프로그램 같이 만들어보실 분 구해요")
+                .recruitmentCount(5)
+                .content("인공지능을 활용한 ai 면접 프로그램 구상 완료됐어요.\n이미 기획, ui/ux 모두 모였고, 백 2분, 프론트 3분 더 모집합니다..\n")
+                .endDate(endDate215)
+                .build();
+
+        postsRepository.save(posts145);
+
+        Category category145 = Category.builder()
+                .posts(posts145)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category145.validateFieldCount();
+        categoryRepository.save(category145);
+
+
+
+
+        // ai, 앱 게임, 웹
+        User user208 = User.builder()
+                .userName("김중사")
+                .nickName("McTominay")
+                .email("mctominay@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("208"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile44.jpg")
+                .build();
+
+        userRepository.save(user208);
+
+        Portfolio user208Portfolio = Portfolio.builder()
+                .user(user208)
+                .web(1)
+                .app(3)
+                .game(1)
+                .ai(4)
+                .shortIntroduce("축구 관련 앱 제작에 관심 많은 김중사 입니다.")
+                .introduce("- 축구에 관심 많아, 스포츠 관련 앱 개발에 관심 있습니다. \n- 축구 자세 교정 앱 개발(진행 중) \n")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user208Portfolio);
+
+        String initialEndDate216 = "2024-02-27";
+        DateTimeFormatter dateFormatter216 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate216 = LocalDate.parse(initialEndDate216, dateFormatter216);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts146 = Posts.builder()
+                .user(user208)
+                .postType(PostType.STUDY)
+                .title("딥러닝 강의 사서 같이 공부하실 분 모집")
+                .recruitmentCount(3)
+                .content("인공지능 공부를 해야할 필요성을 느껴, 별도의 인강을 사서 같이 스터디하실 분 모집합니다.\n만약 잘하시는 분 있으시면, 절 가르치셔도 좋아요...")
+                .endDate(endDate216)
+                .build();
+
+        postsRepository.save(posts146);
+
+        Category category146 = Category.builder()
+                .posts(posts146)
+                .web(false)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category146.validateFieldCount();
+        categoryRepository.save(category146);
+
+        String initialEndDate217 = "2024-01-19";
+        DateTimeFormatter dateFormatter217 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate217 = LocalDate.parse(initialEndDate217, dateFormatter217);
+
+        Posts posts147 = Posts.builder()
+                .user(user208)
+                .postType(PostType.PROJECT)
+                .title("축구 슈팅 자세 교정 앱 개발자 모집")
+                .recruitmentCount(3)
+                .content("텐서플로우를 활용한 축구 슈팅 자세 보정 앱을 제작 중에 있습니다.\n만약 관심 있는 분이 있으시면, 같이 프로젝트 합류해주세요! 코틀린, 텐서플로우 가능하신 분 모십니다.\n")
+                .endDate(endDate217)
+                .build();
+
+        postsRepository.save(posts147);
+
+        Category category147 = Category.builder()
+                .posts(posts147)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category147.validateFieldCount();
+        categoryRepository.save(category147);
+
+
+
+        // ai, 앱, 웹, 게임
+        User user209 = User.builder()
+                .userName("김우석")
+                .nickName("snuStudent")
+                .email("snusnu@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("209"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile45.jpg")
+                .build();
+
+        userRepository.save(user209);
+
+        Portfolio user209Portfolio = Portfolio.builder()
+                .user(user209)
+                .web(2)
+                .app(3)
+                .game(1)
+                .ai(4)
+                .shortIntroduce("의료 관련 딥러닝에 관심 있는 개발자입니다.")
+                .introduce("- 의료 산업 관련 db 구축 경험 보유\n- 대학병원 전산실에서 인턴 근무 경험 보유 \n- 비디오 이미지 프로세싱에도 관심 있음\n")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user209Portfolio);
+
+        String initialEndDate218 = "2024-01-22";
+        DateTimeFormatter dateFormatter218 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate218 = LocalDate.parse(initialEndDate218, dateFormatter218);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts148 = Posts.builder()
+                .user(user209)
+                .postType(PostType.STUDY)
+                .title("비디오 이미지 프로세싱 관련 스터디")
+                .recruitmentCount(4)
+                .content("교수님께서 진행하시는 이미지 프로세싱 수업 듣고 서로 공부 한 거 피드백 주는 스터디 하고싶어요.\n총 4명으로 구성 예정이고, 모집 마감되는대로 바로 시작할 예정입니다!")
+                .endDate(endDate218)
+                .build();
+
+        postsRepository.save(posts148);
+
+        Category category148 = Category.builder()
+                .posts(posts148)
+                .web(false)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category148.validateFieldCount();
+        categoryRepository.save(category148);
+
+        String initialEndDate219 = "2024-01-06";
+        DateTimeFormatter dateFormatter219 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate219 = LocalDate.parse(initialEndDate219, dateFormatter219);
+
+        Posts posts149 = Posts.builder()
+                .user(user209)
+                .postType(PostType.PROJECT)
+                .title("치과 교육 자료로 사용될 비디오 이미지 프로세싱 관련 프로젝트 하실 분 모집합니다. ")
+                .recruitmentCount(4)
+                .content("학습을 위한 가상 수술 자료를 비디오 이미지 프로세싱 통해 앱으로 제작해 배포하고자합니다. \n관련 수업 들으신 분 환영합니다. 앱쪽 지식 있으신 분들도 지원해주세요!!\n")
+                .endDate(endDate219)
+                .build();
+
+        postsRepository.save(posts149);
+
+        Category category149 = Category.builder()
+                .posts(posts149)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category149.validateFieldCount();
+        categoryRepository.save(category149);
+
+
+
+////////////////////////여기부터 내일
+        // 앱 웹 ai 게임
+        User user210 = User.builder()
+                .userName("최유리")
+                .nickName("glassChoi")
+                .email("glasschoi@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("210"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile46.jpg")
+                .build();
+
+        userRepository.save(user210);
+
+        Portfolio user210Portfolio = Portfolio.builder()
+                .user(user210)
+                .web(3)
+                .app(4)
+                .game(1)
+                .ai(2)
+                .shortIntroduce("모바일 앱 개발자 준비생입니다.")
+                .introduce("- 안녕하세요!\n- 모바일 앱에 관심있는 컴퓨터공학과 18학번입니다.\n- swift를 전문적으로 배우고 있어요")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user210Portfolio);
+
+        String initialEndDate220 = "2024-01-09";
+        DateTimeFormatter dateFormatter220 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate220 = LocalDate.parse(initialEndDate220, dateFormatter220);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts150 = Posts.builder()
+                .user(user210)
+                .postType(PostType.STUDY)
+                .title("swift 같이 공부하실 분 모집합니다!")
+                .recruitmentCount(4)
+                .content("예비 애플 개발자분들! 우리 swift공부 열심히 해서 해외로 갑시다.\n장기적으로 스터디 가능하신분이면 제게 메일로 연락주세요.." +
+                        "\n구체적인 커리큘럼, 일정에 대해 궁금하시면 댓글 달아주세요!")
+                .endDate(endDate220)
+                .build();
+
+        postsRepository.save(posts150);
+
+        Category category150 = Category.builder()
+                .posts(posts150)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category150.validateFieldCount();
+        categoryRepository.save(category150);
+
+        String initialEndDate221 = "2024-01-06";
+        DateTimeFormatter dateFormatter221 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate221 = LocalDate.parse(initialEndDate221, dateFormatter221);
+
+        Posts posts151 = Posts.builder()
+                .user(user210)
+                .postType(PostType.PROJECT)
+                .title("피트니스 강사들을 위한 애플 워치 앱 개발하실 분!")
+                .recruitmentCount(4)
+                .content("제가 아는 강사분들한테 여쭤봤는데, 피트니스 수업 하면서, 운동 루틴 프로세스 알려주는 워치 앱 있으면 좋을 것 같다는 의견이 많았다고 하시더라구요" +
+                        "이런 앱 있으면 아마 많이 사용할 것 같아요! 이걸로 졸프 같이할 사람 구합니다.\nswift개발자 2명, ui/ux 1분 모집합니다.\n")
+                .endDate(endDate221)
+                .build();
+
+        postsRepository.save(posts151);
+
+        Category category151 = Category.builder()
+                .posts(posts151)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category151.validateFieldCount();
+        categoryRepository.save(category151);
+
+
+
+
+        // 웹 앱 게임 ai
+        User user211 = User.builder()
+                .userName("김로코")
+                .nickName("loptimist")
+                .email("loptimist@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("211"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile47.jpg")
+                .build();
+
+        userRepository.save(user211);
+
+        Portfolio user211Portfolio = Portfolio.builder()
+                .user(user211)
+                .web(4)
+                .app(3)
+                .game(2)
+                .ai(1)
+                .shortIntroduce("홍익대에서 열심히 해서 우아한 형제들 가겠습니다.")
+                .introduce("- 백엔드 구축 위주로 공부하고 있습니다.\n- spring 관련 경험 개발 다수\n- spring security/jwt을 활용한 개발 선호")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user211Portfolio);
+
+        String initialEndDate222 = "2024-02-19";
+        DateTimeFormatter dateFormatter222 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate222 = LocalDate.parse(initialEndDate222, dateFormatter222);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts152 = Posts.builder()
+                .user(user211)
+                .postType(PostType.STUDY)
+                .title("네트워크 공부")
+                .recruitmentCount(3)
+                .content("컴퓨터 네트워크, 웹 소켓 관련 스터디 하실 분 모집합니다.\n가능하면 웹 개발 하시는 분들이면 좋겠습니다!\n메일 주세요")
+                .endDate(endDate222)
+                .build();
+
+        postsRepository.save(posts152);
+
+        Category category152 = Category.builder()
+                .posts(posts152)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category152.validateFieldCount();
+        categoryRepository.save(category152);
+
+        String initialEndDate223 = "2024-02-03";
+        DateTimeFormatter dateFormatter223 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate223 = LocalDate.parse(initialEndDate223, dateFormatter223);
+
+        Posts posts153 = Posts.builder()
+                .user(user211)
+                .postType(PostType.PROJECT)
+                .title("학교 커뮤니티 웹 사이트 개발하실 분 모집합니다")
+                .recruitmentCount(3)
+                .content("홍대생을 대상으로 하는 커뮤니티 사이트 만들고자 합니다.\n구체적인 내용은 추후에 만나서 상의해요." +
+                        "스프링 부트 가능 백엔드 1명, react가능 프론트 1명 구합니다.\n")
+                .endDate(endDate223)
+                .build();
+
+        postsRepository.save(posts153);
+
+        Category category153 = Category.builder()
+                .posts(posts153)
+                .web(true)
+                .app(false)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category153.validateFieldCount();
+        categoryRepository.save(category153);
+
+
+
+
+        // 게임, ai
+        User user212 = User.builder()
+                .userName("김펍지")
+                .nickName("battlemaster")
+                .email("battlemaster@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("212"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile48.jpg")
+                .build();
+
+        userRepository.save(user212);
+
+        Portfolio user212Portfolio = Portfolio.builder()
+                .user(user212)
+                .web(0)
+                .app(0)
+                .game(4)
+                .ai(3)
+                .shortIntroduce("gta같은 게임을 좋아하는 혼모노 게임 개발자입니다")
+                .introduce("- 언리얼 관련 공부를 하고 있습니다.\n- ai활용한 게임 만들고 싶습니다.\n- rpg게임 '제노아' 개발해본 적 있습니다")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user212Portfolio);
+
+        String initialEndDate224 = "2024-02-29";
+        DateTimeFormatter dateFormatter224 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate224 = LocalDate.parse(initialEndDate224, dateFormatter224);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts154 = Posts.builder()
+                .user(user212)
+                .postType(PostType.STUDY)
+                .title("ai 스터디")
+                .recruitmentCount(3)
+                .content("3학년 떄 ai관련 수업을 수강하지 못해서 배울 곳이 마땅히 없네요\n" +
+                        "같이 관련 논문 보면서 공부하실 분 모집해요!")
+                .endDate(endDate224)
+                .build();
+
+        postsRepository.save(posts154);
+
+        Category category154 = Category.builder()
+                .posts(posts154)
+                .web(false)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category154.validateFieldCount();
+        categoryRepository.save(category154);
+
+        String initialEndDate225 = "2024-01-03";
+        DateTimeFormatter dateFormatter225 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate225 = LocalDate.parse(initialEndDate225, dateFormatter225);
+
+        Posts posts155 = Posts.builder()
+                .user(user212)
+                .postType(PostType.PROJECT)
+                .title("gta같은 ai모듈로 설계된 npc들 깔아놓은 규모 큰 게임 개발해보실 분 모집합니다")
+                .recruitmentCount(5)
+                .content("졸업프로젝트를 넘어서, 이걸로 스타트업까지 창업 생각있으신 분 저랑 함께 미래를 도모해봐요.\n세계관은 거의 구상 완료했습니다.\n" +
+                        "ai관련 모듈 다뤄보신 분, 언리얼 가능하신 분만 지원해주세요.")
+                .endDate(endDate225)
+                .build();
+
+        postsRepository.save(posts155);
+
+        Category category155 = Category.builder()
+                .posts(posts155)
+                .web(false)
+                .app(false)
+                .game(true)
+                .ai(true)
+                .build();
+
+        category155.validateFieldCount();
+        categoryRepository.save(category155);
+
+
+
+
+        // 앱, AI
+        User user213 = User.builder()
+                .userName("안토샤")
+                .nickName("듀얼페르소나")
+                .email("persona@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("213"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile49.jpg")
+                .build();
+
+        userRepository.save(user213);
+
+        Portfolio user213Portfolio = Portfolio.builder()
+                .user(user213)
+                .web(0)
+                .app(4)
+                .game(0)
+                .ai(3)
+                .shortIntroduce("커피를 좋아하는 컴공과 4학년 안토샤입니다.")
+                .introduce("- 앱 개발에 관심 있습니다.\n- 학원에서 학생들 관리하는 앱 '우공방' 개발 \n- 독서실 좌석 배정 시스템 '내자리' 개발")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user213Portfolio);
+
+        String initialEndDate226 = "2024-02-14";
+        DateTimeFormatter dateFormatter226 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate226 = LocalDate.parse(initialEndDate226, dateFormatter226);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts156 = Posts.builder()
+                .user(user213)
+                .postType(PostType.STUDY)
+                .title("파이어베이스 스터디하실 분")
+                .recruitmentCount(3)
+                .content("파이어베이스 같이 공부하실 분 모집합니다. \n기초강의 부터 커리 쭉 타서 공부하고, 이후에 마음 맞으면 플젝도 같이 해요!~\n")
+                .endDate(endDate226)
+                .build();
+
+        postsRepository.save(posts156);
+
+        Category category156 = Category.builder()
+                .posts(posts156)
+                .web(true)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category156.validateFieldCount();
+        categoryRepository.save(category156);
+
+        String initialEndDate227 = "2024-01-03";
+        DateTimeFormatter dateFormatter227 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate227 = LocalDate.parse(initialEndDate227, dateFormatter227);
+
+        Posts posts157 = Posts.builder()
+                .user(user213)
+                .postType(PostType.PROJECT)
+                .title("파이어베이스, aws 활용해서 토이 ERP 앱 만들어보실 분 모집해요!")
+                .recruitmentCount(4)
+                .content("AWS 활용해서 배포까지 하는 만들어봐요~\n" +
+                        "소켓 공부해보신 분이면 바로 지원해주세요 ㅠㅠ\n" +
+                        "앱 같이 공부하면서 플젝하실 분도 지원부탁합니닿ㅎ\n")
+                .endDate(endDate227)
+                .build();
+
+        postsRepository.save(posts157);
+
+        Category category157 = Category.builder()
+                .posts(posts157)
+                .web(false)
+                .app(true)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category157.validateFieldCount();
+        categoryRepository.save(category157);
+
+
+
+
+        // 웹, 앱
+        User user214 = User.builder()
+                .userName("김현대")
+                .nickName("현기차상반기합격")
+                .email("hapgyuk@g.hongik.ac.kr")
+                .password(passwordEncoder.encode("214"))  // 비밀번호 해싱
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
+                .imageUrl("profile50.jpg")
+                .build();
+
+        userRepository.save(user214);
+
+        Portfolio user214Portfolio = Portfolio.builder()
+                .user(user214)
+                .web(4)
+                .app(3)
+                .game(0)
+                .ai(0)
+                .shortIntroduce("대기업 si, 은행권 준비중인 4학년 김현대입니다.")
+                .introduce("- 웹,앱이 주력이지만, 블록체인, 메타버스에도 관심 있습니다.\n- 주식 매매 사이트 개발 경험 보유\n- 경제학 부전공")
+                //.fileUrl("")
+                .build();
+
+        portfolioRepository.save(user214Portfolio);
+
+        String initialEndDate228 = "2024-02-14";
+        DateTimeFormatter dateFormatter228 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate228 = LocalDate.parse(initialEndDate228, dateFormatter228);
+
+        // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
+        Posts posts158 = Posts.builder()
+                .user(user214)
+                .postType(PostType.STUDY)
+                .title("블록체인 스터디 모집")
+                .recruitmentCount(3)
+                .content("가상화폐, 블록체인 등등의 기술에 관심있으신 분 같이 공부하고 돈도 벌어봐요. \n" +
+                        "관련 논문과, 교수님 수업 복습하며 공부 피드백하면서 학습할 예정입니다.\n" +
+                        "관심 있으시면 지원해주세요!")
+                .endDate(endDate228)
+                .build();
+
+        postsRepository.save(posts158);
+
+        Category category158 = Category.builder()
+                .posts(posts158)
+                .web(false)
+                .app(false)
+                .game(false)
+                .ai(true)
+                .build();
+
+        category158.validateFieldCount();
+        categoryRepository.save(category158);
+
+        String initialEndDate229 = "2024-02-04";
+        DateTimeFormatter dateFormatter229 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate229 = LocalDate.parse(initialEndDate229, dateFormatter229);
+
+        Posts posts159 = Posts.builder()
+                .user(user214)
+                .postType(PostType.PROJECT)
+                .title("내 주위 가장 저렴하고 좋은 독서실 찾기 프로젝트 같이 하실 분 모집합니다.")
+                .recruitmentCount(3)
+                .content("모바일 앱, 웹 두가지 방식으로 배포까지 할 분 모집합니다~\n기술 스택은 인원 모이면 정해도 괜찮아요!\n" +
+                        "편하게 지원하시고, 궁금하신 점 있으면 댓글이나 메일 주세요!\n")
+                .endDate(endDate229)
+                .build();
+
+        postsRepository.save(posts159);
+
+        Category category159 = Category.builder()
+                .posts(posts159)
+                .web(true)
+                .app(true)
+                .game(false)
+                .ai(false)
+                .build();
+
+        category159.validateFieldCount();
+        categoryRepository.save(category159);
+    }
 }

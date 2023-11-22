@@ -62,6 +62,103 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(portfolio);
     }
+    private User createUserAndPortfolio_Profile(
+            String userName,
+            String nickName,
+            String email,
+            String password,
+            int web,
+            int app,
+            int game,
+            int ai,
+            String shortIntroduce,
+            String introduce,
+            String fileUrl,
+            String imageUrl
+    ) {
+        User user = User.builder()
+                .userName(userName)
+                .nickName(nickName)
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(Role.USER)
+                .lastAccessDate(LocalDateTime.now())
+                .imageUrl(imageUrl).build();
+
+        userRepository.save(user);
+
+        Portfolio portfolio = Portfolio.builder()
+                .user(user)
+                .web(web)
+                .app(app)
+                .game(game)
+                .ai(ai)
+                .shortIntroduce(shortIntroduce)
+                .introduce(introduce)
+                //.fileUrl(fileUrl)
+                .build();
+
+        portfolioRepository.save(portfolio);
+
+        return user;
+    }
+
+    public void createStudyPosts(final User user, final String title, int recruitmentCount, final String content, LocalDate endDate, boolean web, boolean app, boolean game, boolean ai ){
+
+        Posts posts = Posts.builder()
+                .user(user)
+                .postType(PostType.STUDY)
+                .title(title)
+                .recruitmentCount(recruitmentCount)
+                //.counts(1)
+                .content(content)
+                //.promoteImageUrl("사진")
+                //.fileUrl("파일")
+                .endDate(endDate)
+                .build();
+
+        postsRepository.save(posts);
+
+        Category category = Category.builder()
+                .posts(posts)
+                .web(web)
+                .app(app)
+                .game(game)
+                .ai(ai)
+                .build();
+
+        category.validateFieldCount();
+        categoryRepository.save(category);
+
+    }
+    public void createProjectPosts(final User user, final String title, int recruitmentCount, final String content, LocalDate endDate, boolean web, boolean app, boolean game, boolean ai ){
+
+        Posts posts = Posts.builder()
+                .user(user)
+                .postType(PostType.PROJECT)
+                .title(title)
+                .recruitmentCount(recruitmentCount)
+                //.counts(1)
+                .content(content)
+                //.promoteImageUrl("사진")
+                //.fileUrl("파일")
+                .endDate(endDate)
+                .build();
+
+        postsRepository.save(posts);
+
+        Category category = Category.builder()
+                .posts(posts)
+                .web(web)
+                .app(app)
+                .game(game)
+                .ai(ai)
+                .build();
+
+        category.validateFieldCount();
+        categoryRepository.save(category);
+
+    }
 
     // 여기서 createRecommendationsTable 함수는 Recommendations 테이블에 데이터를 저장하도록 되어 있다.
 
@@ -241,6 +338,439 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(generalPortfolio);
 
+
+// =======================================================================================================
+// =======================================================================================================
+
+        String initialEndDate100 = "2024-01-02";
+        DateTimeFormatter dateFormatter100 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate100 = LocalDate.parse(initialEndDate100, dateFormatter100);
+
+        String name ="";
+        String nickName = "";
+        String email = "";
+
+        String shortInt = "언제든지 열정페이";
+        String introduce = "- 한영외고 \n" +
+                "- 홍익대학교 영어교육과 \n" +
+                "- 영어 토론대회 우수상 \n" +
+                "\n" +
+                "컴퓨터공학과 복수전공중입니다! \n" +
+                "자료조사랑 보고서 쓰는거 잘합니다. 함께 열심히 해보아요:)";
+
+        String postTitle = "졸업 프로젝트 팀원 구합니다";
+        String content = "저는 졸업이 목표고 현재 인턴중이라 졸업 프로젝트에 크게 시간을 쏟기 어렵습니다. 저와 상황이 비슷하신 분과 함께 팀을 이루고싶습니다." +
+                "\n 관심 있으신 분은 댓글 혹은 연락 부탁드립니다";
+
+
+
+        User user = createUserAndPortfolio_Profile(
+                "김길동", "killdong", "killdong@g.hongik.ac.kr",
+                "1", 3, 2, 0, 0, shortInt, introduce, null, "profile70.jpg"
+
+        );
+        createProjectPosts(user,postTitle, 1, content , endDate100, true, false, false, true);
+
+
+        // =======
+        // =======
+
+        initialEndDate100 = "2024-01-03";
+        endDate100 = LocalDate.parse(initialEndDate100, dateFormatter100);
+
+
+        // =========
+        // =========
+        name = "강길동";
+        nickName = "gillfin";
+        email = "gillfin@g.hongik.ac.kr";
+
+
+        shortInt = "믿고 맡기는 백준플레";
+        introduce = "코딩노예의 삶을 살아왔으나 아직 플젝 경험은 없음 \n" +
+                "주 언어는 C++이지만 python도 어느정도는 쓸 수 있습니다\n" +
+                "코테 준비를 오래 해서 알고리즘 문제는 웬만해서 다 해결 가능합니다\n" +
+                "\n" +
+                "현재 3학년이고 내년에 플젝으로 게임, 웹, 인공지능 중에서 하나로 생각중입니다. \n" +
+                "관심있으신 분은 제 개인 연락처로 연락 부탁드립니다\n" +
+                "";
+
+        postTitle = "포폴 같이 만들어보실 분?";
+        content = "코드 공부만 하고 실제로 만들어본 경험 없으신 분들 같이 플젝 구상부터 완성까지 해봐용\n\n"
+                +"저도 경험이 막 많은 건 아니라 많은걸 바라지는 못하고....같이 열심히 새보실 분 찾습니다\n";
+
+
+        createProjectPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 4, 0, 3, 2, shortInt, introduce, null, "profile71.jpg"
+
+                )
+                ,postTitle, 3, content , endDate100, true, false, true, false);
+
+
+        initialEndDate100 = "2024-01-20";
+        endDate100 = LocalDate.parse(initialEndDate100, dateFormatter100);
+
+
+        // ========
+        // ========
+        name = "구길동";
+        nickName = "fishgill";
+        email = "fishgill@g.hongik.ac.kr";
+
+
+        shortInt = "절대 던지지 않습니다";
+        introduce = "희망사항 : 졸업 전에 쇼핑몰 사이트 런칭하기!! \n" +
+                "\n" +
+                "프론트로 vue.js 와 react 사용 가능합니다!\n" +
+                "현재 쇼핑몰 웹사이트 제작중입니당";
+
+        postTitle = "쇼핑몰 사이트 플젝 팀원 구합니다. 현재 디자이너와 프론트 있음";
+        content = "빈티지 쇼핑몰 사이트 프로젝트 백엔드 개발자 모십니다\n"
+                +"-현재 저(프론트)와 디자이너(UIUX) 두 명이서 프로젝트 구상은 마친 상태입니다.\n"
+                +"-프론트는 React로 짜여졌으며 결과에 따라서 창업까지도 준비중입니다. \n"
+                +"-함께 오랫동안 프로젝트 이어가실 컴퓨터공학과 학우분 모십니다. \n\n"
+                +"문의사항 있으시면 댓글 혹은 제 포트폴리오 개인 연락처로 문의 브탁드립니다 \n";
+
+
+        createProjectPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 4, 0, 3, 2, shortInt, introduce, null, "profile72.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, true, false, true, false);
+
+
+        // ========
+        // ========
+        name = "이길동";
+        nickName = "ppry";
+        email = "ppry@g.hongik.ac.kr";
+
+
+        shortInt = "게임 만들고싶다…...";
+        introduce = "- 3D 게임, 언리얼, unity 관심 있습니다.\n" +
+                "- Unity보다는 언리얼 선호하며 공부중입니다.\n" +
+                "\n" +
+                "학점은 4.2/4.5 컴퓨터공학과 20학번…...";
+
+        postTitle = "게임 프로직트 팀원 모집합니다‍🔥";
+        content = "클론코딩부터 시작해서 같이 공부하고 잘되면 실제로 앱으로 출시까지 할 게임 개발 팀원 구합니다\n\n"
+                +"주제는 아직 생각해둔 것은 없지만, 팀원이 생기면 함께 회의해서 맞춰나가고싶습니다\n"
+                +"3학년이라 졸업프로젝트도 생각해야돼서, 잘되면 졸업 프로젝트까지도 함께 해결하면 좋을 것 같습니다.\n"
+                +"많은 관심 부탁드립니다\n";
+
+
+        createProjectPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 0, 0, 4, 2, shortInt, introduce, null, "profile73.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, false, false, true, false);
+
+
+        // ========
+        // ========
+        name = "오길동";
+        nickName = "leoh";
+        email = "leoh@g.hongik.ac.kr";
+
+
+        shortInt = "FE/BE 다 함";
+        introduce = "=프론트는 Vue 주로 써봤으나 React도 가능합니다\uD83D\uDE01\n" +
+                "-백엔드는 Spring Boot 개발 경험 있습니다. 그런데 주력 언어는 python인 그런 상태 ㅋㅋㅋ \n" +
+                "\n\n" +
+                "이것저것 찍먹 개발자(희망)입니다!! 예쁘게 봐주십셔~~~\n" +
+                "참고로 4학년, 취준, 플젝 급함!!!";
+
+        postTitle = "웹 스터디";
+        content = "이고잉, 김영한 커리 같이 타실 분들 모집합니다.\n"
+                + "-인프런 강의 같이 결제하거나 따로 결제하거나 저는 다 좋습니다.\n"
+                +"-매주 시간 정해서 학교 카페에서 1시간씩 서로 질문하고 진도 체크하는 시간 가지려고 합니다\n"
+                +"-자세한 일정은 스터디원이 충분히 모이면 다시 정하면 좋을 것 같습니다.\n";
+
+
+        createStudyPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 0, 0, 4, 2, shortInt, introduce, null, "profile74.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, false, false, true, false);
+
+
+
+
+        // ========
+        // ========
+        name = "우길동";
+        nickName = "우동사리";
+        email = "udon@g.hongik.ac.kr";
+
+
+        shortInt = "언리얼 공부중";
+        introduce = "시각디자인과랑 협업프로젝트로 3D 게임 개발 경력 있어요!\n" +
+                "FPS 게임 개발 했었구 앱스토어에서 \"\"@@@\"\"로 검색하면 다운받을 수도 있습니다!\n" +
+                "\n" +
+                "저는 주로 클라이언트 담당했었어요! \n" +
+                "자세한건 제 깃허브 구경와주세요 \uD83D\uDE06";
+
+        postTitle = "마음 맞는 게임 개발 팀원 찾아요~!";
+        content = "개인적으로 제가 게임에 진심이고 미쳐서 저와 성향과 관심사가 비슷한 분들끼리 게임 개발하고싶습니다\n"
+                +"제 경력은 제 개인 포트폴리오에서 확인하실 수 있습니당!\n\n"
+                +"함께 진심으로 즐기는 마음으로 게임 제작할 수 있는 팀원을 찾고있습니다!\n"
+                +"플젝에 관해 궁금하신 점 있으시면 편하게 문의 주세요!\n";
+
+
+        createProjectPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 0, 0, 4, 0, shortInt, introduce, null, "profile75.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, false, false, true, false);
+
+
+        // ========
+        // ========
+        name = "어길동";
+        nickName = "findingme";
+        email = "findingme@g.hongik.ac.kr";
+
+
+        shortInt = "공모전 도장깨기!";
+        introduce = "한번이라도 공모전에서 상 받고싶다~~~";
+
+        postTitle = "2학기 교내 공모전 같이 나가실 분?";
+        content = "교내에 2학기마다 공모전? 경진대회? 있는걸로 알고있습니다\n"
+                +"그거 같이 나가실 분 찾습니다. 학년, 과, 복수전공 이런거 신경 안 씁니다. 같이 할 실력이 있는 분이면 제가 다 맞출 수 있습니다\n"
+                +"공모전 수상이 목표이신 분들은 연락 주세요\n";
+
+
+        createProjectPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 0, 0, 3, 4, shortInt, introduce, null, "profile76.jpg"
+
+                )
+                ,postTitle, 3, content , endDate100, false, false, true, true);
+
+        // ========
+        // ========
+        name = "유길동";
+        nickName = "youyisi";
+        email = "youyisi@g.hongik.ac.kr";
+
+
+        shortInt = "알골장인";
+        introduce = "코딩 적성은 잘 몰겠지만 알골문제 푸는게 재밌는건 아는 컴퓨터공학과";
+
+        postTitle = "네이버 코테 스터디";
+        content = "함께 네이버 코테 준비할 사람 있음?";
+
+
+        createStudyPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 4, 0, 0, 0, shortInt, introduce, null, "profile77.jpg"
+
+                )
+                ,postTitle, 3, content , endDate100, true, false, false, false);
+
+
+        // ========
+        // ========
+        name = "양길동";
+        nickName = "lamblamb";
+        email = "lamblamb@g.hongik.ac.kr";
+
+
+        shortInt = "말하는 감쟈에오";
+        introduce = "학교 수업은 열심히 들었지만 아직 프로젝트 경험은 없습니다. \n" +
+                "수업 열심히 들어서 배경지식은 탄탄하기 때문에 어떤 프로젝트든 시작하면 잘 할 수 있습니다!\n" +
+                "\n" +
+                "참고로 전공평점 4.0입니다";
+
+        postTitle = "졸프";
+        content = "졸프 팀원 찾아요..... \n" +
+                "일단 저는 졸업이 목표입니다\n" +
+                "\n" +
+                "같이 하실 분 찾습니다.....댓글 주세용";
+
+
+        createProjectPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 3, 4, 0, 0, shortInt, introduce, null, "profile78.jpg"
+
+                )
+                ,postTitle, 3, content , endDate100, true, true, false, false);
+
+
+        // ========
+        // ========
+        name = "마길동";
+        nickName = "strong_gd";
+        email = "strong_gd@g.hongik.ac.kr";
+
+
+        shortInt = "붓싼 싸나이, 코딩, 쉽다";
+        introduce = "길게 말 안한다. Python, 인공지능 좋아함 \n" +
+                "깃허브 잔디밭임";
+
+        postTitle = "인공지능 스터디";
+        content = "파이토치 공부중\n" +
+                "딥러닝 같이 공부할 학우 찾음\n" +
+                "형은 하나만 판다.\n";
+
+
+        createStudyPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 0, 0, 0, 4, shortInt, introduce, null, "profile79.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, false, false, false, true);
+
+        // ========
+        // ========
+        name = "박길동";
+        nickName = "changingill";
+        email = "changingill@g.hongik.ac.kr";
+
+
+        shortInt = "A길만 걸어옴";
+        introduce = "- 2019년도 홍익대학교 알고리즘경진대회 수상 \n" +
+                "- 2019년도 홍익대학교 창의적경진대회 수상 \n" +
+                "- 2020년도 1학기 컴퓨터공학과 과수석 \n" +
+                "- 2020년도 CJ 공모전 수상";
+
+        postTitle = "취준 스터디";
+        content = "서합 현재까지 3군데\n" +
+                "같이 면접 준비할 학우 구합니다.\n";
+
+
+        createStudyPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 4, 0, 0, 3, shortInt, introduce, null, "profile80.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, true, false, false, true);
+
+
+
+        // ========
+        // ========
+        name = "배길동";
+        nickName = "pearof_ways";
+        email = "pearof_way@g.hongik.ac.krs";
+
+
+        shortInt = ".";
+        introduce = ".";
+
+        postTitle = "cs스터디";
+        content = "다음학기에 알골, 프언, 컴네 듣는데 미리 예습하려고 합니다.\n" +
+                "같이 방학동안 스터디 신청해서 지원금 받으면서 공부할 학우분 찾습니다.\n";
+
+
+        createStudyPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 0, 0, 0, 3, shortInt, introduce, null, "profile81.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, false, false, false, true);
+
+
+        // ========
+        name = "방길동";
+        nickName = "fartingfin";
+        email = "fartingfin@g.hongik.ac.kr";
+
+
+        shortInt = "졸업이 목표";
+        introduce = "쓸 수 있는게 없다ㅠㅠㅠㅠㅠㅠ";
+
+        postTitle = "공기업 NCS 스터디";
+        content = "전공이 너어어무 안 맞아서 다른 분야로 공기업 준비중입니다\n" +
+                "함께 같이 공부할 팀원 있을까요? ㅠㅠ\n";
+
+
+        createStudyPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 0, 1, 0, 0, shortInt, introduce, null, "profile82.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, false, true, false, false);
+
+
+
+        // ========
+        name = "봉길동";
+        nickName = "hogubbong";
+        email = "hogubbong@g.hongik.ac.kr";
+
+
+        shortInt = "아싸 구제좀…..";
+        introduce = "복전생입니다!!\n" +
+                "수학 오랜만에 보니 새로와요ㅠ \n" +
+                "불쌍한 중생 구제 부탁드려요";
+
+        postTitle = "msc 스터디!";
+        content = "문과 자전 공대생인데 msc 때문에 고생중이에요ㅠㅠㅠㅠ\n" +
+                "저처럼 문과였거나 미적 기벡 선택 안하신 분들 중에서 같이 msc 공부하실 분 있으면 같이 공부하면 좋을 것 같아요!\n"
+                +"같이 으쌰으쌰 힘내서 다음 학기에 올A+ 받아봐여!!!\n";
+
+
+        createStudyPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 2, 1, 0, 0, shortInt, introduce, null, "profile83.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, true, true, false, false);
+
+
+
+
+        // ========
+        name = "시길동";
+        nickName = "civilsigil";
+        email = "civilsigil@g.hongik.ac.kr";
+
+
+        shortInt = "ㅎㅎ…닳고 닳은 팀플장인";
+        introduce = "산업디자인과, 컴퓨터공학과 복수전공 \n" +
+                "- 산업디자인과 소모임 팀플 경력만 3년째 \n" +
+                "- 그 외 교양수업 다수 발표기계, 피피티장인 \n" +
+                "- 자료조사, 컨셉지정, 스케쥴 관리 다 함 \n" +
+                "- 학교 다니면서 별별 사람 다 봤음.\n"+
+                "- 본인 성격이 개같다? 신경 안씀ㅇㅇ 더한 사람도 겪어봤음\n" +
+                "- 만능 조장, 다만 코드는 아직 좀 부족하지만 금방 할 수 있을 것 같습니다";
+
+        postTitle = "팀 경험 쌓으실 분?";
+        content = "컨셉, 디자인은 걱정 안 하셔도 됨. 제가 디자인과라 그런 쪽은 몸만 오셔도 됨\n" +
+                "+ 웹쪽 플젝 경험 쌓고싶지만 게임도 가능함니당~\n"
+                +"+ 컨셉부터 쭉 함께 플젝 만드는 경험 쌓으실 분들 댓글 주세용\n";
+
+
+        createProjectPosts(
+                createUserAndPortfolio_Profile(
+                        name, nickName, email,
+                        "1", 4, 1, 3, 0, shortInt, introduce, null, "profile85.jpg"
+
+                )
+                ,postTitle, 4, content , endDate100, true, false, true, false);
+
+
+// =======================================================================================================
+// =======================================================================================================
 
 
         // 초기 데이터 생성 및 저장(1)
@@ -1282,6 +1812,11 @@ public class InitialDataLoader implements CommandLineRunner {
         category26.validateFieldCount();
         categoryRepository.save(category26);
 
+
+
+
+
+
         // 초기 데이터 생성 및 저장(10)
         // ai 전문가 생성 예정
         // 게시물은 27부터 (유저 7, 9가 게시물이 4개임. 나머지는 3개.)
@@ -2071,9 +2606,9 @@ public class InitialDataLoader implements CommandLineRunner {
 
         portfolioRepository.save(user100Portfolio);
 
-        String initialEndDate100 = "2024-01-02";
-        DateTimeFormatter dateFormatter100 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate endDate100 = LocalDate.parse(initialEndDate100, dateFormatter100);
+        initialEndDate100 = "2024-01-02";
+        dateFormatter100 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        endDate100 = LocalDate.parse(initialEndDate100, dateFormatter100);
 
         // Posts 생성자 : (User user, PostType postType, String title, Integer recruitmentCount, String content, String promoteImageUrl, String fileUrl, LocalDate endDate)
         Posts posts100 = Posts.builder()
@@ -4515,4 +5050,6 @@ public class InitialDataLoader implements CommandLineRunner {
         category159.validateFieldCount();
         categoryRepository.save(category159);
     }
+
+
 }

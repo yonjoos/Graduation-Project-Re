@@ -1,22 +1,23 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-//import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Spin, Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
-import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
 import { CircularProgressbarWithChildren, buildStyles  } from 'react-circular-progressbar';
 
-import { request, setHasPortfolio } from '../../../hoc/request';
+import { request, setSaveRecommendedList, setIsRecommededPortfolioView } from '../../../hoc/request';
+import { saveRecommendedList, setRecommendPortfolioView } from '../../../_actions/actions';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
-import { useDispatch, useStore } from 'react-redux';
-
 
 function PortfolioCardPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    //const dispatch = useDispatch();
+    const dispatch = useDispatch();
+
+    const selectedRecommendedList = useSelector(state => state.recommend.recommendedList);
+    const selectedIsRecommededPortfolioView = useSelector(state => state.recommend.isRecommededPortfolioView);
 
     const [searchTerm, setSearchTerm] = useState(""); // 검색어 값 -  엔터나 클릭 시에만 변경
     const [currentSearchTerm, setCurrentSearchTerm] = useState(""); // 추적하는 검색어 값, 타이핑 시마다 변경
@@ -39,18 +40,11 @@ function PortfolioCardPage() {
     const [showRecommend, setShow] = useState(0);
     const [recommendedData, setRecommendedData] = useState([]);
 
-    const store = useStore();
-    const dispatch = useDispatch();
-
-
     const pageSize = 9;
-
-    
-    
 
     // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
     useEffect(() => {
-        if( !store.getState().recommend.isRecommededPortpolioView ){
+        if(!selectedIsRecommededPortfolioView){
             console.log('현재 검색된 키워드: ', currentSearchTerm);
             setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
             fetchFilteredSearchLists();
@@ -62,44 +56,34 @@ function PortfolioCardPage() {
     // Handler : handleReload() 에 의해 호출됨
 
 
-    //F5랑 비슷한 기능
     useEffect(() => {
-
-        if(!store.getState().recommend.isRecommededPortpolioView){
+        if(!selectedIsRecommededPortfolioView){
             setCurrentPage(0);
             setTotalPages(0);
             setSearchTerm("");
             setSelectedBanners(['all']);
-            dispatch({
-                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
-                isRecommededPortpolioView: false,
-            });
-            dispatch({
-                type: "SAVE_RECOMMENDED_LIST",
-                recommendedList: null
-            });
-
+            dispatch(setRecommendPortfolioView(false));
+            dispatch(saveRecommendedList(null));
+            setIsRecommededPortfolioView(false);
+            setSaveRecommendedList(null);
             // REQUEST FUNCTION 
             fetchUsers();
             setReload(0);
-
         }
         
-
     }, [reload]);
 
 
     //추천 버튼 누를 때마다 
     useEffect(() => {
-        if (recommend === 1 ) {
+        if (recommend === 1) {
             Recommend();
             setRecommend(0);
             setSustain(1);
-            dispatch({
-                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
-                isRecommededPortpolioView: false,
-            });
-            
+            dispatch(setRecommendPortfolioView(true));
+            setIsRecommededPortfolioView(true);
+            console.log("===============================추천 버튼===============================");
+            console.log("selectedIsRecommededPortfolioView : ", selectedIsRecommededPortfolioView);
         }
         else {
         }
@@ -117,7 +101,7 @@ function PortfolioCardPage() {
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
     useEffect(() => {
-            const recommendedList = store.getState().recommend.recommendedList;
+            const recommendedList = selectedRecommendedList;
     
             console.log("-----------------", recommendedList);
     
@@ -125,11 +109,9 @@ function PortfolioCardPage() {
     
             console.log("세팅된 데이터=================", recommendedList);
     
-            dispatch({
-                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
-                isRecommededPortpolioView: false,
-            });
-    }, [store.getState().recommend.recommendedList]);
+            dispatch(setRecommendPortfolioView(true));
+            setIsRecommededPortfolioView(true);
+    }, [selectedRecommendedList]);
 
 
 
@@ -277,10 +259,8 @@ function PortfolioCardPage() {
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
-        dispatch({
-            type: "SAVE_RECOMMENDED_LIST",
-            recommendedList: null
-        });
+        dispatch(saveRecommendedList(null));
+        setSaveRecommendedList(null);
 
         setIsRecommend(false);
 
@@ -326,9 +306,10 @@ function PortfolioCardPage() {
         try {
             const response = await request('GET', `/getRecommendation`);
             setRecommendedData(response.data);
-            //console.log('response.data', response.data);
-            //console.log("state", store.getState());
-            dispatch({type: "SAVE_RECOMMENDED_LIST", recommendedList: response.data})
+            dispatch(saveRecommendedList(response.data));
+            dispatch(setRecommendPortfolioView(true));
+            setSaveRecommendedList(response.data);
+            setIsRecommededPortfolioView(true);
             setTotalPages(response.data.totalPages);
             console.log(data);
         } catch (error) {

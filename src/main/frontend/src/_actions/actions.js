@@ -103,6 +103,28 @@ export const deletePortfolioSuccess = () => {
 
 
 
+
+
+export const saveRecommendedList = (recommendedList) => {
+    return {
+        type: 'SAVE_RECOMMENDED_LIST',
+        recommendedList: recommendedList
+    };
+};
+
+
+
+
+export const setRecommendPortfolioView = (isRecommededPortfolioView) => {
+    return {
+        type: 'SET_RECOMMENDED_PORTFOLIO_VIEW',
+        isRecommededPortfolioView: isRecommededPortfolioView
+    };
+};
+
+
+
+
 // // 가장 최근에 방문한 유효한 엔드포인터를 기억하기 위한 액션 생성
 // export const lastVisitedEndpoint = (endpoint, endEndPoint, endEndEndPoint) => {
 //     return {

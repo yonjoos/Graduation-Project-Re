@@ -54,7 +54,6 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
-import recommendReducer from './recommendReducer';
 
 // initialState: 앱의 초기 상태를 정의하는 객체임. 여기서는 isAuthenticated와 authToken을 초기화 수행
 const initialState = {
@@ -116,6 +115,29 @@ const authReducer = (state = initialState, action) => {
 };
     
 
+
+
+const initialRecommendState = {
+    recommendedList: [],
+    isRecommededPortfolioView: false
+};
+    
+const recommendReducer = (state = initialRecommendState, action) => {
+    switch (action.type) {
+        case 'SAVE_RECOMMENDED_LIST':
+            return {
+                ...state,
+                recommendedList: action.recommendedList
+            }
+        case 'SET_RECOMMENDED_PORTFOLIO_VIEW':
+            return {
+                ...state,
+                isRecommededPortfolioView: action.isRecommededPortfolioView
+            }
+        default:
+            return state;
+    }
+};
 
 
 // // 엔드포인트는 맨 처음 null로 세팅됨.

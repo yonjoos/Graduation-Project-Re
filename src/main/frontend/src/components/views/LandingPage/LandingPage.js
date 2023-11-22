@@ -265,7 +265,7 @@ function LandingPage() {
                             </Col>
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
-                                <div style={{ position: 'absolute', zIndex: 2, width: '79%' }}>
+                                <div style={{ position: 'absolute', zIndex: 10, width: '79%' }}>
 
                                     {renderSection('User', data.userSearchDtoList)}
                                     {renderSection('Project', data.projectSearchDtoList)}
@@ -410,7 +410,7 @@ function LandingPage() {
                             </Col>
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
 
-                                <div style={{ position: 'absolute', zIndex: 2, width: '79%' }}>
+                                <div style={{ position: 'absolute', zIndex: 10, width: '79%' }}>
 
                                     {renderSection('User', data.userSearchDtoList)}
                                     {renderSection('Project', data.projectSearchDtoList)}

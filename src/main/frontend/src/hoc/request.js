@@ -25,6 +25,24 @@ export const getUserNickName = () => {
     return window.localStorage.getItem('user_nickname');
 }
 
+export const getSaveRecommendedList = () => {
+    const savedRecommendedList = window.localStorage.getItem('recommendedList');
+    return savedRecommendedList ? JSON.parse(savedRecommendedList) : [];
+}
+
+export const getIsRecommededPortfolioView = () => {
+    return window.localStorage.getItem('is_recommended_portfolio_view') === 'true';
+}
+
+export const setSaveRecommendedList = (recommendedList) => {
+    window.localStorage.setItem('recommendedList', JSON.stringify(recommendedList));
+}
+
+export const setIsRecommededPortfolioView = (portfolioView) => {
+    window.localStorage.setItem('is_recommended_portfolio_view', portfolioView);
+}
+
+
 // //로컬 스토리지에서 'last_visited_endpoint'이라는 키로 저장된 사용자 역할을 가져오는 함수
 // export const getLastVisitedEndpoint = () => {
 //     return window.localStorage.getItem('last_visited_endpoint');

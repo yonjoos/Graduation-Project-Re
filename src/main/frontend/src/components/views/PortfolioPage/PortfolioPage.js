@@ -2,12 +2,14 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 //import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider, Modal, Image } from 'antd';
-
+import { setRecommendPortfolioView } from '../../../_actions/actions';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
-import { request } from '../../../hoc/request';
+import { request, setIsRecommededPortfolioView } from '../../../hoc/request';
+import { useDispatch} from 'react-redux';
 
 function PortfolioPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { nickName } = useParams();
     //const visitedEndpoint = useSelector(state => state.endpoint.lastVisitedEndpoint);
     //const visitedEndEndEndpoint = useSelector(state => state.endpoint.lastLastLastVisitedEndpoint);
@@ -31,6 +33,11 @@ function PortfolioPage() {
     UseEffect #############################################################################################################
     UseEffect #############################################################################################################
     */
+
+    useEffect(() => {
+        dispatch(setRecommendPortfolioView(true));
+        setIsRecommededPortfolioView(true);
+    })
 
     // PortfolioPage에 들어오면, Get방식으로 백엔드에서 데이터를 가져와서 data에 세팅한다.
     useEffect(() => {

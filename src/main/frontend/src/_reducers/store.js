@@ -61,7 +61,7 @@ const initialState = {
     authToken: null,
     userRole: null,
     userPortfolio: null,
-    userNickName: null
+    userNickName: null,
 };
 
 /**
@@ -108,13 +108,36 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 userPortfolio: false
-            }
+            }    
         default:
             return state;
     }
 };
     
 
+
+
+const initialRecommendState = {
+    recommendedList: [],
+    isRecommededPortfolioView: false
+};
+    
+const recommendReducer = (state = initialRecommendState, action) => {
+    switch (action.type) {
+        case 'SAVE_RECOMMENDED_LIST':
+            return {
+                ...state,
+                recommendedList: action.recommendedList
+            }
+        case 'SET_RECOMMENDED_PORTFOLIO_VIEW':
+            return {
+                ...state,
+                isRecommededPortfolioView: action.isRecommededPortfolioView
+            }
+        default:
+            return state;
+    }
+};
 
 
 // // 엔드포인트는 맨 처음 null로 세팅됨.
@@ -148,8 +171,9 @@ const authReducer = (state = initialState, action) => {
 
 // Combine both reducers into a single rootReducer
 const rootReducer = combineReducers({
-    auth: authReducer // authReducer manages authentication-related state
+    auth: authReducer, // authReducer manages authentication-related state
     //endpoint: endpointReducer // endpointReducer manages endpoint-related state
+    recommend: recommendReducer
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

@@ -11,12 +11,15 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 import
 import { Provider } from 'react-redux';
 import store from './_reducers/store';
 import { getAuthToken, getUserRole, getHasPortfolio, getUserNickName/*, getLastVisitedEndpoint, getLastLastVisitedEndpoint, getLastLastLastVisitedEndpoint*/ } from './hoc/request';
-import { loginSuccess/*, lastVisitedEndpoint*/ } from './_actions/actions';
+import { getSaveRecommendedList, getIsRecommededPortfolioView } from './hoc/request';
+import { loginSuccess/*, lastVisitedEndpoint*/, setRecommendPortfolioView, saveRecommendedList } from './_actions/actions';
 
 const storedAuthToken = getAuthToken(); //로컬스토리지에서 토큰이 있으면 가져옴
 const userRole = getUserRole(); //로컬스토리지에서 해당 유저의 역할 가져옴
 const hasPortfolio = getHasPortfolio(); // 로컬스토리지에서 해당 유저의 포트폴리오 유무 여부를 가져옴
 const userNickName = getUserNickName(); // 로컬스토리지에서 해당 유저의 닉네임을 가져옴
+const savedRecommendList = getSaveRecommendedList();
+const savedIsRecommendedPortfolioView = getIsRecommededPortfolioView();
 // const endPoint = getLastVisitedEndpoint();   // 로컬스토리지에서 마지막으로 방문한 유효한 페이지를 가져옴
 // const endEndPoint = getLastLastVisitedEndpoint();   // 로컬스토리지에서  마지막 바로 전에 방문한 유효한 페이지를 가져옴
 // const endEndEndPoint = getLastLastLastVisitedEndpoint();
@@ -36,6 +39,8 @@ if (storedAuthToken) { //저장된 토큰이 있다면 로그인완료 상태로
     // 저장된 토큰과 역할로 로그인 액션 디스패치
     store.dispatch(loginSuccess(storedAuthToken, userRole, hasPortfolio, userNickName));
     //store.dispatch(lastVisitedEndpoint(endPoint, endEndPoint, endEndEndPoint));
+    store.dispatch(setRecommendPortfolioView(savedIsRecommendedPortfolioView));
+    store.dispatch(saveRecommendedList(savedRecommendList));
 }
     
 ReactDOM.createRoot(document.getElementById('root')).render(

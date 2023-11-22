@@ -57,6 +57,7 @@ function PortfolioCardPage() {
 
 
     useEffect(() => {
+        console.log("selectedIsRecommededPortfolioView : ", selectedIsRecommededPortfolioView);
         if(!selectedIsRecommededPortfolioView){
             setCurrentPage(0);
             setTotalPages(0);
@@ -82,8 +83,6 @@ function PortfolioCardPage() {
             setSustain(1);
             dispatch(setRecommendPortfolioView(true));
             setIsRecommededPortfolioView(true);
-            console.log("===============================추천 버튼===============================");
-            console.log("selectedIsRecommededPortfolioView : ", selectedIsRecommededPortfolioView);
         }
         else {
         }
@@ -259,10 +258,12 @@ function PortfolioCardPage() {
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
+        dispatch(setRecommendPortfolioView(false));
         dispatch(saveRecommendedList(null));
+        setIsRecommededPortfolioView(false);
         setSaveRecommendedList(null);
 
-        setIsRecommend(false);
+        setIsRecommend(0);
 
         setSustain(0);
 
@@ -310,6 +311,7 @@ function PortfolioCardPage() {
             dispatch(setRecommendPortfolioView(true));
             setSaveRecommendedList(response.data);
             setIsRecommededPortfolioView(true);
+            window.location.reload();
             setTotalPages(response.data.totalPages);
             console.log(data);
         } catch (error) {
@@ -450,44 +452,18 @@ function PortfolioCardPage() {
                                                             <CircularProgressbarWithChildren 
                                                                 value={item.cosineSimilarity}
                                                                 styles={buildStyles({
-                                                                // Rotation of path and trail, in number of turns (0-1)
-
-                                                                // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                                                strokeLinecap: 'round',
-                                                            
-                                                                // Text size
-                                                            
-                                                                // How long animation takes to go from one percentage to another, in seconds
-                                                            
-                                                                // Can specify path transition in more detail, or remove it entirely
-                                                                // pathTransition: 'none',
-                                                            
-                                                                //index === 0 ? '#fee371' : index === 1 ? '#e6e6e6' : index === 2 ? '#decba1' : '#e5eefc'
-                                                                // Colors
-                                                                pathColor: index === 0 ? `rgba(254, 227, 113, ${item.cosineSimilarity / 100})` : index === 1 ? `rgba(150, 150, 150, ${item.cosineSimilarity / 100})` : index === 2 ? `rgba(222, 203, 161, ${item.cosineSimilarity / 100})` : `rgba(229, 238, 252, ${0})`,
-                                                                textColor: '#f88',
-                                                                trailColor: 'white',
-                                                                backgroundColor: '#3e98c7',
-                                                                })
-                                                                }
+                                                                    strokeLinecap: 'round',
+                                                                    pathColor: index === 0 ? `rgba(254, 227, 113, ${item.cosineSimilarity / 100})` : index === 1 ? `rgba(150, 150, 150, ${item.cosineSimilarity / 100})` : index === 2 ? `rgba(222, 203, 161, ${item.cosineSimilarity / 100})` : `rgba(229, 238, 252, ${0})`,
+                                                                    textColor: '#f88',
+                                                                    trailColor: 'white',
+                                                                    backgroundColor: '#3e98c7',
+                                                                })}
                                                             >
-                                                                
-                                                                {/* Put any JSX content in here that you'd like. It'll be vertically and horizonally centered. */}
                                                                 <img
                                                                     style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}
                                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                                 />
-                                                                {/* <div style={{ fontSize: 10, marginTop: 5 }}>
-                                                                    <strong>{item.cosineSimilarity}%</strong>
-                                                                </div> */}
-
-                                                                
-
                                                             </CircularProgressbarWithChildren>
-
-                                                            
-
-
                                                         </td>
                                                     </tr>
                                                     {/* <tr>
@@ -683,7 +659,7 @@ function PortfolioCardPage() {
 
                 </div>
                 <div >
-                    <Button onClick={handleRecommend}>
+                    <Button onClick={() => handleRecommend()}>
                         팀원 추천
                     </Button>
 

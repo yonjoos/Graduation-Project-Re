@@ -37,6 +37,7 @@ function PortfolioCardPage() {
 
     const [sustain, setSustain] = useState(0);
     const [showRecommend, setShow] = useState(0);
+    const [recommendedData, setRecommendedData] = useState([]);
 
     const store = useStore();
     const dispatch = useDispatch();
@@ -60,8 +61,11 @@ function PortfolioCardPage() {
     // <Button> PortfolioCard 다시 눌렀을 때 실행
     // Handler : handleReload() 에 의해 호출됨
 
+
+    //F5랑 비슷한 기능
     useEffect(() => {
-        if( !store.getState().recommend.isRecommededPortpolioView ){
+
+        if(!store.getState().recommend.isRecommededPortpolioView){
             setCurrentPage(0);
             setTotalPages(0);
             setSearchTerm("");
@@ -74,17 +78,20 @@ function PortfolioCardPage() {
                 type: "SAVE_RECOMMENDED_LIST",
                 recommendedList: null
             });
-    
+
             // REQUEST FUNCTION 
             fetchUsers();
             setReload(0);
-        }
 
+        }
+        
 
     }, [reload]);
 
+
+    //추천 버튼 누를 때마다 
     useEffect(() => {
-        if (recommend === 1 && !store.getState().recommend.isRecommededPortpolioView) {
+        if (recommend === 1 ) {
             Recommend();
             setRecommend(0);
             setSustain(1);
@@ -103,22 +110,18 @@ function PortfolioCardPage() {
     // Handler : toggleBanner / handleSearch, toggleBanner, Pagination / handleSearch
     useEffect(() => {
 
-        if(!store.getState().recommend.isRecommededPortpolioView){
             console.log('현재 선택된 배너 정보', selectedBanners);
             console.log('현재 검색 완료된 키워드: ', searchTerm);
             fetchUsers();
-
-        }
         
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
     useEffect(() => {
-        if (store.getState().recommend.isRecommededPortpolioView) {
             const recommendedList = store.getState().recommend.recommendedList;
     
             console.log("-----------------", recommendedList);
     
-            setData(recommendedList);
+            setRecommendedData(recommendedList);
     
             console.log("세팅된 데이터=================", recommendedList);
     
@@ -126,7 +129,6 @@ function PortfolioCardPage() {
                 type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
                 isRecommededPortpolioView: false,
             });
-        }
     }, [store.getState().recommend.recommendedList]);
 
 
@@ -275,8 +277,12 @@ function PortfolioCardPage() {
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
+        dispatch({
+            type: "SAVE_RECOMMENDED_LIST",
+            recommendedList: null
+        });
 
-        setIsRecommend(0);
+        setIsRecommend(false);
 
         setSustain(0);
 
@@ -319,7 +325,7 @@ function PortfolioCardPage() {
     const Recommend = async () => {
         try {
             const response = await request('GET', `/getRecommendation`);
-            setData(response.data);
+            setRecommendedData(response.data);
             //console.log('response.data', response.data);
             //console.log("state", store.getState());
             dispatch({type: "SAVE_RECOMMENDED_LIST", recommendedList: response.data})
@@ -405,31 +411,31 @@ function PortfolioCardPage() {
                             <strong>이런 사람은 어떠세요?</strong>
                         </div>
                         <div>
-                            {renderCards(data)}
+                            {renderCards(recommendedData)}
                         </div>
                     </div>
 
                 );
             }
-        } else {
-            // Render the cards when data is ready
-            return renderCards(data);
+        } else{
+            return renderCards(data, recommendedData);
+
         }
     };
 
     // renderCards
-    const renderCards = (cards) => {
+    const renderCards = (cards, recommendedCard) => {
         let similarity = null;
         
         if (!cards || cards.length === 0) {
             return <div>No data available</div>; // or any other appropriate message
         }
 
-        if (isRecommend === 1) {
+        if (recommendedCard != null) {
             return (
                 <div>
                     <Row gutter={16}>
-                        {cards.map((item, index) => (
+                        {recommendedCard.map((item, index) => (
                             <React.Fragment key={index}>
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
@@ -690,6 +696,12 @@ function PortfolioCardPage() {
                 marginBottom: '20px'
             }}>
                 <div >
+                    <Button onClick={() => handleReload()}>
+                        전체 보기
+                    </Button>
+
+                </div>
+                <div >
                     <Button onClick={handleRecommend}>
                         팀원 추천
                     </Button>
@@ -705,7 +717,7 @@ function PortfolioCardPage() {
 
             </div>
             {/** 일반적인 포폴 카드 페이지에서는 Pagination이 보이도록, 추천 페이지에서는 Pagination이 보이지 않도록 함 */}
-            {isRecommend === 0 ? (
+            {recommendedData == null  ? (
                 <div style={{ textAlign: 'center', margin: '20px 0' }}>
                     <Pagination
                         current={currentPage + 1} // Ant Design's Pagination starts from 1, while your state starts from 0

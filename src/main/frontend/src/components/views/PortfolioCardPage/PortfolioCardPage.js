@@ -1,22 +1,23 @@
 // 로그인된 회원만 볼 수 있는 페이지
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-//import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Spin, Card, Row, Col, Divider, Button, Pagination, Menu, Dropdown } from 'antd';
-import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
 import { CircularProgressbarWithChildren, buildStyles  } from 'react-circular-progressbar';
 
-import { request, setHasPortfolio } from '../../../hoc/request';
+import { request, setSaveRecommendedList, setIsRecommededPortfolioView } from '../../../hoc/request';
+import { saveRecommendedList, setRecommendPortfolioView } from '../../../_actions/actions';
 //import { lastVisitedEndpoint } from '../../../_actions/actions';
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import SearchInPortfolioCardPage from './SearchInPortfolioCardPage';
-import { useDispatch, useStore } from 'react-redux';
-
 
 function PortfolioCardPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    //const dispatch = useDispatch();
+    const dispatch = useDispatch();
+
+    const selectedRecommendedList = useSelector(state => state.recommend.recommendedList);
+    const selectedIsRecommededPortfolioView = useSelector(state => state.recommend.isRecommededPortfolioView);
 
     const [searchTerm, setSearchTerm] = useState(""); // 검색어 값 -  엔터나 클릭 시에만 변경
     const [currentSearchTerm, setCurrentSearchTerm] = useState(""); // 추적하는 검색어 값, 타이핑 시마다 변경
@@ -39,18 +40,11 @@ function PortfolioCardPage() {
     const [showRecommend, setShow] = useState(0);
     const [recommendedData, setRecommendedData] = useState([]);
 
-    const store = useStore();
-    const dispatch = useDispatch();
-
-
     const pageSize = 9;
-
-    
-    
 
     // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
     useEffect(() => {
-        if( !store.getState().recommend.isRecommededPortpolioView ){
+        if(!selectedIsRecommededPortfolioView){
             console.log('현재 검색된 키워드: ', currentSearchTerm);
             setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
             fetchFilteredSearchLists();
@@ -62,44 +56,33 @@ function PortfolioCardPage() {
     // Handler : handleReload() 에 의해 호출됨
 
 
-    //F5랑 비슷한 기능
     useEffect(() => {
-
-        if(!store.getState().recommend.isRecommededPortpolioView){
+        console.log("selectedIsRecommededPortfolioView : ", selectedIsRecommededPortfolioView);
+        if(!selectedIsRecommededPortfolioView){
             setCurrentPage(0);
             setTotalPages(0);
             setSearchTerm("");
             setSelectedBanners(['all']);
-            dispatch({
-                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
-                isRecommededPortpolioView: false,
-            });
-            dispatch({
-                type: "SAVE_RECOMMENDED_LIST",
-                recommendedList: null
-            });
-
+            dispatch(setRecommendPortfolioView(false));
+            dispatch(saveRecommendedList(null));
+            setIsRecommededPortfolioView(false);
+            setSaveRecommendedList(null);
             // REQUEST FUNCTION 
             fetchUsers();
             setReload(0);
-
         }
         
-
     }, [reload]);
 
 
     //추천 버튼 누를 때마다 
     useEffect(() => {
-        if (recommend === 1 ) {
+        if (recommend === 1) {
             Recommend();
             setRecommend(0);
             setSustain(1);
-            dispatch({
-                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
-                isRecommededPortpolioView: false,
-            });
-            
+            dispatch(setRecommendPortfolioView(true));
+            setIsRecommededPortfolioView(true);
         }
         else {
         }
@@ -117,7 +100,7 @@ function PortfolioCardPage() {
     }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
     useEffect(() => {
-            const recommendedList = store.getState().recommend.recommendedList;
+            const recommendedList = selectedRecommendedList;
     
             console.log("-----------------", recommendedList);
     
@@ -125,11 +108,9 @@ function PortfolioCardPage() {
     
             console.log("세팅된 데이터=================", recommendedList);
     
-            dispatch({
-                type: "SET_RECOMMENDED_PORTPOLIO_VIEW",
-                isRecommededPortpolioView: false,
-            });
-    }, [store.getState().recommend.recommendedList]);
+            dispatch(setRecommendPortfolioView(true));
+            setIsRecommededPortfolioView(true);
+    }, [selectedRecommendedList]);
 
 
 
@@ -277,12 +258,12 @@ function PortfolioCardPage() {
 
     // <Button> PortfolioCard 의 핸들러, 페이지 리로딩
     const handleReload = () => {
-        dispatch({
-            type: "SAVE_RECOMMENDED_LIST",
-            recommendedList: null
-        });
+        dispatch(setRecommendPortfolioView(false));
+        dispatch(saveRecommendedList(null));
+        setIsRecommededPortfolioView(false);
+        setSaveRecommendedList(null);
 
-        setIsRecommend(false);
+        setIsRecommend(0);
 
         setSustain(0);
 
@@ -326,9 +307,11 @@ function PortfolioCardPage() {
         try {
             const response = await request('GET', `/getRecommendation`);
             setRecommendedData(response.data);
-            //console.log('response.data', response.data);
-            //console.log("state", store.getState());
-            dispatch({type: "SAVE_RECOMMENDED_LIST", recommendedList: response.data})
+            dispatch(saveRecommendedList(response.data));
+            dispatch(setRecommendPortfolioView(true));
+            setSaveRecommendedList(response.data);
+            setIsRecommededPortfolioView(true);
+            window.location.reload();
             setTotalPages(response.data.totalPages);
             console.log(data);
         } catch (error) {
@@ -380,6 +363,7 @@ function PortfolioCardPage() {
     // COMPONENTS ###############################################
 
     const renderContent = () => {
+
         if (showRecommend === 1) {
             // Show the loading message when data is loading
             return (
@@ -419,7 +403,6 @@ function PortfolioCardPage() {
             }
         } else{
             return renderCards(data, recommendedData);
-
         }
     };
 
@@ -435,21 +418,18 @@ function PortfolioCardPage() {
             return (
                 <div>
                     <Row gutter={16}>
-                        {recommendedCard.map((item, index) => (
+                        {(recommendedCard ? (recommendedCard.map((item, index) => (
                             <React.Fragment key={index}>
                             <Col xs={24} sm={8} key={index}>
                                 {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
                                 {/* style = {{cursor: 'pointer'}} */}
                                 <Card onClick={() => onClickHandler(item.nickName)}
-
                                     headStyle={{ background: '#e5eefc'}}
                                     bodyStyle={{ paddingTop: '15px', paddingBottom: '15px' }}
                                     title={
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <div>
-  
                                                 {index === 0 ? <span> <strong style={{fontSize:'20px'}}>Top</strong> recommended </span> : index === 1 ? <span><strong style={{fontSize:'20px'}}>2nd</strong> recommended</span> : <span><strong style={{fontSize:'20px'}}>3rd</strong> recommended</span>}
-
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                                 <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''}</span>
@@ -458,10 +438,8 @@ function PortfolioCardPage() {
                                         </div>
                                     } style={{ height: '270px', marginBottom: '10px', cursor: 'pointer', border: index === 0 ? '1px solid #fee371' : index === 1 ? '1px solid #e6e6e6' : index === 2 ? '1px solid #decba1' : '#e5eefc' }}
                                 >
-
                                     <div style={{display:'grid'}}>
                                         <div style={{display:'flex'}}>
-                                            
                                             <table style={{width:'90px'}}>
                                                 <tbody>
                                                     <tr>
@@ -469,44 +447,18 @@ function PortfolioCardPage() {
                                                             <CircularProgressbarWithChildren 
                                                                 value={item.cosineSimilarity}
                                                                 styles={buildStyles({
-                                                                // Rotation of path and trail, in number of turns (0-1)
-
-                                                                // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                                                strokeLinecap: 'round',
-                                                            
-                                                                // Text size
-                                                            
-                                                                // How long animation takes to go from one percentage to another, in seconds
-                                                            
-                                                                // Can specify path transition in more detail, or remove it entirely
-                                                                // pathTransition: 'none',
-                                                            
-                                                                //index === 0 ? '#fee371' : index === 1 ? '#e6e6e6' : index === 2 ? '#decba1' : '#e5eefc'
-                                                                // Colors
-                                                                pathColor: index === 0 ? `rgba(254, 227, 113, ${item.cosineSimilarity / 100})` : index === 1 ? `rgba(150, 150, 150, ${item.cosineSimilarity / 100})` : index === 2 ? `rgba(222, 203, 161, ${item.cosineSimilarity / 100})` : `rgba(229, 238, 252, ${0})`,
-                                                                textColor: '#f88',
-                                                                trailColor: 'white',
-                                                                backgroundColor: '#3e98c7',
-                                                                })
-                                                                }
+                                                                    strokeLinecap: 'round',
+                                                                    pathColor: index === 0 ? `rgba(254, 227, 113, ${item.cosineSimilarity / 100})` : index === 1 ? `rgba(150, 150, 150, ${item.cosineSimilarity / 100})` : index === 2 ? `rgba(222, 203, 161, ${item.cosineSimilarity / 100})` : `rgba(229, 238, 252, ${0})`,
+                                                                    textColor: '#f88',
+                                                                    trailColor: 'white',
+                                                                    backgroundColor: '#3e98c7',
+                                                                })}
                                                             >
-                                                                
-                                                                {/* Put any JSX content in here that you'd like. It'll be vertically and horizonally centered. */}
                                                                 <img
                                                                     style={{ borderRadius: '50%', width: '50px', height: '50px', border: `3px solid ${index === 0 ? '#ECC168' : index === 1 ? '#646464' : index === 2 ? '#BC997B' : '#e5eefc'}`}}
                                                                     src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
                                                                 />
-                                                                {/* <div style={{ fontSize: 10, marginTop: 5 }}>
-                                                                    <strong>{item.cosineSimilarity}%</strong>
-                                                                </div> */}
-
-                                                                
-
                                                             </CircularProgressbarWithChildren>
-
-                                                            
-
-
                                                         </td>
                                                     </tr>
                                                     {/* <tr>
@@ -533,12 +485,9 @@ function PortfolioCardPage() {
                                                         {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : null}
                                                         {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : null}
                                                     </strong>
-
                                                 </div>
                                             </div>
                                         </div>
-                                    
-
                                     </div>
                                     <hr></hr>
                                     <div>
@@ -547,21 +496,16 @@ function PortfolioCardPage() {
                                             <br></br>
                                             {truncateString(item.shortIntroduce, 20)}
                                         </div>
-
                                     </div>
-                                    
- 
                                 </Card>
-                                
-                                
                             </Col>
-                            </React.Fragment>
-                            
-                        ))}
+                            </React.Fragment>))) : (<h2>추천 기능을 사용하시려면, 정확한 추천을 위해 먼저 포트폴리오를 작성해주세요!</h2>)
+                        )}
                     </Row>
                 </div>
             )
         }
+
 
         else {
             return (
@@ -597,7 +541,6 @@ function PortfolioCardPage() {
                                             {item.game ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#GAME</span> : <span ></span>}
                                             {item.ai ? <span style={{ ...categoryTagStyle, backgroundColor: '#CDF1FF' }}>#AI</span> : <span ></span>}
                                         </strong>
-
                                     </div>                                    
                                     <Divider style={{ marginTop: '10px', marginBottom: '10px' }}></Divider>
                                     <b> 한 줄 소개 </b>
@@ -625,16 +568,13 @@ function PortfolioCardPage() {
             */}
             <br />
             <SearchInPortfolioCardPage onSearch={handleSearch} onChange={handleSearchTerm} />
-
             {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', margin: '20px 0' }}>
                 <div style={{ position: 'absolute', zIndex: 2, width: '55%' }}>
                     {(relatedSearchTermEnable ?
                         (renderSection('User', searchData.userSearchDtoList)) : null)}
                 </div>
-
             </div>
-
             <div style={{ textAlign: 'center', margin: '20px 0' }}>
                 <Row style={{ display: 'flex', justifyContent: 'center' }}>
                     <Button type={selectedBanners.includes('all') ? 'primary' : 'default'}
@@ -677,7 +617,6 @@ function PortfolioCardPage() {
                         <Button type={location.pathname === '/study' ? 'primary' : 'default'} onClick={handleStudyPage}>
                             Study
                         </Button>
-
                     </Col>
                     <Col span={6} style={{ textAlign: 'right' }}>
                         <Dropdown overlay={menu} placement="bottomRight">
@@ -699,22 +638,18 @@ function PortfolioCardPage() {
                     <Button onClick={() => handleReload()}>
                         전체 보기
                     </Button>
-
                 </div>
                 <div >
-                    <Button onClick={handleRecommend}>
+                    <Button onClick={() => handleRecommend()}>
                         팀원 추천
                     </Button>
-
                 </div>
                 <div style={{ marginLeft: '20px' }}>
                     ⬅️ 팀원을 추천받아 보세요!
                 </div>
             </div>
             <div style={{ display: 'grid' }}>
-
                 {renderContent()}
-
             </div>
             {/** 일반적인 포폴 카드 페이지에서는 Pagination이 보이도록, 추천 페이지에서는 Pagination이 보이지 않도록 함 */}
             {recommendedData == null  ? (
@@ -730,11 +665,8 @@ function PortfolioCardPage() {
             ) : (
                 <div />
             )}
-            
-
         </div>
     );
 }
-
 
 export default PortfolioCardPage;

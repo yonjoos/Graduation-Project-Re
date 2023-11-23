@@ -24,6 +24,7 @@ public class InitialDataLoader implements CommandLineRunner {
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
     private final VectorSimilarityRepository vectorSimilarityRepository;
+    private final PostsFilesRepository postsFilesRepository;
 
 
     private void createUserAndPortfolio(
@@ -2370,7 +2371,7 @@ public class InitialDataLoader implements CommandLineRunner {
         User user10 = User.builder()
                 .userName("이윤식")
                 .nickName("rilato")
-                .email("leeyunsik1997@g.hongik.ac.kr")
+                .email("leeyunsik@g.hongik.ac.kr")
                 .password(passwordEncoder.encode("10"))  // 비밀번호 해싱
                 .role(Role.USER)
                 .lastAccessDate(LocalDateTime.of(2023, 7, 21, 14, 30, 0))
@@ -4676,6 +4677,27 @@ public class InitialDataLoader implements CommandLineRunner {
 
         postsRepository.save(posts150);
 
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image150 = PostsFiles.builder()
+                .posts(posts150) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageYJ2.png") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image150);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file150 = PostsFiles.builder()
+                .posts(posts150) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file10.pdf") // 첨부 파일의 UUID
+                .fileName("file10.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file150);
+
         Category category150 = Category.builder()
                 .posts(posts150)
                 .web(false)
@@ -4702,6 +4724,27 @@ public class InitialDataLoader implements CommandLineRunner {
                 .build();
 
         postsRepository.save(posts151);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image151 = PostsFiles.builder()
+                .posts(posts151) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageYJ1.png") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image151);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file151 = PostsFiles.builder()
+                .posts(posts151) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file9.pdf") // 첨부 파일의 UUID
+                .fileName("file9.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file151);
 
         Category category151 = Category.builder()
                 .posts(posts151)
@@ -4759,6 +4802,27 @@ public class InitialDataLoader implements CommandLineRunner {
 
         postsRepository.save(posts152);
 
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image152 = PostsFiles.builder()
+                .posts(posts152) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageYS4.jpg") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image152);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file152 = PostsFiles.builder()
+                .posts(posts152) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file8.pdf") // 첨부 파일의 UUID
+                .fileName("file8.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file152);
+
         Category category152 = Category.builder()
                 .posts(posts152)
                 .web(true)
@@ -4785,6 +4849,27 @@ public class InitialDataLoader implements CommandLineRunner {
                 .build();
 
         postsRepository.save(posts153);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image153 = PostsFiles.builder()
+                .posts(posts153) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageYS3.jpg") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image153);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file153 = PostsFiles.builder()
+                .posts(posts153) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file7.pdf") // 첨부 파일의 UUID
+                .fileName("file7.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file153);
 
         Category category153 = Category.builder()
                 .posts(posts153)
@@ -4843,6 +4928,27 @@ public class InitialDataLoader implements CommandLineRunner {
 
         postsRepository.save(posts154);
 
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image154 = PostsFiles.builder()
+                .posts(posts154) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageYS2.jpg") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image154);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file154 = PostsFiles.builder()
+                .posts(posts154) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file6.pdf") // 첨부 파일의 UUID
+                .fileName("file6.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file154);
+
         Category category154 = Category.builder()
                 .posts(posts154)
                 .web(false)
@@ -4869,6 +4975,27 @@ public class InitialDataLoader implements CommandLineRunner {
                 .build();
 
         postsRepository.save(posts155);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image155 = PostsFiles.builder()
+                .posts(posts155) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageYS1.jpg") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image155);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file155 = PostsFiles.builder()
+                .posts(posts155) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file5.pdf") // 첨부 파일의 UUID
+                .fileName("file5.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file155);
 
         Category category155 = Category.builder()
                 .posts(posts155)
@@ -4926,6 +5053,27 @@ public class InitialDataLoader implements CommandLineRunner {
 
         postsRepository.save(posts156);
 
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image156 = PostsFiles.builder()
+                .posts(posts156) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageSH4.PNG") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image156);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file156 = PostsFiles.builder()
+                .posts(posts156) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file4.pdf") // 첨부 파일의 UUID
+                .fileName("file4.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file156);
+
         Category category156 = Category.builder()
                 .posts(posts156)
                 .web(true)
@@ -4953,6 +5101,27 @@ public class InitialDataLoader implements CommandLineRunner {
                 .build();
 
         postsRepository.save(posts157);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image157 = PostsFiles.builder()
+                .posts(posts157) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageSH3.PNG") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image157);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file157 = PostsFiles.builder()
+                .posts(posts157) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file3.pdf") // 첨부 파일의 UUID
+                .fileName("file3.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file157);
 
         Category category157 = Category.builder()
                 .posts(posts157)
@@ -5012,6 +5181,27 @@ public class InitialDataLoader implements CommandLineRunner {
 
         postsRepository.save(posts158);
 
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image158 = PostsFiles.builder()
+                .posts(posts158) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageSH2.PNG") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image158);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file158 = PostsFiles.builder()
+                .posts(posts158) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file2.pdf") // 첨부 파일의 UUID
+                .fileName("file2.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file158);
+
         Category category158 = Category.builder()
                 .posts(posts158)
                 .web(false)
@@ -5038,6 +5228,27 @@ public class InitialDataLoader implements CommandLineRunner {
                 .build();
 
         postsRepository.save(posts159);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles image159 = PostsFiles.builder()
+                .posts(posts159) // 해당 이미지가 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(true) // 이미지 여부
+                .fileUrl("imageSH1.PNG") // 이미지 파일의 UUID
+                .build();
+
+        // 이미지 posts_files 테이블에 저장
+        postsFilesRepository.save(image159);
+
+        // PostsFiles 엔티티 생성 및 저장할 리스트에 추가
+        PostsFiles file159 = PostsFiles.builder()
+                .posts(posts159) // 해당 첨부파일이 어떤 게시물에 속하는지 설정! (중요)
+                .isImage(false) // 이미지 여부
+                .fileUrl("file1.pdf") // 첨부 파일의 UUID
+                .fileName("file1.pdf") // 첨부파일의 원본 이름
+                .build();
+
+        // 첨부파일 리스트를 한번에 posts_files 테이블에 저장
+        postsFilesRepository.save(file159);
 
         Category category159 = Category.builder()
                 .posts(posts159)

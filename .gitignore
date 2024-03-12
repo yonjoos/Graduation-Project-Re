@@ -1,0 +1,16 @@
+application.properties
+application.yml
+node_modules
+
+### Exclude ###
+node_modules/
+build/
+out/
+bin/
+.gradle/
+.idea/
+.vscode/
+src/main/generated
+
+### Keep ###
+!/src/main/frontend/
